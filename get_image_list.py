@@ -9,7 +9,7 @@ lock=threading.Lock()
 fout=open('images.xls', 'w+')
 
 def process_url_word(word):
-	for i in range(1, 6000):
+	for i in range(1, 600000):
 	        sstr0="https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=%d&pullCount=0&q=%s&starCount=0" % (i, word)
 	        f=requests.get(sstr0)
 	        print "===========>>>>>====================>>>>"+f.url
@@ -44,8 +44,8 @@ def process_url_word(word):
 	        					                        fout.writelines(args+'\t')
 	        					        fout.writelines('\n')
 							lock.release()
-
-words=['a', 'ubuntu', 'docker', 'repo', 'node', 'red']
+words=['/']
+#words=['a', 'ubuntu', 'docker', 'repo', 'node', 'red']
 
 def main():
 	for word in words:
