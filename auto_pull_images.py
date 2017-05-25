@@ -8,12 +8,19 @@ num_worker_threads=50
 
 def pull(image):
 	cmd='docker pull %s' % image
-        rc = os.system(cmd)
+        try:
+		rc = os.system(cmd)
+	except:
+		print e
+                print 'Ooops: something wrong with this image: %s!' % name
+                pass
 
 def operation():
 	while True:
 		name=q.get()
-        	pull(name)
+        	if name is None:
+			break
+		pull(name)
 		q.task_done()
        
 def get_image_names():
@@ -28,9 +35,10 @@ def get_image_names():
 
 def queue_names():
 	with open('image-names.xls') as fd:
-		for name in fd: 
-	        	print name
-			q.put(name)
+		for name in fd:
+			if name: 
+	        		print name
+				q.put(name)
 
 threads=[]
 def main():
@@ -43,13 +51,17 @@ def main():
 		threads.append(t)
 
 	q.join()
+	print 'wait here!'
 	for i in range(num_worker_threads):
 		q.put(None)
+	print 'put here!'
 	for t in threads:
 		t.join()
+	print 'done here!'
 
 if __name__=='__main__':
 	main()
+	print 'should exit here!'
 	exit(0)
 
 
