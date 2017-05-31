@@ -40,8 +40,9 @@ def plot_count(data, attr, ticks):
 	print data.min()
 	print data.max()
 	print np.median(data)	
-
-	bins=np.arange(np.floor(data.min()), np.ceil(data.max())+ticks, ticks)
+	
+	#bins=np.arange(np.floor(data.min()), np.ceil(data.max()))
+	bins=np.arange(np.floor(data.min()), np.ceil(data.max()) + ticks/20, ticks/20)
 	counts, base=np.histogram(data, bins=bins, density=False)
 
 	fig=plt.figure(figsize=(128,16), dpi=80)
@@ -50,8 +51,8 @@ def plot_count(data, attr, ticks):
 	plt.plot(base[1:], counts, marker='o')
 	
 	plt.rcParams.update({'font.size': 22})
-	plt.xlim(ticks,  np.ceil(data.max()))
-	xmajorLocator=MultipleLocator(ticks)
+	plt.xlim(ticks/20, ticks)
+	xmajorLocator=MultipleLocator(ticks/20)
 	ax.xaxis.set_major_locator(xmajorLocator)
 	#ax.set_xticks(np.arange(0, 5001, 128))
 	plt.xlabel(attr)
@@ -78,8 +79,8 @@ def plot_cdf(data, attr, ticks):
 	
 	ax.plot(base[1:], cdf, marker='o')
 	
-	#plt.xlim(0, 5120)
-	xmajorLocator=MultipleLocator(ticks)
+	plt.xlim(0, ticks)
+	xmajorLocator=MultipleLocator(ticks/20)
 	ax.xaxis.set_major_locator(xmajorLocator)
 	#ax.set_xticks(np.arange(0, 5001, 128))
 	plt.xlabel(attr)
@@ -114,10 +115,10 @@ def main():
 	data_stars=columns_stars
 	data_pulls=columns_pulls
 
-	plot_count(data_stars, 'stars', 256)
-	plot_count(data_pulls, 'pulls', 100000000)
-	plot_cdf(data_stars, 'stars', 256)
-	plot_cdf(data_pulls, 'pulls', 100000000)
+	plot_count(data_stars, 'stars', 50)
+	plot_count(data_pulls, 'pulls', 2000)
+	plot_cdf(data_stars, 'stars', 128)
+	plot_cdf(data_pulls, 'pulls', 5000)
 
 
 if __name__=='__main__':
