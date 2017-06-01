@@ -41,10 +41,10 @@ def main():
 	np.savetxt('pull_count_sorted.out', data, fmt = "%d, %d, %s")
 	field = 'star_count'        
 	data = imagesbase.sortby(field)
-        np.savetxt('star_count_sorted.out', data, delimiter = "%d, %d, %s")
+        np.savetxt('star_count_sorted.out', data, fmt = "%d, %d, %s")
 	field = 'all_two'
         data = imagesbase.sortby(field)
-        np.savetxt('all_two_sorted.out', data, delimiter = "%d, %d, %s")
+        np.savetxt('all_two_sorted.out', data, fmt = "%d, %d, %s")
 	
 
 if __name__=='__main__':
