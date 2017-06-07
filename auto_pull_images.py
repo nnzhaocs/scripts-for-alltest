@@ -2,6 +2,8 @@
 import os, sys, subprocess, select, random, urllib2, time, json, tempfile, shutil
 import re
 import threading, Queue
+import argparse
+from optparse import OptionParser
 
 q=Queue.Queue()
 num_worker_threads=50
@@ -23,9 +25,9 @@ def operation():
 		pull(name)
 		q.task_done()
        
-def get_image_names():
-	cmd1='cp images.xls image-list.xls'
-	cmd2='awk -F\''+r'\t'+'\' \'{print $7}\' image-list.xls > image-names.xls'
+def get_image_names(name):
+	cmd1='cp %s image-list.xls' % name
+	cmd2='awk -F\''+','+'\' \'{print $3}\' image-list.xls > image-names.xls'
 	print cmd1
 	print cmd2
 	rc=os.system(cmd1)
@@ -42,9 +44,14 @@ def queue_names():
 
 threads=[]
 def main():
-	get_image_names()
-	queue_names()
+	parser = OptionParser()
+	parser.add_option('-f', '--filename', action='store', dest='filename', help="The input file which contains all the images'names", default="images.tsv")
+	options, args = parser.parse_args()
+	print 'Input file name: ', options.filename
 
+	get_image_names(options.filename)
+	queue_names()
+	
 	for i in range(num_worker_threads): 
 		t=threading.Thread(target=operation)
 		t.start()
