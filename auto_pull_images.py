@@ -51,7 +51,7 @@ def main():
 
 	get_image_names(options.filename)
 	queue_names()
-	
+	start = time.time()
 	for i in range(num_worker_threads): 
 		t=threading.Thread(target=operation)
 		t.start()
@@ -65,6 +65,10 @@ def main():
 	for t in threads:
 		t.join()
 	print 'done here!'
+
+	elapsed = time.time() - start
+        print (elapsed / 3600)
+
 
 if __name__=='__main__':
 	main()
