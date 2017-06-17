@@ -2,6 +2,7 @@
 from imports import *
 from draw_pic import *
 from utility import *
+from file import *
 
 def load_dirs(cache_id):
     """load the layer dir in layer file /var/lib/docker/aufs/diff/<cache_id>/
@@ -11,7 +12,8 @@ def load_dirs(cache_id):
         return sub_dirs
 
     layer_dir = os.path.join(AUFS_DIFF_DIR, cache_id)
-    print layer_dir
+    layer_dir_level = layer_dir.count(os.sep)
+    print (layer_dir, layer_dir_level)
 
     if not os.path.isdir(layer_dir):
         logging.warn('no following layer dir for %s', layer_dir)
@@ -24,11 +26,18 @@ def load_dirs(cache_id):
                 logging.warn('no following layer subdir for %s', s_dir)
                 continue
 
-            s_dir_files = [f for f in os.listdir(s_dir) if os.path.isfile(os.path.join(s_dir, f))]
+            dir_level = s_dir.count(os.sep) - layer_dir_level
+            s_dir_files = []
+            for f in os.listdir(s_dir):
+                if os.path.isfile(os.path.join(s_dir, f)):
+                    s_dir_file = load_file(os.path.join(s_dir, f))
+                    s_dir_files.append(s_dir_file)
+            # s_dir_files = [f for f in os.listdir(s_dir) if os.path.isfile(os.path.join(s_dir, f))]
+
             sub_dir = {
                 'layer_cache_id': cache_id,
                 'subdir': s_dir,
-                'dir_depth': 0,
+                'dir_depth': dir_level,
                 'file_cnt': len(s_dir_files),
                 'files': s_dir_files # full path of f = dir/files
             }

@@ -21,8 +21,8 @@ def parseArg():
         action="store_const", dest="loglevel", const=logging.INFO,
     )
     parser.add_argument(
-        '-y', '--yes',
-        help="Run",
+        '-c', '--create',
+        help="Create database",
         action="store_true"
     )
     return parser.parse_args()
@@ -32,13 +32,22 @@ def main():
 
     logging.basicConfig(level=args.loglevel)
 
-    images = load_images()
-    print "here loaded images!"
+    if args.create:
+        images = load_images()
+        cal_layer_repeats(images)
+        with open(db_filename, 'w+') as f_out:
+            json.dump(images, f_out)
 
-    logging.info('analyzing layers ...')
-    cal_layer_repeats(images)
-    plt_repeat_layer(images)
-    plt_files_size(images)
+        print "here loaded images to file: database_json!"
+    else:
+        logging.info('loading images ...')
+        with open(db_filename, 'r') as f_out:
+            images = json.load(f_out)
+
+        logging.info('analyzing/plotting images/layers ...')
+
+        #plt_repeat_layer(images)
+        #plt_files_size(images)
 
 if __name__ == '__main__':
 	print "start!"

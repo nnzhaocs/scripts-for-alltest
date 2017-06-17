@@ -24,10 +24,20 @@ def load_layer(chainid):
 
     logging.debug('found cache id for chain id %s -> %s' % (chainid, cache_id))
 
+    sub_dirs = load_dirs(cache_id)
+
+    depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
+    if depths:
+        dir_depth = max(depths)
+        print dir_depth
+    else:
+        dir_depth = 0
+
     layer = {
         'chain_id': chainid,
         'cache_id': cache_id,
-        'dirs': load_dirs(cache_id),  # getLayersBychainID(chain_id),
+        'dirs': sub_dirs,  # getLayersBychainID(chain_id),
+        'dir_depth': dir_depth,
         'size': getLayersSize(chainid),
         'repeats': 0
     }
@@ -57,7 +67,7 @@ def getLayersSize(chainid):
 def cal_layer_repeats(images):
     """ [imge1's layers, image2's layers, ..... ]
     get unique elements among multiple lists: all_list"""
-    fout = open('layer-repeats.txt', 'w+')
+    #fout = open('layer-repeats.txt', 'w+')
     layers = []
     for image in images:
         image_layers = []
@@ -76,7 +86,7 @@ def cal_layer_repeats(images):
     #layer_repeats_dict = cal_layer_repeats(images)
     for k, v in layer_dict.items():
         print (k, v)
-        fout.writelines(str(k)+','+str(v)+'\n')
+        #fout.writelines(str(k)+','+str(v)+'\n')
         for image in images:
             for layer in image['layers']:
                 #print layer

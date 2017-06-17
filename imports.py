@@ -12,5 +12,9 @@ from matplotlib.ticker import MultipleLocator
 import random, string, hashlib
 #from optparse import OptionParser
 
+from magic import Magic
+from collections import defaultdict
+from itertools import groupby
+
 
 
