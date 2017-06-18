@@ -35,7 +35,7 @@ def load_dirs(cache_id):
             # s_dir_files = [f for f in os.listdir(s_dir) if os.path.isfile(os.path.join(s_dir, f))]
 
             sub_dir = {
-                'layer_cache_id': cache_id,
+                #'layer_cache_id': cache_id,
                 'subdir': s_dir,
                 'dir_depth': dir_level,
                 'file_cnt': len(s_dir_files),

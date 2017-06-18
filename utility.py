@@ -1,7 +1,7 @@
 
 from imports import *
 
-DOCKER_DIR = '/var/lib/docker'
+DOCKER_DIR = '/gpfs/dockerimages/docker'
 IMAGE_ROOT = os.path.join(DOCKER_DIR, 'image/aufs')
 IMAGE_STORE_DIR = os.path.join(IMAGE_ROOT, 'imagedb')
 LAYER_STORE_DIR = os.path.join(IMAGE_ROOT, 'layerdb')

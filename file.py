@@ -36,7 +36,7 @@ def load_file(abs_filename):
     #print (f_type, extension, f_size)
 
     dir_file = {
-        'abs_filename': abs_filename,
+        'abs_filename': os.path.basename(abs_filename),
         'sha256': sha256,
         'size (B)': f_size,
         'type': f_type,
