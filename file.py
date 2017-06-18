@@ -28,10 +28,14 @@ def load_file(abs_filename):
 
     f_size = int(f_size)
 
-    m = Magic(mime = True)
+    #m = Magic(mime = True)
     me = Magic(mime_encoding = True)
 
-    f_type = me.from_file(abs_filename)
+    s = open(abs_filename).read(512)
+    if not s:
+        f_type = "text-empty"
+    else:
+        f_type = me.from_file(abs_filename)
     extension = os.path.splitext(abs_filename)[1]
     #print (f_type, extension, f_size)
 
