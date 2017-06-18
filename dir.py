@@ -36,7 +36,7 @@ def load_dirs(cache_id):
 
             sub_dir = {
                 #'layer_cache_id': cache_id,
-                'subdir': s_dir,
+                'subdir': s_dir.replace(DOCKER_DIR, ""),
                 'dir_depth': dir_level,
                 'file_cnt': len(s_dir_files),
                 'files': s_dir_files # full path of f = dir/files
