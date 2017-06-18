@@ -32,6 +32,7 @@ def main():
 
     logging.basicConfig(level=args.loglevel)
 
+    start = time.time()
     if args.create:
         images = load_images()
         cal_layer_repeats(images)
@@ -46,6 +47,8 @@ def main():
 
         logging.info('analyzing/plotting images/layers ...')
 
+    elapsed = time.time() - start
+    print (elapsed / 3600)
         #plt_repeat_layer(images)
         #plt_files_size(images)
 
