@@ -31,8 +31,8 @@ def load_file(abs_filename):
     #m = Magic(mime = True)
     me = Magic(mime_encoding = True)
 
-    s = open(abs_filename).read(512)
-    if not s:
+    #s = open(abs_filename).read(512)
+    if f_size == 1 or f_size == 0:
         f_type = "text-empty"
     else:
         f_type = me.from_file(abs_filename)
