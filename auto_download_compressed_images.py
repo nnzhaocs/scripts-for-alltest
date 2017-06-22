@@ -140,7 +140,7 @@ def queue_names():
             if not name:
                 continue
             repo = {
-                'name': name,
+                'name': str(name).replace(" ", "").replace("/n", ""),
                 'is_official': is_official_repo(name),
                 'docker_io_http': construct_url(name, is_official_repo(name)),
                 'tag': 'latest'  # here we use latest as all images tags
