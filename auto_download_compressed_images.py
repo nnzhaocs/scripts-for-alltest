@@ -43,7 +43,7 @@ def make_request(url):
 
 def download_manifest(repo):
     """download manifest first"""
-    url = repo.docker_io_http + 'manifest' + '/' + repo.tag
+    url = repo['docker_io_http'] + 'manifest' + '/' + repo.tag
     print 'manifest url: %s' % url
     resp = make_request(url)
     if not resp:
