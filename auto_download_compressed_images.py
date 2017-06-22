@@ -206,9 +206,11 @@ def main():
 
     if not os.path.isfile(options.filename):
         print '% is not a valid file' % options.filename
+        return
 
     if not os.path.isdir(options.dirname):
         print '% is not a valid directory' % options.dirname
+        return
 
     get_image_names(options.filename)
     create_dirs(options.dirname)
