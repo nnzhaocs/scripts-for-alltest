@@ -136,11 +136,12 @@ def construct_url(name, is_official):
 
 def queue_names():
     with open('image-names.xls') as fd:
-        for name in fd:
-            if not name:
+        for name1 in fd:
+            if not name1:
                 continue
+            name = str(name1).replace(" ", "").replace("/n", "")
             repo = {
-                'name': str(name).replace(" ", "").replace("/n", ""),
+                'name': name,
                 'is_official': is_official_repo(name),
                 'docker_io_http': construct_url(name, is_official_repo(name)),
                 'tag': 'latest'  # here we use latest as all images tags
