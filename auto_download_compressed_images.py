@@ -139,7 +139,7 @@ def queue_names():
         for name1 in fd:
             if not name1:
                 continue
-            name = str(name1).replace(" ", "").replace("/n", "")
+            name = str(name1).replace(" ", "").replace("\n", "")
             repo = {
                 'name': name,
                 'is_official': is_official_repo(name),
