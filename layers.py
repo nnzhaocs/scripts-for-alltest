@@ -25,6 +25,8 @@ def create_layer_db(f_layer_db):
     for t in threads:
         t.join()
     logging.info('done! all the threads are finished')
+    
+    json.dump(layers, f_layer_db)
     f_layer_db.close()
 
 
@@ -90,7 +92,7 @@ def load_layer(f_out):
         }
 
         lock.acquire()
-        json.dump(layer, f_out)
+        layers.append(layer)
         lock.release()
 
         logging.debug('write layer_id:[%s]: %s to json file', layer_id, layer)
