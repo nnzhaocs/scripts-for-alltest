@@ -1,4 +1,3 @@
-#!/bin/env python
 
 """imports all the libraries"""
 
@@ -20,6 +19,9 @@ import random, string, hashlib
 from magic import Magic
 from collections import defaultdict
 from itertools import groupby
+
+q = Queue.Queue()
+lock = threading.Lock()
 
 
 

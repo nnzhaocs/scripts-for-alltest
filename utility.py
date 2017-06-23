@@ -18,7 +18,6 @@ layer_db_filename = 'layer_db.json'
 
 dest_dir = []
 
-q = Queue.Queue()
 num_worker_threads = 50
-lock = threading.Lock()
 threads = []
+
