@@ -20,7 +20,7 @@ def load_dirs(layer_id):
 
     logging.debug('Extracting the file ==========> %s' % layer_file)
 
-    cmd = 'tar -xvzf %s %s' % (layer_file, dest_dir[0]['layer_dir'])
+    cmd = 'tar -xvzf %s -C %s' % (layer_file, dest_dir[0]['layer_dir'])
     logging.debug('The shell command: %s', cmd)
     rc = os.system(cmd)
     assert (rc == 0)
