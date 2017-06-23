@@ -76,9 +76,6 @@ def main():
         f_layer_db = open(layer_db_filename, 'w+')
         create_layer_db(f_layer_db)
 
-
-
-
             # images = load_images()
             # cal_layer_repeats(images)
             # with open(db_filename, 'w+') as f_out:
@@ -92,8 +89,8 @@ def main():
 
             # logging.info('analyzing/plotting images/layers ...')
 
-    elapsed = time.time() - start
-    logging.info('create layer json file, consumed time ==> ' % (elapsed / 3600))
+        elapsed = time.time() - start
+        logging.info('create layer json file, consumed time ==> %f', (elapsed / 3600))
 
         #plt_repeat_layer(images)
         #plt_files_size(images)
