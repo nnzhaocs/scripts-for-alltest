@@ -18,9 +18,9 @@ def load_dirs(layer_id):
         logging.warn('no following layer file for %s', layer_file)
         return sub_dirs
 
-    logging.debug('Extracting the file:%s' % layer_file)
+    logging.debug('Extracting the file ==========> %s' % layer_file)
 
-    cmd = 'tar -xvzf %s' % layer_file
+    cmd = 'tar -xvzf %s %s' % (layer_file, dest_dir[0]['layer_dir'])
     logging.debug('The shell command: %s', cmd)
     rc = os.system(cmd)
     assert (rc == 0)
