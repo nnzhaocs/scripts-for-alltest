@@ -34,6 +34,9 @@ def queue_layers():
     for _, _, layer_id_dirs in os.walk(dest_dir[0]['layer_dir']):
         for layer_id in layer_id_dirs:
             logging.debug('layer_id: %s', layer_id)  # str(layer_id).replace("/", "")
+            if check_config_file(layer_id):
+                move_config_file(layer_id)
+                continue
             q.put(layer_id)
 
 
@@ -66,9 +69,6 @@ def load_layer(f_out):
         layer_id = q.get()
         if layer_id is None:
             break
-
-        if check_config_file(layer_id):
-            continue
 
         sub_dirs = load_dirs(layer_id)
         clear_dirs(layer_id)
