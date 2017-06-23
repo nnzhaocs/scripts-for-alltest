@@ -73,8 +73,8 @@ def main():
 
         dest_dir.append(dir)
         logging.info('dir list is: %s', dir)
-        f_layer_db = open(layer_db_filename, 'w+')
-        create_layer_db(f_layer_db)
+        # f_layer_db = open(layer_db_filename, 'w+')
+        create_layer_db()
 
             # images = load_images()
             # cal_layer_repeats(images)

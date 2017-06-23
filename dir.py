@@ -70,7 +70,7 @@ def load_dirs(layer_id):
                 'subdir': s_dir.replace(layer_dir, ""),
                 'dir_depth': dir_level,
                 'file_cnt': len(s_dir_files),
-                'files': s_dir_files # full path of f = dir/files
+                'files': s_dir_files  # full path of f = dir/files
             }
 
             # logging.debug('sub_dir: %s', sub_dir)

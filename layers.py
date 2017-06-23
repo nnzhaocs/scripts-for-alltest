@@ -6,14 +6,14 @@ from dir import *
 from itertools import chain
 
 
-def create_layer_db(f_layer_db):
+def create_layer_db():
     """create layer database as a json file"""
     logging.info('==========> create_layer_db: The output layer_db_filename: %s', layer_db_filename)
 
     queue_layers()
 
     for i in range(num_worker_threads):
-        t = threading.Thread(target=load_layer, args=(f_layer_db,))
+        t = threading.Thread(target=load_layer)
         t.start()
         threads.append(t)
 
@@ -25,9 +25,18 @@ def create_layer_db(f_layer_db):
     for t in threads:
         t.join()
     logging.info('done! all the threads are finished')
-    
-    json.dump(layers, f_layer_db)
-    f_layer_db.close()
+
+    while True:
+        layer = layer_q.get()
+        if layer is None:
+            break
+        layers.append(layer)
+        layer_q.task_done()
+
+    with open(layer_db_filename, 'w+') as f_out:
+        json.dump(layers, f_out)
+    # json.dump(layers, f_layer_db)
+    f_out.close()
 
 
 def queue_layers():
@@ -65,7 +74,7 @@ def move_config_file(config_id):
     # logging.debug('The shell output: %s', out)
 
 
-def load_layer(f_out):
+def load_layer():
     """load the layer dirs"""
     while True:
         layer_id = q.get()
@@ -91,9 +100,11 @@ def load_layer(f_out):
             'repeats': 0
         }
 
-        lock.acquire()
-        layers.append(layer)
-        lock.release()
+        layer_q.put(layer)
+
+        # lock.acquire()
+        # layers.append(layer)
+        # lock.release()
 
         logging.debug('write layer_id:[%s]: %s to json file', layer_id, layer)
         q.task_done()

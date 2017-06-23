@@ -17,6 +17,7 @@ from imports import *
 layer_db_filename = 'layer_db.json'
 
 dest_dir = []
+
 layers = []
 
 num_worker_threads = 50
