@@ -11,7 +11,7 @@ from utility import *
 def parseArg():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-d', '--debug',
+        '-D', '--debug',
         help="Print lots of debugging statements",
         action="store_const", dest="loglevel", const=logging.DEBUG,
         default=logging.INFO,
