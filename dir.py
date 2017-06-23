@@ -26,7 +26,7 @@ def load_dirs(layer_id):
     rc = os.system(cmd1)
     assert (rc == 0)
 
-    cmd = 'tar -zxvf %s -C %s' % (layer_file, layer_dir)
+    cmd = 'tar -zxf %s -C %s' % (layer_file, layer_dir)
     logging.debug('The shell command: %s', cmd)
     rc = os.system(cmd)
     assert (rc == 0)
