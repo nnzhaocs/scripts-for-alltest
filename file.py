@@ -6,7 +6,7 @@ from utility import *
 
 def load_file(abs_filename):
     if os.path.islink(abs_filename):
-        logging.debug('this is a symblink')
+        # logging.debug('this is a symblink')
         path = os.readlink(abs_filename)
         sha256 = hashlib.sha256(path).hexdigest()
     else:
@@ -35,7 +35,7 @@ def load_file(abs_filename):
     #s = open(abs_filename).read(512)
     if f_size == 1 or f_size == 0:
         f_type = "text-empty"
-        logging.debug("###### text-empty #####, name: %s", abs_filename)
+        # logging.debug("###### text-empty #####, name: %s", abs_filename)
     else:
         f_type = me.from_file(abs_filename)
     extension = os.path.splitext(abs_filename)[1]
