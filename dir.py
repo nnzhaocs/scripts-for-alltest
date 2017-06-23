@@ -20,7 +20,7 @@ def load_dirs(layer_id):
 
     logging.debug('Extracting the file ==========> %s' % layer_file)
 
-    layer_dir = str(layer_file) + '/'
+    layer_dir = str(layer_file) + '-dir'
     # cmd1 = 'mkdir %s' % layer_dir
     # logging.debug('The shell command: %s', cmd1)
     # rc = os.system(cmd1)
