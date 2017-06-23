@@ -39,11 +39,11 @@ def parseArg():
         action="store_true", dest="dest_dir",
     )
 
-    parser.add_argument(
-        '-c', '--create',
-        help="Create layer database",
-        action="store_true"
-    )
+    # parser.add_argument(
+    #     '-c', '--create',
+    #     help="Create layer database",
+    #     action="store_true",
+    # )
 
     # parser.add_argument(
     #     '-i', '--create',
@@ -60,7 +60,7 @@ def main():
     logging.basicConfig(level=args.loglevel)
 
     start = time.time()
-    if args.dest_dir and args.create:
+    if args.dest_dir:
         manifest_dir = os.path.join(args.dest_dir, "manifests")
         config_dir = os.path.join(args.dest_dir, "configs")
         layer_dir = os.path.join(args.dest_dir, "layers")
