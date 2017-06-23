@@ -32,7 +32,8 @@ def create_layer_db():
             break
         layers.append(layer)
         layer_q.task_done()
-
+        
+    logging.info('write to json file!')
     with open(layer_db_filename, 'w+') as f_out:
         json.dump(layers, f_out)
     # json.dump(layers, f_layer_db)
