@@ -25,7 +25,7 @@ def create_layer_db(f_layer_db):
     for t in threads:
         t.join()
     logging.info('done! all the threads are finished')
-
+    f_layer_db.close()
 
 def queue_layers():
     """queue the layer id under layer dir"""
