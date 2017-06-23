@@ -55,8 +55,8 @@ def check_config_file(layer_id):
 
 
 def move_config_file(config_id):
-    cofig_file = os.path.join(dest_dir[0]['layer_dir'], config_id)
-    cmd3 = 'mv %s %s' % (cofig_file, dest_dir[0]['configs'])
+    config_file = os.path.join(dest_dir[0]['layer_dir'], config_id)
+    cmd3 = 'mv %s %s' % (config_file, dest_dir[0]['config_dir'])
     logging.debug('The shell command: %s', cmd3)
     rc = os.system(cmd3)
     assert (rc == 0)
