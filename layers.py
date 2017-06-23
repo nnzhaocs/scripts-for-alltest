@@ -93,7 +93,7 @@ def load_layer(f_out):
         json.dump(layer, f_out)
         lock.release()
 
-        logging.debug('layer_id:[%s]: %s', layer_id, layer)
+        logging.debug('write layer_id:[%s]: %s to json file', layer_id, layer)
 
 
 # def load_layerBychainid(chainid):
