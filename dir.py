@@ -5,10 +5,23 @@ from utility import *
 from file import *
 
 
-def load_dirs(layer_id):
+def clear_dirs(layer_id):
     """load the layer dir in layer file dest_dir['layer_dir']/<cache_id>/
     extracting the dir
     load all the subdirs in this layer dir """
+    layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_id)
+    layer_dir = str(layer_file) + '-dir'
+    cmd4 = 'rm -rf %s' % layer_dir
+    logging.debug('The shell command: %s', cmd4)
+    rc = os.system(cmd4)
+    assert (rc == 0)
+
+
+def load_dirs(layer_id):
+    """load the layer file in layer file dest_dir['layer_dir']/<layer_id>
+    extracting to id-dir
+    load all the subdirs in this layer-id dir
+    Then clean the layer-id dir"""
     sub_dirs = []
     # if len(layer_id) == 0:
     #     return sub_dirs

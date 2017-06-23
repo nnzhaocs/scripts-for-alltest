@@ -27,6 +27,7 @@ def create_layer_db(f_layer_db):
     logging.info('done! all the threads are finished')
     f_layer_db.close()
 
+
 def queue_layers():
     """queue the layer id under layer dir"""
     for _, _, layer_id_dirs in os.walk(dest_dir[0]['layer_dir']):
@@ -35,18 +36,46 @@ def queue_layers():
             q.put(layer_id)
 
 
+def check_config_file(layer_id):
+    layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_id)
+    cmd2 = 'file %s' % layer_file
+    logging.debug('The shell command: %s', cmd2)
+
+    proc = subprocess.Popen(cmd2, stdout=subprocess.PIPE, shell=True)
+    out, err = proc.communicate()
+    logging.debug('The shell output: %s', out)
+    if 'gzip' in out:
+        return False
+    else:
+        return True
+
+
+def move_config_file(config_id):
+    cofig_file = os.path.join(dest_dir[0]['layer_dir'], config_id)
+    cmd3 = 'mv %s %s' % (cofig_file, dest_dir[0]['configs'])
+    logging.debug('The shell command: %s', cmd3)
+    rc = os.system(cmd3)
+    assert (rc == 0)
+    # logging.debug('The shell output: %s', out)
+
+
 def load_layer(f_out):
     """load the layer dirs"""
     while True:
         layer_id = q.get()
         if layer_id is None:
             break
+
+        if check_config_file(layer_id):
+            continue
+
         sub_dirs = load_dirs(layer_id)
+        clear_dirs(layer_id)
 
         depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
         if depths:
             dir_depth = max(depths)
-            print dir_depth
+            # print dir_depth
         else:
             dir_depth = 0
 

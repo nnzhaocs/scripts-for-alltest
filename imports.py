@@ -20,6 +20,8 @@ from magic import Magic
 from collections import defaultdict
 from itertools import groupby
 
+import subprocess
+
 q = Queue.Queue()
 lock = threading.Lock()
 
