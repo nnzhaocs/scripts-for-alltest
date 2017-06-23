@@ -36,7 +36,7 @@ def parseArg():
     parser.add_argument(
         '-d', '--directory',
         help="Directory which contains manfiest and tarballs",
-        action="store_true", dest="dest_dir",
+        dest="dest_dir",
     )
 
     # parser.add_argument(
