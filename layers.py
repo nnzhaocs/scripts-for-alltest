@@ -94,6 +94,7 @@ def load_layer(f_out):
         lock.release()
 
         logging.debug('write layer_id:[%s]: %s to json file', layer_id, layer)
+        q.task_done()
 
 
 # def load_layerBychainid(chainid):
