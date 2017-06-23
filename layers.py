@@ -30,6 +30,7 @@ def create_layer_db(f_layer_db):
 
 def queue_layers():
     """queue the layer id under layer dir"""
+    logging.debug('layer_dir: %s', dest_dir[0]['layer_dir'])  # str(layer_id).replace("/", "")
     for _, _, layer_id_dirs in os.walk(dest_dir[0]['layer_dir']):
         for layer_id in layer_id_dirs:
             logging.debug('layer_id: %s', layer_id)  # str(layer_id).replace("/", "")
