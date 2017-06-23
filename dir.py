@@ -73,7 +73,7 @@ def load_dirs(layer_id):
                 'files': s_dir_files # full path of f = dir/files
             }
 
-            logging.debug('sub_dir: %s', sub_dir)
+            # logging.debug('sub_dir: %s', sub_dir)
             sub_dirs.append(sub_dir)
     return sub_dirs
 
