@@ -31,7 +31,7 @@ def queue_layers():
     """queue the layer id under layer dir"""
     for _, _, layer_id_dirs in os.walk(dest_dir[0]['layer_dir']):
         for layer_id in layer_id_dirs:
-            logging.debug('layer_id: %s' % layer_id)  # str(layer_id).replace("/", "")
+            logging.debug('layer_id: %s', layer_id)  # str(layer_id).replace("/", "")
             q.put(layer_id)
 
 
@@ -62,7 +62,7 @@ def load_layer(f_out):
         json.dump(layer, f_out)
         lock.release()
 
-        logging.debug('layer_id: %s {%s}' % layer_id, layer)
+        logging.debug('layer_id:[%s]: %s', layer_id, layer)
 
 
 # def load_layerBychainid(chainid):
