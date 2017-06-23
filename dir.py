@@ -13,7 +13,7 @@ def load_dirs(layer_id):
     # if len(layer_id) == 0:
     #     return sub_dirs
 
-    layer_file = os.path.join(dest_dir['layer_dir'], layer_id)
+    layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_id)
     if not os.path.isfile(layer_file):
         logging.warn('no following layer file for %s', layer_file)
         return sub_dirs
