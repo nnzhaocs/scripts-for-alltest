@@ -1,15 +1,11 @@
 
 from imports import *
-from images import *
+# from images import *
 from layers import *
 from dir import *
 from file import *
 from draw_pic import *
 from utility import *
-
-
-# repos = []
-# layers = []
 
 
 def parseArg():
@@ -20,16 +16,11 @@ def parseArg():
         action="store_const", dest="loglevel", const=logging.DEBUG,
         default=logging.INFO,
     )
-    # parser.add_argument(
-    #     '-v', '--verbose',
-    #     help="Be verbose",
-    #     action="store_const", dest="loglevel", const=logging.INFO,
-    # )
 
     parser.add_argument(
-        '-c', '--create',
-        help="Create layer database",
-        action="store_true"
+        '-v', '--verbose',
+        help="Be verbose",
+        action="store_const", dest="loglevel", const=logging.INFO,
     )
 
     """ dest_dir contains three directories:
@@ -41,11 +32,24 @@ def parseArg():
         config_dir = os.path.join(dest_dir, "configs")
         layer_dir = os.path.join(dest_dir, "layers")
     """
+
     parser.add_argument(
-        '-t', '--tarball',
-        help="Get tarball and extract it",
-        action="store_true", dest="dest_dir", const=logging.INFO,
+        '-d', '--directory',
+        help="Directory which contains manfiest and tarballs",
+        action="store_true", dest="dest_dir",
     )
+
+    parser.add_argument(
+        '-c', '--create',
+        help="Create layer database",
+        action="store_true"
+    )
+
+    # parser.add_argument(
+    #     '-i', '--create',
+    #     help="Create layer database",
+    #     action="store_true"
+    # )
 
     return parser.parse_args()
 
@@ -55,42 +59,25 @@ def main():
 
     logging.basicConfig(level=args.loglevel)
 
-    manifest_dir = os.path.join(args.dest_dir, "manifests")
-    config_dir = os.path.join(args.dest_dir, "configs")
-    layer_dir = os.path.join(args.dest_dir, "layers")
-
-    dir = {
-        'dirname': args.dest_dir,
-        'manifest_dir': manifest_dir,
-        'config_dir': config_dir,
-        'layer_dir': layer_dir
-    }
-
-    dest_dir.append(dir)
-
     start = time.time()
-    if not args.tarball:
-        if args.create:
-            logging.info('The output layer_db_filename: %s', layer_db_filename)
-            f_layer_db = open(layer_db_filename, 'w+')
-            queue_layers()
+    if args.dest_dir and args.create:
+        manifest_dir = os.path.join(args.dest_dir, "manifests")
+        config_dir = os.path.join(args.dest_dir, "configs")
+        layer_dir = os.path.join(args.dest_dir, "layers")
+        dir = {
+            'dirname': args.dest_dir,
+            'manifest_dir': manifest_dir,
+            'config_dir': config_dir,
+            'layer_dir': layer_dir
+        }
 
-            for i in range(num_worker_threads):
-                t = threading.Thread(target=load_layer, args=(f_layer_db,))
-                t.start()
-                threads.append(t)
+        dest_dir.append(dir)
+        logging.info('dir list is: %s', dir)
+        f_layer_db = open(layer_db_filename, 'w+')
+        create_layer_db(f_layer_db)
+        f_layer_db.close()
 
-            q.join()
-            logging.info('wait queue to join!')
-            for i in range(num_worker_threads):
-                q.put(None)
-            logging.info('put none layers to queue!')
-            for t in threads:
-                t.join()
-            logging.info('done! all the threads are finished')
 
-            elapsed = time.time() - start
-            logging.info('create layer json file, consumed time ==> ' % (elapsed / 3600))
 
             # images = load_images()
             # cal_layer_repeats(images)
@@ -105,8 +92,9 @@ def main():
 
             # logging.info('analyzing/plotting images/layers ...')
 
-    # elapsed = time.time() - start
-    # print (elapsed / 3600)
+    elapsed = time.time() - start
+    logging.info('create layer json file, consumed time ==> ' % (elapsed / 3600))
+
         #plt_repeat_layer(images)
         #plt_files_size(images)
 

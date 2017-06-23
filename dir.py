@@ -4,16 +4,30 @@ from draw_pic import *
 from utility import *
 from file import *
 
-def load_dirs(cache_id):
+
+def load_dirs(layer_id):
     """load the layer dir in layer file dest_dir['layer_dir']/<cache_id>/
+    extracting the dir
     load all the subdirs in this layer dir """
     sub_dirs = []
-    if len(cache_id) == 0:
+    # if len(layer_id) == 0:
+    #     return sub_dirs
+
+    layer_file = os.path.join(dest_dir['layer_dir'], layer_id)
+    if not os.path.isfile(layer_file):
+        logging.warn('no following layer file for %s', layer_file)
         return sub_dirs
 
-    layer_dir = os.path.join(dest_dir['layer_dir'], cache_id)
+    logging.debug('Extracting the file:%s' % layer_file)
+
+    cmd = 'tar -xvzf %s' % layer_file
+    logging.debug('The shell command: %s', cmd)
+    rc = os.system(cmd)
+    assert (rc == 0)
+    layer_dir = str(layer_file) + '/'
+
     layer_dir_level = layer_dir.count(os.sep)
-    print (layer_dir, layer_dir_level)
+    logging.debug("(%s, %s)", layer_dir, layer_dir_level)
 
     if not os.path.isdir(layer_dir):
         logging.warn('no following layer dir for %s', layer_dir)
@@ -35,14 +49,13 @@ def load_dirs(cache_id):
             # s_dir_files = [f for f in os.listdir(s_dir) if os.path.isfile(os.path.join(s_dir, f))]
 
             sub_dir = {
-                #'layer_cache_id': cache_id,
                 'subdir': s_dir.replace(layer_dir, ""),
                 'dir_depth': dir_level,
                 'file_cnt': len(s_dir_files),
                 'files': s_dir_files # full path of f = dir/files
             }
 
-            #print sub_dir
+            logging.debug('sub_dir: %s', sub_dir)
             sub_dirs.append(sub_dir)
     return sub_dirs
 

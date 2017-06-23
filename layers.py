@@ -6,14 +6,37 @@ from dir import *
 from itertools import chain
 
 
+def create_layer_db(f_layer_db):
+    """create layer database as a json file"""
+    logging.info('==========> create_layer_db: The output layer_db_filename: %s', layer_db_filename)
+
+    queue_layers()
+
+    for i in range(num_worker_threads):
+        t = threading.Thread(target=load_layer, args=(f_layer_db,))
+        t.start()
+        threads.append(t)
+
+    q.join()
+    logging.info('wait queue to join!')
+    for i in range(num_worker_threads):
+        q.put(None)
+    logging.info('put none layers to queue!')
+    for t in threads:
+        t.join()
+    logging.info('done! all the threads are finished')
+
+
 def queue_layers():
-    for _, layer_id_dirs, _ in os.walk(dest_dir['layer_dir']):
+    """queue the layer id under layer dir"""
+    for _, _, layer_id_dirs in os.walk(dest_dir['layer_dir']):
         for layer_id in layer_id_dirs:
             logging.debug('layer_id: %s' % layer_id)  # str(layer_id).replace("/", "")
             q.put(layer_id)
 
 
 def load_layer(f_out):
+    """load the layer dirs"""
     while True:
         layer_id = q.get()
         if layer_id is None:
@@ -28,8 +51,6 @@ def load_layer(f_out):
             dir_depth = 0
 
         layer = {
-            'chain_id': 0,
-            'cache_id': 0,
             'layer_id': layer_id,  # str(layer_id).replace("/", ""),
             'dirs': sub_dirs,  # getLayersBychainID(chain_id),
             'dir_max_depth': dir_depth,
@@ -44,64 +65,65 @@ def load_layer(f_out):
         logging.debug('layer_id: %s {%s}' % layer_id, layer)
 
 
-def load_layerBychainid(chainid):
-    """ first we find the layer folder with chain id under /var/lib/docker/image/aufs/layerdb
-    then the file 'cache-id' has the contents of the real layer id
-    """
-    cache_file = os.path.join(LAYER_STORE_DIR, 'sha256', chainid, 'cache-id')
-    #print  os.path.join(LAYER_STORE_DIR, 'sha256', chainid, 'cache-id')
-    if not os.path.isfile(cache_file):
-        logging.info('no cache-id file found for this chain id: %s', chainid)
-        return []
+# def load_layerBychainid(chainid):
+#     """ first we find the layer folder with chain id under /var/lib/docker/image/aufs/layerdb
+#     then the file 'cache-id' has the contents of the real layer id
+#     """
+#     cache_file = os.path.join(LAYER_STORE_DIR, 'sha256', chainid, 'cache-id')
+#     #print  os.path.join(LAYER_STORE_DIR, 'sha256', chainid, 'cache-id')
+#     if not os.path.isfile(cache_file):
+#         logging.info('no cache-id file found for this chain id: %s', chainid)
+#         return []
+#
+#     with open(cache_file) as data_file:
+#         cache_id = data_file.read()
+#
+#     if len(cache_id) == 0:
+#         logging.info('cache-id file is empty, no layers for this chain id:%s' % chainid)
+#         return []
+#
+#     logging.debug('found cache id for chain id %s -> %s' % (chainid, cache_id))
+#
+#     sub_dirs = load_dirs(cache_id)
+#
+#     depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
+#     if depths:
+#         dir_depth = max(depths)
+#         print dir_depth
+#     else:
+#         dir_depth = 0
+#
+#     layer = {
+#         'chain_id': chainid,
+#         'cache_id': cache_id,
+#         'dirs': sub_dirs,  # getLayersBychainID(chain_id),
+#         'dir_depth': dir_depth,
+#         'size': getLayersSize(chainid),
+#         'repeats': 0
+#     }
+#
+#     #print layer
+#     return layer
 
-    with open(cache_file) as data_file:
-        cache_id = data_file.read()
+# def getLayersSize(chainid):
+#     """ first we find the layer folder with chain id under /var/lib/docker/image/aufs/layerdb
+#     then the file 'size' has size"""
+#     size_file = os.path.join(LAYER_STORE_DIR, 'sha256', chainid, 'size')
+#     #print  size_file
+#     if not os.path.isfile(size_file):
+#         logging.info('no size file found for this chain id: %s', chainid)
+#         return []
+#
+#     with open(size_file) as data_file:
+#         size = data_file.read()
+#
+#     if len(size) == 0:
+#         logging.info('size file is empty, no layers for this chain id:%s' % chainid)
+#         return []
+#
+#     logging.debug('found size for chain id %s -> %s' % (chainid, size))
+#     return size
 
-    if len(cache_id) == 0:
-        logging.info('cache-id file is empty, no layers for this chain id:%s' % chainid)
-        return []
-
-    logging.debug('found cache id for chain id %s -> %s' % (chainid, cache_id))
-
-    sub_dirs = load_dirs(cache_id)
-
-    depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
-    if depths:
-        dir_depth = max(depths)
-        print dir_depth
-    else:
-        dir_depth = 0
-
-    layer = {
-        'chain_id': chainid,
-        'cache_id': cache_id,
-        'dirs': sub_dirs,  # getLayersBychainID(chain_id),
-        'dir_depth': dir_depth,
-        'size': getLayersSize(chainid),
-        'repeats': 0
-    }
-
-    #print layer
-    return layer
-
-def getLayersSize(chainid):
-    """ first we find the layer folder with chain id under /var/lib/docker/image/aufs/layerdb
-    then the file 'size' has size"""
-    size_file = os.path.join(LAYER_STORE_DIR, 'sha256', chainid, 'size')
-    #print  size_file
-    if not os.path.isfile(size_file):
-        logging.info('no size file found for this chain id: %s', chainid)
-        return []
-
-    with open(size_file) as data_file:
-        size = data_file.read()
-
-    if len(size) == 0:
-        logging.info('size file is empty, no layers for this chain id:%s' % chainid)
-        return []
-
-    logging.debug('found size for chain id %s -> %s' % (chainid, size))
-    return size
 
 def cal_layer_repeats(images):
     """ [imge1's layers, image2's layers, ..... ]
@@ -112,7 +134,7 @@ def cal_layer_repeats(images):
         image_layers = []
         for layer in image['layers']:
             #print layer
-            diff_path = os.path.join(AUFS_DIFF_DIR, layer['cache_id'])
+            diff_path = os.path.join(dest_dir['layer_dir'], layer['cache_id'])
             logging.debug('%s', '\n'.join(diff_path))
             """here, find all layer for each image"""
             image_layers.append(layer['cache_id'])
@@ -132,6 +154,7 @@ def cal_layer_repeats(images):
                 if layer['cache_id'] == k:
                     layer['repeats'] = v
                 #print layer
+
 
 def plt_repeat_layer(images):
     d = {}

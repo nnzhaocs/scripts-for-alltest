@@ -1,4 +1,7 @@
 #!/bin/env python
+
+"""imports all the libraries"""
+
 import os, json, hashlib, argparse, logging, shutil, sys, time
 from functools import reduce
 from utility import *

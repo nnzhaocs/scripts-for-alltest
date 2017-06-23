@@ -3,9 +3,10 @@ from imports import *
 from draw_pic import *
 from utility import *
 
+
 def load_file(abs_filename):
     if os.path.islink(abs_filename):
-        #print "this is a symblink"
+        logging.debug('this is a symblink')
         path = os.readlink(abs_filename)
         sha256 = hashlib.sha256(path).hexdigest()
     else:
@@ -24,7 +25,7 @@ def load_file(abs_filename):
 
     f_size = os.lstat(abs_filename).st_size
     if f_size > 100000000000:
-        print(f_size, abs_filename)
+        logging.warn("Too large file %d, name: %s", f_size, abs_filename)
 
     f_size = int(f_size)
 
@@ -34,6 +35,7 @@ def load_file(abs_filename):
     #s = open(abs_filename).read(512)
     if f_size == 1 or f_size == 0:
         f_type = "text-empty"
+        logging.debug("###### text-empty #####, name: %s", abs_filename)
     else:
         f_type = me.from_file(abs_filename)
     extension = os.path.splitext(abs_filename)[1]
@@ -45,7 +47,6 @@ def load_file(abs_filename):
         'size (B)': f_size,
         'type': f_type,
         'extension': extension
-        #'age': created_time  # full path of f = dir/files
     }
 
     return dir_file

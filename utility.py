@@ -1,6 +1,8 @@
 
 from imports import *
 
+"""contains all the global variables"""
+
 # DOCKER_DIR = '/gpfs/dockerimages/docker'
 # IMAGE_ROOT = os.path.join(DOCKER_DIR, 'image/aufs')
 # IMAGE_STORE_DIR = os.path.join(IMAGE_ROOT, 'imagedb')
@@ -10,8 +12,7 @@ from imports import *
 # AUFS_MNT_DIR = os.path.join(AUFS_ROOT, 'mnt')
 # AUFS_DIFF_DIR = os.path.join(AUFS_ROOT, 'diff')
 # CONTANER_DIR = os.path.join(DOCKER_DIR, 'containers')
-
-#db_filename = 'database_json'
+# db_filename = 'database_json'
 
 layer_db_filename = 'layer_db.json'
 
