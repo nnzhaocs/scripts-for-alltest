@@ -5,13 +5,13 @@ from utility import *
 from file import *
 
 def load_dirs(cache_id):
-    """load the layer dir in layer file /var/lib/docker/aufs/diff/<cache_id>/
+    """load the layer dir in layer file dest_dir['layer_dir']/<cache_id>/
     load all the subdirs in this layer dir """
     sub_dirs = []
     if len(cache_id) == 0:
         return sub_dirs
 
-    layer_dir = os.path.join(AUFS_DIFF_DIR, cache_id)
+    layer_dir = os.path.join(dest_dir['layer_dir'], cache_id)
     layer_dir_level = layer_dir.count(os.sep)
     print (layer_dir, layer_dir_level)
 

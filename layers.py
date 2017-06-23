@@ -5,7 +5,46 @@ from utility import *
 from dir import *
 from itertools import chain
 
-def load_layer(chainid):
+
+def queue_layers():
+    for _, layer_id_dirs, _ in os.walk(dest_dir['layer_dir']):
+        for layer_id in layer_id_dirs:
+            logging.debug('layer_id: %s' % layer_id)  # str(layer_id).replace("/", "")
+            q.put(layer_id)
+
+
+def load_layer(f_out):
+    while True:
+        layer_id = q.get()
+        if layer_id is None:
+            break
+        sub_dirs = load_dirs(layer_id)
+
+        depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
+        if depths:
+            dir_depth = max(depths)
+            print dir_depth
+        else:
+            dir_depth = 0
+
+        layer = {
+            'chain_id': 0,
+            'cache_id': 0,
+            'layer_id': layer_id,  # str(layer_id).replace("/", ""),
+            'dirs': sub_dirs,  # getLayersBychainID(chain_id),
+            'dir_max_depth': dir_depth,
+            'size': 0,  # getLayersSize(chainid),
+            'repeats': 0
+        }
+
+        lock.acquire()
+        json.dump(layer, f_out)
+        lock.release()
+
+        logging.debug('layer_id: %s {%s}' % layer_id, layer)
+
+
+def load_layerBychainid(chainid):
     """ first we find the layer folder with chain id under /var/lib/docker/image/aufs/layerdb
     then the file 'cache-id' has the contents of the real layer id
     """

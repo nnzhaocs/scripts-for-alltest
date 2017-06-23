@@ -18,6 +18,9 @@ layers = []
     1: manifest_dir
     2: config_dir
     3: layer_dir
+    manifest_dir = os.path.join(dest_dir, "manifests")
+    config_dir = os.path.join(dest_dir, "configs")
+    layer_dir = os.path.join(dest_dir, "layers")
 """
 dest_dir = []
 
@@ -202,6 +205,7 @@ def main():
     parser.add_option('-d', '--dirname', action='store', dest='dirname',
                       help="The output directory which will contain three directories: manifests, configs, and layers")
     options, args = parser.parse_args()
+
     print 'Input file name: ', options.filename
     print 'Output directory: ', options.dirname
 
