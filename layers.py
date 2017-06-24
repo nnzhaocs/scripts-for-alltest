@@ -26,13 +26,13 @@ def create_layer_db():
         t.join()
     logging.info('done! all the threads are finished')
 
-    while True:
+    while not layer_q.empty():
         layer = layer_q.get()
-        if layer is None:
-            break
+        # if layer is None:
+        #     break
         layers.append(layer)
-        layer_q.task_done()
-        
+        # layer_q.task_done()
+
     logging.info('write to json file!')
     with open(layer_db_filename, 'w+') as f_out:
         json.dump(layers, f_out)
