@@ -96,7 +96,7 @@ def load_layer():
         sha, id, timestamp = str(layer_id).split("-")
 
         layer = {
-            'layer_id': sha+'-'+id,  # str(layer_id).replace("/", ""),
+            'layer_id': sha+':'+id,  # str(layer_id).replace("/", ""),
             'dirs': sub_dirs,  # getLayersBychainID(chain_id),
             'dir_max_depth': dir_depth,
             'size': 0,  # getLayersSize(chainid),
