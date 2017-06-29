@@ -4,14 +4,16 @@ import threading, Queue
 import argparse
 from optparse import OptionParser
 import requests
+import subprocess
 
 q = Queue.Queue()
+layers_q = Queue.Queue()
+
 num_worker_threads = 50
 lock = threading.Lock()
 
 threads = []
 repos = []
-layers = []
 
 """dest_dir contains three directories:
     0: root_dir
@@ -24,56 +26,109 @@ layers = []
 """
 dest_dir = []
 
-"""example https://registry-1.docker.io/v2/library/redis/manifests/latest; 
-    note that we need to add library to official images"""
-docker_io_http = "https://registry-1.docker.io/v2/"
+# """example https://registry-1.docker.io/v2/library/redis/manifests/latest;
+#     note that we need to add library to official images"""
+# docker_io_http = "https://registry-1.docker.io/v2/"
 
 
-def store_file(filename, resp):
-    if type(resp.content == str):
-        f = open(filename, 'w')
-        f.write(resp.json())
-    else:
-        with open(filename, 'w') as fd:
-            for chunk in resp.iter_content(chunk_size=128):
-                fd.write(chunk)
+# def store_file(filename, resp):
+#     if type(resp.content == str):
+#         f = open(filename, 'w')
+#         f.write(resp.json())
+#     else:
+#         with open(filename, 'w') as fd:
+#             for chunk in resp.iter_content(chunk_size=128):
+#                 fd.write(chunk)
 
 
-def make_request(url):
-    resp = requests.get(url)
-    return resp
+def make_request(req):
+    """send request to docker.io. call golang"""
+    """go run down_loader.go -operation=download_blobs -filename=library/redis -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -dirname=./test
+        go run down_loader.go -operation=download_manifest -filename=library/redis -tag=latest -dirname=./test"""
+
+    args = "go run down_loader.go -operation=%s -filename=%s -tag=%s -dirname=%s" % (req['operation'], req['repo_name'], req['tag'], req['absfilename'])
+    resp = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+    return resp.communicate()
 
 
 def download_manifest(repo):
     """download manifest first"""
-    url = repo['docker_io_http'] + 'manifest' + '/' + repo['tag']
-    print 'manifest url: %s' % url
-    resp = make_request(url)
+    # url = repo['docker_io_http'] + 'manifest' + '/' + repo['tag']
+    # print 'manifest url: %s' % url
+    timestamp = time.time()
+    filename = os.path.join(dest_dir['manifest_dir'], str(repo.name).replace("/", "-") + '-' + str(timestamp) + '.json')
+    print filename
+    req = {
+        'repo_name': repo['name'],
+        'repo_tag': repo['tag'],
+        'operation': 'download_manifest',
+        'absfilename': filename
+    }
+    resp = make_request(req)
     if not resp:
         return None
     else:
-        """write to json file"""
-        timestamp = time.time()
-        filename = os.path.join(dest_dir['manifest_dir'], str(repo.name).replace("/", "-")+'-'+str(timestamp)+'.json')
-        print filename
-        store_file(filename, resp)
-        return resp.json()
+        """return json"""
+        return json.loads(resp)
+        # d = json.loads()
+        # filename = os.path.join(dest_dir['manifest_dir'], str(repo.name).replace("/", "-")+'-'+str(timestamp)+'.json')
+        # store_file(filename, resp)
+        # return resp.json()
 
 
 def download_blobs(repo, blobs_digest):
     """download image blob tar files"""
     digest_list = list(set(blobs_digest))  # remove redundant sha
     for digest in digest_list:
-        if digest not in layers:
-            layers.append(digest)
-            url = repo.docker_io_http + 'blobs' + '/' + repo.tag
-            print 'blobs url: %s' % url
-            resp = make_request(url)
+        if digest not in layers_q.queue:
+            layers_q.put(digest)  # queue
+            # url = repo.docker_io_http + 'blobs' + '/' + repo.tag
+            # print 'blobs url: %s' % url
             timestamp = time.time()
-            """write to tar file"""
-            filename = os.path.join(dest_dir['layer_dir'], digest+'-'+str(timestamp))
+            filename = os.path.join(dest_dir['layer_dir'], digest + '-' + str(timestamp))
             print filename
-            store_file(filename, resp)
+            req = {
+                'repo_name': repo['name'],
+                'repo_tag': blobs_digest,
+                'operation': 'download_manifest',
+                'absfilename': filename
+            }
+            resp = make_request(req)
+            # """write to tar file"""
+            # store_file(filename, resp)
+
+
+def manifest_schemalist(manifest):
+    blobs_digest = []
+    if 'manifests' in manifest and isinstance(manifest['manifests'], list) and len(manifest['manifests']) > 0:
+        for i in manifest['manifests']:
+            if 'digest' in i:
+                print i['digest']
+                blobs_digest.append(i['digest'])
+    return blobs_digest
+
+
+def manifest_schema2(manifest):
+    blobs_digest = []
+    if 'config' in manifest and 'digest' in manifest['config']:
+        config_digest = manifest['config']['digest']
+        blobs_digest.append(config_digest)
+    if 'layers' in manifest and isinstance(manifest['layers'], list) and len(manifest['layers']) > 0:
+        for i in manifest['layers']:
+            if 'digest' in i:
+                print i['digest']
+                blobs_digest.append(i['digest'])
+    return blobs_digest
+
+
+def manifest_schema1(manifest):
+    blobs_digest = []
+    if 'fsLayers' in manifest and isinstance(manifest['fsLayers'], list) and len(manifest['fsLayers']) > 0:
+        for i in manifest['fsLayers']:
+            if 'blobSum' in i:
+                print i['blobSum']
+                blobs_digest.append(i['blobSum'])
+    return blobs_digest
 
 
 def download():
@@ -86,21 +141,26 @@ def download():
             break
         blobs_digest = []
         if 'schemaVersion' in manifest and manifest['schemaVersion'] == 2:
-            if 'config' in manifest and 'digest' in manifest['config']:
-                config_digest = manifest['config']['digest']
-                blobs_digest.append(config_digest)
-            if 'layers' in manifest and isinstance(manifest['layers'], list) and len(manifest['layers']) > 0:
-                for i in manifest['layers']:
-                    if 'digest' in i:
-                        print i['digest']
-                        blobs_digest.append(i['digest'])
+            if 'mediaType' in manifest and 'list' in manifest['mediaType']:
+                blobs_digest = manifest_schemalist(manifest)
+            else:
+                blobs_digest = manifest_schema2(manifest)
+            # if 'config' in manifest and 'digest' in manifest['config']:
+            #     config_digest = manifest['config']['digest']
+            #     blobs_digest.append(config_digest)
+            # if 'layers' in manifest and isinstance(manifest['layers'], list) and len(manifest['layers']) > 0:
+            #     for i in manifest['layers']:
+            #         if 'digest' in i:
+            #             print i['digest']
+            #             blobs_digest.append(i['digest'])
 
         elif 'schemaVersion' in manifest and manifest['schemaVersion'] == 1:
-            if 'fsLayers' in manifest and isinstance(manifest['fsLayers'], list) and len(manifest['fsLayers']) > 0:
-                for i in manifest['fsLayers']:
-                    if 'blobSum' in i:
-                        print i['blobSum']
-                        blobs_digest.append(i['blobSum'])
+            blobs_digest = manifest_schema1(manifest)
+            # if 'fsLayers' in manifest and isinstance(manifest['fsLayers'], list) and len(manifest['fsLayers']) > 0:
+            #     for i in manifest['fsLayers']:
+            #         if 'blobSum' in i:
+            #             print i['blobSum']
+            #             blobs_digest.append(i['blobSum'])
 
         download_blobs(repo, blobs_digest)
         q.task_done()
@@ -118,23 +178,23 @@ def get_image_names(name):
     assert (rc == 0)
 
 
-def is_official_repo(name):
-    if str(name).count('/') > 0:
-        return False
-    else:
-        return True
+# def is_official_repo(name):
+#     if str(name).count('/') > 0:
+#         return False
+#     else:
+#         return True
 
 
-def construct_url(name, is_official):
-    """official: add library in front"""
-    if is_official:
-        url = docker_io_http + 'library/' + name + '/'
-        print "===============>"+url
-        return url
-    else:
-        url = docker_io_http + name + '/'
-        print "===============>"+url
-        return url
+# def construct_url(name, is_official):
+#     """official: add library in front"""
+#     if is_official:
+#         url = docker_io_http + 'library/' + name + '/'
+#         print "===============>"+url
+#         return url
+#     else:
+#         url = docker_io_http + name + '/'
+#         print "===============>"+url
+#         return url
 
 
 def queue_names():
@@ -145,8 +205,8 @@ def queue_names():
             name = str(name1).replace(" ", "").replace("\n", "")
             repo = {
                 'name': name,
-                'is_official': is_official_repo(name),
-                'docker_io_http': construct_url(name, is_official_repo(name)),
+                # 'is_official': is_official_repo(name),
+                # 'docker_io_http': construct_url(name, is_official_repo(name)),
                 'tag': 'latest'  # here we use latest as all images tags
             }
             repos.append(repo)
@@ -165,7 +225,7 @@ def load_layer_digests(dirname):
             else:
                 if str(name).split('-')[0]:
                     print str(name).split('-')[0]
-                    layers.append(str(name).split('-')[0])
+                    layers_q.put(str(name).split('-')[0])
 
 
 def create_dirs(dirname):

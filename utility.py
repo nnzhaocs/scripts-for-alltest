@@ -14,7 +14,7 @@ from imports import *
 # CONTANER_DIR = os.path.join(DOCKER_DIR, 'containers')
 # db_filename = 'database_json'
 
-layer_db_filename = 'layer_db.json'
+layer_db_filename = 'layer_tb.json'
 
 dest_dir = []
 
