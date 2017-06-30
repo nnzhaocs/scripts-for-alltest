@@ -14,11 +14,16 @@ import (
 	"io/ioutil"
 	"bytes"
 	"io"
-	//"os"
+	"os"
 	"flag"
 	"net/http"
 	"strings"
 )
+/* TODO
+	1. add log file
+	2. fix the parameter names' more readable
+	3. catch exceptions (input, timeout)
+*/
 
 func registry_init() (*registry.Registry, error){
 	url      := "https://registry-1.docker.io/"
@@ -126,20 +131,31 @@ func storeBlob(absFileName string, resp io.ReadCloser) error {
 
 	registry.Log("start storeBlob")
 
-	bs, err := ioutil.ReadAll(resp)
+	//bs, err := ioutil.ReadAll(resp)
+	//if err != nil{
+	//	//return nil
+	//}
+	//rdr1 := ioutil.NopCloser(bytes.NewBuffer(bs))
+	//rdr2 := ioutil.NopCloser(bytes.NewBuffer(bs))
+	//resp = rdr2
+	//
+	//buf1 := new(bytes.Buffer)
+	//buf1.ReadFrom(rdr1)
+	//
+	//err = ioutil.WriteFile(absFileName, buf1.Bytes(), 0644)
+	//if err != nil {
+	//	//err handling
+	//}
+	/*
+	Given an io.ReadCloser, from the response of an HTTP request for example,
+	what is the most efficient way both in memory overhead and code readability
+	to stream the response to a File?
+	*/
+	outFile, _ := os.Create(absFileName)
+	defer  outFile.Close()
+	_, err := io.Copy(outFile, resp)
 	if err != nil{
-		//return nil
-	}
-	rdr1 := ioutil.NopCloser(bytes.NewBuffer(bs))
-	rdr2 := ioutil.NopCloser(bytes.NewBuffer(bs))
-	resp = rdr2
 
-	buf1 := new(bytes.Buffer)
-	buf1.ReadFrom(rdr1)
-
-	err = ioutil.WriteFile(absFileName, buf1.Bytes(), 0644)
-	if err != nil {
-		//err handling
 	}
 	return nil
 }
