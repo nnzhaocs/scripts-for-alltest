@@ -32,7 +32,7 @@ go run down_loader.go -operation=download_blobs -filename=library/redis -tag=448
 
 *2. Run the downloader*
 
-python auto_download_compressed_images.py -f xdl -d /gpfs/docker_images_largefs/xdl
+root# python auto_download_compressed_images.py -f xdl -d /gpfs/docker_images_largefs/xdl
 
 ### Run analyzer
 1. 
