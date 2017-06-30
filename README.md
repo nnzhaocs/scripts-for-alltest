@@ -22,6 +22,14 @@ go run down_loader.go -operation=download_manifest -filename=library/redis -tag=
 
 go run down_loader.go -operation=download_blobs -filename=library/redis -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -dirname=./test
 
+*operation: download_manifest or download_blobs*
+
+*filename: image name, namespace/reponame*
+
+*tag: tag or digest*
+
+*dirname: output filename, manifest file name or layer blobs'name*
+
 *2. Run the downloader*
 
 python auto_download_compressed_images.py -f xdl -d /gpfs/docker_images_largefs/xdl
