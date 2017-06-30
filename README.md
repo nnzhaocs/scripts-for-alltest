@@ -10,7 +10,7 @@ The project docker-remetrics is to download all the images from docker hub, anal
 
 *Python 2.7.4 or above*
 
-### setup docker-registry-client lib and downloader, assuming 
+### setup docker-registry-client lib and downloader
 1. go get -v github.com/heroku/docker-registry-client
 2. git am ****.path //apply ****.patch file to $GOPATH/src/github.com/heroku/docker-registry-client/registry/manifest.go   
 3. cp down_loader.go auto_download_compressed_images.py $GOPATH/src/github.com/heroku/docker-registry-client/
