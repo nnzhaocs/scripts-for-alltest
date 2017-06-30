@@ -2,7 +2,7 @@ package main
 
 
 import (
-	"github.com/nnzhaocs/docker-registry-client-api/registry"
+	"github.com/heroku/docker-registry-client/registry"
 	"github.com/docker/distribution/digest"
 	manifestV2 "github.com/docker/distribution/manifest/schema2"
 	//"github.com/docker/distribution/manifest"

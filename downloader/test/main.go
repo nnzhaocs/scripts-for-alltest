@@ -3,9 +3,9 @@ package main
 
 import (
 	"github.com/heroku/docker-registry-client/registry"
-	"github.com/docker/distribution/digest"
-	"github.com/docker/distribution/manifest"
-	"github.com/docker/libtrust"
+	"github.com/heroku/docker-registry-client/vendor/github.com/docker/distribution/digest"
+	"github.com/heroku/docker-registry-client/vendor/github.com/docker/distribution/manifest"
+	"github.com/heroku/docker-registry-client/vendor/github.com/docker/libtrust"
 	"fmt"
 )
 
