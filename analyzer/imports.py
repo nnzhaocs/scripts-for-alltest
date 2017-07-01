@@ -23,7 +23,7 @@ from itertools import groupby
 import subprocess
 
 q = Queue.Queue()
-layer_q = Queue.Queue()
+# layer_q = Queue.Queue()
 lock = threading.Lock()
 
 

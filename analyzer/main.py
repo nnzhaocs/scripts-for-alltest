@@ -7,6 +7,12 @@ from file import *
 from draw_pic import *
 from utility import *
 
+""" TODO:
+    1. put layer json to a single file
+     2. fetch all the manifest
+     3. get all the tags
+"""
+
 
 def parseArg():
     parser = argparse.ArgumentParser()

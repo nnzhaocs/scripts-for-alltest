@@ -18,6 +18,7 @@ import (
 	"flag"
 	"net/http"
 	"strings"
+	"time"
 )
 /* TODO
 	1. add log file
@@ -151,12 +152,18 @@ func storeBlob(absFileName string, resp io.ReadCloser) error {
 	what is the most efficient way both in memory overhead and code readability
 	to stream the response to a File?
 	*/
+	start := time.Now().UnixNano()
 	outFile, _ := os.Create(absFileName)
 	defer  outFile.Close()
-	_, err := io.Copy(outFile, resp)
+	size, err := io.Copy(outFile, resp)
 	if err != nil{
 
 	}
+	end := time.Now().UnixNano()
+	elapsed := float64((end - start) / 1000) //millisecond
+	registry.Log("finished storeBlob time: ====> (%v MB / %v s) %v MB/s", float64(size) / 1024 / 1024,
+		float64(elapsed) / 1000000,
+		float64(size) / float64(elapsed))
 	return nil
 }
 

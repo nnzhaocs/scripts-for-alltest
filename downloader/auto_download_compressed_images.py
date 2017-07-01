@@ -3,17 +3,24 @@ import re
 import threading, Queue
 import argparse
 from optparse import OptionParser
-import requests
+#import requests
 import subprocess
 
 q = Queue.Queue()
 layers_q = Queue.Queue()
 
-num_worker_threads = 50
+num_worker_threads = 6
+num_layer_worker_threads = 6
 lock = threading.Lock()
 
 threads = []
 repos = []
+
+# /* TODO
+# 	1. add log file (store all the errors)
+#
+# 	2. catch exceptions (input, timeout)
+# */
 
 """dest_dir contains three directories:
     0: root_dir
@@ -96,12 +103,22 @@ def download_manifest(repo):
 
 def download_blobs(repo, blobs_digest):
     """download image blob tar files"""
-    digest_list = list(set(blobs_digest))  # remove redundant sha
-    for digest in digest_list:
-        if digest not in layers_q.queue:
-            layers_q.put(digest)  # queue
-            # url = repo.docker_io_http + 'blobs' + '/' + repo.tag
-            # print 'blobs url: %s' % url
+    # digest_list = list(set(blobs_digest))  # remove redundant sha
+    while True:
+        digest = blobs_digest.get()
+        if digest is None:
+            break
+        with lock:
+            if digest in layers_q.queue:
+                print "Layer Already Exist!"
+                is_layer_exist = True
+            else:
+                is_layer_exist = False
+                layers_q.put(digest)  # queue
+                print "Layer Not Exist!"
+        # url = repo.docker_io_http + 'blobs' + '/' + repo.tag
+        # print 'blobs url: %s' % url
+        if not is_layer_exist:
             timestamp = time.time()
             filename = os.path.join(dest_dir[0]['layer_dir'], str(digest).replace(':', '-') + '-' + str(timestamp))
             print filename
@@ -116,10 +133,9 @@ def download_blobs(repo, blobs_digest):
                     'absfilename': filename
                 }
                 make_request(req)
-        else:
-            print "Layer Already Exist!"
-            # """write to tar file"""
-            # store_file(filename, resp)
+        blobs_digest.task_done()
+    # """write to tar file"""
+    # store_file(filename, resp)
 
 
 def manifest_schemalist(manifest):
@@ -164,6 +180,7 @@ def download():
         if manifest is None:
             continue
         blobs_digest = []
+        layer_threads = []
         if 'schemaVersion' in manifest and manifest['schemaVersion'] == 2:
             if 'mediaType' in manifest and 'list' in manifest['mediaType']:
                 blobs_digest = manifest_schemalist(manifest)
@@ -186,7 +203,25 @@ def download():
             #             print i['blobSum']
             #             blobs_digest.append(i['blobSum'])
 
-        download_blobs(repo, blobs_digest)
+        # download_blobs(repo, blobs_digest)
+        digest_list = list(set(blobs_digest))  # remove redundant sha
+        blobs_digest_q = Queue.Queue()
+        for i in digest_list:
+            blobs_digest_q.put(i)
+        for i in range(num_layer_worker_threads):
+            t = threading.Thread(target=download_blobs, args=(repo, blobs_digest_q))
+            t.start()
+            layer_threads.append(t)
+
+        blobs_digest_q.join()
+        print 'wait here!'
+        for i in range(num_layer_worker_threads):
+            blobs_digest_q.put(None)
+        print 'put here!'
+        for t in layer_threads:
+            t.join()
+        print 'done here!'
+
         q.task_done()
 
 
@@ -260,11 +295,19 @@ def create_dirs(dirname):
     manifest_dir = os.path.join(dirname, "manifests")
     config_dir = os.path.join(dirname, "configs")
     layer_dir = os.path.join(dirname, "layers")
-    if not os.path.exists(manifest_dir):
-        os.makedirs(manifest_dir)
-        print 'create manifest_dir: %s' % manifest_dir
-    else:
-        print 'manifest_dir: %s already exists' % manifest_dir
+    # if not os.path.exists(manifest_dir):
+    #     os.makedirs(manifest_dir)
+    #     print 'create manifest_dir: %s' % manifest_dir
+    # else:
+    #     print 'manifest_dir: %s already exists' % manifest_dir
+    """Here, we create new manifest dir if manifest exist! and mv old manifest to manifest-timestamp"""
+    if os.path.exists(manifest_dir):
+        timestamp = time.time()
+        cmd5 = "mv %s %s" % (manifest_dir, os.path.join(dirname, "manifests"+str(timestamp)))
+        rc = os.system(cmd5)
+        assert (rc == 0)
+    os.makedirs(manifest_dir)
+    print 'create manifest_dir: %s' % manifest_dir
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
         print 'create config_dir: %s' % config_dir

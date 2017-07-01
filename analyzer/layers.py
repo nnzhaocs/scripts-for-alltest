@@ -5,10 +5,15 @@ from utility import *
 from dir import *
 from itertools import chain
 
+"""TODO:
+    1. check duplicated.
+    2. mount tmpfs
+"""
+
 
 def create_layer_db():
     """create layer database as a json file"""
-    logging.info('==========> create_layer_db: The output layer_db_filename: %s', layer_db_filename)
+    logging.info('==========> create_layer_db: create layer metadata json file')
 
     queue_layers()
 
@@ -26,35 +31,31 @@ def create_layer_db():
         t.join()
     logging.info('done! all the threads are finished')
 
-    while not layer_q.empty():
-        layer = layer_q.get()
-        # if layer is None:
-        #     break
-        layers.append(layer)
+    # while not layer_q.empty():
+    #     layer = layer_q.get()
+    #     # if layer is None:
+    #     #     break
+    #     layers.append(layer)
         # layer_q.task_done()
-
-    logging.info('write to json file!')
-    with open(layer_db_filename, 'w+') as f_out:
-        json.dump(layers, f_out)
     # json.dump(layers, f_layer_db)
-    f_out.close()
+    # f_out.close()
 
 
 def queue_layers():
-    """queue the layer id under layer dir"""
-    for _, _, layer_id_dirs in os.walk(dest_dir[0]['layer_dir']):
-        for layer_id in layer_id_dirs:
-            logging.debug('layer_id: %s', layer_id)  # str(layer_id).replace("/", "")
-            if check_config_file(layer_id):
-                move_config_file(layer_id)
+    """queue the layer id under layer dir, layer id = sha256-digest-timestamp == layer_tarball_filenames"""
+    for _, _, tarball_filenames in os.walk(dest_dir[0]['layer_dir']):
+        for tarball_filename in tarball_filenames:
+            logging.debug('layer_id: %s', tarball_filename)  # str(layer_id).replace("/", "")
+            if check_config_file(tarball_filename):
+                move_config_file(tarball_filename)
                 continue
-            q.put(layer_id)
-            logging.debug('queue layer_dir: %s', layer_id)  # str(layer_id).replace("/", "")
+            q.put(tarball_filename)
+            logging.debug('queue layer_dir: %s', tarball_filename)  # str(layer_id).replace("/", "")
 
 
-def check_config_file(layer_id):
-    layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_id)
-    cmd2 = 'file %s' % layer_file
+def check_config_file(filename):
+    tarball_filename = os.path.join(dest_dir[0]['layer_dir'], filename)
+    cmd2 = 'file %s' % tarball_filename
     logging.debug('The shell command: %s', cmd2)
 
     proc = subprocess.Popen(cmd2, stdout=subprocess.PIPE, shell=True)
@@ -66,9 +67,9 @@ def check_config_file(layer_id):
         return True
 
 
-def move_config_file(config_id):
-    config_file = os.path.join(dest_dir[0]['layer_dir'], config_id)
-    cmd3 = 'mv %s %s' % (config_file, dest_dir[0]['config_dir'])
+def move_config_file(filename):
+    config_filename = os.path.join(dest_dir[0]['layer_dir'], filename)
+    cmd3 = 'mv %s %s' % (config_filename, dest_dir[0]['config_dir'])
     logging.debug('The shell command: %s', cmd3)
     rc = os.system(cmd3)
     assert (rc == 0)
@@ -78,13 +79,13 @@ def move_config_file(config_id):
 def load_layer():
     """load the layer dirs"""
     while True:
-        layer_id = q.get()
-        logging.debug('process layer_dir: %s', layer_id)  # str(layer_id).replace("/", "")
-        if layer_id is None:
+        layer_filename = q.get()
+        logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
+        if layer_filename is None:
             break
 
-        sub_dirs = load_dirs(layer_id)
-        clear_dirs(layer_id)
+        sub_dirs = load_dirs(layer_filename)
+        clear_dirs(layer_filename)
 
         depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
         if depths:
@@ -93,7 +94,7 @@ def load_layer():
         else:
             dir_depth = 0
 
-        sha, id, timestamp = str(layer_id).split("-")
+        sha, id, timestamp = str(layer_filename).split("-")
 
         layer = {
             'layer_id': sha+':'+id,  # str(layer_id).replace("/", ""),
@@ -103,13 +104,16 @@ def load_layer():
             'repeats': 0
         }
 
-        layer_q.put(layer)
-
+        # layer_q.put(layer)
+        abslayer_filename = os.path.join(dest_dir[0]['layer_dir'], layer_filename+'.json')
+        logging.info('write to layer json file: %s', abslayer_filename)
+        with open(abslayer_filename, 'w+') as f_out:
+            json.dump(layer, f_out)
         # lock.acquire()
         # layers.append(layer)
         # lock.release()
 
-        logging.debug('write layer_id:[%s]: %s to json file', layer_id, layer)
+        logging.debug('write layer_id:[%s]: %s to json file %s', layer_filename, abslayer_filename)
         q.task_done()
 
 

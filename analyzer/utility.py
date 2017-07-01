@@ -18,7 +18,7 @@ layer_db_filename = 'layer_tb.json'
 
 dest_dir = []
 
-layers = []
+# layers = []
 
 num_worker_threads = 50
 threads = []
