@@ -50,10 +50,10 @@ dest_dir = []
 
 def make_request(req):
     """send request to docker.io. call golang"""
-    """go run down_loader.go -operation=download_blobs -filename=library/redis -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -dirname=./test
-        go run down_loader.go -operation=download_manifest -filename=library/redis -tag=latest -dirname=./test"""
+    """go run down_loader.go -operation=download_blobs -repo=library/redis -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test
+        go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test"""
 
-    args = "go run down_loader.go -operation=%s -filename=%s -tag=%s -dirname=%s" % (req['operation'], req['repo_name'], req['repo_tag'], req['absfilename'])
+    args = "go run down_loader.go -operation=%s -repo=%s -tag=%s -absfilename=%s" % (req['operation'], req['repo_name'], req['repo_tag'], req['absfilename'])
     try:
         subprocess.check_output(args, shell=True)
     except subprocess.CalledProcessError as e:

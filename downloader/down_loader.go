@@ -4,7 +4,7 @@ package main
 import (
 	"github.com/heroku/docker-registry-client/registry"
 	"github.com/docker/distribution/digest"
-	manifestV2 "github.com/docker/distribution/manifest/schema2"
+	//manifestV2 "github.com/docker/distribution/manifest/schema2"
 	//"github.com/docker/distribution/manifest"
 	//"github.com/docker/libtrust"
 	"fmt"
@@ -32,28 +32,36 @@ func registry_init() (*registry.Registry, error){
 	password := "" // anonymous
 	hub, err := registry.New(url, username, password)
 	if err != nil{
-		//
+		registry.Log("###########cannot init a regisrty!############")
+		return nil, err
 	}
 	//repositories, err := hub.Repositories()
-	return hub, err
+	return hub, nil
 }
 
-func docker_download(input_op string, input_repo string, input_tag string, input_filename string) (*manifestV2.DeserializedManifest) {
-	hub, _ := registry_init()
+func docker_download(input_op string, input_repo string, input_tag string, output_filename string) error {
+	hub, err := registry_init()
+	if err != nil{
+		registry.Log("###########Error, cannot download anything!############")
+		return err
+	}
 
 	repo_name := input_repo
 	repo_op := input_op
 	repo_tag := input_tag
-	absfilename := input_filename
+	absfilename := output_filename
 
 	switch repo_op {
 	case "download_blobs":
-		get_blobs(hub, repo_name, repo_tag, absfilename)
+		registry.Log("download blobs!")
+		err := get_blobs(hub, repo_name, repo_tag, absfilename)
+		return err
 	case "download_manifest":
-		get_manifest(hub, repo_name, repo_tag, absfilename)
+		registry.Log("download manifest!")
+		err := get_manifest(hub, repo_name, repo_tag, absfilename)
+		return err
 		//printResponse(manifest)
 	}
-
 	return nil
 }
 
@@ -63,14 +71,21 @@ func get_manifest(hub *registry.Registry, repo_name string, repo_tag string, abs
 	//fmt.Printf("%v\n", tags)
 	//manifest, err := hub.Manifest("library/ubuntu", "1")
 	//fmt.Printf("%v\n", manifest)
-	registry.Log("start get_manifest")
+	registry.Log("start get manifest")
 	manifest2, err := hub.ManifestV2(repo_name, repo_tag)
+	if err != nil{
+		registry.Log("Fail to get manifest: Failed repo: %v", repo_name)
+		return err
+	}
 	//fmt.Printf("%v\n", manifest2)
 	printResponse(manifest2)
-	storeBlob(absfilename, manifest2.Body)
+	err = storeBlob(absfilename, manifest2.Body)
+	if err != nil{
+		return err
+	}
 	defer manifest2.Body.Close()
 
-	return err
+	return nil
 }
 
 func get_blobs(hub *registry.Registry, repo_name string, blob_digest string, absfilename string) error {
@@ -80,23 +95,26 @@ func get_blobs(hub *registry.Registry, repo_name string, blob_digest string, abs
 	)
 	reader, err := hub.DownloadLayer(repo_name, digest)
 	if reader != nil {
+		//registry.Log("Cannot download blobs: %v", blob_digest)
 		defer reader.Close()
 	}
 	if err != nil {
+		registry.Log("Cannot download blobs: %v", blob_digest)
 		return err
 	}
 
-	storeBlob(absfilename, reader)
-	defer reader.Close()
-	return nil
+	err = storeBlob(absfilename, reader)
+	//defer reader.Close()
+	return err
 }
 
-func printResponse(resp *http.Response) {
+func printResponse(resp *http.Response) error {
 	var response []string
 
 	bs, err := ioutil.ReadAll(resp.Body)
 	if err != nil{
-		//	return  nil
+		registry.Log("Fail to read resp.body!")
+		return err
 	}
 	rdr1 := ioutil.NopCloser(bytes.NewBuffer(bs))
 	rdr2 := ioutil.NopCloser(bytes.NewBuffer(bs))
@@ -126,6 +144,7 @@ func printResponse(resp *http.Response) {
 
 	strings.Join(response, "\n")
 	registry.Log("<manifest>%s<manifest>\n", response)
+	return nil
 }
 
 func storeBlob(absFileName string, resp io.ReadCloser) error {
@@ -153,11 +172,16 @@ func storeBlob(absFileName string, resp io.ReadCloser) error {
 	to stream the response to a File?
 	*/
 	start := time.Now().UnixNano()
-	outFile, _ := os.Create(absFileName)
+	outFile, err := os.Create(absFileName)
+	if err != nil{
+		registry.Log("Fail to create a file for the blob: %v", absFileName)
+		return err
+	}
 	defer  outFile.Close()
 	size, err := io.Copy(outFile, resp)
 	if err != nil{
-
+		registry.Log("Fail to copy the resp to outFile %v!", absFileName)
+		return err
 	}
 	end := time.Now().UnixNano()
 	elapsed := float64((end - start) / 1000) //millisecond
@@ -170,20 +194,21 @@ func storeBlob(absFileName string, resp io.ReadCloser) error {
 func main() {
 
 	input_op := flag.String("operation", "download_blobs", "download_blobs or download_manifest")
-	input_filename := flag.String("filename", "xdn", "The input file which contains all the images'names")
-	input_dir := flag.String("dirname", "/gpfs/docker", "The output directory which will contain three directories: manifests, configs, and layers")
+	input_repo := flag.String("repo", "library/redis", "image'name including namespace/reponame")
+	filename := flag.String("absfilename", "./test", "The output filename: tarball filename or manifest name")
 	input_tag := flag.String("tag", "latest", "repo tag or layer digest")
-
+	//input_op string, input_repo string, input_tag string, output_filename string
+	//go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test
 	flag.Parse()
-	fmt.Println("filename:", *input_filename)
-	fmt.Println("dirname:", *input_dir)
+	fmt.Println("repo name:", *input_repo)
+	fmt.Println("output filename:", *filename)
 	fmt.Println("operation:", *input_op)
 	fmt.Println("tag:", *input_tag)
 
-	docker_download(*input_op, *input_filename, *input_tag, *input_dir)
-
-	//open the file
-	//if file, err := os.Open()
+	err := docker_download(*input_op, *input_repo, *input_tag, *filename)
+	if err != nil{
+		registry.Log("############ Main: No file is downloaded! #############")
+	}
 }
 
 
