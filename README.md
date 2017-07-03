@@ -1,8 +1,6 @@
 # docker-remetrics
-A Tool for downloading all the images from docker hub and analyzing these images 
-
-## Intro
-The project docker-remetrics is to download all the images from docker hub, analyze and characterize them. 
+A Tool for downloading all the images from docker hub and analyzing these images.
+<The project docker-remetrics is to download all the images from docker hub, analyze and characterize them>
 
 ## Installation
 ### Requirments 
@@ -18,17 +16,10 @@ The project docker-remetrics is to download all the images from docker hub, anal
 ### Run downloader
 *1. Check if the down_loader works by downloading a repo library/redis*
 
-go run down_loader.go -operation=download_manifest -filename=library/redis -tag=latest -dirname=./test
+go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test.manifest
 
-go run down_loader.go -operation=download_blobs -filename=library/redis -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -dirname=./test
-
-*operation: download_manifest or download_blobs*
-
-*filename: image name, namespace/reponame*
-
-*tag: tag or digest*
-
-*dirname: output filename, manifest file name or layer blobs'name*
+go run down_loader.go -operation=download_blobs -repo=library/redis 
+-tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test.tarball
 
 *2. Run the downloader*
 
