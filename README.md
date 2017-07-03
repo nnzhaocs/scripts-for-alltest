@@ -7,7 +7,7 @@ A Tool for downloading all the images from docker hub and analyzing these images
 
 *Python 2.7.4 or above*
 
-### setup docker-registry-client lib and downloader
+### Setup docker-registry-client lib and downloader
 1. go get -v github.com/heroku/docker-registry-client
 2. cp down_loader.go auto_download_compressed_images.py ****.patch $GOPATH/src/github.com/heroku/docker-registry-client/
 3. git am ****.patch //apply ****.patch file to $GOPATH/src/github.com/heroku/docker-registry-client/registry/manifest.go   
