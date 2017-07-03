@@ -1,6 +1,5 @@
 # docker-remetrics
 A Tool for downloading all the images from docker hub and analyzing these images.
-<The project docker-remetrics is to download all the images from docker hub, analyze and characterize them>
 
 ## Installation
 ### Requirments 
