@@ -24,7 +24,7 @@ go run down_loader.go -operation=download_blobs -repo=library/redis
 
 root# python auto_download_compressed_images.py -f xdl -d /gpfs/docker_images_largefs/xdl
 
-*Note! xdl is the input file that contains images'names, please use the files in images-names directory/repo which follows the correct format*
+*!!!Note: xdl is the input file that contains images'names, please use the files in images-names directory/repo which follows the correct format*
 
 ### Run analyzer
 1. 
