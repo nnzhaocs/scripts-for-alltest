@@ -78,7 +78,7 @@ func get_manifest(hub *registry.Registry, repo_name string, repo_tag string, abs
 		return err
 	}
 	//fmt.Printf("%v\n", manifest2)
-	printResponse(manifest2)
+	//printResponse(manifest2)
 	err = storeBlob(absfilename, manifest2.Body)
 	if err != nil{
 		return err

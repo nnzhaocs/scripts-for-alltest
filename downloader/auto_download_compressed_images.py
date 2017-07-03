@@ -9,7 +9,7 @@ import subprocess
 q = Queue.Queue()
 layers_q = Queue.Queue()
 
-num_worker_threads = 6
+num_worker_threads = 9
 num_layer_worker_threads = 6
 lock = threading.Lock()
 
@@ -84,7 +84,7 @@ def download_manifest(repo):
         return None
     else:
         """return json"""
-        print resp
+        #print resp
         # sstr = str(resp).split('<manifest>')
         # if sstr:
         #     print sstr
@@ -107,6 +107,7 @@ def download_blobs(repo, blobs_digest):
     while True:
         digest = blobs_digest.get()
         if digest is None:
+	    print "layer queue is empty"
             break
         with lock:
             if digest in layers_q.queue:
@@ -175,9 +176,11 @@ def download():
     while True:
         repo = q.get()
         if repo is None:
+	    print "repo queue is empty!"
             break
         manifest = download_manifest(repo)
         if manifest is None:
+	    q.task_done()
             continue
         blobs_digest = []
         layer_threads = []
@@ -214,13 +217,13 @@ def download():
             layer_threads.append(t)
 
         blobs_digest_q.join()
-        print 'wait here!'
+        print 'layer wait here!'
         for i in range(num_layer_worker_threads):
             blobs_digest_q.put(None)
-        print 'put here!'
+        print 'layer put here!'
         for t in layer_threads:
             t.join()
-        print 'done here!'
+        print 'layer done here!'
 
         q.task_done()
 
