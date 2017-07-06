@@ -185,6 +185,7 @@ def download():
                 print "Layer Not Exist!"
 
         if is_repo_exist:
+            q.task_done()
             continue
 
         manifest = download_manifest(repo)
@@ -319,7 +320,7 @@ def flush_file(fd, q_name, lock_file):
         with lock_file:
             fd.write(item + "\n")
             fd.flush()
-            q_name.task_done()
+        q_name.task_done()
 
 
 # def flush_file(f_finished_repo, f_bad_repo, f_finished_layer, f_bad_layer):

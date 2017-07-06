@@ -5,39 +5,45 @@ from utility import *
 from file import *
 
 
-def clear_dirs(layer_id):
-    """load the layer dir in layer file dest_dir['layer_dir']/<cache_id>/
-    extracting the dir
-    load all the subdirs in this layer dir """
-    layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_id)
-    layer_dir = str(layer_file) + '-dir'
+def clear_dirs(layer_id, extracting_dir):
+    """ delete the dir """
+    layer_dir = os.path.join(extracting_dir, layer_id)
+    if not os.path.isfile(layer_dir):
+        logging.error('layer tarball dir %s is not valid', layer_dir)
+        # q_flush_analyzed_layers.put()
+    # layer_dir = str(layer_file) + '-dir'
     cmd4 = 'rm -rf %s' % layer_dir
     logging.debug('The shell command: %s', cmd4)
     rc = os.system(cmd4)
     assert (rc == 0)
 
 
-def load_dirs(layer_id):
-    """load the layer file in layer file dest_dir['layer_dir']/<layer_id>
-    extracting to id-dir
+def load_dirs(layer_id, extracting_dir):
+    """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
+    extracting to temp/<layer_id>
     load all the subdirs in this layer-id dir
-    Then clean the layer-id dir"""
+    Then clean the layer-id dir """
     sub_dirs = []
     # if len(layer_id) == 0:
     #     return sub_dirs
 
     layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_id)
     if not os.path.isfile(layer_file):
-        logging.warn('no following layer file for %s', layer_file)
+        logging.error('layer tarball file %s is not valid', layer_file)
+        # q_flush_analyzed_layers.put()
+        q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1])
         return sub_dirs
+    # if not os.path.isfile(layer_file):
+    #     logging.warn('no following layer file for %s', layer_file)
 
     logging.debug('Extracting the file ==========> %s' % layer_file)
 
-    layer_dir = str(layer_file) + '-dir'
+    layer_dir = os.path.join(extracting_dir, layer_id)
     cmd1 = 'mkdir %s' % layer_dir
     logging.debug('The shell command: %s', cmd1)
     rc = os.system(cmd1)
     assert (rc == 0)
+    logging.debug('to ==========> %s', layer_dir)
 
     cmd = 'tar -zxf %s -C %s' % (layer_file, layer_dir)
     logging.debug('The shell command: %s', cmd)
@@ -48,7 +54,7 @@ def load_dirs(layer_id):
     logging.debug("(%s, %s)", layer_dir, layer_dir_level)
 
     if not os.path.isdir(layer_dir):
-        logging.warn('no following layer dir for %s', layer_dir)
+        logging.warn('layer dir %s is invalid', layer_dir)
         return sub_dirs
 
     for path, subdirs, files in os.walk(layer_dir):

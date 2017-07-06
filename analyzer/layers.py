@@ -8,28 +8,50 @@ from itertools import chain
 """TODO:
     1. check duplicated.
     2. mount tmpfs
+    3. already has json file no need to extracting again
 """
 
 
-def create_layer_db():
+def create_layer_db(analyzed_layer_filename, extracting_dir):
     """create layer database as a json file"""
-    logging.info('==========> create_layer_db: create layer metadata json file')
+    logging.info('=============> create_layer_db: create layer metadata json file <===========')
 
-    queue_layers()
+    queue_layers(analyzed_layer_filename)
+
+    f_analyzed_layer = open(analyzed_layer_filename, 'a+')
+    f_bad_unopen_layer = open("bad_unopen_layer_list.out", 'a+')
 
     for i in range(num_worker_threads):
-        t = threading.Thread(target=load_layer)
+        t = threading.Thread(target=load_layer, args=(extracting_dir,))
         t.start()
         threads.append(t)
 
-    q.join()
+    for j in range(num_flush_threads):
+        t1 = threading.Thread(target=flush_file, args=(f_analyzed_layer, q_flush_analyzed_layers, lock_f_analyzed_layer))
+        t2 = threading.Thread(target=flush_file, args=(f_bad_unopen_layer, q_flush_bad_unopen_layers, lock_f_bad_unopen_layer))
+        t1.start()
+        t2.start()
+        flush_threads.append(t1)
+        flush_threads.append(t2)
+
+    q_dir_layers.join()
     logging.info('wait queue to join!')
     for i in range(num_worker_threads):
-        q.put(None)
+        q_dir_layers.put(None)
     logging.info('put none layers to queue!')
     for t in threads:
         t.join()
-    logging.info('done! all the threads are finished')
+    logging.info('done! all the layer threads are finished')
+
+    q_flush_analyzed_layers.join()
+    q_flush_bad_unopen_layers.join()
+
+    print "flush queues wait here!"
+    for i in range(num_flush_threads):
+        q_flush_analyzed_layers.put(None)
+        q_flush_bad_unopen_layers.put(None)
+    for t in flush_threads:
+        t.join()
 
     # while not layer_q.empty():
     #     layer = layer_q.get()
@@ -41,16 +63,37 @@ def create_layer_db():
     # f_out.close()
 
 
-def queue_layers():
-    """queue the layer id under layer dir, layer id = sha256-digest-timestamp == layer_tarball_filenames"""
-    for _, _, tarball_filenames in os.walk(dest_dir[0]['layer_dir']):
+def queue_layers(analyzed_layer_filename):
+    """queue the layer id in downloaded_layer_filename, layer id = sha256:digest !!! without timestamp"""
+    # with open(downloaded_layer_filename) as f:
+    #     for line in f:
+    #         print line
+    #         if line:
+    #             logging.debug('queue layer_id: %s to downloaded layer queue', line.replace("\n", ""))  #
+    #             q_downloaded_layers.put(line.replace("\n", ""))
+    """queue the layer id in analyzed_layer_filename, layer id = sha256:digest !!! without timestamp"""
+    with open(analyzed_layer_filename) as f:
+        for line in f:
+            print line
+            if line:
+                logging.debug('queue layer_id: %s to analyzed_layer_queue', line.replace("\n", ""))  #
+                q_analyzed_layers.put(line.replace("\n", ""))
+
+    """queue the layer id in dest_dir/layers, layer id = sha256-digest-timestamp"""
+    for path, _, tarball_filenames in os.walk(dest_dir[0]['layer_dir']):
         for tarball_filename in tarball_filenames:
             logging.debug('layer_id: %s', tarball_filename)  # str(layer_id).replace("/", "")
+            if "sha256-" not in tarball_filename:
+                logging.info('file %s is not a layer tarball or config file', tarball_filename)
+                continue
+            if not os.path.isfile(os.path.join(path, tarball_filename)):
+                logging.info('layer tarball file %s is not valid', tarball_filename)
+                continue
             if check_config_file(tarball_filename):
                 move_config_file(tarball_filename)
                 continue
-            q.put(tarball_filename)
-            logging.debug('queue layer_dir: %s', tarball_filename)  # str(layer_id).replace("/", "")
+            q_dir_layers.put(tarball_filename)
+            logging.debug('queue dir layer tarball: %s', tarball_filename)  # str(layer_id).replace("/", "")
 
 
 def check_config_file(filename):
@@ -72,20 +115,45 @@ def move_config_file(filename):
     cmd3 = 'mv %s %s' % (config_filename, dest_dir[0]['config_dir'])
     logging.debug('The shell command: %s', cmd3)
     rc = os.system(cmd3)
-    assert (rc == 0)
+    assert (rc == 0) # or use try exception
     # logging.debug('The shell output: %s', out)
 
 
-def load_layer():
+def load_layer(extracting_dir):
     """load the layer dirs"""
     while True:
-        layer_filename = q.get()
+        layer_filename = q_dir_layers.get()
         logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
         if layer_filename is None:
+            logging.debug('The dir layer queue is empty!')
             break
 
-        sub_dirs = load_dirs(layer_filename)
-        clear_dirs(layer_filename)
+        if len(layer_filename.split("-")) != 3:
+            q_dir_layers.task_done()
+            logging.debug('The dir layer filename is invalid %s!', layer_filename)
+            break
+
+        logging.info('sha256:' + layer_filename.split("-")[1])
+        with lock_q_analyzed_layer:
+            if ('sha256:' + layer_filename.split("-")[1]) in q_analyzed_layers.queue:
+                print "Layer Already Analyzed!"
+                is_layer_analyzed = True
+            else:
+                is_layer_analyzed = False
+                q_analyzed_layers.put('sha256:' + layer_filename.split("-")[1])
+                print "Layer Not Analyzed!"
+
+        if is_layer_analyzed:
+            q_dir_layers.task_done()
+            continue
+
+        sub_dirs = load_dirs(layer_filename, extracting_dir)
+        if not len(sub_dirs):
+            q_dir_layers.task_done()
+            logging.debug('The dir wrong!')
+            continue
+
+        clear_dirs(layer_filename, extracting_dir)
 
         depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
         if depths:
@@ -113,9 +181,23 @@ def load_layer():
         # layers.append(layer)
         # lock.release()
 
-        logging.debug('write layer_id:[%s]: %s to json file %s', layer_filename, abslayer_filename)
-        q.task_done()
+        logging.debug('write layer_id:[%s]: to json file %s', layer_filename, abslayer_filename)
+        q_flush_analyzed_layers.put('sha256:' + layer_filename.split("-")[1])
+        q_dir_layers.task_done()
 
+
+def flush_file(fd, q_name, lock_file):
+    while True:
+        item = q_name.get()
+        if item is None:
+            print str(q_name) + " queue empty!"
+            break
+        """write to file"""
+        print "f_finished_item: " + item
+        with lock_file:
+            fd.write(item + "\n")
+            fd.flush()
+        q_name.task_done()
 
 # def load_layerBychainid(chainid):
 #     """ first we find the layer folder with chain id under /var/lib/docker/image/aufs/layerdb

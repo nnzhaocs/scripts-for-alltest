@@ -22,9 +22,18 @@ from itertools import groupby
 
 import subprocess
 
-q = Queue.Queue()
+q_dir_layers = Queue.Queue()
+# q_downloaded_layers = Queue.Queue()
+q_analyzed_layers = Queue.Queue()
+q_bad_unopen_layers = Queue.Queue()
+
+q_flush_analyzed_layers = Queue.Queue()
+q_flush_bad_unopen_layers = Queue.Queue()
+
 # layer_q = Queue.Queue()
-lock = threading.Lock()
+lock_f_bad_unopen_layer = threading.Lock()
+lock_f_analyzed_layer = threading.Lock()
+lock_q_analyzed_layer = threading.Lock()
 
 
 
