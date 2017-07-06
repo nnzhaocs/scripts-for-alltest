@@ -83,15 +83,6 @@ def queue_layers(analyzed_layer_filename):
     for path, _, tarball_filenames in os.walk(dest_dir[0]['layer_dir']):
         for tarball_filename in tarball_filenames:
             logging.debug('layer_id: %s', tarball_filename)  # str(layer_id).replace("/", "")
-            if "sha256-" not in tarball_filename:
-                logging.info('file %s is not a layer tarball or config file', tarball_filename)
-                continue
-            if not os.path.isfile(os.path.join(path, tarball_filename)):
-                logging.info('layer tarball file %s is not valid', tarball_filename)
-                continue
-            if check_config_file(tarball_filename):
-                move_config_file(tarball_filename)
-                continue
             q_dir_layers.put(tarball_filename)
             logging.debug('queue dir layer tarball: %s', tarball_filename)  # str(layer_id).replace("/", "")
 
@@ -123,18 +114,33 @@ def move_config_file(filename):
         print e.output
 
 
+def is_valid_tarball(layer_filename):
+    if "sha256-" not in layer_filename:
+        logging.info('file %s is not a layer tarball or config file', layer_filename)
+        return False
+    if len(layer_filename.split("-")) != 3:
+        logging.debug('The layer filename is invalid %s!', layer_filename)
+        return False
+    if not os.path.isfile(os.path.join(dest_dir[0]['layer_dir'], layer_filename)):
+        logging.info('layer tarball file %s is not valid', layer_filename)
+        return False
+    if check_config_file(layer_filename):
+        move_config_file(layer_filename)
+        return False
+    return True
+
+
 def load_layer(extracting_dir):
     """load the layer dirs"""
     while True:
         layer_filename = q_dir_layers.get()
+        if not is_valid_tarball():
+            q_dir_layers.task_done()
+            continue
+
         logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
         if layer_filename is None:
             logging.debug('The dir layer queue is empty!')
-            break
-
-        if len(layer_filename.split("-")) != 3:
-            q_dir_layers.task_done()
-            logging.debug('The dir layer filename is invalid %s!', layer_filename)
             break
 
         logging.info('sha256:' + layer_filename.split("-")[1])

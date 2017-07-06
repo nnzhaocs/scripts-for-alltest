@@ -65,12 +65,6 @@ def parseArg():
     )
 
     # parser.add_argument(
-    #     '-f', '--file',
-    #     help="files which contains downloaded layers from downloader module, eg., finished_layer_list.out",
-    #     dest="downloaded_layer_list",
-    # )
-
-    # parser.add_argument(
     #     '-i', '--create',
     #     help="Create layer database",
     #     action="store_true"
