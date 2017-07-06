@@ -1,6 +1,8 @@
 
 import os, argparse, logging
 from apscheduler.schedulers.blocking import BlockingScheduler
+# from apscheduler.schedulers.blocking import BlockingScheduler
+
 """python main.py -D -d dest_dir -l analyzed_layer_file -e extracting_dir"""
 
 
@@ -49,7 +51,7 @@ def parseArg():
     parser.add_argument(
         '-e', '--extracting_dir',
         help="Directory which is used to extracting tarball files",
-        dest="dest_dir",
+        dest="extracting_dir",
     )
 
     parser.add_argument(
@@ -63,8 +65,13 @@ def parseArg():
 
 def main():
     args = parseArg()
+    if args.loglevel:
+        debug = True
+    else:
+        debug = False
+
     scheduler = BlockingScheduler()
-    scheduler.add_job(scan_and_create_layer_db, 'interval', hours=5, args=(args.dest_dir, args.analyzed_layer_file, args.extracting_dir))
+    scheduler.add_job(scan_and_create_layer_db, 'interval', hours=10, args=(debug, args.dest_dir, args.analyzed_layer_file, args.extracting_dir))
     scheduler.start()
 
 if __name__ == '__main__':

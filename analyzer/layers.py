@@ -114,9 +114,13 @@ def move_config_file(filename):
     config_filename = os.path.join(dest_dir[0]['layer_dir'], filename)
     cmd3 = 'mv %s %s' % (config_filename, dest_dir[0]['config_dir'])
     logging.debug('The shell command: %s', cmd3)
-    rc = os.system(cmd3)
-    assert (rc == 0) # or use try exception
-    # logging.debug('The shell output: %s', out)
+    # rc = os.system(cmd3)
+    # assert (rc == 0) # or use try exception
+    # # logging.debug('The shell output: %s', out)
+    try:
+        subprocess.check_output(cmd3, shell=True)
+    except subprocess.CalledProcessError as e:
+        print e.output
 
 
 def load_layer(extracting_dir):

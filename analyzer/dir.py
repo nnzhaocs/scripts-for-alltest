@@ -14,8 +14,15 @@ def clear_dirs(layer_id, extracting_dir):
     # layer_dir = str(layer_file) + '-dir'
     cmd4 = 'rm -rf %s' % layer_dir
     logging.debug('The shell command: %s', cmd4)
-    rc = os.system(cmd4)
-    assert (rc == 0)
+    # rc = os.system(cmd4)
+    # assert (rc == 0)
+    try:
+        subprocess.check_output(cmd4, shell=True)
+    except subprocess.CalledProcessError as e:
+        print e.output
+        # return e.output
+    # else:
+    #     return None
 
 
 def load_dirs(layer_id, extracting_dir):
@@ -41,14 +48,22 @@ def load_dirs(layer_id, extracting_dir):
     layer_dir = os.path.join(extracting_dir, layer_id)
     cmd1 = 'mkdir %s' % layer_dir
     logging.debug('The shell command: %s', cmd1)
-    rc = os.system(cmd1)
-    assert (rc == 0)
+    # rc = os.system(cmd1)
+    # assert (rc == 0)
+    try:
+        subprocess.check_output(cmd1, shell=True)
+    except subprocess.CalledProcessError as e:
+        print e.output
     logging.debug('to ==========> %s', layer_dir)
 
     cmd = 'tar -zxf %s -C %s' % (layer_file, layer_dir)
     logging.debug('The shell command: %s', cmd)
-    rc = os.system(cmd)
-    assert (rc == 0)
+    # rc = os.system(cmd)
+    # assert (rc == 0)
+    try:
+        subprocess.check_output(cmd, shell=True)
+    except subprocess.CalledProcessError as e:
+        print e.output
 
     layer_dir_level = layer_dir.count(os.sep)
     logging.debug("(%s, %s)", layer_dir, layer_dir_level)
