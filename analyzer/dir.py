@@ -66,9 +66,13 @@ def load_dirs(layer_id, extracting_dir):
     try:
         subprocess.check_output(cmd, shell=True)
     except subprocess.CalledProcessError as e:
-        q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1]+':tar-error')
         print '###################' + e.output + '###################'
-        print e.output
+        # print e.output
+        if "No space left on device" in e.output:
+            q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1] + ':tar-no-space-error')
+            return sub_dirs
+        else:
+            q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1] + ':tar-common-error')
 
     layer_dir_level = layer_dir.count(os.sep)
     logging.debug("(%s, %s)", layer_dir, layer_dir_level)
