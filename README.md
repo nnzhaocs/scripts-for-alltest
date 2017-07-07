@@ -20,7 +20,7 @@ go run down_loader.go -operation=download_manifest -repo=library/redis -tag=late
 go run down_loader.go -operation=download_blobs -repo=library/redis 
 -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test.tarball
 
-*2. Run the downloader to massively downloading the repos*
+*2. Run the downloader to massively download the repos*
 
 root# python auto_download_compressed_images.py -f unique_name.out -d /gpfs/docker_images_largefs/ -l /home/nannan/docker-remetrics/downloader/finished_layer_list.out -r /home/nannan/docker-remetrics/downloader/finished_repo_list.out
 
@@ -33,3 +33,10 @@ root# python auto_download_compressed_images.py -f unique_name.out -d /gpfs/dock
 Have not tested yet
 ## Tests
 
+*1. Downloader*
+
+~20MB/s
+
+*2. Analyzer*
+
+~1s per layer
