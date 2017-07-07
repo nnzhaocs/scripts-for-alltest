@@ -26,7 +26,6 @@ def load_file(abs_filename):
     f_size = os.lstat(abs_filename).st_size
     if f_size > 100000000000:
         logging.warn("Too large file %d, name: %s", f_size, abs_filename)
-
     f_size = int(f_size)
 
     #m = Magic(mime = True)

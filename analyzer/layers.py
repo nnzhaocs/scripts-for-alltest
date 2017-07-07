@@ -160,7 +160,7 @@ def load_layer(extracting_dir):
         sub_dirs = load_dirs(layer_filename, extracting_dir)
         if not len(sub_dirs):
             q_dir_layers.task_done()
-	    clear_dirs(layer_filename, extracting_dir)
+            clear_dirs(layer_filename, extracting_dir)
             logging.debug('The dir wrong!')
             continue
 

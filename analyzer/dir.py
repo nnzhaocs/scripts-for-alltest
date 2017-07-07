@@ -9,8 +9,8 @@ def clear_dirs(layer_id, extracting_dir):
     """ delete the dir """
     layer_dir = os.path.join(extracting_dir, layer_id)
     if not os.path.isdir(layer_dir):
-        logging.error('layer tarball dir %s is not valid', layer_dir)
-	return
+        logging.error('####################layer tarball dir %s is not valid############', layer_dir)
+        return
         # q_flush_analyzed_layers.put()
     # layer_dir = str(layer_file) + '-dir'
     cmd4 = 'rm -rf %s' % layer_dir
@@ -20,7 +20,7 @@ def clear_dirs(layer_id, extracting_dir):
     try:
         subprocess.check_output(cmd4, shell=True)
     except subprocess.CalledProcessError as e:
-        print e.output
+        print '###################'+e.output+'#######################'
         # return e.output
     # else:
     #     return None
@@ -54,9 +54,9 @@ def load_dirs(layer_id, extracting_dir):
     try:
         subprocess.check_output(cmd1, shell=True)
     except subprocess.CalledProcessError as e:
-        print e.output
-	q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1])
-	return sub_dirs
+        print '###################'+e.output+'###################'
+        q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1]+':cannot-make-dir-error')
+        return sub_dirs
     logging.debug('to ==========> %s', layer_dir)
 
     cmd = 'tar -zxf %s -C %s' % (layer_file, layer_dir)
@@ -66,7 +66,8 @@ def load_dirs(layer_id, extracting_dir):
     try:
         subprocess.check_output(cmd, shell=True)
     except subprocess.CalledProcessError as e:
-	q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1])
+        q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1]+':tar-error')
+        print '###################' + e.output + '###################'
         print e.output
 
     layer_dir_level = layer_dir.count(os.sep)
@@ -80,8 +81,8 @@ def load_dirs(layer_id, extracting_dir):
         for dirname in subdirs:
             s_dir = os.path.join(path, dirname)
             if not os.path.isdir(s_dir):
-                logging.warn('no following layer subdir for %s', s_dir)
-		q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1])
+                logging.warn('###################layer subdir %s is invalid###################', s_dir.replace(layer_dir, ""))
+                q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1]+':layer-subdir-error:'+s_dir.replace(layer_dir, ""))
                 continue
 
             dir_level = s_dir.count(os.sep) - layer_dir_level
@@ -90,6 +91,10 @@ def load_dirs(layer_id, extracting_dir):
                 if os.path.isfile(os.path.join(s_dir, f)):
                     s_dir_file = load_file(os.path.join(s_dir, f))
                     s_dir_files.append(s_dir_file)
+                else:
+                    logging.warn('###################layer file %s is invalid###################', f)
+                    q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1] + ':layer-file-error:' + f)
+                    continue
             # s_dir_files = [f for f in os.listdir(s_dir) if os.path.isfile(os.path.join(s_dir, f))]
 
             sub_dir = {
