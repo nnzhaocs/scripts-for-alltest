@@ -95,10 +95,11 @@ def load_dirs(layer_id, extracting_dir):
                 if os.path.isfile(os.path.join(s_dir, f)):
                     s_dir_file = load_file(os.path.join(s_dir, f))
                     s_dir_files.append(s_dir_file)
-                else:
-                    logging.warn('###################layer file %s is invalid###################', f)
-                    q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1] + ':layer-file-error:' + f)
-                    continue
+                # else:
+                # else is directory
+                #     logging.warn('###################layer file %s is invalid###################', s_dir.replace(layer_dir, "")+'/'+f)
+                #     q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1] + ':layer-file-error:' + f)
+                #     continue
             # s_dir_files = [f for f in os.listdir(s_dir) if os.path.isfile(os.path.join(s_dir, f))]
 
             sub_dir = {

@@ -21,20 +21,8 @@ def create_layer_db(analyzed_layer_filename, extracting_dir):
     f_analyzed_layer = open(analyzed_layer_filename, 'a+')
     f_bad_unopen_layer = open("bad_unopen_layer_list.out", 'a+')
 
-    layer_db_json_dir = os.path.join(dest_dir[0]['dirname'], 'layer_db_json')
-    logging.debug('make layer_db_json dir ==========> %s' % layer_db_json_dir)
-    cmd1 = 'mkdir %s' % layer_db_json_dir
-    logging.debug('The shell command: %s', cmd1)
-    try:
-        subprocess.check_output(cmd1, shell=True)
-    except subprocess.CalledProcessError as e:
-        print '###################'+e.output+'###################'
-        # q_bad_unopen_layers.put('sha256:' + layer_id.split("-")[1]+':cannot-make-dir-error')
-        return
-    # logging.debug('to ==========> %s', layer_dir)
-
     for i in range(num_worker_threads):
-        t = threading.Thread(target=load_layer, args=(extracting_dir, layer_db_json_dir))
+        t = threading.Thread(target=load_layer, args=(extracting_dir, dest_dir[0]['layer_db_json_dir']))
         t.start()
         threads.append(t)
 
