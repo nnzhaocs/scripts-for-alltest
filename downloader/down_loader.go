@@ -74,7 +74,7 @@ func get_manifest(hub *registry.Registry, repo_name string, repo_tag string, abs
 	registry.Log("start get manifest")
 	manifest2, err := hub.ManifestV2(repo_name, repo_tag)
 	if err != nil{
-		registry.Log("Fail to get manifest: Failed repo: %v", repo_name)
+		registry.Log("Fail to get manifest: Failed repo: %v\n, error message: %s", repo_name,			err)
 		return err
 	}
 	//fmt.Printf("%v\n", manifest2)
