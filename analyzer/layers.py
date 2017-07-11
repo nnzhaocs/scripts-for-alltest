@@ -6,9 +6,11 @@ from dir import *
 from itertools import chain
 
 """TODO:
-    1. check duplicated.
-    2. mount tmpfs
-    3. already has json file no need to extracting again
+    # 1. check duplicated.
+    # 2. mount tmpfs
+    # 3. already has json file no need to extracting again
+    1. need to add more remetrics 
+    2. remove layer db json timestamp
 """
 
 

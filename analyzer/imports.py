@@ -35,5 +35,21 @@ lock_f_bad_unopen_layer = threading.Lock()
 lock_f_analyzed_layer = threading.Lock()
 lock_q_analyzed_layer = threading.Lock()
 
+# =============================================
 
+q_dir_images = Queue.Queue()
+q_layer_json_db = Queue.Queue()
+
+q_analyzed_images = Queue.Queue()
+q_bad_unopen_image_manifest = Queue.Queue()
+
+q_flush_analyzed_images = Queue.Queue()
+q_flush_bad_unopen_image_manifest = Queue.Queue()
+
+# layer_q = Queue.Queue()
+lock_f_bad_unopen_image_manifest = threading.Lock()
+lock_f_analyzed_image_manifest = threading.Lock()
+lock_q_analyzed_image_manifest = threading.Lock()
+
+lock_repo = threading.Lock()
 
