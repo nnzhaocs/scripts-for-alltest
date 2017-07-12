@@ -40,5 +40,3 @@ Have not tested yet
 *2. Analyzer*
 
 ~1s per layer
-
-Vasily: Just a test commit.
