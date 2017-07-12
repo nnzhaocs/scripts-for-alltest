@@ -103,10 +103,11 @@ def load_dirs(layer_id, extracting_dir):
             # s_dir_files = [f for f in os.listdir(s_dir) if os.path.isfile(os.path.join(s_dir, f))]
 
             sub_dir = {
-                'subdir': s_dir.replace(layer_dir, ""),
+                'subdir': s_dir,  # .replace(layer_dir, ""),
                 'dir_depth': dir_level,
                 'file_cnt': len(s_dir_files),
-                'files': s_dir_files  # full path of f = dir/files
+                'files': s_dir_files,  # full path of f = dir/files
+                'dir_size': sum_dir_size(s_dir)
             }
 
             # logging.debug('sub_dir: %s', sub_dir)
@@ -114,6 +115,12 @@ def load_dirs(layer_id, extracting_dir):
     return sub_dirs
 
 
+def sum_dir_size(dir):
+    s_dir_files = dir['files']
+    sum_size = 0
+    for file in s_dir_files:
+        sum_size = file['size (B)'] + sum_size
+    return sum_size
 
 # def load_files_to_layers(aufspath):
 #     """get all files from multiple layer dirs = root_layer_dir"""

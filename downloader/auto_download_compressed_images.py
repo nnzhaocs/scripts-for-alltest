@@ -323,81 +323,8 @@ def flush_file(fd, q_name, lock_file):
         q_name.task_done()
 
 
-# def flush_file(f_finished_repo, f_bad_repo, f_finished_layer, f_bad_layer):
-#     is_flush_finished_repo_q_empty = False
-#     is_flush_finished_layer_q_empty = False
-#     is_flush_bad_repo_q_empty = False
-#     is_flush_bad_layer_q_empty = False
-#
-#     while True:
-#         if not is_flush_finished_repo_q_empty:
-#             finished_repo = flush_finished_repo_q.get()
-#             if finished_repo is None:
-#                 print "flush_finished_repo_q empty!"
-#                 is_flush_finished_repo_q_empty = True
-#             else:
-#                 """write to file"""
-#                 print "f_finished_repo" + finished_repo['name']
-#                 with lock_f_finished_repo:
-#                     f_finished_repo.write(finished_repo['name']+"\n")
-#                     f_finished_repo.flush()
-#                     flush_finished_repo_q.task_done()
-#
-#         if not is_flush_finished_layer_q_empty:
-#             finished_layer = flush_finished_layer_q.get()
-#             if finished_layer is None:
-#                 print "flush_finished_repo_q empty!"
-#                 is_flush_finished_layer_q_empty = True
-#             else:
-#                 """write to file"""
-#                 print "f_finished_layer" + finished_layer
-#                 with lock_f_finished_layer:
-#                     f_finished_layer.write(finished_layer + "\n")
-#                     f_finished_layer.flush()
-#                     flush_finished_layer_q.task_done()
-#
-#         if not is_flush_bad_repo_q_empty:
-#             bad_repo = flush_bad_repo_q.get()
-#             if bad_repo is None:
-#                 print "flush_finished_repo_q empty!"
-#                 is_flush_bad_repo_q_empty = True
-#             else:
-#                 """write to file"""
-#                 print "f_bad_repo" + bad_repo['name']
-#                 with lock_f_bad_repo:
-#                     f_bad_repo.write(bad_repo['name'] + "\n")
-#                     f_bad_repo.flush()
-#                     flush_bad_repo_q.task_done()
-#
-#         if not is_flush_bad_layer_q_empty:
-#             bad_layer = flush_bad_layer_q.get()
-#             if bad_layer is None:
-#                 print "flush_finished_repo_q empty!"
-#                 is_flush_bad_layer_q_empty = True
-#             else:
-#                 """write to file"""
-#                 print "f_bad_layer" + bad_layer
-#                 with lock_f_bad_layer:
-#                     f_bad_layer.write(bad_layer + "\n")
-#                     f_bad_layer.flush()
-#                     flush_bad_layer_q.task_done()
-#
-#         if is_flush_bad_layer_q_empty and is_flush_bad_repo_q_empty and is_flush_finished_layer_q_empty and is_flush_finished_repo_q_empty:
-#             print "flush queues are all empty!"
-#             break
-
-
 def parseArg():
     parser = OptionParser()
-    # parser.add_option(
-    #     '-D',
-    #     '--debug',
-    #     help="Print lots of debugging statements",
-    #     action="store",
-    #     dest="loglevel",
-    #     # const=logging.DEBUG,
-    #     default=logging.INFO,
-    # )
 
     parser.add_option(
         '-f',

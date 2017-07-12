@@ -5,12 +5,32 @@ from utility import *
 
 
 def load_file(abs_filename):
+    # symlink = []
+    # statinfo = []
+    stat = os.stat(abs_filename)
+    statinfo = {
+        'st_nlink': stat.st_nlink,
+        'st_uid': stat.st_uid,
+        'st_gid': stat.st_gid,
+        'st_atime': stat.st_atime, # most recent access time
+        'st_mtime': stat.st_mtime,  # change of content
+        'st_ctime': stat.st_ctime  # matedata modify
+    }
+
     if os.path.islink(abs_filename):
         # logging.debug('this is a symblink')
         path = os.readlink(abs_filename)
         sha256 = hashlib.sha256(path).hexdigest()
+        symlink = {
+            'is_symlink': True,
+            'target_path': path
+        }
     else:
         sha256 = hashlib.sha256(open(abs_filename, 'rb').read()).hexdigest()
+        symlink = {
+            'is_symlink': False,
+            'target_path': None
+        }
 
     # read_size = 10240
     # sha256 = hashlib.sha256()
@@ -28,10 +48,10 @@ def load_file(abs_filename):
         logging.warn("Too large file %d, name: %s", f_size, abs_filename)
     f_size = int(f_size)
 
-    #m = Magic(mime = True)
-    me = Magic(mime_encoding = True)
+    # m = Magic(mime = True)
+    me = Magic(mime_encoding=True)
 
-    #s = open(abs_filename).read(512)
+    # s = open(abs_filename).read(512)
     if f_size == 1 or f_size == 0:
         f_type = "text-empty"
         # logging.debug("###### text-empty #####, name: %s", abs_filename)
@@ -41,11 +61,13 @@ def load_file(abs_filename):
     #print (f_type, extension, f_size)
 
     dir_file = {
-        'abs_filename': os.path.basename(abs_filename),
+        'abs_filename': abs_filename,
         'sha256': sha256,
         'size (B)': f_size,
         'type': f_type,
-        'extension': extension
+        'extension': extension,
+        'symlink': symlink,
+        'statinfo': statinfo
     }
 
     return dir_file
