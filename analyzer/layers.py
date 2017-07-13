@@ -73,6 +73,7 @@ def queue_layers(analyzed_layer_filename):
     #         if line:
     #             logging.debug('queue layer_id: %s to downloaded layer queue', line.replace("\n", ""))  #
     #             q_downloaded_layers.put(line.replace("\n", ""))
+    start = time.time()
     """queue the layer id in analyzed_layer_filename, layer id = sha256:digest !!! without timestamp"""
     with open(analyzed_layer_filename) as f:
         for line in f:
@@ -87,6 +88,9 @@ def queue_layers(analyzed_layer_filename):
             logging.debug('layer_id: %s', tarball_filename)  # str(layer_id).replace("/", "")
             q_dir_layers.put(tarball_filename)
             logging.debug('queue dir layer tarball: %s', tarball_filename)  # str(layer_id).replace("/", "")
+
+    elapsed = time.time() - start
+    logging.info('queue layers, consumed time ==> %f s', elapsed)
 
 
 def check_config_file(filename):
@@ -159,29 +163,51 @@ def load_layer(extracting_dir, layer_db_json_dir):
             q_dir_layers.task_done()
             continue
 
+        compressed_size_with_method_gzip = os.lstat(os.path.join(dest_dir[0]['layer_dir'], layer_filename)).st_size
+        logging.debug("compressed_size_with_method_gzip %d B, name: %s", compressed_size_with_method_gzip, layer_filename)
+
         sub_dirs = load_dirs(layer_filename, extracting_dir)
         if not len(sub_dirs):
             q_dir_layers.task_done()
-            clear_dirs(layer_filename, extracting_dir)
-            logging.debug('The dir wrong!')
+            archival_size = clear_dirs(layer_filename, extracting_dir)
+            logging.debug('################### The layer dir wrong! layer file name %s ###################', layer_filename)
             continue
 
-        clear_dirs(layer_filename, extracting_dir)
+        archival_size = clear_dirs(layer_filename, extracting_dir)
+        if archival_size == -1:
+            q_dir_layers.task_done()
+            return
 
         depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
-        if depths:
-            dir_depth = max(depths)
+        # if depths:
+        dir_depth = {
+            'dir_max_depth': max(depths),
+            'dir_min_depth': min(depths),
+            'dir_median_depth': median(depths),
+            'dir_avg_depth': mean(depths)
+        }
             # print dir_depth
-        else:
-            dir_depth = 0
+        # else:
+        #     dir_depth = {
+        #         'dir_max_depth': 0,
+        #         'dir_min_depth': 0,
+        #         'dir_median_depth': 0,
+        #         'dir_avg_depth': 0
+        #     }
 
         sha, id, timestamp = str(layer_filename).split("-")
+
+        size = {
+            'uncompressed_sum_of_files': sum_layer_size(sub_dirs),
+            'compressed_size_with_method_gzip': compressed_size_with_method_gzip,
+            'archival_size': archival_size
+        }
 
         layer = {
             'layer_id': sha+':'+id,  # str(layer_id).replace("/", ""),
             'dirs': sub_dirs,  # getLayersBychainID(chain_id),
-            'dir_max_depth': dir_depth,
-            'size': sum_layer_size(sub_dirs),  # getLayersSize(chainid),
+            'dir_depth': dir_depth,
+            'size': size,  # sum of files size,
             'repeats': 0,
             'file_cnt': sum_file_cnt(sub_dirs)
         }
@@ -220,11 +246,12 @@ def sum_layer_size(sub_dirs):
         sum = sum + dir['dir_size']
     return sum
 
+
 def sum_file_cnt(sub_dirs):
     sum = 0
     for dir in sub_dirs:
         sum = sum + dir['file_cnt']
-    return
+    return sum
 
 
 def cal_layer_repeats(images):

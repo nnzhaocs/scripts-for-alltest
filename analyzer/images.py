@@ -221,13 +221,21 @@ def load_image_manifest():  # dest_dir[0]['layer_db_json_dir']
             continue
 
         image = {
-            'version': version,  # str(layer_id).replace("/", ""),
-            'layers': layer_db_json_data,  # getLayersBychainID(chain_id),
-            'size': 0,
+            'manifest version': version,  # str(layer_id).replace("/", ""),
             'tag': manifest_filename.split("-")[1],  # getLayersSize(chainid),
+            'docker version': None,
+            'os': None,
+            'architecture': None,
+            'pull_cnt': None,
+            # ==================================================
+
+            'size': 0,
+
             'pull_cnt': 0,
             'file_cnt': 0,
-            'layer_cnt': len(blobs_digest)
+            'layer_cnt': len(blobs_digest),
+            # ==================================================
+            'layers': layer_db_json_data  # getLayersBychainID(chain_id),
         }
 
         absimage_filename = os.path.join(dest_dir[0]['image_db_json_dir'], manifest_filename+'.json')

@@ -19,7 +19,7 @@ import random, string, hashlib
 from magic import Magic
 from collections import defaultdict
 from itertools import groupby
-
+import statistics
 import subprocess
 
 q_dir_layers = Queue.Queue()

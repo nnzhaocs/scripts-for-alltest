@@ -14,7 +14,7 @@ from run_funcs import *
      2. fetch all the manifest
      3. get all the tags
 """
-""" python main.py -D -L -d dest_dir -a analyzed_layer_file -e extracting_dir """
+""" python main.py -D -L -d dest_dir -a analyzed_layer_file -e extracting_dir -z zip_archival_dir"""
 """ python main.py -D -I -d dest_dir -a analyzed_layer_file """
 
 

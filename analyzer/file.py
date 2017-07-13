@@ -5,8 +5,6 @@ from utility import *
 
 
 def load_file(abs_filename):
-    # symlink = []
-    # statinfo = []
     stat = os.stat(abs_filename)
     statinfo = {
         'st_nlink': stat.st_nlink,
@@ -16,7 +14,7 @@ def load_file(abs_filename):
         'st_mtime': stat.st_mtime,  # change of content
         'st_ctime': stat.st_ctime  # matedata modify
     }
-
+    start = time.time()
     if os.path.islink(abs_filename):
         # logging.debug('this is a symblink')
         path = os.readlink(abs_filename)
@@ -31,7 +29,8 @@ def load_file(abs_filename):
             'is_symlink': False,
             'target_path': None
         }
-
+    elapsed = time.time() - start
+    logging.info('sha digest calculation, consumed time ==> %f s', elapsed)
     # read_size = 10240
     # sha256 = hashlib.sha256()
     #
