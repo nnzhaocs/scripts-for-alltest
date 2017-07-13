@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 import random, string, hashlib
 #from optparse import OptionParser
-
+import zipfile, tarfile
 from magic import Magic
 from collections import defaultdict
 from itertools import groupby

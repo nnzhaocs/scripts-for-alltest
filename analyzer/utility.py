@@ -20,7 +20,7 @@ dest_dir = []
 
 # layers = []
 
-num_worker_threads = 50
+num_worker_threads = 20
 num_flush_threads = 3
 
 threads = []

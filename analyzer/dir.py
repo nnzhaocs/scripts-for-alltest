@@ -5,29 +5,38 @@ from utility import *
 from file import *
 
 
-def zipit(path, archname):
-    archive = zipfile.ZipFile(archname, "w", zipfile.ZIP_STORED)
-    if os.path.isdir(path):
-        _zippy(path, path, archive)
-    else:
-        _, name = os.path.split(path)
-        archive.write(path, name)
-    archive.close()
-
-
-def _zippy(base_path, path, archive):
-    paths = os.listdir(path)
-    for p in paths:
-        p = os.path.join(path, p)
-        if os.path.isdir(p):
-            _zippy(base_path, p, archive)
-        else:
-            archive.write(p, os.path.relpath(p, base_path))
+#def zipit(path, archname):
+#    archive = zipfile.ZipFile(archname, "w", zipfile.ZIP_STORED)
+#    if os.path.isdir(path):
+#        _zippy(path, path, archive)
+#    else:
+#        _, name = os.path.split(path)
+#        archive.write(path, name)
+#    archive.close()
+#
+#
+#def _zippy(base_path, path, archive):
+#    paths = os.listdir(path)
+#    for p in paths:
+#        p = os.path.join(path, p)
+#        if os.path.isdir(p) and not os.path.islink(p):
+#            _zippy(base_path, p, archive)
+#        else:
+#            if os.path.islink(p):
+#                zipInfo = zipfile.ZipInfo(os.path.relpath(p, base_path))
+#                zipInfo.create_system = 3
+#                # long type of hex val of '0xA1ED0000L',
+#                # say, symlink attr magic...
+#                zipInfo.external_attr = 2716663808L
+#                archive.writestr(zipInfo, os.readlink(p))
+#            else:
+#                archive.write(p, os.path.relpath(p, base_path), zipfile.ZIP_STORED)
+#            #archive.write(p, os.path.relpath(p, base_path))
 
 
 def clear_dirs(layer_id, extracting_dir):
     """ delete the dir """
-    start = time.time()
+    #start = time.time()
     layer_dir = os.path.join(extracting_dir, layer_id)
     if not os.path.isdir(layer_dir):
         logging.error('####################layer tarball dir %s is not valid############', layer_dir)
@@ -36,7 +45,10 @@ def clear_dirs(layer_id, extracting_dir):
     """ first archive this dir """
     start = time.time()
     abs_zip_file_name = os.path.join(layer_dir, layer_id+'-uncompressed-archival.zip')
-    zipit(layer_dir, abs_zip_file_name)
+    # zipit(layer_dir, abs_zip_file_name)
+    tar = tarfile.open(abs_zip_file_name, "w")
+    tar.add(layer_dir, recursive=True)
+    tar.close()
     elapsed = time.time() - start
     logging.info('archival directory, consumed time ==> %f s', elapsed)
 

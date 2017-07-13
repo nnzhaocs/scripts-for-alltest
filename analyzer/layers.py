@@ -166,7 +166,10 @@ def load_layer(extracting_dir, layer_db_json_dir):
         compressed_size_with_method_gzip = os.lstat(os.path.join(dest_dir[0]['layer_dir'], layer_filename)).st_size
         logging.debug("compressed_size_with_method_gzip %d B, name: %s", compressed_size_with_method_gzip, layer_filename)
 
+	start = time.time()
         sub_dirs = load_dirs(layer_filename, extracting_dir)
+	elapsed = time.time() - start
+    	logging.info('process directory: sha digest calculation, consumed time ==> %f s', elapsed)
         if not len(sub_dirs):
             q_dir_layers.task_done()
             archival_size = clear_dirs(layer_filename, extracting_dir)

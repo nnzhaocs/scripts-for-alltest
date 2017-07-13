@@ -89,7 +89,7 @@ def run_createlayerdb(args):
         logging.error('%s is not a valid dir', layer_dir)
         return
 
-    layer_db_json_dir = os.path.join(args.dest_dir, 'layer_db_json')
+    layer_db_json_dir = os.path.join(args.dest_dir, 'layer_db_json_bison03p')
     if not os.path.isdir(layer_db_json_dir):
         logging.debug('make layer_db_json dir ==========> %s' % layer_db_json_dir)
         cmd1 = 'mkdir %s' % layer_db_json_dir
