@@ -8,11 +8,12 @@ def load_file(abs_filename):
     stat = os.stat(abs_filename)
     statinfo = {
         'st_nlink': stat.st_nlink,
-        'st_uid': stat.st_uid,
-        'st_gid': stat.st_gid,
-        'st_atime': stat.st_atime, # most recent access time
-        'st_mtime': stat.st_mtime,  # change of content
-        'st_ctime': stat.st_ctime  # matedata modify
+        'tarinfo_type': None,
+        'tarinfo_uid': None,
+        'tarinfo_gid': None,
+        'tarinfo_atime': None, # most recent access time
+        'tarinfo_mtime': None,  # change of content
+        'tarinfo_ctime': None  # matedata modify
     }
     #start = time.time()
     if os.path.islink(abs_filename):
@@ -47,17 +48,18 @@ def load_file(abs_filename):
         logging.warn("Too large file %d, name: %s", f_size, abs_filename)
     f_size = int(f_size)
 
-    # m = Magic(mime = True)
-    me = Magic(mime_encoding=True)
+    me = magic.Magic(mime = True)
+    # me = Magic(mime_encoding=True)
+    # me = magic.open(magic.MAGIC_MIME)
 
     # s = open(abs_filename).read(512)
-    if f_size == 1 or f_size == 0:
-        f_type = "text-empty"
-        # logging.debug("###### text-empty #####, name: %s", abs_filename)
-    else:
-        f_type = me.from_file(abs_filename)
+    # if f_size == 1 or f_size == 0:
+    #     f_type = "text-empty"
+    #     # logging.debug("###### text-empty #####, name: %s", abs_filename)
+    # else:
+    f_type = me.from_file(abs_filename)
     extension = os.path.splitext(abs_filename)[1]
-    #print (f_type, extension, f_size)
+    # print (f_type, extension, f_size)
 
     dir_file = {
         'abs_filename': abs_filename,

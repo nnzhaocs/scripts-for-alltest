@@ -16,7 +16,8 @@ from matplotlib.ticker import MultipleLocator
 import random, string, hashlib
 #from optparse import OptionParser
 import zipfile, tarfile
-from magic import Magic
+#from magic import Magic
+import  magic
 from collections import defaultdict
 from itertools import groupby
 import statistics
@@ -60,3 +61,4 @@ lock_repo = threading.Lock()
 
 # ===============================================
 
+me = magic.Magic()
