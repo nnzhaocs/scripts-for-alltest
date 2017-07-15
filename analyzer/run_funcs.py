@@ -7,6 +7,7 @@ from dir import *
 from file import *
 from draw_pic import *
 from utility import *
+from jobdivider import *
 
 
 def run_createimagedb(args):
@@ -124,3 +125,57 @@ def run_createlayerdb(args):
 
     elapsed = time.time() - start
     logging.info('create layer json file, consumed time ==> %f', (elapsed / 3600))
+
+
+def run_jobdivider(args):
+    start = time.time()
+    logging.info('Input dir name: %s', args.dest_dir)
+    if not os.path.isdir(args.dest_dir):
+        logging.error('%s is not a valid dir', args.dest_dir)
+        return
+
+    # config_dir = os.path.join(args.dest_dir, "configs")
+    # if not os.path.isdir(config_dir):
+    #     logging.error('%s is not a valid dir', config_dir)
+    #     return
+
+    layer_dir = os.path.join(args.dest_dir, "layers")
+    if not os.path.isdir(layer_dir):
+        logging.error('%s is not a valid dir', layer_dir)
+        return
+
+    job_list_dir = os.path.join(args.dest_dir, 'job_list_dir')
+    if not os.path.isdir(job_list_dir):
+        logging.debug('make layer_db_json dir ==========> %s' % job_list_dir)
+        cmd1 = 'mkdir %s' % job_list_dir
+        logging.debug('The shell command: %s', cmd1)
+        try:
+            subprocess.check_output(cmd1, shell=True)
+        except subprocess.CalledProcessError as e:
+            print '###################' + e.output + '###################'
+            return
+
+    dir = {
+        'dirname': args.dest_dir,
+        # 'config_dir': config_dir,
+        'layer_dir': layer_dir,
+        'job_list_dir': job_list_dir
+    }
+
+    dest_dir.append(dir)
+    logging.info('dest dir is: %s', dest_dir)
+
+    # logging.info('analyzed_layer_file is: %s', args.analyzed_file)
+    # if not os.path.isfile(args.analyzed_file):
+    #     logging.error('%s is not a valid file', args.analyzed_file)
+    #     return
+    #
+    # logging.info('extracting_dir is: %s', args.extracting_dir)
+    # if not os.path.isdir(args.extracting_dir):
+    #     logging.error('%s is not a valid file', args.extracting_dir)
+    #     return
+
+    create_job_list()
+
+    elapsed = time.time() - start
+    logging.info('create job list file, consumed time ==> %f', (elapsed / 3600))
