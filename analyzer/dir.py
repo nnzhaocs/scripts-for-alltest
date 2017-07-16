@@ -94,20 +94,20 @@ def load_dirs(layer_filename):
         f_type = None
         extension = None
         link = None
-        logging.debug(tarinfo.name + ' ,' + tarinfo.size)
+        logging.debug(tarinfo.name + ' , %d', tarinfo.size)
         if tarinfo.issym():
             link = {
                 'link_type': 'symlink',
                 'target_path': tarinfo.linkname
             }
-        if tarinfo.islink():
+        if tarinfo.islnk():
             link = {
                 'link_type': 'hardlink',
                 'target_path': tarinfo.linkname
             }
         if tarinfo.isdir():
             logging.debug("dirname : %s", tarinfo.name)
-            dir_level = tarinfo.name.count(os.sep)
+            dir_level = tarinfo.name.count(os.sep) + 1
             sub_dir = {
                 'dirname': tarinfo.name,  # .replace(layer_dir, ""),
                 'dir_depth': dir_level
@@ -119,7 +119,7 @@ def load_dirs(layer_filename):
 
         if tarinfo.isreg():
             try:
-                reg_f = tarinfo.extractfile(tarinfo.name)
+                reg_f = tar.extractfile(tarinfo.name)
             except KeyError:
                 logging.error("File: %s is not found.", tarinfo.name)
             else:
@@ -127,7 +127,7 @@ def load_dirs(layer_filename):
                 if len(os.path.splitext(tarinfo.name)) >= 2:
                     extension = os.path.splitext(tarinfo.name)[1]
                 sha256 = hashlib.md5(bytes).hexdigest()
-                f_type = me.from_file(tarinfo.name)
+                f_type = me.id_buffer(bytes)
 
         dir_file = {
             'filename': tarinfo.name,
@@ -139,8 +139,9 @@ def load_dirs(layer_filename):
             # 'statinfo': statinfo
         }
         # files[filename] = dir_file
-        dir_files[os.path.dirname(tarinfo.name)].append(dir_file)
-        files[tarinfo.name] = dir_file
+        if tarinfo.isreg():
+            dir_files[os.path.dirname(tarinfo.name)].append(dir_file)
+            files[tarinfo.name] = dir_file
 
         tar_info = {
             # 'st_nlink': stat.st_nlink,
@@ -154,9 +155,10 @@ def load_dirs(layer_filename):
             'link': link
             # 'hardlink': hardlink
         }
-        file_infos[tarinfo.name] = tar_info
+        if tarinfo.isreg():
+            file_infos[tarinfo.name] = tar_info
 
-    for filename, file in files:
+    for filename, file in files.items():
         file['file_info'] = file_infos[filename]
 
     for dir in sub_dirs:
@@ -266,5 +268,5 @@ def load_dirs(layer_filename):
 def sum_dir_size(s_dir_files):
     sum_size = 0
     for file in s_dir_files:
-        sum_size = file['size (B)'] + sum_size
+        sum_size = file['file_info']['ti_size'] + sum_size
     return sum_size

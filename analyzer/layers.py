@@ -24,7 +24,7 @@ def create_layer_db(analyzed_layer_filename, layer_list_filename):
     queue_layers(analyzed_layer_filename, layer_list_filename)
 
     for i in range(num_worker_threads):
-        t = threading.Thread(target=load_layer, args=(dest_dir[0]['layer_db_json_dir']))
+        t = threading.Thread(target=load_layer, args=(dest_dir[0]['layer_db_json_dir'],))
         t.start()
         threads.append(t)
 
@@ -147,14 +147,15 @@ def load_layer(layer_db_json_dir):
     """load the layer dirs"""
     while True:
         layer_filename = q_dir_layers.get()
+        if layer_filename is None:
+            logging.debug('The dir layer queue is empty!')
+            break
+
         if not is_valid_tarball(layer_filename):
             q_dir_layers.task_done()
             continue
 
         logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
-        if layer_filename is None:
-            logging.debug('The dir layer queue is empty!')
-            break
 
         logging.info('sha256:' + layer_filename.split("-")[1])
         with lock_q_analyzed_layer:
