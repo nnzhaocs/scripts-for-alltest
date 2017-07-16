@@ -1,10 +1,10 @@
 
 from imports import *
 # from images import *
-from layers import *
-from images import *
-from dir import *
-from file import *
+#from layers import *
+#from images import *
+#from dir import *
+#from file import *
 from draw_pic import *
 from utility import *
 from jobdivider import *

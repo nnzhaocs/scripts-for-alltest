@@ -93,8 +93,8 @@ def main():
 
     logging.basicConfig(level=args.loglevel)
 
-    if args.createlayerdb:
-        run_createlayerdb(args)
+    #if args.createlayerdb:
+        #run_createlayerdb(args)
     if args.createimagedb:
         run_createimagedb(args)
 
