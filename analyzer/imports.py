@@ -23,6 +23,7 @@ from itertools import groupby
 import statistics
 import subprocess
 from collections import OrderedDict
+from collections import defaultdict
 
 q_dir_layers = Queue.Queue()
 # q_downloaded_layers = Queue.Queue()
@@ -62,4 +63,4 @@ lock_repo = threading.Lock()
 
 # ===============================================
 
-me = magic.Magic()
+me = magic.Magic() # me = magic.Magic(mime = True)

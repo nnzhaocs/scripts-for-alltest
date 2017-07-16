@@ -4,6 +4,12 @@ from draw_pic import *
 from utility import *
 from file import *
 
+"""
+TODO:
+1. get compression
+2. check
+
+"""
 
 #def zipit(path, archname):
 #    archive = zipfile.ZipFile(archname, "w", zipfile.ZIP_STORED)
@@ -73,89 +79,93 @@ def clear_dirs(layer_id, extracting_dir):
 
 def load_dirs(layer_filename):
     sub_dirs = []
-    dir_files = {}
+    dir_files = defaultdict(list)
     file_infos = {}
     files = {}
     layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_filename)
-    with zipfile.ZipFile(layer_file, "r") as zp:
-        for filename in zp.namelist():
-            if not filename.endswith('/'):
-                logging.debug("filename : %s", filename)
-                bytes = zp.read(filename)
-                f_type = me.id_buffer(bytes)
-                extension = os.path.splitext(filename)[1]
-                sha256 = hashlib.sha256(bytes).hexdigest()
-                dir_file = {
-                    'filename': filename,
-                    'sha256': sha256,
-                    # 'size (B)': None,
-                    'type': f_type,
-                    'extension': extension,
-                    # 'symlink': symlink,
-                    # 'statinfo': statinfo
-                }
-                files[filename] = dir_file
-                dir_files[os.path.dirname(filename)].append(dir_file)
-            else:
-                """it is a directory"""
-                logging.debug("dirname : %s", filename)
-                dir_level = filename.count(os.sep)
-                sub_dir = {
-                    'dirname': filename,  # .replace(layer_dir, ""),
-                    'dir_depth': dir_level
-                    # 'file_cnt': len(s_dir_files),
-                    # 'files': s_dir_files,  # full path of f = dir/files
-                    # 'dir_size': sum_dir_size(s_dir_files)
-                }
-                sub_dirs.append(sub_dir)
-    with tarfile.open(layer_file) as tar:
-        for tarinfo in tar:
-            logging.debug(tarinfo.name + ' ,' + tarinfo.size)
-            if tarinfo.issym():
-                symlink = {
-                    'is_symlink': True,
-                    'target_path': tarinfo.linkname
-                }
-            else:
-                symlink = {
-                    'is_symlink': None,
-                    'target_path': None
-                }
-            if tarinfo.islink():
-                hardlink = {
-                    'is_hardlink': True,
-                    'target_path': tarinfo.linkname
-                }
-            else:
-                hardlink = {
-                    'is_hardlink': None,
-                    'target_path': None
-                }
-            # if not tarinfo.isdir():
-            #     logging.debug("dir!")
-            tar_info = {
-                # 'st_nlink': stat.st_nlink,
-                'ti_size': tarinfo.size,
-                'ti_type': tarinfo.type,
-                'ti_uname': tarinfo.uname,
-                'ti_gname': tarinfo.gname,
-                # 'ti_atime': None,  # most recent access time
-                'ti_mtime': tarinfo.mtime,  # change of content
-                # 'ti_ctime': None  # matedata modify
-                'symlink': symlink,
-                'hardlink': hardlink
-            }
-            file_infos[tarinfo.name] = tar_info
-            # file_infos.append(file_info)
+    try:
+        tar = tarfile.open(layer_file, "r:gz")
+    except tarfile.TarError:
+        print tarfile.TarError
+        return sub_dirs
 
-    for filename, dir_file in dir_files:
-        dir_file['file_info'] = file_infos[filename]
-    for dirname, sub_dir in sub_dirs:
-        sub_dir['files'] = dir_files[dirname]
-        # sub_dir['files'].append()
+    for tarinfo in tar:
+        sha256 = None
+        f_type = None
+        extension = None
+        link = None
+        logging.debug(tarinfo.name + ' ,' + tarinfo.size)
+        if tarinfo.issym():
+            link = {
+                'link_type': 'symlink',
+                'target_path': tarinfo.linkname
+            }
+        if tarinfo.islink():
+            link = {
+                'link_type': 'hardlink',
+                'target_path': tarinfo.linkname
+            }
+        if tarinfo.isdir():
+            logging.debug("dirname : %s", tarinfo.name)
+            dir_level = tarinfo.name.count(os.sep)
+            sub_dir = {
+                'dirname': tarinfo.name,  # .replace(layer_dir, ""),
+                'dir_depth': dir_level
+                # 'file_cnt': len(s_dir_files),
+                # 'files': s_dir_files,  # full path of f = dir/files
+                # 'dir_size': sum_dir_size(s_dir_files)
+            }
+            sub_dirs.append(sub_dir)
+
+        if tarinfo.isreg():
+            try:
+                reg_f = tarinfo.extractfile(tarinfo.name)
+            except KeyError:
+                logging.error("File: %s is not found.", tarinfo.name)
+            else:
+                bytes = reg_f.read()
+                if len(os.path.splitext(tarinfo.name)) >= 2:
+                    extension = os.path.splitext(tarinfo.name)[1]
+                sha256 = hashlib.md5(bytes).hexdigest()
+                f_type = me.from_file(tarinfo.name)
+
+        dir_file = {
+            'filename': tarinfo.name,
+            'sha256': sha256,
+            # 'size (B)': None,
+            'type': f_type,
+            'extension': extension
+            # 'symlink': symlink,
+            # 'statinfo': statinfo
+        }
+        # files[filename] = dir_file
+        dir_files[os.path.dirname(tarinfo.name)].append(dir_file)
+        files[tarinfo.name] = dir_file
+
+        tar_info = {
+            # 'st_nlink': stat.st_nlink,
+            'ti_size': tarinfo.size,
+            'ti_type': tarinfo.type,
+            'ti_uname': tarinfo.uname,
+            'ti_gname': tarinfo.gname,
+            # 'ti_atime': None,  # most recent access time
+            'ti_mtime': tarinfo.mtime,  # change of content
+            # 'ti_ctime': None  # matedata modify
+            'link': link
+            # 'hardlink': hardlink
+        }
+        file_infos[tarinfo.name] = tar_info
+
+    for filename, file in files:
+        file['file_info'] = file_infos[filename]
+
+    for dir in sub_dirs:
+        print dir['dirname']
+        dir['files'] = dir_files[dir['dirname']]
+        dir['file_cnt'] = len(dir['files'])
+        dir['dir_size'] = sum_dir_size(dir['files'])
 
     tar.close()
-    zp.close()
 
     return sub_dirs
 
