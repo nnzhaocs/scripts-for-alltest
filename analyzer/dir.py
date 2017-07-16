@@ -78,105 +78,6 @@ def clear_dirs(layer_id, extracting_dir):
 
 
 def load_dirs(layer_filename):
-    #sub_dirs = []
-    #dir_files = {}
-    #file_infos = {}
-    #files = {}
-    #layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_filename)
-    ##print layer_file
-    ##mode='r', compression=ZIP_STORED, allowZip64=False
-    #try:
-    #    zipfile.ZipFile(layer_filename)
-    #except zipfile.BadZipfile:
-    #    original = open(layer_filename, 'rb')
-    #    try:
-    #        data = original.read()
-    #        #finally:
-    #        original.close()
-    #        position = data.rindex(zipfile.stringEndArchive,
-    #                                -(22 + 100), -20)
-    #        coredata = cStringIO.StringIO(data[: 22 + position])
-    #    #zipfile.ZipFile(coredata)
-    #	with zipfile.ZipFile(coredata, mode='r', allowZip64=True) as zp:
-    #    	for filename in zp.namelist():
-    #        		if not filename.endswith('/'):
-    #            		logging.debug("filename : %s", filename)
-    #            bytes = zp.read(filename)
-    #            f_type = me.id_buffer(bytes)
-    #            extension = os.path.splitext(filename)[1]
-    #            sha256 = hashlib.sha256(bytes).hexdigest()
-    #            dir_file = {
-    #                'filename': filename,
-    #                'sha256': sha256,
-    #                # 'size (B)': None,
-    #                'type': f_type,
-    #                'extension': extension,
-    #                # 'symlink': symlink,
-    #                # 'statinfo': statinfo
-    #            }
-    #            files[filename] = dir_file
-    #            dir_files[os.path.dirname(filename)].append(dir_file)
-    #        else:
-    #            """it is a directory"""
-    #            logging.debug("dirname : %s", filename)
-    #            dir_level = filename.count(os.sep)
-    #            sub_dir = {
-    #                'dirname': filename,  # .replace(layer_dir, ""),
-    #                'dir_depth': dir_level
-    #                # 'file_cnt': len(s_dir_files),
-    #                # 'files': s_dir_files,  # full path of f = dir/files
-    #                # 'dir_size': sum_dir_size(s_dir_files)
-    #            }
-    #            sub_dirs.append(sub_dir)
-    #with tarfile.open(layer_file) as tar:
-    #    for tarinfo in tar:
-    #        logging.debug(tarinfo.name + ' ,' + tarinfo.size)
-    #        if tarinfo.issym():
-    #            symlink = {
-    #                'is_symlink': True,
-    #                'target_path': tarinfo.linkname
-    #            }
-    #        else:
-    #            symlink = {
-    #                'is_symlink': None,
-    #                'target_path': None
-    #            }
-    #        if tarinfo.islink():
-    #            hardlink = {
-    #                'is_hardlink': True,
-    #                'target_path': tarinfo.linkname
-    #            }
-    #        else:
-    #            hardlink = {
-    #                'is_hardlink': None,
-    #                'target_path': None
-    #            }
-    #        # if not tarinfo.isdir():
-    #        #     logging.debug("dir!")
-    #        tar_info = {
-    #            # 'st_nlink': stat.st_nlink,
-    #            'ti_size': tarinfo.size,
-    #            'ti_type': tarinfo.type,
-    #            'ti_uname': tarinfo.uname,
-    #            'ti_gname': tarinfo.gname,
-    #            # 'ti_atime': None,  # most recent access time
-    #            'ti_mtime': tarinfo.mtime,  # change of content
-    #            # 'ti_ctime': None  # matedata modify
-    #            'symlink': symlink,
-    #            'hardlink': hardlink
-    #        }
-    #        file_infos[tarinfo.name] = tar_info
-    #        # file_infos.append(file_info)
-
-    #for filename, dir_file in dir_files:
-    #    dir_file['file_info'] = file_infos[filename]
-    #for dirname, sub_dir in sub_dirs:
-    #    sub_dir['files'] = dir_files[dirname]
-    #    # sub_dir['files'].append()
-
-    #tar.close()
-    #zp.close()
-
     sub_dirs = []
     dir_files = defaultdict(list)
     file_infos = {}
@@ -265,9 +166,7 @@ def load_dirs(layer_filename):
         dir['dir_size'] = sum_dir_size(dir['files'])
 
     tar.close()
->>>>>>> 2ee41607e1d54394eea2a9bd8ad0a6e7e962754f
-
-    #return sub_dirs
+    return sub_dirs
 
 # def load_dirs(layer_id, extracting_dir):
 #     """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
@@ -364,8 +263,8 @@ def load_dirs(layer_filename):
 #     return sub_dirs
 
 
-#def sum_dir_size(s_dir_files):
-    #sum_size = 0
-    #for file in s_dir_files:
-     #   sum_size = file['size (B)'] + sum_size
-    #return sum_size
+def sum_dir_size(s_dir_files):
+    sum_size = 0
+    for file in s_dir_files:
+        sum_size = file['size (B)'] + sum_size
+    return sum_size
