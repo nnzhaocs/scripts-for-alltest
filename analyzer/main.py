@@ -50,6 +50,7 @@ def parseArg():
         1: manifest_dir
         2: config_dir
         3: layer_dir
+        4: job_list_dir
         manifest_dir = os.path.join(dest_dir, "manifests")
         config_dir = os.path.join(dest_dir, "configs")
         layer_dir = os.path.join(dest_dir, "layers")
@@ -67,11 +68,11 @@ def parseArg():
         dest="extracting_dir",
     )
 
-    # parser.add_argument(
-    #     '-f', '--file',
-    #     help="file which contains downloaded layers from downloader module, eg., finished_layer_list.out",
-    #     dest="downloaded_layer_file",
-    # )
+    parser.add_argument(
+        '-s', '--layer_list_file',
+        help="file which contains the layers that need to be analyzed, eg., list_less_50m.out",
+        dest="layer_list_file",
+    )
 
     parser.add_argument(
         '-a', '--analyzed_file',

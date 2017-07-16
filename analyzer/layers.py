@@ -14,17 +14,17 @@ from itertools import chain
 """
 
 
-def create_layer_db(analyzed_layer_filename, extracting_dir):
+def create_layer_db(analyzed_layer_filename, layer_list_filename):
     """create layer database as a json file"""
     logging.info('=============> create_layer_db: create layer metadata json file <===========')
-
-    queue_layers(analyzed_layer_filename)
 
     f_analyzed_layer = open(analyzed_layer_filename, 'a+')
     f_bad_unopen_layer = open("bad_unopen_layer_list.out", 'a+')
 
+    queue_layers(analyzed_layer_filename, layer_list_filename)
+
     for i in range(num_worker_threads):
-        t = threading.Thread(target=load_layer, args=(extracting_dir, dest_dir[0]['layer_db_json_dir']))
+        t = threading.Thread(target=load_layer, args=(dest_dir[0]['layer_db_json_dir']))
         t.start()
         threads.append(t)
 
@@ -65,15 +65,22 @@ def create_layer_db(analyzed_layer_filename, extracting_dir):
     # f_out.close()
 
 
-def queue_layers(analyzed_layer_filename):
-    """queue the layer id in downloaded_layer_filename, layer id = sha256:digest !!! without timestamp"""
-    # with open(downloaded_layer_filename) as f:
-    #     for line in f:
-    #         print line
-    #         if line:
-    #             logging.debug('queue layer_id: %s to downloaded layer queue', line.replace("\n", ""))  #
-    #             q_downloaded_layers.put(line.replace("\n", ""))
-    start = time.time()
+def queue_layers(analyzed_layer_filename, layer_list_filename):
+    """queue the layer id in layer_list_filename, layer id = sha256-digest with timestamp"""
+    with open(layer_list_filename) as f:
+        content = json.load(f)
+        for key, val in content.items():
+            logging.debug('queue dir layer tarball: %s', key)  #
+            q_dir_layers.put(key)
+
+        # for line in f:
+        #     print line
+        #
+        #     if line:
+        #         logging.debug('queue dir layer tarball: %s', line.replace("\n", ""))  #
+        #         q_dir_layers.put(line.replace("\n", ""))
+
+    # start = time.time()
     """queue the layer id in analyzed_layer_filename, layer id = sha256:digest !!! without timestamp"""
     with open(analyzed_layer_filename) as f:
         for line in f:
@@ -82,15 +89,15 @@ def queue_layers(analyzed_layer_filename):
                 logging.debug('queue layer_id: %s to analyzed_layer_queue', line.replace("\n", ""))  #
                 q_analyzed_layers.put(line.replace("\n", ""))
 
-    """queue the layer id in dest_dir/layers, layer id = sha256-digest-timestamp"""
-    for path, _, tarball_filenames in os.walk(dest_dir[0]['layer_dir']):
-        for tarball_filename in tarball_filenames:
-            logging.debug('layer_id: %s', tarball_filename)  # str(layer_id).replace("/", "")
-            q_dir_layers.put(tarball_filename)
-            logging.debug('queue dir layer tarball: %s', tarball_filename)  # str(layer_id).replace("/", "")
+    # """queue the layer id in dest_dir/layers, layer id = sha256-digest-timestamp"""
+    # for path, _, tarball_filenames in os.walk(dest_dir[0]['layer_dir']):
+    #     for tarball_filename in tarball_filenames:
+    #         logging.debug('layer_id: %s', tarball_filename)  # str(layer_id).replace("/", "")
+    #         q_dir_layers.put(tarball_filename)
+    #         logging.debug('queue dir layer tarball: %s', tarball_filename)  # str(layer_id).replace("/", "")
 
-    elapsed = time.time() - start
-    logging.info('queue layers, consumed time ==> %f s', elapsed)
+    # elapsed = time.time() - start
+    # logging.info('queue layers, consumed time ==> %f s', elapsed)
 
 
 def check_config_file(filename):
@@ -136,7 +143,7 @@ def is_valid_tarball(layer_filename):
     return True
 
 
-def load_layer(extracting_dir, layer_db_json_dir):
+def load_layer(layer_db_json_dir):
     """load the layer dirs"""
     while True:
         layer_filename = q_dir_layers.get()
@@ -169,7 +176,7 @@ def load_layer(extracting_dir, layer_db_json_dir):
         start = time.time()
         sub_dirs = load_dirs(layer_filename)
         elapsed = time.time() - start
-        logging.info('process directory: sha digest calculation, consumed time ==> %f s', elapsed)
+        logging.info('process directory: sha digest calculation, consumed time ==> %f ; %d', elapsed, compressed_size_with_method_gzip)
         if not len(sub_dirs):
             q_dir_layers.task_done()
             # archival_size = clear_dirs(layer_filename, extracting_dir)
@@ -209,7 +216,7 @@ def load_layer(extracting_dir, layer_db_json_dir):
         layer = {
             'layer_id': sha+':'+id,  # str(layer_id).replace("/", ""),
             'dirs': sub_dirs,  # getLayersBychainID(chain_id),
-            'dir_depth': dir_depth,
+            'layer_depth': dir_depth,
             'size': size,  # sum of files size,
             'repeats': 0,
             'file_cnt': sum_file_cnt(sub_dirs)

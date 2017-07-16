@@ -116,12 +116,17 @@ def run_createlayerdb(args):
         logging.error('%s is not a valid file', args.analyzed_file)
         return
 
-    logging.info('extracting_dir is: %s', args.extracting_dir)
-    if not os.path.isdir(args.extracting_dir):
-        logging.error('%s is not a valid file', args.extracting_dir)
+    logging.info('layer_list_file is: %s', args.layer_list_file)
+    if not os.path.isfile(args.layer_list_file):
+        logging.error('%s is not a valid file', args.layer_list_file)
         return
 
-    create_layer_db(args.analyzed_file, args.extracting_dir)
+    # logging.info('extracting_dir is: %s', args.extracting_dir)
+    # if not os.path.isdir(args.extracting_dir):
+    #     logging.error('%s is not a valid file', args.extracting_dir)
+    #     return
+
+    create_layer_db(args.analyzed_file, args.layer_list_file)
 
     elapsed = time.time() - start
     logging.info('create layer json file, consumed time ==> %f', (elapsed / 3600))
