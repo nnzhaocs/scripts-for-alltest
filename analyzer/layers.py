@@ -24,13 +24,13 @@ def create_layer_db(analyzed_layer_filename, layer_list_filename):
     queue_layers(analyzed_layer_filename, layer_list_filename)
 
     for i in range(num_worker_threads):
-        t = threading.Thread(target=load_layer, args=(dest_dir[0]['layer_db_json_dir'],))
+        t = multiprocessing.Process(target=load_layer, args=(dest_dir[0]['layer_db_json_dir'],))
         t.start()
         threads.append(t)
 
     for j in range(num_flush_threads):
-        t1 = threading.Thread(target=flush_file, args=(f_analyzed_layer, q_flush_analyzed_layers, lock_f_analyzed_layer))
-        t2 = threading.Thread(target=flush_file, args=(f_bad_unopen_layer, q_flush_bad_unopen_layers, lock_f_bad_unopen_layer))
+        t1 = multiprocessing.Process(target=flush_file, args=(f_analyzed_layer, q_flush_analyzed_layers, lock_f_analyzed_layer))
+        t2 = multiprocessing.Process(target=flush_file, args=(f_bad_unopen_layer, q_flush_bad_unopen_layers, lock_f_bad_unopen_layer))
         t1.start()
         t2.start()
         flush_threads.append(t1)
@@ -158,14 +158,14 @@ def load_layer(layer_db_json_dir):
         logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
 
         logging.info('sha256:' + layer_filename.split("-")[1])
-        with lock_q_analyzed_layer:
-            if ('sha256:' + layer_filename.split("-")[1]) in q_analyzed_layers.queue:
-                print "Layer Already Analyzed!"
-                is_layer_analyzed = True
-            else:
-                is_layer_analyzed = False
-                q_analyzed_layers.put('sha256:' + layer_filename.split("-")[1])
-                print "Layer Not Analyzed!"
+        # with lock_q_analyzed_layer:
+        if ('sha256:' + layer_filename.split("-")[1]) in q_analyzed_layers.queue:
+            print "Layer Already Analyzed!"
+            is_layer_analyzed = True
+        else:
+            is_layer_analyzed = False
+            q_analyzed_layers.put('sha256:' + layer_filename.split("-")[1])
+            print "Layer Not Analyzed!"
 
         if is_layer_analyzed:
             q_dir_layers.task_done()

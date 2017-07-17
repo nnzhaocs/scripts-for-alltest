@@ -110,10 +110,14 @@ layer_info = {
     layer_base_info['dir_depth'] = dir_depth
     layer_base_info['file_cnt'] = file_cnt
 
-    fig = fig_size('large')
+# <<<<<<< HEAD
+#     fig = fig_size('large')
+# =======
+    fig = fig_size('small')
+# >>>>>>> 9a122e2943b1908a16c7026b1ed63c55984eab88
     data1 = layer_base_info['size']['uncompressed_sum_of_files']
     xlabel = 'layer size (MB)'
     xlim = len(data1)
     ticks = 50
-
+    print xlim
     plot_cdf(fig, data1, xlabel, xlim, ticks)

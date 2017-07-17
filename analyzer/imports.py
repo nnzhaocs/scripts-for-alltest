@@ -5,7 +5,8 @@ import os, json, hashlib, argparse, logging, shutil, sys, time
 from functools import reduce
 from utility import *
 import itertools
-import threading, Queue
+import threading, multiprocessing, Queue
+# from  import Process,
 
 import matplotlib
 matplotlib.use('Agg')
@@ -25,42 +26,40 @@ import subprocess
 from collections import OrderedDict
 from collections import defaultdict
 
-q_dir_layers = Queue.Queue()
-# q_downloaded_layers = Queue.Queue()
-q_analyzed_layers = Queue.Queue()
-q_bad_unopen_layers = Queue.Queue()
+os.system("taskset -p 0xff %d" % os.getpid())
 
-q_flush_analyzed_layers = Queue.Queue()
-q_flush_bad_unopen_layers = Queue.Queue()
+q_dir_layers = multiprocessing.Queue()
 
-# layer_q = Queue.Queue()
-lock_f_bad_unopen_layer = threading.Lock()
-lock_f_analyzed_layer = threading.Lock()
-lock_q_analyzed_layer = threading.Lock()
+q_analyzed_layers = multiprocessing.Queue()
+q_bad_unopen_layers = multiprocessing.Queue()
+
+q_flush_analyzed_layers = multiprocessing.Queue()
+q_flush_bad_unopen_layers = multiprocessing.Queue()
+
+lock_f_bad_unopen_layer = multiprocessing.Lock()
+lock_f_analyzed_layer = multiprocessing.Lock()
+
+lock_q_analyzed_layer = multiprocessing.Lock()
 
 # =============================================
 
-q_dir_images = Queue.Queue()
-q_layer_json_db = Queue.Queue()
+q_dir_images = multiprocessing.Queue()
+q_layer_json_db = multiprocessing.Queue()
 
-q_analyzed_images = Queue.Queue()
-q_bad_unopen_image_manifest = Queue.Queue()
-q_manifest_list_image = Queue.Queue()
+q_analyzed_images = multiprocessing.Queue()
+q_bad_unopen_image_manifest = multiprocessing.Queue()
+q_manifest_list_image = multiprocessing.Queue()
 
-q_flush_analyzed_images = Queue.Queue()
-# q_flush_bad_unopen_image_manifest = Queue.Queue()
-# q_flush_bad_unopen_image_manifest = Queue.Queue()
-# layer_q = Queue.Queue()
-lock_f_bad_unopen_image_manifest = threading.Lock()
-lock_f_analyzed_image_manifest = threading.Lock()
-lock_f_manifest_list_image = threading.Lock()
-lock_q_analyzed_image_manifest = threading.Lock()
-# lock_q_analyzed_image_manifest = threading.Lock()
+q_flush_analyzed_images = multiprocessing.Queue()
 
-lock_repo = threading.Lock()
+lock_f_bad_unopen_image_manifest = multiprocessing.Lock()
+lock_f_analyzed_image_manifest = multiprocessing.Lock()
+lock_f_manifest_list_image = multiprocessing.Lock()
+lock_q_analyzed_image_manifest = multiprocessing.Lock()
 
-# f_manifest_list_image
+lock_repo = multiprocessing.Lock()
+
 
 # ===============================================
 
-me = magic.Magic() # me = magic.Magic(mime = True)
+me = magic.Magic()  # me = magic.Magic(mime = True)
