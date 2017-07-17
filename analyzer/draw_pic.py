@@ -35,12 +35,12 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
 
     #bins_max = np.arange(np.ceil(data.min()), np.floor(data.max()))
     #bins = (data.max() - data.min())/(xlim/ticks)
-    bins = np.arange(np.ceil(data.min()), np.floor(data.max()) + xlim/ticks, xlim/ticks)
-
+    # bins = np.arange(np.ceil(data.min()), np.floor(data.max()) + xlim/ticks, xlim/ticks)
+    bins = ticks
     print "cdf and pdf calculating: bins = %d" % len(bins)
-    counts_cdf, base_cdf = np.histogram(data, bins=bins, density=1)
-    counts_pdf, base_pdf = np.histogram(data, bins=bins, density=1)
-    cdf = np.cumsum(counts_pdf)
+    counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
+    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=True)
+    cdf = np.cumsum(counts_cdf)
 
     print "start plotting!"
     pd = ax.bar(base_cdf[1:] - 0.4, counts_cdf, width=0.4, color='r', label='Probability distribution', align='center')
@@ -62,7 +62,7 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
     sstr0 = 'Distribution of %s: MIN:%d; MAX:%d; MEDIAN:%d' % (xlabel, data.min(), data.max(), np.median(data))
     plt.title(sstr0)
     plt.grid()
-    name = '2distribution_%s.png' % xlabel
+    name = '2distribution%s.png' % xlabel
     fig.savefig(name)
 
 

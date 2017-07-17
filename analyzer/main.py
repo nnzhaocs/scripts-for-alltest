@@ -47,7 +47,7 @@ def parseArg():
 
     parser.add_argument(
         '-A', '--analyzelayer',
-        help="divide the layers into job lists",
+        help="analyze the layer",
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
@@ -104,6 +104,7 @@ def main():
         run_createlayerdb(args)
     if args.createimagedb:
         run_createimagedb(args)
+
     if args.jobdivider:
         run_jobdivider(args)
 
