@@ -8,7 +8,7 @@ def create_job_list():
 
     tarballs = {}
 
-    for path, _, tarball_filenames in os.walk(job_list_dir):
+    for path, _, tarball_filenames in os.walk(dest_dir[0]['layer_dir']):
         for tarball_filename in tarball_filenames:
             f_size = os.lstat(tarball_filename).st_size
             tarballs[tarball_filename] = f_size

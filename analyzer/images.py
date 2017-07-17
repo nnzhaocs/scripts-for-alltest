@@ -231,7 +231,7 @@ def load_image_manifest():  # dest_dir[0]['layer_db_json_dir']
 
             'size': 0,
 
-            'pull_cnt': 0,
+            # 'pull_cnt': 0,
             'file_cnt': 0,
             'layer_cnt': len(blobs_digest),
             # ==================================================

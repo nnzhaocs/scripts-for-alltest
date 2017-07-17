@@ -3,12 +3,14 @@ from imports import *
 from pylab import *
 import itertools
 
+
 def fig_size(size):
     if size == 'small':
         fig = plt.figure(figsize=(48, 16), dpi=80)
     elif size == 'large':
         fig = plt.figure(figsize=(128, 16), dpi=80)
     return fig
+
 
 def bar_label_text(ax, x, y, xlim):
     for a, b in zip(x, y):
@@ -17,7 +19,8 @@ def bar_label_text(ax, x, y, xlim):
         if isinstance(b, int):
             ax.text(a, b + 0.05, '%d' % b)
         else:
-            ax.text(a, b + 0.05, '%.3f' % b)
+            ax.text(a, b + 0.05, '%d' % int(b))
+
 
 def plot_cdf(fig, data1, xlabel, xlim, ticks):
     data = np.array(data1)
@@ -35,19 +38,19 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
     bins = np.arange(np.ceil(data.min()), np.floor(data.max()) + xlim/ticks, xlim/ticks)
 
     print "cdf and pdf calculating: bins = %d" % len(bins)
-    counts_cdf, base_cdf = np.histogram(data, bins = bins, density = 1)
-    counts_pdf, base_pdf = np.histogram(data, bins = bins, density = 1)
+    counts_cdf, base_cdf = np.histogram(data, bins=bins, density=1)
+    counts_pdf, base_pdf = np.histogram(data, bins=bins, density=1)
     cdf = np.cumsum(counts_pdf)
 
     print "start plotting!"
-    pd = ax.bar(base_cdf[1:] - 0.4, counts_cdf, width = 0.4, color='r', label='Probability distribution', align='center')
-    cd = ax.bar(base_pdf[1:] + 0.0, cdf, color='b', width = 0.4, label='Cumulative distribution', align='center')
+    pd = ax.bar(base_cdf[1:] - 0.4, counts_cdf, width=0.4, color='r', label='Probability distribution', align='center')
+    cd = ax.bar(base_pdf[1:] + 0.0, cdf, color='b', width=0.4, label='Cumulative distribution', align='center')
 
     print "start labeling!"
     bar_label_text(ax, base_cdf[1:] - 0.4, counts_cdf, xlim)
     bar_label_text(ax, base_pdf[1:] + 0.0, cdf, xlim)
 
-    ax.set_xlabel(xlabel, fontsize = 22)
+    ax.set_xlabel(xlabel, fontsize=22)
     ax.set_ylabel('Distribution', fontsize=22)
 
     plt.legend([pd, cd], ['Probability distribution', 'Cumulative distribution'])
@@ -62,13 +65,14 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
     name = '2distribution_%s.png' % xlabel
     fig.savefig(name)
 
+
 def plot_bar_pic(fig, x, y, xlabel, ylabel, xlim, ticks):
     #fig, ax = plt.subplots()
     ax = fig.add_subplot(111)
 
     ax.set_xlim(xlim / ticks, xlim)
-    ax.set_xlabel(xlabel, fontsize = 22)
-    ax.set_ylabel(ylabel, fontsize = 22)
+    ax.set_xlabel(xlabel, fontsize=22)
+    ax.set_ylabel(ylabel, fontsize=22)
 
     # plt.xlabel(xlabel)
     # plt.ylabel(ylabel)
@@ -81,7 +85,7 @@ def plot_bar_pic(fig, x, y, xlabel, ylabel, xlim, ticks):
     #   ax.text(rect.get_x(), i)
     #ind = np.array()
     #plt.xlim(0, xlim)
-    ax.bar(x, y, width = width)
+    ax.bar(x, y, width=width)
     ax.grid()
     name = 'bar_%s%s' % (xlabel, ylabel)
 

@@ -45,6 +45,12 @@ def parseArg():
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
+    parser.add_argument(
+        '-A', '--analyzelayer',
+        help="divide the layers into job lists",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
     """ dest_dir contains three directories:
         0: root_dir
         1: manifest_dir
@@ -100,6 +106,9 @@ def main():
         run_createimagedb(args)
     if args.jobdivider:
         run_jobdivider(args)
+
+    if args.analyzelayer:
+        run_analyzelayer(args)
 
 
 if __name__ == '__main__':
