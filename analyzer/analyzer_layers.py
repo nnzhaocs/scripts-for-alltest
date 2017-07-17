@@ -91,7 +91,7 @@ layer_info = {
     layer_dir = dest_dir[0]['layer_db_json_dir']
     for path, _, layer_json_filenames in os.walk(layer_dir):
         for layer_json_filename in layer_json_filenames:
-            if not os.path.isfile(layer_json_filename):
+            if not os.path.isfile(os.path.join(path, layer_json_filename)):
                 logging.debug("layer json file %s is not valid!", layer_json_filename)
                 continue
                 # return None
@@ -100,9 +100,9 @@ layer_info = {
 
                 size['uncompressed_sum_of_files'].append(json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024)
                 size['compressed_size_with_method_gzip'].append(json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024)
-                size['archival_size'].append(['size']['archival_size'] / 1024 / 1024)
+                size['archival_size'].append(json_data['size']['archival_size'] / 1024 / 1024)
 
-                dir_depth['dir_max_depth'].append(json_data['dir_max_depth'])
+                dir_depth['dir_max_depth'].append(json_data['layer_depth']['dir_max_depth'])
 
                 file_cnt.append(json_data['file_cnt'])
 
@@ -110,10 +110,10 @@ layer_info = {
     layer_base_info['dir_depth'] = dir_depth
     layer_base_info['file_cnt'] = file_cnt
 
-    fig = fig_size('large')
-    data1 = layer_base_info['size']
+    fig = fig_size('small')
+    data1 = layer_base_info['size']['uncompressed_sum_of_files']
     xlabel = 'layer size (MB)'
     xlim = max(data1)
     ticks = 50
-
+    print xlim
     plot_cdf(fig, data1, xlabel, xlim, ticks)

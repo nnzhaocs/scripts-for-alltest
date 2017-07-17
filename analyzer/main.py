@@ -46,9 +46,10 @@ def parseArg():
     )
 
     parser.add_argument(
-        '-A', '--analyzelayer',
-        help="divide the layers into job lists",
+        '-R', '--analyzelayer',
+        help="analyze the layer",
         action="store_true",  # dest="loglevel", const=logging.INFO,
+	#dest="analyzelayer",
     )
 
     """ dest_dir contains three directories:
@@ -97,17 +98,19 @@ def parseArg():
 
 def main():
     args = parseArg()
-
+    print args
     logging.basicConfig(level=args.loglevel)
 
     if args.createlayerdb:
         run_createlayerdb(args)
     if args.createimagedb:
         run_createimagedb(args)
+
     if args.jobdivider:
         run_jobdivider(args)
 
     if args.analyzelayer:
+	print "start!"
         run_analyzelayer(args)
 
 
