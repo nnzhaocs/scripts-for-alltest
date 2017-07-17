@@ -175,19 +175,20 @@ def load_layer(layer_db_json_dir):
         logging.debug("compressed_size_with_method_gzip %d B, name: %s", compressed_size_with_method_gzip, layer_filename)
 
         start = time.time()
-        sub_dirs = load_dirs(layer_filename)
+        sub_dirs, archival_size = load_dirs(layer_filename)
         elapsed = time.time() - start
-        logging.info('process directory: sha digest calculation, consumed time ==> %f ; %d', elapsed, compressed_size_with_method_gzip)
+        logging.info('process directory: decompression plus sha digest calculation, consumed time ==> %f ; %d', elapsed, compressed_size_with_method_gzip)
         if not len(sub_dirs):
             q_dir_layers.task_done()
-            # archival_size = clear_dirs(layer_filename, extracting_dir)
+            q_bad_unopen_layers.put(layer_filename)
+            # archival_size = clear_dirs(layer_filename)
             logging.debug('################### The layer dir wrong! layer file name %s ###################', layer_filename)
             continue
 
-        # archival_size = clear_dirs(layer_filename, extracting_dir)
-        # if archival_size == -1:
-        #     q_dir_layers.task_done()
-        #     return
+        # archival_size = clear_dirs(layer_filename)
+        if archival_size == -1:
+            q_dir_layers.task_done()
+            return
 
         depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
         # if depths:
@@ -197,7 +198,7 @@ def load_layer(layer_db_json_dir):
             'dir_median_depth': median(depths),
             'dir_avg_depth': mean(depths)
         }
-            # print dir_depth
+        # print dir_depth
         # else:
         #     dir_depth = {
         #         'dir_max_depth': 0,
@@ -211,7 +212,7 @@ def load_layer(layer_db_json_dir):
         size = {
             'uncompressed_sum_of_files': sum_layer_size(sub_dirs),
             'compressed_size_with_method_gzip': compressed_size_with_method_gzip,
-            'archival_size': 0  # archival_size
+            'archival_size': archival_size  # archival_size
         }
 
         layer = {

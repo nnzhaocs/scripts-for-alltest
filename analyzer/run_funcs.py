@@ -100,11 +100,17 @@ def run_createlayerdb(args):
             print '###################' + e.output + '###################'
             return
 
+    logging.info('extracting_dir is: %s', args.extracting_dir)
+    if not os.path.isdir(args.extracting_dir):
+        logging.error('%s is not a valid file', args.extracting_dir)
+        return
+
     dir = {
         'dirname': args.dest_dir,
         'config_dir': config_dir,
         'layer_dir': layer_dir,
-        'layer_db_json_dir': layer_db_json_dir
+        'layer_db_json_dir': layer_db_json_dir,
+        'extracting_dir': args.extracting_dir
     }
 
     dest_dir.append(dir)
@@ -119,11 +125,6 @@ def run_createlayerdb(args):
     if not os.path.isfile(args.layer_list_file):
         logging.error('%s is not a valid file', args.layer_list_file)
         return
-
-    # logging.info('extracting_dir is: %s', args.extracting_dir)
-    # if not os.path.isdir(args.extracting_dir):
-    #     logging.error('%s is not a valid file', args.extracting_dir)
-    #     return
 
     create_layer_db(args.analyzed_file, args.layer_list_file)
 
