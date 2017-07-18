@@ -28,18 +28,18 @@ from collections import defaultdict
 
 os.system("taskset -p 0xff %d" % os.getpid())
 
-q_dir_layers = multiprocessing.Queue()
+q_dir_layers = []  # multiprocessing.Queue()
 
-q_analyzed_layers = multiprocessing.Queue()
-q_bad_unopen_layers = multiprocessing.Queue()
-
-q_flush_analyzed_layers = multiprocessing.Queue()
-q_flush_bad_unopen_layers = multiprocessing.Queue()
-
-lock_f_bad_unopen_layer = multiprocessing.Lock()
-lock_f_analyzed_layer = multiprocessing.Lock()
-
-lock_q_analyzed_layer = multiprocessing.Lock()
+q_analyzed_layers = Queue.Queue()
+# q_bad_unopen_layers = Queue.Queue()
+#
+# q_flush_analyzed_layers = Queue.Queue()
+# q_flush_bad_unopen_layers = Queue.Queue()
+#
+# lock_f_bad_unopen_layer = Queue.Lock()
+# lock_f_analyzed_layer = Queue.Lock()
+#
+# lock_q_analyzed_layer = Queue.Lock()
 
 # =============================================
 

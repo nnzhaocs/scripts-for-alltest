@@ -130,11 +130,11 @@ def load_dirs(layer_filename):
     except subprocess.CalledProcessError as e:
         print '###################'+e.output+'###################'
         if "No space left on device" in e.output:
-            q_bad_unopen_layers.put('sha256:' + layer_filename.split("-")[1] + ':cannot-gunzip-error')
+            # q_bad_unopen_layers.put('sha256:' + layer_filename.split("-")[1] + ':cannot-gunzip-error')
             uncompressed_archival_size = clear_file(layer_tarfile)
             return sub_dirs, uncompressed_archival_size
-        else:
-            q_bad_unopen_layers.put('sha256:' + layer_filename.split("-")[1] + ':gunzip-common-error')
+        # else:
+            # q_bad_unopen_layers.put('sha256:' + layer_filename.split("-")[1] + ':gunzip-common-error')
     logging.debug('to ==========> %s', layer_tarfile)
 
     # cmd = 'tar -zxf %s -C %s' % (layer_file, layer_dir)

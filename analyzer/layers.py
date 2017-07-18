@@ -18,42 +18,30 @@ def create_layer_db(analyzed_layer_filename, layer_list_filename):
     """create layer database as a json file"""
     logging.info('=============> create_layer_db: create layer metadata json file <===========')
 
-    f_analyzed_layer = open(analyzed_layer_filename, 'a+')
-    f_bad_unopen_layer = open("bad_unopen_layer_list.out", 'a+')
-
     queue_layers(analyzed_layer_filename, layer_list_filename)
 
-    for i in range(num_worker_threads):
-        t = multiprocessing.Process(target=load_layer, args=(dest_dir[0]['layer_db_json_dir'],))
+    total = len(q_dir_layers)
+    job_size = total / num_worker_threads
+    slices = chunks(q_dir_layers, job_size)
+    jobs = []
+
+    for i, s in enumerate(slices):
+        # for i in range(num_worker_threads):
+        for item in s:
+            q = Queue.Queue()
+            q.put(item)
+        t = multiprocessing.Process(target=process_job, args=(i, q, q_analyzed_layers))
         t.start()
-        threads.append(t)
+        jobs.append(t)
 
-    for j in range(num_flush_threads):
-        t1 = multiprocessing.Process(target=flush_file, args=(f_analyzed_layer, q_flush_analyzed_layers, lock_f_analyzed_layer))
-        t2 = multiprocessing.Process(target=flush_file, args=(f_bad_unopen_layer, q_flush_bad_unopen_layers, lock_f_bad_unopen_layer))
-        t1.start()
-        t2.start()
-        flush_threads.append(t1)
-        flush_threads.append(t2)
-
-    q_dir_layers.join()
-    logging.info('wait queue to join!')
-    for i in range(num_worker_threads):
-        q_dir_layers.put(None)
-    logging.info('put none layers to queue!')
-    for t in threads:
+    # q_dir_layers.join()
+    # logging.info('wait queue to join!')
+    # for i in range(num_worker_threads):
+    #     q_dir_layers.put(None)
+    # logging.info('put none layers to queue!')
+    for t in jobs:
         t.join()
-    logging.info('done! all the layer threads are finished')
-
-    q_flush_analyzed_layers.join()
-    q_flush_bad_unopen_layers.join()
-
-    print "flush queues wait here!"
-    for i in range(num_flush_threads):
-        q_flush_analyzed_layers.put(None)
-        q_flush_bad_unopen_layers.put(None)
-    for t in flush_threads:
-        t.join()
+    logging.info('done! all the layer job processes are finished')
 
     # while not layer_q.empty():
     #     layer = layer_q.get()
@@ -71,7 +59,7 @@ def queue_layers(analyzed_layer_filename, layer_list_filename):
         content = json.load(f)
         for key, val in content.items():
             logging.debug('queue dir layer tarball: %s', key)  #
-            q_dir_layers.put(key)
+            q_dir_layers.append(key)
 
         # for line in f:
         #     print line
@@ -143,16 +131,73 @@ def is_valid_tarball(layer_filename):
     return True
 
 
-def load_layer(layer_db_json_dir):
+def chunks(l, n):
+    return [l[i:i+n] for i in range(0, len(l), n)]
+
+
+def process_job(job_id, job_queue, q_analyzed_layers):
+
+    logging.info('==============> starting process id %d <============', job_id)
+
+    f_analyzed_layer = open("analyzed_layer_filename-%d.out" % job_id, 'a+')
+    f_bad_unopen_layer = open("bad_unopen_layer_list-%d.out" % job_id, 'a+')
+
+    q_flush_analyzed_layers = Queue.Queue()
+    q_flush_bad_unopen_layers = Queue.Queue()
+    # q_bad_unopen_layers = Queue.Queue()
+
+    lock_f_bad_unopen_layer = Queue.Lock()
+    lock_f_analyzed_layer = Queue.Lock()
+    # q_analyzed_layers = Queue.Queue()
+    # lock_q_analyzed_layer = Queue.Lock()
+    threads = []
+    flush_threads = []
+
+    for i in range(num_worker_threads):
+        t = threading.Thread(target=load_layer, args=(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_bad_unopen_layers))
+        t.start()
+        threads.append(t)
+
+    for j in range(num_flush_threads):
+        t1 = threading.Thread(target=flush_file, args=(f_analyzed_layer, q_flush_analyzed_layers, lock_f_analyzed_layer))
+        t2 = threading.Thread(target=flush_file, args=(f_bad_unopen_layer, q_flush_bad_unopen_layers, lock_f_bad_unopen_layer))
+        t1.start()
+        t2.start()
+        flush_threads.append(t1)
+        flush_threads.append(t2)
+
+    job_queue.join()
+    logging.info('wait job queue to join!')
+    for i in range(num_worker_threads):
+        job_queue.put(None)
+    logging.info('put none layers to job queue!')
+    for t in threads:
+        t.join()
+    logging.info('done! all the layer threads are finished')
+
+    q_flush_analyzed_layers.join()
+    q_flush_bad_unopen_layers.join()
+
+    print "flush queues wait here!"
+    for i in range(num_flush_threads):
+        q_flush_analyzed_layers.put(None)
+        q_flush_bad_unopen_layers.put(None)
+    for t in flush_threads:
+        t.join()
+    logging.info('done! all the flush threads are finished')
+
+
+def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_bad_unopen_layers):
+    layer_db_json_dir = dest_dir[0]['layer_db_json_dir']
     """load the layer dirs"""
     while True:
-        layer_filename = q_dir_layers.get()
+        layer_filename = job_queue.get()
         if layer_filename is None:
             logging.debug('The dir layer queue is empty!')
             break
 
         if not is_valid_tarball(layer_filename):
-            q_dir_layers.task_done()
+            job_queue.task_done()
             continue
 
         logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
@@ -164,11 +209,10 @@ def load_layer(layer_db_json_dir):
             is_layer_analyzed = True
         else:
             is_layer_analyzed = False
-            q_analyzed_layers.put('sha256:' + layer_filename.split("-")[1])
             print "Layer Not Analyzed!"
 
         if is_layer_analyzed:
-            q_dir_layers.task_done()
+            job_queue.task_done()
             continue
 
         compressed_size_with_method_gzip = os.lstat(os.path.join(dest_dir[0]['layer_dir'], layer_filename)).st_size
@@ -179,15 +223,15 @@ def load_layer(layer_db_json_dir):
         elapsed = time.time() - start
         logging.info('process directory: decompression plus sha digest calculation, consumed time ==> %f ; %d', elapsed, compressed_size_with_method_gzip)
         if not len(sub_dirs):
-            q_dir_layers.task_done()
-            q_bad_unopen_layers.put(layer_filename)
+            job_queue.task_done()
+            q_flush_bad_unopen_layers.put(layer_filename)
             # archival_size = clear_dirs(layer_filename)
             logging.debug('################### The layer dir wrong! layer file name %s ###################', layer_filename)
             continue
 
         # archival_size = clear_dirs(layer_filename)
         if archival_size == -1:
-            q_dir_layers.task_done()
+            job_queue.task_done()
             return
 
         depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
@@ -234,8 +278,9 @@ def load_layer(layer_db_json_dir):
         # lock.release()
 
         logging.debug('write layer_id:[%s]: to json file %s', layer_filename, abslayer_filename)
+        q_analyzed_layers.put('sha256:' + layer_filename.split("-")[1])
         q_flush_analyzed_layers.put('sha256:' + layer_filename.split("-")[1])
-        q_dir_layers.task_done()
+        job_queue.task_done()
 
 
 def flush_file(fd, q_name, lock_file):

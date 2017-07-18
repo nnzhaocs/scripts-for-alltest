@@ -46,14 +46,9 @@ def parseArg():
     )
 
     parser.add_argument(
-# <<<<<<< HEAD
-#         '-A', '--analyzelayer',
-# =======
         '-R', '--analyzelayer',
-# >>>>>>> 9a122e2943b1908a16c7026b1ed63c55984eab88
         help="analyze the layer",
         action="store_true",  # dest="loglevel", const=logging.INFO,
-	#dest="analyzelayer",
     )
 
     """ dest_dir contains three directories:
