@@ -87,7 +87,7 @@ layer_info = {
     size = defaultdict(list)
     dir_depth = defaultdict(list)
     file_cnt = []
-
+    # i = 0
     layer_dir = dest_dir[0]['layer_db_json_dir']
     for path, _, layer_json_filenames in os.walk(layer_dir):
         for layer_json_filename in layer_json_filenames:
@@ -97,7 +97,9 @@ layer_info = {
 
             with open(os.path.join(path, layer_json_filename)) as lj_f:
                 json_data = json.load(lj_f)
-
+		# i = i + 1
+		# if i > 50:
+		#    break
                 size['uncompressed_sum_of_files'].append(json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024)
                 size['compressed_size_with_method_gzip'].append(json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024)
                 size['archival_size'].append(json_data['size']['archival_size'] / 1024 / 1024)
@@ -114,7 +116,7 @@ layer_info = {
 
     data1 = layer_base_info['size']['uncompressed_sum_of_files']
     xlabel = 'layer size (MB)'
-    xlim = len(data1)
-    ticks = 50
+    xlim = max(data1)
+    ticks = 25
     print xlim
     plot_cdf(fig, data1, xlabel, xlim, ticks)
