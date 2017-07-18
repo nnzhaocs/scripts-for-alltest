@@ -189,8 +189,10 @@ def load_dirs(layer_filename):
         if tarinfo.isreg():
             try:
                 reg_f = tar.extractfile(tarinfo.name)
-            except KeyError:
-                logging.error("File: %s is not found.", tarinfo.name)
+            except: # KeyError:
+                logging.error("File: %s is wrong.", tarinfo.name)
+		sub_dirs = []
+                return None
             else:
                 bytes = reg_f.read()
                 if len(os.path.splitext(tarinfo.name)) >= 2:

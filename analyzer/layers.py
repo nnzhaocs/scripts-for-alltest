@@ -24,7 +24,8 @@ def create_layer_db(analyzed_layer_filename, layer_list_filename):
     job_size = total / num_worker_process
     slices = chunks(q_dir_layers, job_size)
     jobs = []
-
+    print slices
+    print len(slices)
     for i, s in enumerate(slices):
         # for i in range(num_worker_threads):
 	job_queue = Queue.Queue()
