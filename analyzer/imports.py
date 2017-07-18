@@ -26,7 +26,7 @@ import subprocess
 from collections import OrderedDict
 from collections import defaultdict
 
-os.system("taskset -p 0xff %d" % os.getpid())
+#os.system("taskset -p 0xff %d" % os.getpid())
 
 q_dir_layers = []  # multiprocessing.Queue()
 

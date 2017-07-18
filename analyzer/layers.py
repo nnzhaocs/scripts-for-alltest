@@ -21,16 +21,17 @@ def create_layer_db(analyzed_layer_filename, layer_list_filename):
     queue_layers(analyzed_layer_filename, layer_list_filename)
 
     total = len(q_dir_layers)
-    job_size = total / num_worker_threads
+    job_size = total / num_worker_process
     slices = chunks(q_dir_layers, job_size)
     jobs = []
 
     for i, s in enumerate(slices):
         # for i in range(num_worker_threads):
+	job_queue = Queue.Queue()
         for item in s:
-            q = Queue.Queue()
-            q.put(item)
-        t = multiprocessing.Process(target=process_job, args=(i, q, q_analyzed_layers))
+            #q = Queue.Queue()
+            job_queue.put(item)
+        t = multiprocessing.Process(target=process_job, args=(i, job_queue, q_analyzed_layers))
         t.start()
         jobs.append(t)
 
@@ -146,8 +147,8 @@ def process_job(job_id, job_queue, q_analyzed_layers):
     q_flush_bad_unopen_layers = Queue.Queue()
     # q_bad_unopen_layers = Queue.Queue()
 
-    lock_f_bad_unopen_layer = Queue.Lock()
-    lock_f_analyzed_layer = Queue.Lock()
+    lock_f_bad_unopen_layer = threading.Lock()
+    lock_f_analyzed_layer = threading.Lock()
     # q_analyzed_layers = Queue.Queue()
     # lock_q_analyzed_layer = Queue.Lock()
     threads = []
