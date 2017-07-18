@@ -1,12 +1,11 @@
 
 """imports all the libraries"""
 
-import os, json, hashlib, argparse, logging, shutil, sys, time
+import os, json, hashlib, argparse, logging, shutil, sys, time, optparse
 from functools import reduce
 from utility import *
 import itertools
 import threading, multiprocessing, Queue
-# from  import Process,
 
 import matplotlib
 matplotlib.use('Agg')
@@ -15,9 +14,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 import random, string, hashlib
-#from optparse import OptionParser
+
 import zipfile, tarfile
-#from magic import Magic
+
 import  magic
 from collections import defaultdict
 from itertools import groupby

@@ -94,7 +94,7 @@ layer_info = {
             if not os.path.isfile(os.path.join(path, layer_json_filename)):
                 logging.debug("layer json file %s is not valid!", layer_json_filename)
                 continue
-                # return None
+
             with open(os.path.join(path, layer_json_filename)) as lj_f:
                 json_data = json.load(lj_f)
 
@@ -110,11 +110,8 @@ layer_info = {
     layer_base_info['dir_depth'] = dir_depth
     layer_base_info['file_cnt'] = file_cnt
 
-# <<<<<<< HEAD
-#     fig = fig_size('large')
-# =======
-    fig = fig_size('small')
-# >>>>>>> 9a122e2943b1908a16c7026b1ed63c55984eab88
+    fig = fig_size('small')  # 'large'
+
     data1 = layer_base_info['size']['uncompressed_sum_of_files']
     xlabel = 'layer size (MB)'
     xlim = len(data1)
