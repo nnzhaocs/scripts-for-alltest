@@ -59,7 +59,7 @@ def run_analyzelayer(args):
     #     return
 
     # create_layer_db(args.analyzed_file, args.layer_list_file)
-    layer_distribution()
+    layer_distribution(args)
 
     elapsed = time.time() - start
     logging.info('analyze layer json files, consumed time ==> %f', (elapsed / 3600))
