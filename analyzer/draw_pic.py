@@ -33,7 +33,7 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
     xmajorLocator = MultipleLocator(xlim/ticks)
     ax.xaxis.set_major_locator(xmajorLocator)
 
-    # bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
+    bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
     #bins = (data.max() - data.min())/(xlim/ticks)
 
 #     # bins = np.arange(np.ceil(data.min()), np.floor(data.max()) + xlim/ticks, xlim/ticks)
@@ -42,30 +42,30 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
 #     counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
 #     counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=True)
 #     cdf = np.cumsum(counts_cdf)
-    bins = np.arange(data.min(), data.max() + xlim/ticks, xlim/ticks)
+    #bins = np.arange(data.min(), data.max() + xlim/ticks, xlim/ticks)
     # bins = np.arange(np.ceil(data.min()), np.floor(data.max()) + xlim/ticks, xlim/ticks)
     #bins = np.arange(np.floor(data.min()), np.ceil(data.max()) + xlim/ticks - np.ceil(data.max()) % (xlim/ticks), xlim/ticks)
     print "cdf and pdf calculating: bins = %d" % len(bins)
     counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
-    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
+    #counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
     cdf = np.cumsum(counts_cdf)
-    pdf = np.cumsum(counts_pdf)
-    cdf_ =  [x * 1.0 / len(data) for x in pdf]
-    counts_pdf_ = [x * 1.0 / len(data) for x in counts_pdf]
-    print (data, len(data), counts_cdf, cdf, base_cdf, counts_pdf, np.cumsum(counts_pdf), base_pdf)
-    print (cdf_, counts_pdf_)
+    #pdf = np.cumsum(counts_pdf)
+    #cdf_ =  [x * 1.0 / len(data) for x in pdf]
+    #counts_pdf_ = [x * 1.0 / len(data) for x in counts_pdf]
+    # print (data, len(data), counts_cdf, cdf, base_cdf)
+    #print (cdf_, counts_pdf_)
     print "start plotting!"
-    pd = ax.bar(base_pdf[1:] - 0.4, counts_pdf_, width=0.4, color='r', label='Probability distribution', align='center')
-    cd = ax.bar(base_pdf[1:] + 0.0, cdf_, color='b', width=0.4, label='Cumulative distribution', align='center')
+    pd = ax.plot(base_cdf[1:], counts_cdf, 'r--', linewidth=1.5, label='Probability distribution')
+    cd = ax.plot(base_cdf[1:], cdf, 'b-', linewidth=1.5, label='Cumulative distribution')
 
     print "start labeling!"
-    bar_label_text(ax, base_pdf[1:] - 0.4, counts_pdf_, xlim)
-    bar_label_text(ax, base_pdf[1:] + 0.0, cdf_, xlim)
+    # bar_label_text(ax, base_pdf[1:] - 0.4, counts_pdf_, xlim)
+    # bar_label_text(ax, base_pdf[1:] + 0.0, cdf_, xlim)
 
     ax.set_xlabel(xlabel, fontsize=22)
     ax.set_ylabel('Distribution', fontsize=22)
 
-    plt.legend([pd, cd], ['Probability distribution', 'Cumulative distribution'])
+    #plt.legend([pd, cd], ['Probability distribution', 'Cumulative distribution'])
 
     #ax2 = ax1.twinx()
     #ax2 = fig.add_subplot(111)#bins = ticks,
