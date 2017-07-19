@@ -154,6 +154,7 @@ def load_dirs(layer_filename):
     try:
         tar = tarfile.open(layer_tarfile, "r")
     except tarfile.TarError:
+	logging.error("Cannot open tarfile: %s is wrong.", layer_filename)
         print tarfile.TarError
         uncompressed_archival_size = clear_file(layer_tarfile)
         return sub_dirs, uncompressed_archival_size
@@ -190,9 +191,10 @@ def load_dirs(layer_filename):
             try:
                 reg_f = tar.extractfile(tarinfo.name)
             except: # KeyError:
-                logging.error("File: %s is wrong.", tarinfo.name)
+                logging.error("Cannot extractfile File: %s: %s is wrong.", layer_filename, tarinfo.name)
 		sub_dirs = []
-                return None
+                uncompressed_archival_size = clear_file(layer_tarfile)
+       		return sub_dirs, uncompressed_archival_size
             else:
                 bytes = reg_f.read()
                 if len(os.path.splitext(tarinfo.name)) >= 2:
