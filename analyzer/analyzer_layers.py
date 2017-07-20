@@ -161,9 +161,9 @@ def load_layer_json(job_queue, q_analyzed_layers):
         #
         # layer_base_info['dir_max_depth'] = dir_max_depth
         # layer_base_info['file_cnt'] = file_cnt
-        layer_base_info = tuple(uncompressed_sum_of_files, compressed_size_with_method_gzip, archival_size, dir_max_depth, file_cnt)
+        layer_base_info = [uncompressed_sum_of_files, compressed_size_with_method_gzip, archival_size, dir_max_depth, file_cnt]
 
-        logging.debug("Put dict: %s to queues!", layer_base_info)
+        logging.debug("Put tuple: %s to queues!", layer_base_info)
 
         q_analyzed_layers.put(layer_base_info)
         # q_flush_analyzed_layers.put(layer_base_info)
@@ -197,13 +197,17 @@ def distribution_plot(queue_list):
     # uncompressed_sum_of_files, compressed_size_with_method_gzip, archival_size, dir_max_depth, file_cnt
     if not len(queue_list):
         logging.debug("#####################queue list is empty!##################")
+    print queue_list
 
     for q_analyzed_layers in queue_list:
         while not q_analyzed_layers.empty():
             json_data = q_analyzed_layers.get()
+            print json_data
             size['uncompressed_sum_of_files'].append(json_data[0])
             size['compressed_size_with_method_gzip'].append(json_data[1])
             size['archival_size'].append(json_data[2])
+
+            print size
 
             dir_depth['dir_max_depth'].append(json_data[3])
 
