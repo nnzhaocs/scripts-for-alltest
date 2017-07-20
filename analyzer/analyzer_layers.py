@@ -137,23 +137,29 @@ def load_layer_json(job_queue, q_analyzed_layers):
         # dir_max_depth = [] # defaultdict(list)
         # file_cnt = []
 
-        with open(os.path.join(layer_db_json_dir, layer_json_filename)) as lj_f:
-            try:
-                json_data = json.load(lj_f)
-            except:
-                logging.debug("layer json file %s is not valid!", layer_json_filename)
+        try:
+            lj_f = open(os.path.join(layer_db_json_dir, layer_json_filename))
+        except:
+            logging.debug("cannot open layer json file %s!", layer_json_filename)
+            job_queue.task_done()
+            continue
+        try:
+            json_data = json.load(lj_f)
+        except:
+            logging.debug("layer json file %s is not valid!", layer_json_filename)
+            job_queue.task_done()
                 # q_flush_bad_unopen_layers.put(layer_json_filename)
             # i = i + 1
             # if i > 50:
             #   break
-            uncompressed_sum_of_files = (json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024)
-            compressed_size_with_method_gzip = (
-                json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024)
-            archival_size = (json_data['size']['archival_size'] / 1024 / 1024)
+        uncompressed_sum_of_files = (json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024)
+        compressed_size_with_method_gzip = (
+            json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024)
+        archival_size = (json_data['size']['archival_size'] / 1024 / 1024)
 
-            dir_max_depth = (json_data['layer_depth']['dir_max_depth'])
+        dir_max_depth = (json_data['layer_depth']['dir_max_depth'])
 
-            file_cnt = (json_data['file_cnt'])
+        file_cnt = (json_data['file_cnt'])
 
         # layer_base_info['uncompressed_sum_of_files'] = uncompressed_sum_of_files
         # layer_base_info['compressed_size_with_method_gzip'] = compressed_size_with_method_gzip
