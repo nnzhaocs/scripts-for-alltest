@@ -133,10 +133,6 @@ def is_valid_tarball(layer_filename):
     return True
 
 
-def chunks(l, n):
-    return [l[i:i+n] for i in range(0, len(l), n)]
-
-
 def process_job(job_id, job_queue, q_analyzed_layers):
 
     logging.info('==============> starting process id %d <============', job_id)

@@ -23,3 +23,7 @@ num_flush_threads = 3
 
 # threads = []
 # flush_threads = []
+
+
+def chunks(l, n):
+    return [l[i:i+n] for i in range(0, len(l), n)]
