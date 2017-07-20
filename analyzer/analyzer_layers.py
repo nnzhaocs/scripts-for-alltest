@@ -3,72 +3,11 @@ from imports import *
 from utility import *
 from draw_pic import *
 
-"""
-        layer = {
-            'layer_id': sha+':'+id,  # str(layer_id).replace("/", ""),
-            'dirs': sub_dirs,  # getLayersBychainID(chain_id),
-            'layer_depth': dir_depth,
-            'size': size,  # sum of files size,
-            'repeats': 0,
-            'file_cnt': sum_file_cnt(sub_dirs)
-        }
-        
-        size = {
-            'uncompressed_sum_of_files': sum_layer_size(sub_dirs),
-            'compressed_size_with_mejson_datathod_gzip': compressed_size_with_method_gzip,
-            'archival_size': archival_size  # archival_size
-        }
-        
-        dir_depth = {
-            'dir_max_depth': max(depths),
-            'dir_min_depth': min(depths),
-            'dir_median_depth': median(depths),
-            'dir_avg_depth': mean(depths)
-        }
-        
-        sub_dir = {
-                'dirname': tarinfo.name,  # .replace(layer_dir, ""),
-                'dir_depth': dir_level
-                # 'file_cnt': len(s_dir_files),
-                # 'files': s_dir_files,  # full path of f = dir/files
-                # 'dir_size': sum_dir_size(s_dir_files)
-        }
-        
-        dir_file = {
-            'filename': tarinfo.name,
-            'sha256': sha256,
-            # 'size (B)': None,
-            'type': f_type,
-            'extension': extension
-            # 'symlink': symlink,
-            # 'statinfo': statinfo
-        }
-        
-        tar_info = {
-            # 'st_nlink': stat.st_nlink,
-            'ti_size': tarinfo.size,
-            'ti_type': get_tarfile_type(tarinfo.type),
-            'ti_uname': tarinfo.uname,
-            'ti_gname': tarinfo.gname,
-            # 'ti_atime': None,  # most recent access time
-            'ti_mtime': tarinfo.mtime,  # change of content
-            # 'ti_ctime': None  # matedata modify
-            'link': link
-            # 'hardlink': hardlink
-        }
-        
-        dir['files'] = dir_files[dir['dirname']]
-        dir['file_cnt'] = len(dir['files'])
-        dir['dir_size'] = sum_dir_size(dir['files'])
-"""
-
 
 def layer_distribution(args): # analyzed_layer_filename, layer_list_filename
     """create layer database as a json file"""
     logging.info('=============> create_layer_db: create layer metadata json file <===========')
 
-    # queue_layers(analyzed_layer_filename, layer_list_filename)
-    # q_dir_layers = Queue.Queue()
     queue_layer_jsons()
 
     total = len(q_dir_layers)
@@ -79,12 +18,11 @@ def layer_distribution(args): # analyzed_layer_filename, layer_list_filename
     queue_list = []
 
     print slices
-    print len(slices)
+    # print len(slices)
+
     for i, s in enumerate(slices):
-    # for i in range(num_worker_threads):
         job_queue = Queue.Queue()
         for item in s:
-            #q = Queue.Queue()
             job_queue.put(item)
 
         q_analyzed_layers = Queue.Queue()
@@ -93,11 +31,6 @@ def layer_distribution(args): # analyzed_layer_filename, layer_list_filename
         jobs.append(t)
         queue_list.append(q_analyzed_layers)
 
-    # q_dir_layers.join()
-    # logging.info('wait queue to join!')
-    # for i in range(num_worker_threads):
-    #     q_dir_layers.put(None)
-    # logging.info('put none layers to queue!')
     for t in jobs:
         t.join()
     logging.info('done! all the layer job processes are finished')
@@ -117,7 +50,6 @@ def process_job(job_id, job_queue, q_analyzed_layers):
     lock_f_bad_unopen_layer = threading.Lock()
     lock_f_analyzed_layer = threading.Lock()
 
-    # lock_q_analyzed_layer = Queue.Lock()
     threads = []
     flush_threads = []
 
@@ -137,10 +69,10 @@ def process_job(job_id, job_queue, q_analyzed_layers):
         flush_threads.append(t1)
         flush_threads.append(t2)
 
-    q_dir_layers.join()
+    job_queue.join()
     logging.info('wait job queue to join!')
     for i in range(num_worker_threads):
-        q_dir_layers.put(None)
+        job_queue.put(None)
     logging.info('put none layer json files to job queue!')
     for t in threads:
         t.join()
@@ -184,11 +116,11 @@ def queue_layer_jsons():
             #     continue
 
 
-def load_layer_json(q_dir_layers, q_analyzed_layers, q_flush_analyzed_layers, q_flush_bad_unopen_layers):
+def load_layer_json(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_bad_unopen_layers):
     layer_db_json_dir = dest_dir[0]['layer_db_json_dir']
     """load the layer dirs"""
     while True:
-        layer_json_filename = q_dir_layers.get()
+        layer_json_filename = job_queue.get()
         if layer_json_filename is None:
             logging.debug('The dir layer json queue is empty!')
             break
@@ -196,7 +128,7 @@ def load_layer_json(q_dir_layers, q_analyzed_layers, q_flush_analyzed_layers, q_
         if not os.path.isfile(os.path.join(layer_db_json_dir, layer_json_filename)):
             logging.debug("layer json file %s is not valid!", layer_json_filename)
             q_flush_bad_unopen_layers.put(layer_json_filename)
-            q_dir_layers.task_done()
+            job_queue.task_done()
             continue
 
         logging.debug('process layer_json file: %s', layer_json_filename)  # str(layer_id).replace("/", "")
@@ -232,28 +164,10 @@ def load_layer_json(q_dir_layers, q_analyzed_layers, q_flush_analyzed_layers, q_
 
         q_analyzed_layers.put(layer_base_info)
         q_flush_analyzed_layers.put(layer_base_info)
-        q_dir_layers.task_done()
+        job_queue.task_done()
 
 
-def distribution_plot(q_flush_analyzed_layers):
-
-    """
-layer_info = {
-        size: {
-            'uncompressed_sum_of_files': sum_layer_size(sub_dirs),
-            'compressed_size_with_method_gzip': compressed_size_with_method_gzip,
-            'archival_size': archival_size  # archival_size
-        }
-        
-        dir_depth = {
-            'dir_max_depth': max(depths),
-            'dir_min_depth': min(depths),
-            'dir_median_depth': median(depths),
-            'dir_avg_depth': mean(depths)
-        }
-        'file_cnt': sum_file_cnt(sub_dirs)
-        
-    }"""
+def distribution_plot(queue_list):
 
     layer_base_info = {}
     size = defaultdict(list)
@@ -279,15 +193,19 @@ layer_info = {
     #             dir_depth['dir_max_depth'].append(json_data['layer_depth']['dir_max_depth'])
     #
     #             file_cnt.append(json_data['file_cnt'])
-    while not q_analyzed_layers.empty():
-        json_data = q_analyzed_layers.get()
-        size['uncompressed_sum_of_files'].append(json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024)
-        size['compressed_size_with_method_gzip'].append(json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024)
-        size['archival_size'].append(json_data['size']['archival_size'] / 1024 / 1024)
+    if not len(queue_list):
+        logging.debug("#####################queue list is empty!##################")
 
-        dir_depth['dir_max_depth'].append(json_data['layer_depth']['dir_max_depth'])
+    for q_analyzed_layers in queue_list:
+        while not q_analyzed_layers.empty():
+            json_data = q_analyzed_layers.get()
+            size['uncompressed_sum_of_files'].append(json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024)
+            size['compressed_size_with_method_gzip'].append(json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024)
+            size['archival_size'].append(json_data['size']['archival_size'] / 1024 / 1024)
 
-        file_cnt.append(json_data['file_cnt'])
+            dir_depth['dir_max_depth'].append(json_data['layer_depth']['dir_max_depth'])
+
+            file_cnt.append(json_data['file_cnt'])
 
     layer_base_info['size'] = size
     layer_base_info['dir_depth'] = dir_depth
