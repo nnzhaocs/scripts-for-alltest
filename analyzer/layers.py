@@ -14,6 +14,9 @@ from itertools import chain
 """
 
 
+q_analyzed_layers = Queue.Queue()
+
+
 def create_layer_db(analyzed_layer_filename, layer_list_filename):
     """create layer database as a json file"""
     logging.info('=============> create_layer_db: create layer metadata json file <===========')

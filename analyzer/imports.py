@@ -29,7 +29,7 @@ from collections import defaultdict
 
 q_dir_layers = []  # multiprocessing.Queue()
 
-q_analyzed_layers = Queue.Queue()
+#
 # q_bad_unopen_layers = Queue.Queue()
 #
 # q_flush_analyzed_layers = Queue.Queue()
