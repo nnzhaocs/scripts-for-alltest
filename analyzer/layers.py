@@ -159,9 +159,14 @@ def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_ba
             logging.debug('The dir layer queue is empty!')
             break
 
-        if not is_valid_tarball(layer_filename):
+        #if not is_valid_tarball(layer_filename):
+         #   job_queue.task_done()
+          #  continue
+
+	if len(layer_filename.split("-")) != 3:
+            logging.debug('The layer filename is invalid %s!', layer_filename)
             job_queue.task_done()
-            continue
+	    continue
 
         logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
 
@@ -175,6 +180,10 @@ def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_ba
             print "Layer Not Analyzed!"
 
         if is_layer_analyzed:
+            job_queue.task_done()
+            continue
+
+        if not is_valid_tarball(layer_filename):
             job_queue.task_done()
             continue
 

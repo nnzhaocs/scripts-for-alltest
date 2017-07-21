@@ -159,10 +159,16 @@ def load_dirs(layer_filename):
             sub_dirs.append(sub_dir)
 
         if tarinfo.isreg():
-            f_info = load_file(os.path.join(layer_dir, tarinfo.name))
-            sha256 = f_info['sha256']
-            f_type = f_info['type']
-            extension = f_info['extension']
+	    try:
+		f_name = os.path.join(layer_dir, tarinfo.name)
+	    except UnicodeDecodeError as e:
+		logging.error("############## wrong file name %s ##############", e)
+	        tarinfo.name = tarinfo.name.decode('utf-8') 
+	    if os.path.isfile(os.path.join(layer_dir, tarinfo.name)):
+            	f_info = load_file(os.path.join(layer_dir, tarinfo.name))
+            	sha256 = f_info['sha256']
+            	f_type = f_info['type']
+            	extension = f_info['extension']
 
         dir_file = {
             'filename': tarinfo.name,
