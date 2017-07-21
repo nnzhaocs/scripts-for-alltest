@@ -5,72 +5,14 @@ from utility import *
 
 
 def load_file(abs_filename):
-    # stat = os.stat(abs_filename)
-    # statinfo = {
-    #     'st_nlink': stat.st_nlink,
-    #     'tarinfo_type': None,
-    #     'tarinfo_uid': None,
-    #     'tarinfo_gid': None,
-    #     'tarinfo_atime': None, # most recent access time
-    #     'tarinfo_mtime': None,  # change of content
-    #     'tarinfo_ctime': None  # matedata modify
-    # }
-    # #start = time.time()
-    # if os.path.islink(abs_filename):
-    #     # logging.debug('this is a symblink')
-    #     path = os.readlink(abs_filename)
-    #     sha256 = hashlib.sha256(path).hexdigest()
-    #     symlink = {
-    #         'is_symlink': True,
-    #         'target_path': path
-    #     }
-    # else:
     sha256 = hashlib.md5(open(abs_filename, 'rb').read()).hexdigest()
-    #     symlink = {
-    #         'is_symlink': False,
-    #         'target_path': None
-    #     }
-    #elapsed = time.time() - start
-    #logging.info('sha digest calculation, consumed time ==> %f s', elapsed)
-    # read_size = 10240
-    # sha256 = hashlib.sha256()
-    #
-    # with open(abs_filename, 'rb') as f:
-    #     data = f.read(read_size)
-    #     while data:
-    #         sha256.update(data)# = hashlib.sha256(open(abs_filename, 'rb').read()).hexdigest()
-    #         data = f.read(read_size)
-    #
-    # sha256 = sha256.hexdigest()
-    # sha256 = hashlib.md5(bytes).hexdigest()
 
     f_size = os.lstat(abs_filename).st_size
     if f_size > 100000000000:
         logging.warn("Too large file %d, name: %s", f_size, abs_filename)
-    # f_size = int(f_size)
 
-    # me = magic.Magic(mime = True)
-    # me = Magic(mime_encoding=True)
-    # me = magic.open(magic.MAGIC_MIME)
-
-    # s = open(abs_filename).read(512)
-    # if f_size == 1 or f_size == 0:
-    #     f_type = "text-empty"
-    #     # logging.debug("###### text-empty #####, name: %s", abs_filename)
-    # else:
     f_type = me.from_file(abs_filename)
     extension = os.path.splitext(abs_filename)[1]
-    # print (f_type, extension, f_size)
-
-    # dir_file = {
-    #     'abs_filename': abs_filename,
-    #     'sha256': sha256,
-    #     'size (B)': f_size,
-    #     'type': f_type,
-    #     'extension': extension,
-    #     'symlink': symlink,
-    #     'statinfo': statinfo
-    # }
 
     dir_file = {
         # 'filename': abs_filename,
