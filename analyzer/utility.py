@@ -18,7 +18,7 @@ dest_dir = []
 
 num_worker_process = 30
 
-num_worker_threads = 9
+num_worker_threads = 2
 num_flush_threads = 3
 
 # threads = []

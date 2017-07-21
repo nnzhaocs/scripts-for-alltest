@@ -21,11 +21,11 @@ def layer_distribution(args):  # analyzed_layer_filename, layer_list_filename
     print len(slices)
 
     for i, s in enumerate(slices):
-        job_queue = Queue.Queue()
+        job_queue = multiprocessing.JoinableQueue()
         for item in s:
             job_queue.put(item)
 
-        q_analyzed_layers = Queue.Queue()
+        q_analyzed_layers = multiprocessing.Queue()
         t = multiprocessing.Process(target=process_job, args=(i, job_queue, q_analyzed_layers))
         t.start()
         jobs.append(t)
@@ -34,7 +34,10 @@ def layer_distribution(args):  # analyzed_layer_filename, layer_list_filename
     for t in jobs:
         t.join()
     logging.info('done! all the layer job processes are finished')
-
+    print queue_list
+    print queue_list[0]
+    for q in queue_list:
+        print q.get()
     distribution_plot(queue_list)
 
 
@@ -103,9 +106,13 @@ def flush_file(fd, q_name, lock_file):
 
 def queue_layer_jsons():
     layer_dir = dest_dir[0]['layer_db_json_dir']
+    i = 0
     for path, _, layer_json_filenames in os.walk(layer_dir):
         for layer_json_filename in layer_json_filenames:
             # logging.debug('layer_id: %s', layer_json_filename)  # str(layer_id).replace("/", "")
+	    i = i + 1
+	    # if i > 50000:
+	        #break
             q_dir_layers.append(layer_json_filename)
             logging.debug('queue dir layer json file: %s', layer_json_filename)  # str(layer_id).replace("/", "")
             # if not os.path.isfile(os.path.join(path, layer_json_filename)):
@@ -137,29 +144,32 @@ def load_layer_json(job_queue, q_analyzed_layers):
         # dir_max_depth = [] # defaultdict(list)
         # file_cnt = []
 
-        try:
-            lj_f = open(os.path.join(layer_db_json_dir, layer_json_filename))
-        except:
-            logging.debug("cannot open layer json file %s!", layer_json_filename)
-            job_queue.task_done()
-            continue
-        try:
-            json_data = json.load(lj_f)
-        except:
-            logging.debug("layer json file %s is not valid!", layer_json_filename)
-            job_queue.task_done()
+        #try:
+        #    lj_f = open(os.path.join(layer_db_json_dir, layer_json_filename))
+        #except:
+        #    logging.debug("cannot open layer json file %s!", layer_json_filename)
+        #    job_queue.task_done()
+        #    continue
+        with open(os.path.join(layer_db_json_dir, layer_json_filename)) as lj_f:
+	    try:
+            	json_data = json.load(lj_f)
+            except:
+            	logging.debug("cannot load layer json file %s is not valid!", layer_json_filename)
+            	job_queue.task_done()
+		continue
                 # q_flush_bad_unopen_layers.put(layer_json_filename)
             # i = i + 1
             # if i > 50:
             #   break
-        uncompressed_sum_of_files = (json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024)
-        compressed_size_with_method_gzip = (
-            json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024)
-        archival_size = (json_data['size']['archival_size'] / 1024 / 1024)
+            uncompressed_sum_of_files = (json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024)
+            compressed_size_with_method_gzip = (
+            	json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024)
+            archival_size = (json_data['size']['archival_size'] / 1024 / 1024)
 
-        dir_max_depth = (json_data['layer_depth']['dir_max_depth'])
+            dir_max_depth = (json_data['layer_depth']['dir_max_depth'])
 
-        file_cnt = (json_data['file_cnt'])
+            file_cnt = (json_data['file_cnt'])
+	    del json_data
 
         # layer_base_info['uncompressed_sum_of_files'] = uncompressed_sum_of_files
         # layer_base_info['compressed_size_with_method_gzip'] = compressed_size_with_method_gzip
@@ -171,9 +181,12 @@ def load_layer_json(job_queue, q_analyzed_layers):
 
         logging.debug("Put tuple: %s to queues!", layer_base_info)
 
-        q_analyzed_layers.put(layer_base_info)
+        # q_analyzed_layers.put(layer_base_info)
+	q_analyzed_layers.put(layer_base_info)
+        # print "queue: %s" % q_analyzed_layers
         # q_flush_analyzed_layers.put(layer_base_info)
         job_queue.task_done()
+	layer_base_info = []
 
 
 def distribution_plot(queue_list):
@@ -201,19 +214,22 @@ def distribution_plot(queue_list):
     #
     #             file_cnt.append(json_data['file_cnt'])
     # uncompressed_sum_of_files, compressed_size_with_method_gzip, archival_size, dir_max_depth, file_cnt
+
+    print "===============>start ploting<============="
+
     if not len(queue_list):
         logging.debug("#####################queue list is empty!##################")
-    print queue_list
+    #print queue_list
 
     for q_analyzed_layers in queue_list:
         while not q_analyzed_layers.empty():
             json_data = q_analyzed_layers.get()
-            print json_data
+            # print json_data
             size['uncompressed_sum_of_files'].append(json_data[0])
             size['compressed_size_with_method_gzip'].append(json_data[1])
             size['archival_size'].append(json_data[2])
 
-            print size
+            # print size
 
             dir_depth['dir_max_depth'].append(json_data[3])
 
@@ -229,8 +245,8 @@ def distribution_plot(queue_list):
     fig = fig_size('small')  # 'large'
 
     data1 = layer_base_info['size']['uncompressed_sum_of_files']
-    xlabel = 'layer size (MB)'
-    xlim = max(data1)
+    xlabel = 'Uncompressed layer size (MB): sum of files'
+    xlim = statistics.median(data1)  # max(data1)
     ticks = 25
     print xlim
     plot_cdf(fig, data1, xlabel, xlim, ticks)
