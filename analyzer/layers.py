@@ -153,12 +153,23 @@ def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_ba
             logging.debug('The dir layer queue is empty!')
             break
 
+# <<<<<<< HEAD
         if "sha256-" not in layer_filename:
             logging.info('file %s is not a layer tarball or config file', layer_filename)
             return False
         if len(layer_filename.split("-")) != 3:
             logging.debug('The layer filename is invalid %s!', layer_filename)
             return False
+# =======
+#         #if not is_valid_tarball(layer_filename):
+#          #   job_queue.task_done()
+#           #  continue
+#
+# 	if len(layer_filename.split("-")) != 3:
+#             logging.debug('The layer filename is invalid %s!', layer_filename)
+#             job_queue.task_done()
+# 	    continue
+# >>>>>>> 1d3e7c00e29a0b0f8f28eb90ed83cbf80852f7dd
 
         logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
         logging.info('sha256:' + layer_filename.split("-")[1])

@@ -156,8 +156,63 @@ def load_dirs(layer_filename):
                 'dir_size': sum_dir_size(s_dir_files)
             }
 
+# <<<<<<< HEAD
             sub_dirs.append(sub_dir)
     return sub_dirs
+# =======
+#         if tarinfo.isreg():
+# 	    try:
+# 		f_name = os.path.join(layer_dir, tarinfo.name)
+# 	    except UnicodeDecodeError as e:
+# 		logging.error("############## wrong file name %s ##############", e)
+# 	        tarinfo.name = tarinfo.name.decode('utf-8')
+# 	    if os.path.isfile(os.path.join(layer_dir, tarinfo.name)):
+#             	f_info = load_file(os.path.join(layer_dir, tarinfo.name))
+#             	sha256 = f_info['sha256']
+#             	f_type = f_info['type']
+#             	extension = f_info['extension']
+#
+#         dir_file = {
+#             'filename': tarinfo.name,
+#             'sha256': sha256,
+#             'type': f_type,
+#             'extension': extension
+#             # 'symlink': symlink,
+#             # 'statinfo': statinfo
+#         }
+#
+#         if tarinfo.isreg():
+#             dir_files[os.path.dirname(tarinfo.name)].append(dir_file)
+#             files[tarinfo.name] = dir_file
+#
+#         tar_info = {
+#             # 'st_nlink': stat.st_nlink,
+#             'ti_size': tarinfo.size,
+#             'ti_type': get_tarfile_type(tarinfo.type),
+#             'ti_uname': tarinfo.uname,
+#             'ti_gname': tarinfo.gname,
+#             # 'ti_atime': None,  # most recent access time
+#             'ti_mtime': tarinfo.mtime,  # change of content
+#             # 'ti_ctime': None  # matedata modify
+#             'link': link
+#             # 'hardlink': hardlink
+#         }
+#         if tarinfo.isreg():
+#             file_infos[tarinfo.name] = tar_info
+#
+#     for filename, file in files.items():
+#         file['file_info'] = file_infos[filename]
+#
+#     for dir in sub_dirs:
+#         # print dir['dirname']
+#         dir['files'] = dir_files[dir['dirname']]
+#         dir['file_cnt'] = len(dir['files'])
+#         dir['dir_size'] = sum_dir_size(dir['files'])
+#
+#     tar.close()
+#     uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
+#     return sub_dirs, uncompressed_archival_size
+# >>>>>>> 1d3e7c00e29a0b0f8f28eb90ed83cbf80852f7dd
 
 
 def sum_dir_size(s_dir_files):
