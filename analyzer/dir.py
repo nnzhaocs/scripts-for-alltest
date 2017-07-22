@@ -74,9 +74,9 @@ def get_tarfile_type(type):
 
 def load_dirs(layer_filename):
     sub_dirs = []
-    dir_files = defaultdict(list)
-    file_infos = {}
-    files = {}
+    # dir_files = defaultdict(list)
+    # file_infos = {}
+    # files = {}
 
     """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
     extracting to extracting_dir/<layer_id>
@@ -122,92 +122,46 @@ def load_dirs(layer_filename):
         uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
         return sub_dirs, uncompressed_archival_size
 
-    try:
-        tar = tarfile.open(layer_file, "r")
-    except tarfile.TarError:
-        logging.error("###################Cannot open tarfile: %s is wrong.###################", layer_filename)
-        print tarfile.TarError
-        uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
-        return sub_dirs, uncompressed_archival_size
+    logging.error("cannot read tarinfo %s, using read directory", e)
 
-    for tarinfo in tar:
-        sha256 = None
-        f_type = None
-        extension = None
-        link = None
-        # logging.debug(tarinfo.name + ' , %d', tarinfo.size)
-        if tarinfo.issym():
-            link = {
-                'link_type': 'symlink',
-                'target_path': tarinfo.linkname
-            }
-        if tarinfo.islnk():
-            link = {
-                'link_type': 'hardlink',
-                'target_path': tarinfo.linkname
-            }
-        if tarinfo.isdir():
-            # logging.debug("dirname : %s", tarinfo.name)
-            dir_level = tarinfo.name.count(os.sep) + 1
+    layer_dir_level = layer_dir.count(os.sep)
+    logging.debug("(%s, %s)", layer_dir, layer_dir_level)
+
+    if not os.path.isdir(layer_dir):
+        logging.warn('layer dir %s is invalid', layer_dir)
+        return sub_dirs
+
+    for path, subdirs, files in os.walk(layer_dir):
+        for dirname in subdirs:
+            s_dir = os.path.join(path, dirname)
+            if not os.path.isdir(s_dir):
+                logging.warn('################### layer subdir %s is invalid ###################',
+                             s_dir.replace(layer_dir, ""))
+                # q_bad_unopen_layers.put(
+                #     'sha256:' + layer_id.split("-")[1] + ':layer-subdir-error:' + s_dir.replace(layer_dir, ""))
+                continue
+
+            dir_level = s_dir.count(os.sep) - layer_dir_level
+            s_dir_files = []
+            for f in os.listdir(s_dir):
+                if os.path.isfile(os.path.join(s_dir, f)):
+                    s_dir_file = load_file(os.path.join(s_dir, f))
+                    s_dir_files.append(s_dir_file)
+
             sub_dir = {
-                'dirname': tarinfo.name,  # .replace(layer_dir, ""),
-                'dir_depth': dir_level
-                # 'file_cnt': len(s_dir_files),
-                # 'files': s_dir_files,  # full path of f = dir/files
-                # 'dir_size': sum_dir_size(s_dir_files)
+                'subdir': dirname,  # .replace(layer_dir, ""),
+                'dir_depth': dir_level,
+                'file_cnt': len(s_dir_files),
+                'files': s_dir_files,  # full path of f = dir/files
+                'dir_size': sum_dir_size(s_dir_files)
             }
+
             sub_dirs.append(sub_dir)
-
-        if tarinfo.isreg():
-            f_info = load_file(os.path.join(layer_dir, tarinfo.name))
-            sha256 = f_info['sha256']
-            f_type = f_info['type']
-            extension = f_info['extension']
-
-        dir_file = {
-            'filename': tarinfo.name,
-            'sha256': sha256,
-            'type': f_type,
-            'extension': extension
-            # 'symlink': symlink,
-            # 'statinfo': statinfo
-        }
-
-        if tarinfo.isreg():
-            dir_files[os.path.dirname(tarinfo.name)].append(dir_file)
-            files[tarinfo.name] = dir_file
-
-        tar_info = {
-            # 'st_nlink': stat.st_nlink,
-            'ti_size': tarinfo.size,
-            'ti_type': get_tarfile_type(tarinfo.type),
-            'ti_uname': tarinfo.uname,
-            'ti_gname': tarinfo.gname,
-            # 'ti_atime': None,  # most recent access time
-            'ti_mtime': tarinfo.mtime,  # change of content
-            # 'ti_ctime': None  # matedata modify
-            'link': link
-            # 'hardlink': hardlink
-        }
-        if tarinfo.isreg():
-            file_infos[tarinfo.name] = tar_info
-
-    for filename, file in files.items():
-        file['file_info'] = file_infos[filename]
-
-    for dir in sub_dirs:
-        # print dir['dirname']
-        dir['files'] = dir_files[dir['dirname']]
-        dir['file_cnt'] = len(dir['files'])
-        dir['dir_size'] = sum_dir_size(dir['files'])
-
-    tar.close()
-    uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
-    return sub_dirs, uncompressed_archival_size
+    return sub_dirs
 
 
 def sum_dir_size(s_dir_files):
     sum_size = 0
     for file in s_dir_files:
-        sum_size = file['file_info']['ti_size'] + sum_size
+        sum_size = file['file_info']['stat_size'] + sum_size
     return sum_size

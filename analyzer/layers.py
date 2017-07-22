@@ -84,12 +84,6 @@ def move_config_file(filename):
 
 
 def is_valid_tarball(layer_filename):
-    if "sha256-" not in layer_filename:
-        logging.info('file %s is not a layer tarball or config file', layer_filename)
-        return False
-    if len(layer_filename.split("-")) != 3:
-        logging.debug('The layer filename is invalid %s!', layer_filename)
-        return False
     if not os.path.isfile(os.path.join(dest_dir[0]['layer_dir'], layer_filename)):
         logging.info('layer tarball file %s is not valid', layer_filename)
         return False
@@ -147,7 +141,7 @@ def process_job(job_id, job_queue, q_analyzed_layers):
     for t in flush_threads:
         t.join()
     logging.info('done! all the flush threads are finished')
-    return 
+    return
 
 
 def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_bad_unopen_layers):
@@ -159,12 +153,14 @@ def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_ba
             logging.debug('The dir layer queue is empty!')
             break
 
-        if not is_valid_tarball(layer_filename):
-            job_queue.task_done()
-            continue
+        if "sha256-" not in layer_filename:
+            logging.info('file %s is not a layer tarball or config file', layer_filename)
+            return False
+        if len(layer_filename.split("-")) != 3:
+            logging.debug('The layer filename is invalid %s!', layer_filename)
+            return False
 
         logging.debug('process layer_dir: %s', layer_filename)  # str(layer_id).replace("/", "")
-
         logging.info('sha256:' + layer_filename.split("-")[1])
 
         if ('sha256:' + layer_filename.split("-")[1]) in q_analyzed_layers.queue:
@@ -175,6 +171,10 @@ def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_ba
             print "Layer Not Analyzed!"
 
         if is_layer_analyzed:
+            job_queue.task_done()
+            continue
+
+        if not is_valid_tarball(layer_filename):
             job_queue.task_done()
             continue
 

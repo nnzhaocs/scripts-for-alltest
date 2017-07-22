@@ -24,6 +24,7 @@ import statistics
 import subprocess
 from collections import OrderedDict
 from collections import defaultdict
+from stat import *
 
 #os.system("taskset -p 0xff %d" % os.getpid())
 
