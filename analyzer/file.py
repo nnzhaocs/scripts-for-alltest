@@ -53,7 +53,7 @@ def load_file(abs_filename):
         }
 
     if get_file_type(mode) == "REGTYPE":
-        sha256 = hashlib.sha256(open(abs_filename, 'rb').read()).hexdigest()
+        sha256 = hashlib.md5(open(abs_filename, 'rb').read()).hexdigest()
         f_type = me.from_file(abs_filename)
         extension = os.path.splitext(abs_filename)[1]
 
@@ -62,7 +62,7 @@ def load_file(abs_filename):
         #     logging.warn("##################### Too large file %d, name: %s ################", f_size, abs_filename)
 
     dir_file = {
-        'filename': abs_filename.replace(dest_dir[0]['layer_dir'], ""),
+        'filename': os.path.basename(abs_filename),
         'sha256': sha256,
         'type': f_type,
         'extension': extension

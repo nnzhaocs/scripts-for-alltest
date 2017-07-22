@@ -122,14 +122,14 @@ def load_dirs(layer_filename):
         uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
         return sub_dirs, uncompressed_archival_size
 
-    logging.error("cannot read tarinfo %s, using read directory", e)
+    # logging.error("cannot read tarinfo %s, using read directory", e)
 
     layer_dir_level = layer_dir.count(os.sep)
     logging.debug("(%s, %s)", layer_dir, layer_dir_level)
 
-    if not os.path.isdir(layer_dir):
-        logging.warn('layer dir %s is invalid', layer_dir)
-        return sub_dirs
+    # if not os.path.isdir(layer_dir):
+    #     logging.warn('layer dir %s is invalid', layer_dir)
+    #     return sub_dirs
 
     for path, subdirs, files in os.walk(layer_dir):
         for dirname in subdirs:
@@ -149,7 +149,7 @@ def load_dirs(layer_filename):
                     s_dir_files.append(s_dir_file)
 
             sub_dir = {
-                'subdir': dirname,  # .replace(layer_dir, ""),
+                'subdir': s_dir.replace(layer_dir, ""),
                 'dir_depth': dir_level,
                 'file_cnt': len(s_dir_files),
                 'files': s_dir_files,  # full path of f = dir/files
@@ -158,7 +158,8 @@ def load_dirs(layer_filename):
 
 # <<<<<<< HEAD
             sub_dirs.append(sub_dir)
-    return sub_dirs
+    uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
+    return sub_dirs, uncompressed_archival_size
 # =======
 #         if tarinfo.isreg():
 # 	    try:

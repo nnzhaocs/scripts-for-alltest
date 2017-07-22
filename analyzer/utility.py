@@ -13,7 +13,7 @@ from imports import *
 # AUFS_DIFF_DIR = os.path.join(AUFS_ROOT, 'diff')
 # CONTANER_DIR = os.path.join(DOCKER_DIR, 'containers')
 # db_filename = 'database_json'
-
+layer_db_json_name = 'layer_db_json_bison01'
 dest_dir = []
 
 num_worker_process = 30
