@@ -37,7 +37,7 @@ def load_file(abs_filename):
             'link_type': 'symlink',
             'target_path': path
         }
-    
+
     elif stat.st_nlink >= 1:
         link = {
             'link_type': 'hardlink',
