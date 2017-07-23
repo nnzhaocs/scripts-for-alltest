@@ -6,27 +6,19 @@ from utility import *
 
 def get_file_type(mode):
     if S_ISREG(mode):  # tarfile.DIRTYPE
-        return "REGTYPE"
-    # if type == tarfile.AREGTYPE:  # tarfile.DIRTYPE
-    #     return "AREGTYPE"
-    # if S_ISLNK(mode):  # tarfile.DIRTYPE
-    #     return "LNKTYPE"
-    if S_ISLNK(mode):  # tarfile.DIRTYPE
-        return "SYMTYPE"
-    # if type == tarfile.DIRTYPE:  # tarfile.DIRTYPE
-    #     return "DIRTYPE"
-    if S_ISFIFO(mode):  # tarfile.DIRTYPE
-        return "FIFOTYPE"
-    # if type == tarfile.CONTTYPE:  # tarfile.DIRTYPE
-    #     return "CONTTYPE"
-    if S_ISCHR(mode):  # tarfile.DIRTYPE
-        return "CHRTYPE"
-    if S_ISBLK(mode):  # tarfile.DIRTYPE
-        return "BLKTYPE"
-    # if type == tarfile.GNUTYPE_SPARSE:  # tarfile.DIRTYPE
-    #     return "GNUTYPE_SPARSE"
-    if S_ISSOCK(mode):
-        return "SOCK"
+        return 'REGTYPE'
+    elif S_ISLNK(mode):  # tarfile.DIRTYPE
+        return 'SYMTYPE'
+    elif S_ISFIFO(mode):  # tarfile.DIRTYPE
+        return 'FIFOTYPE'
+    elif S_ISCHR(mode):  # tarfile.DIRTYPE
+        return 'CHRTYPE'
+    elif S_ISBLK(mode):  # tarfile.DIRTYPE
+        return 'BLKTYPE'
+    elif S_ISSOCK(mode):
+        return 'SOCK'
+    else:
+        return 'Unknown'
 
 
 def load_file(abs_filename):
@@ -45,21 +37,34 @@ def load_file(abs_filename):
             'link_type': 'symlink',
             'target_path': path
         }
-
-    if stat.st_nlink:
+    
+    elif stat.st_nlink >= 1:
         link = {
             'link_type': 'hardlink',
             'num_hdlinks': stat.st_nlink
         }
 
-    if get_file_type(mode) == "REGTYPE":
-        sha256 = hashlib.md5(open(abs_filename, 'rb').read()).hexdigest()
+    elif S_ISREG(mode):
+        f_size = os.lstat(abs_filename).st_size
+        if f_size > 1000000000:
+            logging.warn("##################### Too large file %d, name: %s ################", f_size, abs_filename)
+
+        try:
+            sha256 = hashlib.md5(open(abs_filename, 'rb').read()).hexdigest()
+        except MemoryError as e:
+            logging.debug("##################### Memory Error #####################: %s", e)
+            logging.debug("##################### Too large file %d, name: %s ################", f_size, abs_filename)
+            read_size = 1024  # You can make this bigger
+            sha256 = hashlib.md5()
+            with open(abs_filename, 'rb') as f:
+                data = f.read(read_size)
+                while data:
+                    sha256.update(data)
+                    data = f.read(read_size)
+            sha256 = sha256.hexdigest()
+
         f_type = me.from_file(abs_filename)
         extension = os.path.splitext(abs_filename)[1]
-
-        f_size = os.lstat(abs_filename).st_size
-        # if f_size > 100000000000:
-        #     logging.warn("##################### Too large file %d, name: %s ################", f_size, abs_filename)
 
     dir_file = {
         'filename': os.path.basename(abs_filename),
