@@ -182,6 +182,7 @@ def load_dirs(layer_filename):
     try:
         for path, subdirs, files in os.walk(layer_dir):
             for dirname in subdirs:
+		sub_dir = {}
                 s_dir = os.path.join(path, dirname)
                 if not os.path.isdir(s_dir):
                     logging.warn('################### layer subdir %s is invalid ###################',
@@ -210,7 +211,7 @@ def load_dirs(layer_filename):
                     'files': s_dir_files,  # full path of f = dir/files
                     'dir_size': sum_dir_size(s_dir_files)
                 }
-            sub_dirs.append(sub_dir)
+                sub_dirs.append(sub_dir)
     except UnicodeDecodeError as e:
         logging.error("############## Skip this tarball wrong tar ball %s, %s ##############", f, e)
         sub_dirs = []
