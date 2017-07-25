@@ -31,6 +31,15 @@ def load_file(abs_filename):
     mode = os.stat(abs_filename).st_mode
     stat = os.stat(abs_filename)
 
+    # statinfo = {
+    #     'st_nlink': stat.st_nlink,
+    #     'st_uid': stat.st_uid,
+    #     'st_gid': stat.st_gid,
+    #     'st_atime': stat.st_atime,  # most recent access time
+    #     'st_mtime': stat.st_mtime,  # change of content
+    #     'st_ctime': stat.st_ctime  # matedata modify
+    # }
+
     if S_ISLNK(mode):
         path = os.readlink(abs_filename)
         link = {
@@ -38,7 +47,7 @@ def load_file(abs_filename):
             'target_path': path
         }
 
-    elif stat.st_nlink >= 1:
+    elif stat.st_nlink > 1:
         link = {
             'link_type': 'hardlink',
             'num_hdlinks': stat.st_nlink
@@ -76,7 +85,13 @@ def load_file(abs_filename):
     file_info = {
         'stat_size': f_size,
         'stat_type': get_file_type(mode),
-        'link': link
+        'link': link,
+        # 'st_nlink': stat.st_nlink,
+        'st_uid': stat.st_uid,
+        'st_gid': stat.st_gid,
+        'st_atime': stat.st_atime,  # most recent access time
+        'st_mtime': stat.st_mtime,  # change of content
+        'st_ctime': stat.st_ctime  # matedata modify
     }
 
     dir_file['file_info'] = file_info

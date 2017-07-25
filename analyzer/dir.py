@@ -146,7 +146,7 @@ def load_dirs(layer_filename):
     logging.debug('to ==========> %s', layer_dir)
 
     start = time.time()
-    cmd = 'tar -zxf %s -C %s' % (layer_file, layer_dir)
+    cmd = 'tar -pzxf %s -C %s' % (layer_file, layer_dir)
     logging.debug('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, shell=True)
