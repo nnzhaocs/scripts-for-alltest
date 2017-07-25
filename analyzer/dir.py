@@ -21,7 +21,16 @@ def clear_dir(layer_id, extracting_dir):
 
     """ first archive this dir """
     start = time.time()
-    abs_zip_file_name = os.path.join(layer_dir, layer_id+'-uncompressed-archival.zip')
+#<<<<<<< HEAD
+#    abs_zip_file_name = os.path.join(layer_dir, layer_id+'-uncompressed-archival.zip')
+#=======
+    abs_zip_file_name = os.path.join(extracting_dir, layer_id+'-uncompressed-archival.tar')
+
+    # tar = tarfile.open(abs_zip_file_name, "w")
+    # tar.add(layer_dir, recursive=True)
+    # tar.close()
+    # tar -czvf name-of-archive.tar.gz /path/to/directory-or-file
+#>>>>>>> a02f972d6374d2fa95a83ebc6fbb61e4ece6b3b8
     cmd = 'tar -cf %s %s' % (abs_zip_file_name, layer_dir)
     logging.debug('The shell command: %s', cmd)
     try:
@@ -29,10 +38,26 @@ def clear_dir(layer_id, extracting_dir):
     except subprocess.CalledProcessError as e:
         print '###################' + e.output + '###################'
         logging.error("############## cannot archive file %s ##############", layer_id)
+#<<<<<<< HEAD
 	return -1
     #tar = tarfile.open(abs_zip_file_name, "w")
     #tar.add(layer_dir, recursive=True)
     #tar.close()
+#=======
+#        return -1
+        # if "No space left on device" in e.output:
+        #     logging.debug('sha256:' + layer_id.split("-")[1] + ':tar-no-space-error')
+        #     # uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
+        #     return -1
+        # elif "File name too long" in e.output:
+        #     logging.debug('sha256:' + layer_id.split("-")[1] + ':tar-incomplete-downloading')
+        #     # uncompressed_archival_size = clear_dir(layer_id, extracting_dir)
+        #     return -1
+        # else:
+        #     logging.debug('sha256:' + layer_id.split("-")[1] + ':tar-common-error')
+        #     return -1
+
+#>>>>>>> a02f972d6374d2fa95a83ebc6fbb61e4ece6b3b8
     elapsed = time.time() - start
     logging.info('archival directory, consumed time ==> %f s', elapsed)
 
@@ -50,6 +75,10 @@ def clear_dir(layer_id, extracting_dir):
         subprocess.check_output(cmd4, shell=True)
     except subprocess.CalledProcessError as e:
         print '###################'+e.output+'#######################'
+#<<<<<<< HEAD
+#=======
+        return -1
+#>>>>>>> a02f972d6374d2fa95a83ebc6fbb61e4ece6b3b8
 
     cmd4 = 'rm -rf %s' % abs_zip_file_name
     logging.debug('The shell command: %s', cmd4)
@@ -150,40 +179,79 @@ def load_dirs(layer_filename):
     # if not os.path.isdir(layer_dir):
     #     logging.warn('layer dir %s is invalid', layer_dir)
     #     return sub_dirs
+    try:
+        for path, subdirs, files in os.walk(layer_dir):
+            for dirname in subdirs:
+                s_dir = os.path.join(path, dirname)
+                if not os.path.isdir(s_dir):
+                    logging.warn('################### layer subdir %s is invalid ###################',
+                                 s_dir.replace(layer_dir, ""))
+                    # q_bad_unopen_layers.put(
+                    #     'sha256:' + layer_id.split("-")[1] + ':layer-subdir-error:' + s_dir.replace(layer_dir, ""))
+                    continue
 
-    for path, subdirs, files in os.walk(layer_dir):
-        for dirname in subdirs:
-            s_dir = os.path.join(path, dirname)
-            if not os.path.isdir(s_dir):
-                logging.warn('################### layer subdir %s is invalid ###################',
-                             s_dir.replace(layer_dir, ""))
-                # q_bad_unopen_layers.put(
-                #     'sha256:' + layer_id.split("-")[1] + ':layer-subdir-error:' + s_dir.replace(layer_dir, ""))
-                continue
+                dir_level = s_dir.count(os.sep) - layer_dir_level
+                s_dir_files = []
+                for f in os.listdir(s_dir):
+                    try:
+                        filename = os.path.isfile(os.path.join(s_dir, f))
+                    except UnicodeDecodeError as e:
+                        logging.error("############## wrong file name %s, %s ##############", f, e)
+                        # f = f.decode('utf-8')
+                        continue
+                    if os.path.isfile(os.path.join(s_dir, f)):
+                        s_dir_file = load_file(os.path.join(s_dir, f))
+                        s_dir_files.append(s_dir_file)
 
-            dir_level = s_dir.count(os.sep) - layer_dir_level
-            s_dir_files = []
-            for f in os.listdir(s_dir):
-                try:
-                    filename = os.path.isfile(os.path.join(s_dir, f))
-                except UnicodeDecodeError as e:
-                    print("############## wrong file name %s, %s, %s, %s ##############", f, e, s_dir, layer_filename)
-                    # f = f.decode('utf-8')
-		    continue
-                if os.path.isfile(os.path.join(s_dir, f)):
-                    s_dir_file = load_file(os.path.join(s_dir, f))
-                    s_dir_files.append(s_dir_file)
-
-            sub_dir = {
-                'subdir': s_dir.replace(layer_dir, ""),
-                'dir_depth': dir_level,
-                'file_cnt': len(s_dir_files),
-                'files': s_dir_files,  # full path of f = dir/files
-                'dir_size': sum_dir_size(s_dir_files)
-            }
+##<<<<<< HEAD
+#    for path, subdirs, files in os.walk(layer_dir):
+#        for dirname in subdirs:
+#            s_dir = os.path.join(path, dirname)
+#            if not os.path.isdir(s_dir):
+#                logging.warn('################### layer subdir %s is invalid ###################',
+#                             s_dir.replace(layer_dir, ""))
+#                # q_bad_unopen_layers.put(
+#                #     'sha256:' + layer_id.split("-")[1] + ':layer-subdir-error:' + s_dir.replace(layer_dir, ""))
+#                continue
+#
+#            dir_level = s_dir.count(os.sep) - layer_dir_level
+#            s_dir_files = []
+#            for f in os.listdir(s_dir):
+#                try:
+#                    filename = os.path.isfile(os.path.join(s_dir, f))
+#                except UnicodeDecodeError as e:
+#                    print("############## wrong file name %s, %s, %s, %s ##############", f, e, s_dir, layer_filename)
+#                    # f = f.decode('utf-8')
+#		    continue
+#                if os.path.isfile(os.path.join(s_dir, f)):
+#                    s_dir_file = load_file(os.path.join(s_dir, f))
+#                    s_dir_files.append(s_dir_file)
+#
+#            sub_dir = {
+#                'subdir': s_dir.replace(layer_dir, ""),
+#                'dir_depth': dir_level,
+#                'file_cnt': len(s_dir_files),
+#                'files': s_dir_files,  # full path of f = dir/files
+#                'dir_size': sum_dir_size(s_dir_files)
+#            }
+#=======
+                sub_dir = {
+                    'subdir': s_dir.replace(layer_dir, ""),
+                    'dir_depth': dir_level,
+                    'file_cnt': len(s_dir_files),
+                    'files': s_dir_files,  # full path of f = dir/files
+                    'dir_size': sum_dir_size(s_dir_files)
+                }
+#>>>>>>> a02f972d6374d2fa95a83ebc6fbb61e4ece6b3b8
 
 # <<<<<<< HEAD
             sub_dirs.append(sub_dir)
+    except UnicodeDecodeError as e:
+        logging.error("############## Skip this tarball wrong tar ball %s, %s ##############", f, e)
+        sub_dirs = []
+        uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
+        return sub_dirs, uncompressed_archival_size
+
     uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
     return sub_dirs, uncompressed_archival_size
 # =======
