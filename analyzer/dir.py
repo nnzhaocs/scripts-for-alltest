@@ -203,38 +203,6 @@ def load_dirs(layer_filename):
                         s_dir_file = load_file(os.path.join(s_dir, f))
                         s_dir_files.append(s_dir_file)
 
-##<<<<<< HEAD
-#    for path, subdirs, files in os.walk(layer_dir):
-#        for dirname in subdirs:
-#            s_dir = os.path.join(path, dirname)
-#            if not os.path.isdir(s_dir):
-#                logging.warn('################### layer subdir %s is invalid ###################',
-#                             s_dir.replace(layer_dir, ""))
-#                # q_bad_unopen_layers.put(
-#                #     'sha256:' + layer_id.split("-")[1] + ':layer-subdir-error:' + s_dir.replace(layer_dir, ""))
-#                continue
-#
-#            dir_level = s_dir.count(os.sep) - layer_dir_level
-#            s_dir_files = []
-#            for f in os.listdir(s_dir):
-#                try:
-#                    filename = os.path.isfile(os.path.join(s_dir, f))
-#                except UnicodeDecodeError as e:
-#                    print("############## wrong file name %s, %s, %s, %s ##############", f, e, s_dir, layer_filename)
-#                    # f = f.decode('utf-8')
-#		    continue
-#                if os.path.isfile(os.path.join(s_dir, f)):
-#                    s_dir_file = load_file(os.path.join(s_dir, f))
-#                    s_dir_files.append(s_dir_file)
-#
-#            sub_dir = {
-#                'subdir': s_dir.replace(layer_dir, ""),
-#                'dir_depth': dir_level,
-#                'file_cnt': len(s_dir_files),
-#                'files': s_dir_files,  # full path of f = dir/files
-#                'dir_size': sum_dir_size(s_dir_files)
-#            }
-#=======
                 sub_dir = {
                     'subdir': s_dir.replace(layer_dir, ""),
                     'dir_depth': dir_level,
@@ -242,9 +210,6 @@ def load_dirs(layer_filename):
                     'files': s_dir_files,  # full path of f = dir/files
                     'dir_size': sum_dir_size(s_dir_files)
                 }
-#>>>>>>> a02f972d6374d2fa95a83ebc6fbb61e4ece6b3b8
-
-# <<<<<<< HEAD
             sub_dirs.append(sub_dir)
     except UnicodeDecodeError as e:
         logging.error("############## Skip this tarball wrong tar ball %s, %s ##############", f, e)
