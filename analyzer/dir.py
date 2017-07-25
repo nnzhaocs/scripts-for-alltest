@@ -22,10 +22,17 @@ def clear_dir(layer_id, extracting_dir):
     """ first archive this dir """
     start = time.time()
     abs_zip_file_name = os.path.join(layer_dir, layer_id+'-uncompressed-archival.zip')
-
-    tar = tarfile.open(abs_zip_file_name, "w")
-    tar.add(layer_dir, recursive=True)
-    tar.close()
+    cmd = 'tar -cf %s %s' % (abs_zip_file_name, layer_dir)
+    logging.debug('The shell command: %s', cmd)
+    try:
+        subprocess.check_output(cmd, shell=True)
+    except subprocess.CalledProcessError as e:
+        print '###################' + e.output + '###################'
+        logging.error("############## cannot archive file %s ##############", layer_id)
+	return -1
+    #tar = tarfile.open(abs_zip_file_name, "w")
+    #tar.add(layer_dir, recursive=True)
+    #tar.close()
     elapsed = time.time() - start
     logging.info('archival directory, consumed time ==> %f s', elapsed)
 
@@ -43,6 +50,15 @@ def clear_dir(layer_id, extracting_dir):
         subprocess.check_output(cmd4, shell=True)
     except subprocess.CalledProcessError as e:
         print '###################'+e.output+'#######################'
+
+    cmd4 = 'rm -rf %s' % abs_zip_file_name
+    logging.debug('The shell command: %s', cmd4)
+    try:
+        subprocess.check_output(cmd4, shell=True)
+    except subprocess.CalledProcessError as e:
+        print '###################'+e.output+'#######################'
+        return -1
+
     elapsed = time.time() - start
     logging.info('clear dirs, consumed time ==> %f s', elapsed)
 
@@ -111,6 +127,10 @@ def load_dirs(layer_filename):
             logging.debug('sha256:' + layer_filename.split("-")[1] + ':tar-no-space-error')
             uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
             return sub_dirs, uncompressed_archival_size
+        elif "gzip: stdin: unexpected end of file" in e.output:
+            logging.debug('sha256:' + layer_filename.split("-")[1] + ':tar-incomplete-downloading')
+            uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
+            return sub_dirs, uncompressed_archival_size
         else:
             logging.debug('sha256:' + layer_filename.split("-")[1] + ':tar-common-error')
 
@@ -144,6 +164,12 @@ def load_dirs(layer_filename):
             dir_level = s_dir.count(os.sep) - layer_dir_level
             s_dir_files = []
             for f in os.listdir(s_dir):
+                try:
+                    filename = os.path.isfile(os.path.join(s_dir, f))
+                except UnicodeDecodeError as e:
+                    print("############## wrong file name %s, %s, %s, %s ##############", f, e, s_dir, layer_filename)
+                    # f = f.decode('utf-8')
+		    continue
                 if os.path.isfile(os.path.join(s_dir, f)):
                     s_dir_file = load_file(os.path.join(s_dir, f))
                     s_dir_files.append(s_dir_file)

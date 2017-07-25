@@ -7,7 +7,7 @@ from dir import *
 from draw_pic import *
 from utility import *
 from jobdivider import *
-from get_metrics_data import *
+#from get_metrics_data import *
 
 
 def run_analyzelayer(args):
