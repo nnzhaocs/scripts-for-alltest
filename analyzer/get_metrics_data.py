@@ -21,6 +21,8 @@ def layer_distribution(args):
 	#while not q_analyzed_layer_json.empty():
         print i
 
+    with open("saved_analyzed_layer_jsonfile.out", 'w+') as f_analyzed_layer:
+        json.dump(q_analyzed_layer_jsons, f_analyzed_layer)
     #distribution_plot()
 
 
@@ -54,9 +56,9 @@ def load_layer_json(layer_json_filename):
             lj_f.close()
             return None
 
-        uncompressed_sum_of_files = json_data['size']['uncompressed_sum_of_files'] / 1024 / 1024
-        compressed_size_with_method_gzip = json_data['size']['compressed_size_with_method_gzip'] / 1024 / 1024
-        archival_size = json_data['size']['archival_size'] / 1024 / 1024
+        uncompressed_sum_of_files = json_data['size']['uncompressed_sum_of_files']
+        compressed_size_with_method_gzip = json_data['size']['compressed_size_with_method_gzip']
+        archival_size = json_data['size']['archival_size']
 
         dir_max_depth = json_data['layer_depth']['dir_max_depth']
 
