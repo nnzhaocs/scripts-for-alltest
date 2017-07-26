@@ -7,8 +7,11 @@ from dir import *
 from draw_pic import *
 from utility import *
 from jobdivider import *
-#from get_metrics_data import *
+from get_metrics_data import *
+from plot_graph import *
 
+def run_plot(args):
+    plot_all(args)
 
 def run_analyzelayer(args):
     start = time.time()

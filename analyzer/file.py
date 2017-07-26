@@ -28,8 +28,8 @@ def load_file(abs_filename):
     link = None
     f_size = 0
 
-    mode = os.stat(abs_filename).st_mode
-    stat = os.stat(abs_filename)
+    mode = os.lstat(abs_filename).st_mode
+    stat = os.lstat(abs_filename)
 
     # statinfo = {
     #     'st_nlink': stat.st_nlink,
@@ -56,7 +56,7 @@ def load_file(abs_filename):
     elif S_ISREG(mode):
         f_size = os.lstat(abs_filename).st_size
         if f_size > 1000000000:
-            logging.warn("##################### Too large file %d, name: %s ################", f_size, abs_filename)
+            logging.warn("##################### Too large file %d > 100000000000, name: %s ################", f_size, abs_filename)
 
         try:
             sha256 = hashlib.md5(open(abs_filename, 'rb').read()).hexdigest()
