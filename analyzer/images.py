@@ -28,13 +28,14 @@ q_analyzed_layer_jsons = []
 q_dir_manifest_jsons = []
 
 
-def create_image_db():
+def create_image_db(args):
     """create image database as a json file"""
     logging.info('=============> create_image_db: create image metadata json file <===========')
+
     queue_images()
 
     print "create pool"
-    P = multiprocessing.Pool(60)
+    P = multiprocessing.Pool(6)
     print "before map"
     P.map(load_image_manifest, q_dir_manifest_jsons)
     # P.close()
@@ -47,22 +48,27 @@ def queue_images():
     """queue the image in analyzed_filename, image name = usernamespace/repo"""
 
     """queue the manifest in dest_dir/manifests, manifest name = usrnamespace-repo-timestamp"""
+    logging.debug("start queue_images")
+    i = 0
     for path, _, manifest_filenames in os.walk(dest_dir[0]['manifest_dir']):
         for manifest_filename in manifest_filenames:
-            logging.debug('manifest: %s', manifest_filename)  # str(layer_id).replace("/", "")
+            #logging.debug('manifest: %s', manifest_filename)  # str(layer_id).replace("/", "")
+            i = i + 1 
+            if i > 50:
+                break               
             q_dir_manifest_jsons.append(manifest_filename)
             logging.debug('queue q_dir_manifest_jsons: %s', manifest_filename)  # str(layer_id).replace("/", "")
 
     """queue the manifest in dest_dir/layer_db_json_dir, layer db json name = sha256-digest-timestamp.json"""
     for path, _, layer_json_filenames in os.walk(dest_dir[0]['layer_db_json_dir']):
         for layer_json_filename in layer_json_filenames:
-            logging.debug('manifest: %s', layer_json_filename)  # str(layer_id).replace("/", "")
+            #logging.debug('manifest: %s', layer_json_filename)  # str(layer_id).replace("/", "")
             q_analyzed_layer_jsons.append(layer_json_filename)
             logging.debug('queue q_analyzed_layer_jsons: %s', layer_json_filename)  # str(layer_id).replace("/", "")
 
 
 def is_valid_manifest(manifest_filename):
-    if len(manifest_filename.split("-")) != 3:
+    if len(manifest_filename.split("-")) < 2:
         logging.debug('The manifest filename is invalid %s!', manifest_filename)
         return False
     if not os.path.isfile(os.path.join(dest_dir[0]['manifest_dir'], manifest_filename)):
@@ -172,37 +178,45 @@ def load_image_manifest(manifest_filename):  # dest_dir[0]['layer_db_json_dir']
         # q_manifest_list_image.put()
         # q_dir_images.task_done()
         # continue
-
+    image_data = load_layer_jsons(layer_json_filenames)
+    image_data_info = sum_image_info(image_data)
+    size = {
+	'uncompressed_sum_of_files': image_data_info['uncompressed_sum_of_files'],
+	'compressed_size_with_method_gzip': image_data_info['compressed_size_with_method_gzip'],
+	'archival_size': image_data_info['archival_size'],
+	#'file_cnt': image_data_info['file_cnt']
+    }
     image = {
         'manifest version': version,  # str(layer_id).replace("/", ""),
-        'tag': manifest_filename.split("-")[1],  # getLayersSize(chainid),
-        'docker version': None,
-        'os': None,
-        'architecture': None,
-        'pull_cnt': None,
+        'tag': 'latest',  # getLayersSize(chainid),
+        #'docker version': None,
+        #'os': None,
+        #'architecture': None,
+        #'pull_cnt': None,
         # ==================================================
-
-        'size': 0,
-
+        'size': size,
         # 'pull_cnt': 0,
-        'file_cnt': 0,
-        'layer_cnt': len(blobs_digest),
+        'file_cnt': image_data_info['file_cnt'],
+        'layer_cnt': len(blobs_digest)
         # ==================================================
-        'layers': load_layer_jsons(layer_json_filenames)  # getLayersBychainID(chain_id),
+        #'layers': image_data #load_layer_jsons(layer_json_filenames)  # getLayersBychainID(chain_id),
     }
-
+   
     absimage_filename = os.path.join(dest_dir[0]['image_db_json_dir'], manifest_filename+'.json')
     logging.info('write to image json file: %s', absimage_filename)
     with open(absimage_filename, 'w') as f_out:
         json.dump(image, f_out)
 
     logging.debug('wrote image:[%s]: to json file %s', manifest_filename, absimage_filename)
-    # q_flush_analyzed_layers.put(manifest_filename)
+    del image_data
+    del image_data_info
+	 # q_flush_analyzed_layers.put(manifest_filename)
     # q_dir_layers.task_done()
 
 
 def load_layer_jsons(layer_json_filenames):
     layer_json_datas = []
+    print "load layer jsons"
     for layer_json_filename in layer_json_filenames:
         if os.path.join(dest_dir[0]['layer_db_json_dir'], layer_json_filename):
             with open(os.path.join(dest_dir[0]['layer_db_json_dir'], layer_json_filename), 'r') as l_f:
@@ -210,25 +224,35 @@ def load_layer_jsons(layer_json_filenames):
 
             if layer_json_data:
                 layer_json_datas.append(layer_json_data)
+    return layer_json_datas
 
 
+def sum_image_info(layer_json_datas):
+    layer_base_info = {}
+    layer_base_info['uncompressed_sum_of_files'] = 0
+    layer_base_info['compressed_size_with_method_gzip'] = 0
+    layer_base_info['archival_size'] = 0
 
+    #layer_base_info['dir_max_depth'] = dir_max_depth
+    layer_base_info['file_cnt'] = 0
 
+    if not layer_json_datas:
+        logging.debug("layer_json_datas is none!") 
+    for json_data in layer_json_datas:
+ 	uncompressed_sum_of_files = json_data['size']['uncompressed_sum_of_files']
+        compressed_size_with_method_gzip = json_data['size']['compressed_size_with_method_gzip']
+        archival_size = json_data['size']['archival_size']
 
+        dir_max_depth = json_data['layer_depth']['dir_max_depth']
 
+        file_cnt = json_data['file_cnt']
 
+    layer_base_info['uncompressed_sum_of_files'] = layer_base_info['uncompressed_sum_of_files'] + uncompressed_sum_of_files
+    layer_base_info['compressed_size_with_method_gzip'] = layer_base_info['compressed_size_with_method_gzip'] + compressed_size_with_method_gzip
+    layer_base_info['archival_size'] = layer_base_info['archival_size'] + archival_size
 
+    #layer_base_info['dir_max_depth'] = dir_max_depth
+    layer_base_info['file_cnt'] = layer_base_info['file_cnt'] + file_cnt
 
-
-
-
-
-
-
-
-
-
-
-
-
+    return layer_base_info
 

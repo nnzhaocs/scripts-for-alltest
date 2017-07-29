@@ -74,7 +74,8 @@ def load_layer_json(layer_json_filename):
 
     layer_base_info['dir_max_depth'] = dir_max_depth
     layer_base_info['file_cnt'] = file_cnt
-
+    layer_base_info['sum_to_gzip_ratio'] = uncompressed_sum_of_files*1.0/compressed_size_with_method_gzip
+    layer_base_info['archival_to_gzip_ratio'] = archival_size*1.0/compressed_size_with_method_gzip
     logging.debug("Put tuple: %s to queues!", layer_base_info)
     return layer_base_info
     #q_analyzed_layer_jsons.put(layer_base_info)

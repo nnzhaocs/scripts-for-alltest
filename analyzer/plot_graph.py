@@ -43,22 +43,22 @@ def plot_graph(type):
 	data = [x * 1.0 / 1024 / 1024 for x in data1]
     elif type == 'compressed_size_with_method_gzip':
         data1 = layer_base_info['size']['compressed_size_with_method_gzip']
-        xlabel = 'compressed_size_with_method_gzip (MB)'
+        xlabel = 'Compressed layer tarball size (MB)'
 	data = [x * 1.0 / 1024 / 1024 for x in data1]
 	xlim = max(data)
     elif type == 'archival_size':
         data1 = layer_base_info['size']['archival_size']
-        xlabel = 'archival_size (MB)'
+        xlabel = 'Uncompressed layer tarball size (MB)'
 	data = [x * 1.0 / 1024 / 1024 for x in data1]
-	xlim = 2000
+	xlim = 250
     elif type == 'dir_max_depth':
         data = layer_base_info['dir_depth']['dir_max_depth']
-        xlabel = 'dir_max_depth'
-	xlim = max(data)
+        xlabel = 'Maximum directory depth for each layer'
+	xlim = 25
     elif type == 'file_cnt':
         data = layer_base_info['file_cnt']
-        xlabel = 'file_cnt'
-	xlim = 2000
+        xlabel = 'File count for each layer'
+	xlim = 300
 
     #data = [x * 1.0 / 1024 / 1024 for x in data1]
     #xlim = int(mean(data))  # max(data1)
