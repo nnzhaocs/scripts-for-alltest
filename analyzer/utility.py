@@ -16,10 +16,10 @@ from imports import *
 layer_db_json_name = 'layer_db_json_bison02'
 dest_dir = []
 
-num_worker_process = 30
+num_worker_process = 31
 
-num_worker_threads = 2
-num_flush_threads = 3
+num_worker_threads = 6
+num_flush_threads = 2
 
 # threads = []
 # flush_threads = []
