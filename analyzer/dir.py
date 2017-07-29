@@ -200,9 +200,14 @@ def load_dirs(layer_filename):
                         logging.error("############## wrong file name %s, %s ##############", f, e)
                         # f = f.decode('utf-8')
                         continue
+                    except OSError as e:
+                        logging.error("############## wrong file name %s, %s ##############", f, e)
+                        # f = f.decode('utf-8')
+                        continue
                     if os.path.isfile(os.path.join(s_dir, f)):
                         s_dir_file = load_file(os.path.join(s_dir, f))
-                        s_dir_files.append(s_dir_file)
+			if s_dir_file:
+                            s_dir_files.append(s_dir_file)
 
                 sub_dir = {
                     'subdir': s_dir.replace(layer_dir, ""),

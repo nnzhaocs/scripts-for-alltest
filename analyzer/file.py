@@ -22,6 +22,8 @@ def get_file_type(mode):
 
 
 def load_file(abs_filename):
+    if not os.path.isfile(abs_filename):
+	return None
     sha256 = None
     f_type = None
     extension = None
@@ -72,7 +74,10 @@ def load_file(abs_filename):
                     data = f.read(read_size)
             sha256 = sha256.hexdigest()
 
-        f_type = me.from_file(abs_filename)
+        try:
+	    f_type = me.from_file(abs_filename)
+	except:
+	    logging.debug("##################### MagicException:file %d #####################: %s", abs_filename)
         extension = os.path.splitext(abs_filename)[1]
 
     dir_file = {
