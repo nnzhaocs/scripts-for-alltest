@@ -77,7 +77,7 @@ def run_createimagedb(args):
         logging.error('%s is not a valid dir', args.dest_dir)
         return
 
-    manifest_dir = os.path.join(args.dest_dir, "manifests")
+    manifest_dir = os.path.join(args.dest_dir, manifests_name)
     if not os.path.isdir(manifest_dir):
         logging.error('%s is not a valid dir', manifest_dir)
         return
@@ -120,12 +120,12 @@ def run_createimagedb(args):
     dest_dir.append(dir)
     logging.info('dest dir is: %s', dest_dir)
 
-    logging.info('analyzed_image_file is: %s', args.analyzed_file)
-    if not os.path.isfile(args.analyzed_file):
-        logging.error('%s is not a valid file', args.analyzed_file)
-        return
+    #logging.info('analyzed_image_file is: %s', args.analyzed_file)
+    #if not os.path.isfile(args.analyzed_file):
+     #   logging.error('%s is not a valid file', args.analyzed_file)
+      #  return
 
-    create_image_db(args.analyzed_image_file)
+    create_image_db(args)
 
     elapsed = time.time() - start
     logging.info('create image json file, consumed time ==> %f', (elapsed / 3600))

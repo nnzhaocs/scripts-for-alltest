@@ -102,7 +102,7 @@ def main():
         parser.add_option('-f', '--filename', action='store', dest="filename", help="The input file name. e.g., images.tsv", default="images.tsv")
         options, args = parser.parse_args()
         #print parser.filename
-        print 'Input file name: ', options.filename
+        print ('Input file name: %s', options.filename)
 
 	cmd_stars='awk -F\''+r','+'\' \'{print $1}\' %s > image_stars.txt' % options.filename
 	cmd_pulls='awk -F\''+r','+'\' \'{print $2}\' %s > image_pulls.txt' % options.filename
@@ -130,19 +130,19 @@ def main():
 
 	data = data_stars
 	xlabel = 'Star count for each image'  # data = [x * 1.0 / 1024 / 1024 for x in data1]
-	xlim = 25  # max(data1)
+	xlim = 5  # max(data1)
 	ticks = 25
 	print xlim
 	plot_cdf(fig, data, xlabel, xlim, ticks)
 	
-	fig = fig_size('small')  # 'large'
+	fig = fig_size('min')  # 'large'
 	
 	data = data_pulls
 	xlabel = 'Pull count for each image'  # data = [x * 1.0 / 1024 / 1024 for x in data1]
-	xlim = 2000  # max(data1)
+	xlim = 250  # max(data1)
 	ticks = 25
 	print xlim
-	plot_cdf(fig, data, xlabel, xlim, ticks)
+	plot_cdf_normal(fig, data, xlabel, xlim, ticks)
 
 if __name__=='__main__':
 	print 'here'
