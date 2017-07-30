@@ -69,7 +69,7 @@ def clear_dir(layer_id, extracting_dir):
         logging.debug("uncompressed_archival_wrong!!! name: %s", layer_id)
 
     start = time.time()
-    cmd4 = 'rm -rf %s' % layer_dir
+    cmd4 = 'rm -rf %s' % (layer_dir+'*')
     logging.debug('The shell command: %s', cmd4)
     try:
         subprocess.check_output(cmd4, shell=True)
@@ -80,13 +80,15 @@ def clear_dir(layer_id, extracting_dir):
         return -1
 #>>>>>>> a02f972d6374d2fa95a83ebc6fbb61e4ece6b3b8
 
-    cmd4 = 'rm -rf %s' % abs_zip_file_name
-    logging.debug('The shell command: %s', cmd4)
-    try:
-        subprocess.check_output(cmd4, shell=True)
-    except subprocess.CalledProcessError as e:
-        print '###################'+e.output+'#######################'
-        return -1
+    #cmd4 = 'rm -rf %s' % abs_zip_file_name
+    #logging.debug('The shell command: %s', cmd4)
+    #try:
+    #    subprocess.check_output(cmd4, shell=True)
+    #except subprocess.CalledProcessError as e:
+    #    print '###################'+e.output+'#######################'
+    #    return -1
+
+    ##cmd = 'rm -rf %s'
 
     elapsed = time.time() - start
     logging.info('clear dirs, consumed time ==> %f s', elapsed)
@@ -122,14 +124,14 @@ def load_dirs(layer_filename):
     # dir_files = defaultdict(list)
     # file_infos = {}
     # files = {}
-
+    #return sub_dirs, -1
     """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
     extracting to extracting_dir/<layer_id>
     load all the subdirs in this layer-id dir
     Then clean the layer-id dir """
 
     layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_filename)
-    logging.debug('Extracting the file ==========> %s' % layer_file)
+    #logging.debug('Extracting the file ==========> %s' % layer_file)
 
     extracting_dir = dest_dir[0]['extracting_dir']
     layer_dir = os.path.join(extracting_dir, layer_filename)
@@ -143,10 +145,38 @@ def load_dirs(layer_filename):
         uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
         return sub_dirs, uncompressed_archival_size
 
-    logging.debug('to ==========> %s', layer_dir)
+    cp_layer_tarball_name = os.path.join(extracting_dir, layer_filename+'-cp.tar.gzip')
+    logging.debug('cp tarball to ==========> %s', layer_dir)
 
     start = time.time()
-    cmd = 'tar -pzxf %s -C %s' % (layer_file, layer_dir)
+    cmd = 'cp %s  %s' % (layer_file, cp_layer_tarball_name)
+    logging.debug('The shell command: %s', cmd)
+    try:
+        subprocess.check_output(cmd, shell=True)
+    except subprocess.CalledProcessError as e:
+        print '###################' + e.output + '###################'
+        #if "No space left on device" in e.output:
+        #    logging.debug('sha256:' + layer_filename.split("-")[1] + ':tar-no-space-error')
+        uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
+        return sub_dirs, uncompressed_archival_size
+        #elif "gzip: stdin: unexpected end of file" in e.output:
+        #    logging.debug('sha256:' + layer_filename.split("-")[1] + ':tar-incomplete-downloading')
+        #    uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
+        #    return sub_dirs, uncompressed_archival_size
+        #else:
+        #    logging.debug('sha256:' + layer_filename.split("-")[1] + ':tar-common-error')
+
+    elapsed = time.time() - start
+    logging.info('copy compressed tarball, ==> %f s', elapsed)
+    #logging.debug('FINISHED! to ==========> %s', layer_dir)
+    if not os.path.isfile(cp_layer_tarball_name):
+        logging.warn('cp layer tarball file %s is invalid', cp_layer_tarball_name)
+        uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
+        return sub_dirs, uncompressed_archival_size    
+
+    logging.debug('STAT Extracting the file ==========> %s' % layer_file)
+    start = time.time()
+    cmd = 'tar -pzxf %s -C %s' % (cp_layer_tarball_name, layer_dir)
     logging.debug('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, shell=True)
@@ -165,7 +195,7 @@ def load_dirs(layer_filename):
 
     elapsed = time.time() - start
     logging.info('decompress tarball, consumed time ==> %f s', elapsed)
-
+    logging.debug('FINISHED! to ==========> %s', layer_dir)
     if not os.path.isdir(layer_dir):
         logging.warn('layer dir %s is invalid', layer_dir)
         uncompressed_archival_size = clear_dir(layer_filename, extracting_dir)
