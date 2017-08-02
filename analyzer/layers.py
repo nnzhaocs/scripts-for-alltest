@@ -186,6 +186,7 @@ def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_ba
             continue
 
         if not is_valid_tarball(layer_filename):
+	    print "###########################layer_file %s is not valid!####################" % layer_filename
             job_queue.task_done()
             continue
 
@@ -233,7 +234,7 @@ def load_layer(job_queue, q_analyzed_layers, q_flush_analyzed_layers, q_flush_ba
 
         abslayer_filename = os.path.join(layer_db_json_dir, layer_filename+'.json')
         logging.info('write to layer json file: %s', abslayer_filename)
-        with open(abslayer_filename, 'w') as f_out:
+        with open(abslayer_filename, 'w+') as f_out:
             json.dump(layer, f_out)
 
         logging.debug('write layer_id:[%s]: to json file %s', layer_filename, abslayer_filename)
