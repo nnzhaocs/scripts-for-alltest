@@ -3,9 +3,21 @@ A Tool for downloading all the images from docker hub and analyzing these images
 
 ## Installation
 ### Requirments 
-*Go 1.7.4 or above*
+*Go 1.7.4 or above, and setup GOPATH*
 
 *Python 2.7.4 or above, and some python packages*
+
+*for example*
+
+sudo yum install python-matplotlib
+
+Sudo yum install python-magic
+
+sudo yum -y install epel-release
+
+sudo yum -y install python-pip
+
+sudo pip install statistics
 
 ### Setup docker-registry-client lib and downloader
 1. go get -v github.com/heroku/docker-registry-client
