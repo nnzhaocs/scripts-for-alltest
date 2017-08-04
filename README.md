@@ -20,16 +20,21 @@ For Analyzer & Plotter:
 
 * for example for CentOS 7.3*
 
-sudo yum install python-matplotlib
-	for plotting but imported in downloader and analyzer as well
-
-sudo yum install python-magic
-	for file magic detection
-
 sudo yum -y install epel-release
 	for pip (which we later use for installing statistics package)
 
 sudo yum -y install python-pip
+	install pip from epel
+
+sudo pip install python-magic
+	INSTALL USING PIP
+	for file magic detection
+	ATTENTION: there are two Python packages named "magic" we must
+	use the one that runs via pip not via RPM.
+
+sudo yum install python-matplotlib
+	for plotting but imported in downloader and analyzer as well
+
 
 sudo pip install statistics
 
@@ -101,6 +106,37 @@ root# python auto_download_compressed_images.py
 
 ### Run analyzer
 
+XXX: rename main.py
+
+Supports four mutually exclusive modes:
+
+<-L,-J,-P,-I>
+
+-J - job devider
+-L - layer analyzer
+-I - image analyzer
+
+## Plotter 
+
+-P - plot
+
+1. Job divider (-J)
+
+python main.py [-D] -J -d /gpfs/docker_images_largefs/
+
+Creates a directory "job_list_dir" which contains 
+four files:
+
+	1) list_less_50m.json,
+	2) list_less_1g.json,
+	3) list_less_2g.json,
+	4) list_bigger_2g.json
+
+-D - debug
+-d - directory with layers; <layers> subdirectory must exist and containe all the layers
+
+
+
 *1. Analyze tarballs less than 50MB*
 
 mount -t tmpfs -o size=50960m tmpfs /mnt/extracting_dir
@@ -113,9 +149,6 @@ python main.py -D -L -d /gpfs/docker_images_largefs/ -a analyzed_layer_file-less
 
 python main.py -D -L -d /gpfs/docker_images_largefs/ -a analyzed_layer_file-bigger-2g.out -s /gpfs/docker_images_largefs/job_list_dir/list_bigger_2g.out  -e /mnt/largerssd/ &> analyzer_bigger-1g-8-2.log &
 
-*3. Job divider*
-
-python main.py -D -J -d /gpfs/docker_images_largefs/
 
 *4. Plot_graph*
 
