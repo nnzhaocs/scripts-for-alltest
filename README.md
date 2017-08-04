@@ -3,38 +3,101 @@ A Tool for downloading all the images from docker hub and analyzing these images
 
 ## Installation
 ### Requirments 
+
+TODO: split README (and code, if needed) based on requirements:
+
+For Downloader:
+
 *Go 1.7.4 or above, and setup GOPATH*
 
 *Python 2.7.4 or above, and some python packages*
 
-*for example*
+yum install go python
+
+setup GOPATH
+
+For Analyzer & Plotter:
+
+* for example for CentOS 7.3*
 
 sudo yum install python-matplotlib
+	for plotting but imported in downloader and analyzer as well
 
-Sudo yum install python-magic
+sudo yum install python-magic
+	for file magic detection
 
 sudo yum -y install epel-release
+	for pip (which we later use for installing statistics package)
 
 sudo yum -y install python-pip
 
 sudo pip install statistics
 
+## Crowler
+
+Explain how to use and what it produces.
+
+## Downloader
+
+### List of files
+
+xxx - short description
+xxx - short description
+xxx - short description
+
+XXX: Modify to be able to graciously to shutdown the downloading process.
+
 ### Setup docker-registry-client lib and downloader
+
 1. go get -v github.com/heroku/docker-registry-client
+	Download the library from github.
+
 2. cp down_loader.go auto_download_compressed_images.py ****.patch $GOPATH/src/github.com/heroku/docker-registry-client/
-3. git am ****.patch //apply ****.patch file to $GOPATH/src/github.com/heroku/docker-registry-client/registry/manifest.go   
-4. make
+	Copy downloader files to the directory (XXX)
+	
+3. patch -p1 < patch-changes-to-manifest.patch
+	Apply the patch
+
+4.  cd && make
+
+
 ### Run downloader
 *1. Check if the down_loader works by downloading a repo library/redis*
 
 go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test.manifest
 
+(XXX: outfile is absfilename)
+
+
 go run down_loader.go -operation=download_blobs -repo=library/redis 
 -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test.tarball
 
+(XXX: tag is confusing)
+
 *2. Run the downloader to massively download the repos*
 
-root# python auto_download_compressed_images.py -f unique_name.out -d /gpfs/docker_images_largefs/ -l /home/nannan/docker-remetrics/downloader/finished_layer_list.out -r /home/nannan/docker-remetrics/downloader/finished_repo_list.out &> downloader-8-2.log &
+mkdir -p /tmp/downloaded/layers
+mkdir -p /tmp/downloaded/configs
+touch  /tmp/downloaded-layers.lst
+touch  /tmp/downloaded-images.lst
+
+root# python auto_download_compressed_images.py
+	-f /tmp/repos_to_download.lst
+	-d /tmp/downloaded/
+	-l /tmp/downloaded-layers.lst 
+	-r /tmp/downloaded-images.lst &> downloader.log &
+
+-f <file containing the list of repositories to download>
+	The format of the file is CSV with the first column is star count, second column
+	is a pull count and the last (third) column is the name of the repo.
+	XXX: Where does this file come from? Explain.
+-d <directory where to put manifests, configs, and layers. configs/ and layers/ subdirecotries must exist>
+-l <file containing the list of layer digests that are already downloaded, newline separated digests>
+	This file is read AND appended with newly downloaded layers
+-r <file containing the list of repositories that are already downloaded>
+	This file is read AND appended with newly downloaded images
+
+## Analyzer
 
 ### Run analyzer
 
