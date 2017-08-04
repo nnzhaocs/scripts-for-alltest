@@ -26,18 +26,25 @@ root# python auto_download_compressed_images.py -f unique_name.out -d /gpfs/dock
 
 ### Run analyzer
 
-*1. analyze tarballs less than 50MB
+*1. Analyze tarballs less than 50MB*
 
 mount -t tmpfs -o size=50960m tmpfs /mnt/extracting_dir
+
 python main.py -D -L -d /gpfs/docker_images_largefs/ -a analyzed_layer_file-less-50m.out -s /gpfs/docker_images_largefs/job_list_dir/list_less_50m.out  -e /mnt/extracting_dir/ &> analyzer_less-50m-8-2.log &
 
-*number of workers: less than 50mb(60), less than 1g(20), less than 2g(5)
+*number of workers: less than 50mb(60), less than 1g(20), less than 2g(5)*
 
-*2. analyze tarballs larger than 2g
+*2. Analyze tarballs bigger than 2g*
 
 python main.py -D -L -d /gpfs/docker_images_largefs/ -a analyzed_layer_file-bigger-2g.out -s /gpfs/docker_images_largefs/job_list_dir/list_bigger_2g.out  -e /mnt/largerssd/ &> analyzer_bigger-1g-8-2.log &
 
-*3. analyze manifest: todo
+*3. Job divider*
+
+python main.py -D -J -d /gpfs/docker_images_largefs/
+
+*4. Plot_graph*
+
+python main.py -D -P -d /gpfs/docker_images_largefs/
 
 ## Tests
 
