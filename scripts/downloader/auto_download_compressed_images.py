@@ -176,13 +176,13 @@ def download():
             print "repo queue is empty!"
             break
         """check if this repo already downloaded"""
-        with lock_repo:
-            if repo['name'] in finished_repo_q.queue:
-                print "Repo Already Exist!"
-                is_repo_exist = True
-            else:
-                is_repo_exist = False
-                print "Layer Not Exist!"
+        #with lock_repo:
+        if repo['name'] in finished_repo_q.queue:
+            print "Repo Already Exist!"
+            is_repo_exist = True
+        else:
+            is_repo_exist = False
+            print "Layer Not Exist!"
 
         if is_repo_exist:
             q.task_done()
@@ -233,30 +233,32 @@ def download():
         q.task_done()
 
 
-def get_image_names(name):
-    """process image file list and store the names in a file"""
-    cmd1 = 'cp %s image-list.xls' % name
-    cmd2 = 'awk -F\'' + ',' + '\' \'{print $3}\' image-list.xls > image-names.xls'
-    print cmd1
-    print cmd2
-    rc = os.system(cmd1)
-    assert (rc == 0)
-    rc = os.system(cmd2)
-    assert (rc == 0)
+#def get_image_names(name):
+#    """process image file list and store the names in a file"""
+#    cmd1 = 'cp %s image-list.xls' % name
+#    cmd2 = 'awk -F\'' + ',' + '\' \'{print $3}\' image-list.xls > image-names.xls'
+#    print cmd1
+#    print cmd2
+#    rc = os.system(cmd1)
+#    assert (rc == 0)
+#    rc = os.system(cmd2)
+#    assert (rc == 0)
 
 
-def queue_names():
-    with open('image-names.xls') as fd:
+def queue_names(filename):
+    with open(filename) as fd:
         for name1 in fd:
             if not name1:
                 continue
             name = str(name1).replace(" ", "").replace("\n", "")
             if name is None:
                 continue
-            if '/' in name:
+            if '/' not in name:
                 print "This is an official repo, add library to it"
+		print name
                 name2 = "library/"+name
                 name = name2
+		print "official repo: %s"%name
             repo = {
                 'name': name,
                 # 'is_official': is_official_repo(name),
@@ -281,18 +283,18 @@ def load_finished_file(filename, q_name):
 
 
 def create_dirs(dirname, filename):
-    manifest_dir = os.path.join(dirname, "manifests-"+str(filename).replace("/", "-"))
+    manifest_dir = os.path.join(dirname, "manifests")#+str(filename).replace("/", "-"))
     config_dir = os.path.join(dirname, "configs")
     layer_dir = os.path.join(dirname, "layers")
 
     """Here, we create new manifest dir if manifest exist! and mv old manifest to manifest-timestamp"""
-    if os.path.exists(manifest_dir):
-        timestamp = time.time()
-        cmd5 = "mv %s %s" % (manifest_dir, os.path.join(dirname, "manifests-"+str(filename).replace("/", "-")+"-"+str(timestamp)))
-        rc = os.system(cmd5)
-        assert (rc == 0)
-    os.makedirs(manifest_dir)
-    print 'create manifest_dir: %s' % manifest_dir
+    if not os.path.exists(manifest_dir):
+        #timestamp = time.time()
+        #cmd5 = "mv %s %s" % (manifest_dir, os.path.join(dirname, "manifests-"+str(filename).replace("/", "-")+"-"+str(timestamp)))
+        #rc = os.system(cmd5)
+        #assert (rc == 0)
+        os.makedirs(manifest_dir)
+        print 'create manifest_dir: %s' % manifest_dir
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
         print 'create config_dir: %s' % config_dir
@@ -368,29 +370,29 @@ def main():
 
     print 'Input file name: ', options.filename
     if not os.path.isfile(options.filename):
-        print '% is not a valid file' % options.filename
+        print '%s is not a valid file' % options.filename
         return
 
     print 'Output directory: ', options.dirname
     if not os.path.isdir(options.dirname):
-        print '% is not a valid directory' % options.dirname
+        print '%s is not a valid directory' % options.dirname
         return
 
     if options.finished_layer_file:
         print 'finished layer file: ', options.finished_layer_file
         if not os.path.isfile(options.finished_layer_file):
-            print '% is not a valid file' % options.finished_layer_file
+            print '%s is not a valid file' % options.finished_layer_file
             return
         load_finished_file(options.finished_layer_file, finished_layers_q)
 
     if options.finished_repo_file:
         print 'finished repo file: ', options.finished_repo_file
         if not os.path.isfile(options.finished_repo_file):
-            print '% is not a valid file' % options.finished_repo_file
+            print '%s is not a valid file' % options.finished_repo_file
             return
         load_finished_file(options.finished_repo_file, finished_repo_q)
 
-    get_image_names(options.filename)
+    #get_image_names(options.filename)
     create_dirs(options.dirname, options.filename)
 
     f_finished_repo = open(options.finished_repo_file, 'a+')
@@ -398,7 +400,7 @@ def main():
     f_finished_layer = open(options.finished_layer_file, 'a+')
     f_bad_layer = open("bad_layer_list.out", 'a+')
 
-    queue_names()
+    queue_names(options.filename)
     start = time.time()
     for i in range(num_worker_threads):
         t = threading.Thread(target=download)
