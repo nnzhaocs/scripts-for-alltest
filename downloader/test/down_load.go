@@ -1,1 +1,0 @@
-package docker_registry_client
