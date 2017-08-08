@@ -9,7 +9,7 @@ from list_dir_files import *
 def run_createimagedb():
     start = time.time()
 
-    create_image_db(args)
+    create_image_db()
 
     elapsed = time.time() - start
     logging.info('created image json files, consumed time ==> %f', (elapsed / 3600))

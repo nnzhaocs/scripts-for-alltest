@@ -51,8 +51,9 @@ def parseArg():
 def main():
     args = parseArg()
     print args
-    logging.basicConfig(level=args.loglevel)
-
+    #logging.basicConfig(level=args.loglevel)
+    fmt="%(funcName)s():%(lineno)i: %(message)s %(levelname)s"
+    logging.basicConfig(level=args.loglevel, format=fmt)
     load_config()
 
     if args.createlayerdb:

@@ -1,7 +1,7 @@
-import cStringIO
-from imports import *
-from draw_pic import *
-from utility import *
+#import cStringIO
+from config import *
+#from draw_pic import *
+#from utility import *
 from file import *
 
 """
@@ -49,11 +49,11 @@ def compress_tarball_tar(abs_gzip_file_name, layer_dir):
     return True
 
 
-def clear_dir(dir):
+def clear_dir(layer_dir):
     """ delete the dir """
     # layer_dir = os.path.join(extracting_dir, layer_id)
-    if not os.path.isdir(dir):
-        logging.error('###################%s is not valid###################', dir)
+    if not os.path.isdir(layer_dir):
+        logging.error('###################%s is not valid###################', layer_dir)
         return False
 
     start = time.time()
@@ -130,10 +130,12 @@ def mk_dir(layer_dir):
     except subprocess.CalledProcessError as e:
         logging.debug('###################%s: %s###################',
                       layer_dir, e.output)
+	#clear_dir(layer_dir)
+	#subprocess.check_output(cmd1, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
         return False
 
-    elapsed = time.time() - start
-    logging.info('copy compressed tarball, ==> %f s', elapsed)
+    #elapsed = time.time() - start
+    #logging.info('copya compressed tarball, ==> %f s', elapsed)
     return True
 
 
@@ -146,10 +148,10 @@ def cp_file(layer_file, cp_layer_tarball_name):
     except subprocess.CalledProcessError as e:
         logging.debug('###################%s: %s###################',
                       layer_file, e.output)
-
+	return False
     elapsed = time.time() - start
     logging.info('copy compressed tarball, ==> %f s', elapsed)
-
+    return True
 
 def load_dirs(layer_filename, filetype):
     sub_dirs = []
@@ -165,7 +167,7 @@ def load_dirs(layer_filename, filetype):
 
     extracting_dir = dest_dir[0]['extracting_dir']
     layer_dir = os.path.join(extracting_dir, layer_filename)
-
+    mk_dir(layer_dir)
     cp_layer_tarball_name = os.path.join(extracting_dir, layer_filename+'-cp.tar.gzip')
 
     """
@@ -185,7 +187,7 @@ def load_dirs(layer_filename, filetype):
         clear_dir(layer_dir)
         return sub_dirs, -1
 
-    if type == 'gzip':
+    if filetype == 'gzip':
         logging.debug('STAT Extracting gzip file ==========> %s' % layer_file)
         abs_zip_file_name = os.path.join(extracting_dir, layer_file + '-uncompressed-archival.tar')
         if not decompress_tarball_gunzip(cp_layer_tarball_name, abs_zip_file_name):
@@ -208,7 +210,7 @@ def load_dirs(layer_filename, filetype):
             logging.warn('layer dir %s is invalid', layer_dir)
             clear_dir(layer_dir)
             return sub_dirs, -1
-    elif type == 'tar':
+    elif filetype == 'tar':
         logging.debug('STAT Extracting tar file ==========> %s' % layer_file)
         if os.path.isfile(cp_layer_tarball_name):
             uncompressed_archival_size = os.lstat(cp_layer_tarball_name).st_size
@@ -229,10 +231,17 @@ def load_dirs(layer_filename, filetype):
 
     layer_dir_level = layer_dir.count(os.sep)
     logging.debug("(%s, %s)", layer_dir, layer_dir_level)
-
+    #return sub_dirs, -1
     try:
         for path, subdirs, files in os.walk(layer_dir):
+	    print subdirs
+            if not len(subdirs):
+                logging.warn("################### subdirs is None ###################")
+                #clear_dir(layer_dir)
+                continue
+	    sub_dir = {}
             for dirname in subdirs:
+		print dirname
                 s_dir = os.path.join(path, dirname)
                 if not os.path.isdir(s_dir):
                     logging.warn('################### layer subdir %s is invalid ###################',
@@ -271,7 +280,7 @@ def load_dirs(layer_filename, filetype):
         clear_dir(layer_dir)
         return sub_dirs, -1
 
-    if type == 'tar':
+    if filetype == 'tar':
         abs_gzip_file_name = os.path.join(extracting_dir, layer_file + '-compressed.tar.gz')
         if not compress_tarball_tar(abs_gzip_file_name, layer_dir):
             clear_dir(layer_dir)
@@ -285,7 +294,7 @@ def load_dirs(layer_filename, filetype):
             logging.debug("compressed_archival_wrong!!! name: %s", layer_file)
             clear_dir(layer_dir)
             return sub_dirs, -1
-    elif type == 'gzip':
+    elif filetype == 'gzip':
         clear_dir(layer_dir)
         return sub_dirs, uncompressed_archival_size
 

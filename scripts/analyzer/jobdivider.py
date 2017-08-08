@@ -6,9 +6,11 @@ def create_job_list():
     job_list_dir = dest_dir[0]['job_list_dir']
 
     tarballs = {}
-
+    logging.debug("=================> create job list <==============\n loading layer dir %s waiting~10 min to start ......", 
+	dest_dir[0]['layer_dir'])
     for path, _, tarball_filenames in os.walk(dest_dir[0]['layer_dir']):
         for tarball_filename in tarball_filenames:
+	    print tarball_filename
             f_size = os.lstat(os.path.join(path, tarball_filename)).st_size
             tarballs[tarball_filename] = f_size
             logging.debug('layer_tarball: %s, size %d', tarball_filename, f_size)

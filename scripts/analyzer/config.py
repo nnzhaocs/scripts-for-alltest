@@ -6,12 +6,16 @@ from regular_libraries import *
 
 """configurations for setup"""
 
-dest_dirname = "/gpfs/"
-extracting_dir = ""
-
-analyzed_absfilename = ''
-layer_list_absfilename = ''
-
+dest_dirname = "/gpfs/docker_images_largefs"
+"""mount tmpfs"""
+extracting_dir = "/mnt/extracting_dir"
+"""mount flash array"""
+#extracting_dir = "/mnt/largessd"
+analyzed_absfilename = '/gpfs/docker_images_largefs/results/analyzed_layer_file-less-50m.out'
+layer_list_absfilename = '/gpfs/docker_images_largefs/job_list_dir/list_less_50m.out'
+# list_less_1g.out
+# list_less_2g.out
+# list_bigger_2g.out
 """configurations for multithreading"""
 
 num_worker_process = 60

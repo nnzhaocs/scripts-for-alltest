@@ -18,8 +18,8 @@ layer_job_list = []
 def create_layer_db():
     """create layer database as a json file"""
     logging.info('=============> create_layer_db: create layer metadata json files <===========')
-    analyzed_layer_filename = dest_dir[0]['analyzed_absfilename']
-    layer_list_filename = dest_dir[0]['layer_list_absfilename']
+    analyzed_layer_filename = analyzed_absfilename
+    layer_list_filename = layer_list_absfilename
 
     queue_layers(analyzed_layer_filename, layer_list_filename)
 
@@ -29,7 +29,11 @@ def create_layer_db():
     print len(layer_job_list)  # process_manifest
     print len(analyzed_layer_list)
     print "before map!"
-
+   # for i in layer_job_list:
+   #     if not i:
+   #         continue
+   #     process_layer(i)
+   #     break
     json_datas = P.map(process_layer, layer_job_list)
     print "after map"
 
@@ -38,16 +42,24 @@ def create_layer_db():
 
 def queue_layers(analyzed_layer_filename, layer_list_filename):
     """queue the layer id in layer_list_filename, layer id = sha256-digest with timestamp"""
+    num = 0
     with open(layer_list_filename) as f:
         content = json.load(f)
         for key, val in content.items():
             logging.debug('queue dir layer tarball: %s', key)  #
+	    num = num + 1
+	    if num > 50:
+                break
             layer_job_list.append(key)
 
     """queue the layer id in analyzed_layer_filename, layer id = sha256:digest !!! without timestamp"""
+    num = 0
     with open(analyzed_layer_filename) as f:
         for line in f:
             print line
+	    num = num + 1
+	    if num > 50:
+		break
             if line:
                 logging.debug('queue layer_id: %s to analyzed_layer_queue', line.replace("\n", ""))  #
                 analyzed_layer_list.append(line.replace("\n", ""))
@@ -126,7 +138,7 @@ def process_layer(layer_filename):
 
     if not len(sub_dirs):
         """"write to bad layer_tarball"""
-        with open("bad_nonanalyzed_layer_list-%d.out" % processname, 'a+') as f:
+        with open("bad_nonanalyzed_layer_list-%s.out" % processname, 'a+') as f:
             f.write(layer_filename+'\n')
         logging.debug('################### The layer tarball has problems! layer file name %s ###################', layer_filename)
         return
@@ -138,8 +150,8 @@ def process_layer(layer_filename):
     dir_depth = {
         'dir_max_depth': max(depths),
         'dir_min_depth': min(depths),
-        'dir_median_depth': median(depths),
-        'dir_avg_depth': mean(depths)
+        'dir_median_depth': statistics.median(depths),
+        'dir_avg_depth': statistics.mean(depths)
     }
 
     sha, id, timestamp = str(layer_filename).split("-")
@@ -166,7 +178,7 @@ def process_layer(layer_filename):
 
     logging.debug('write layer_id:[%s]: to json file %s', layer_filename, abslayer_filename)
 
-    with open("analyzed_layer_filename-%d.out" % processname, 'a+') as f:
+    with open("analyzed_layer_filename-%s.out" % processname, 'a+') as f:
         f.write(layer_filename + '\n')
 
 
@@ -184,18 +196,18 @@ def process_layer(layer_filename):
 #         q_name.task_done()
 
 
-# def sum_layer_size(sub_dirs):
-#     sum = 0
-#     for dir in sub_dirs:
-#         sum = sum + dir['dir_size']
-#     return sum
-#
-#
-# def sum_file_cnt(sub_dirs):
-#     sum = 0
-#     for dir in sub_dirs:
-#         sum = sum + dir['file_cnt']
-#     return sum
+def sum_layer_size(sub_dirs):
+    sum = 0
+    for dir in sub_dirs:
+        sum = sum + dir['dir_size']
+    return sum
+
+
+def sum_file_cnt(sub_dirs):
+    sum = 0
+    for dir in sub_dirs:
+        sum = sum + dir['file_cnt']
+    return sum
 #
 #
 # def cal_layer_repeats(images):
