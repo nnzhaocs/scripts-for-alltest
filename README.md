@@ -58,7 +58,7 @@ XXX: Modify to be able to graciously to shutdown the downloading process.
 	Download the library from github.
 
 2. cp down_loader.go auto_download_compressed_images.py ****.patch $GOPATH/src/github.com/heroku/docker-registry-client/
-	Copy downloader files to the directory (XXX)
+	Copy downloader files to the directory ($GOPATH/src/github.com/heroku/docker-registry-client/)
 	
 3. patch -p1 < patch-changes-to-manifest.patch
 	Apply the patch
@@ -71,13 +71,13 @@ XXX: Modify to be able to graciously to shutdown the downloading process.
 
 go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test.manifest
 
-(XXX: outfile is absfilename)
+(outfile is absfilename)
 
 
 go run down_loader.go -operation=download_blobs -repo=library/redis 
 -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test.tarball
 
-(XXX: tag is confusing)
+(tag is also digest)
 
 *2. Run the downloader to massively download the repos*
 
@@ -104,51 +104,138 @@ root# python auto_download_compressed_images.py
 
 ## Analyzer
 
-### Run analyzer
+### setup config file in analyzer/config.py
 
-XXX: rename main.py
+*1. config for setup*
 
-Supports four mutually exclusive modes:
+dest_dirname: directory with layers, manifests; <layers> and <manifests> subdirectories must exist and containe all the layers and manifest;
+
+extracting_dir: directory that is used to store layer directories. This must be set based on compressed layer tarball size.
+	
+	1) use tmpfs for tarballs less than 1g.
+		mount -t tmpfs -o size=50960m tmpfs /mnt/extracting_dir
+		
+	2) use ssd for tarballer bigger than 1g.
+	
+num_worker_process: number of processes. This must be set based on extracting directory size and layer tarball size.
+
+	1) list_less_50m.json, 60
+	
+	2) list_less_1g.json, 20,
+	
+	3) list_less_2g.json, 5,
+	
+	4) list_bigger_2g.json, 5
+	
+*2. config for input files*
+
+analyzed_absfilename: file containing list of layers that are already analyzed, newline separated layer digests
+
+*2. Output directories no need to change*
+
+layer_db_json_dirname: directory containing all the layer profiles, json files.
+
+image_db_json_dirname: directory containing all the image profiles (mapper), json files
+
+job_list_dirname: directory containing all the output files.
+
+layer_list_absfilename: file containing list of layers to be analyzed, newline separated layer digests
+
+layer_config_map_dir_filename: file containning a map between layer/config digest and the layer tarball path, json file.
+
+layer_json_map_dir_filename: file containning a map between layer digest and the layer profile path, json file. 
+
+manifest_map_dir_filename: : file containning a map between repo name and the manifest path, json file. 
+
+dirs: a list of directories that store layers, configs, and manifests
+
+### Supports four mutually exclusive modes:
 
 <-L,-J,-P,-I>
 
 -J - job devider
+
 -L - layer analyzer
+
+-F - file mapper
+
 -I - image analyzer
-
-## Plotter 
-
--P - plot
 
 1. Job divider (-J)
 
-python main.py [-D] -J -d /gpfs/docker_images_largefs/
+python main.py [-D] -J 
 
 Creates a directory "job_list_dir" which contains 
 four files:
 
 	1) list_less_50m.json,
+	
 	2) list_less_1g.json,
+	
 	3) list_less_2g.json,
+	
 	4) list_bigger_2g.json
 
 -D - debug
--d - directory with layers; <layers> subdirectory must exist and containe all the layers
 
+2. Layer analyzer (-L)
 
+python main.py [-D] -L 
 
-*1. Analyze tarballs less than 50MB*
+Creates a directory "layer_db_json_dirname" which contains 
+layer profile, json file.
+Creates files:
 
-mount -t tmpfs -o size=50960m tmpfs /mnt/extracting_dir
+	1) analyzed_layer_filename-*.out
+	
+	2) bad_nonanalyzed_layer_list-*.out
 
-python main.py -D -L -d /gpfs/docker_images_largefs/ -a analyzed_layer_file-less-50m.out -s /gpfs/docker_images_largefs/job_list_dir/list_less_50m.out  -e /mnt/extracting_dir/ &> analyzer_less-50m-8-2.log &
+-D - debug
 
-*number of workers: less than 50mb(60), less than 1g(20), less than 2g(5)*
+(After finishing, joint and save all analyzed_layer_file*/bad_nonanalyzed_layer_list-*)
 
-*2. Analyze tarballs bigger than 2g*
+3. File mapper (-F)
 
-python main.py -D -L -d /gpfs/docker_images_largefs/ -a analyzed_layer_file-bigger-2g.out -s /gpfs/docker_images_largefs/job_list_dir/list_bigger_2g.out  -e /mnt/largerssd/ &> analyzer_bigger-1g-8-2.log &
+python main.py [-D] -F 
 
+Creates a map for layer/config digest<->tarball path; repo name<->manifest path.
+Creates files:
+
+	1) layer_config_map_dir.json
+	
+	2) layer_json_map_dir.json
+	
+	3) manifest_map_dir.json
+
+-D - debug
+
+4. Image analyzer (-I)
+
+python main.py [-D] -I 
+
+Creates a map for repo name<->manifest path,layer/config digest<->tarball path, layer profile path.
+input files:
+
+	1) layer_config_map_dir.json
+	
+	2) layer_json_map_dir.json
+	
+	3) manifest_map_dir.json
+
+Creates files:
+
+	1) image_mapper.json
+		containning the mapper
+		
+	2) layer_analyzer_jobs.json
+		containning layers that has no layer profile and need to be analyzed
+		
+	3) bad_manifests.json
+		containning manifests that cannot be read
+
+## Plotter 
+
+-P - plot
 
 *4. Plot_graph*
 
