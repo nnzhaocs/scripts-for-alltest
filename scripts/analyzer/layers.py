@@ -47,9 +47,9 @@ def queue_layers(analyzed_layer_filename, layer_list_filename):
         content = json.load(f)
         for key, val in content.items():
             logging.debug('queue dir layer tarball: %s', key)  #
-	    num = num + 1
-	    if num > 50:
-                break
+	    #num = num + 1
+	    #if num > 50:
+            #    break
             layer_job_list.append(key)
 
     """queue the layer id in analyzed_layer_filename, layer id = sha256:digest !!! without timestamp"""
@@ -57,9 +57,9 @@ def queue_layers(analyzed_layer_filename, layer_list_filename):
     with open(analyzed_layer_filename) as f:
         for line in f:
             print line
-	    num = num + 1
-	    if num > 50:
-		break
+	    #num = num + 1
+	    #if num > 50:
+		#break
             if line:
                 logging.debug('queue layer_id: %s to analyzed_layer_queue', line.replace("\n", ""))  #
                 analyzed_layer_list.append(line.replace("\n", ""))

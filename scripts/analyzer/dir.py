@@ -234,9 +234,9 @@ def load_dirs(layer_filename, filetype):
     #return sub_dirs, -1
     try:
         for path, subdirs, files in os.walk(layer_dir):
-	    print subdirs
+	    #print subdirs
             if not len(subdirs):
-                logging.warn("################### subdirs is None ###################")
+                #logging.warn("################### subdirs is None ###################")
                 #clear_dir(layer_dir)
                 continue
 	    sub_dir = {}
