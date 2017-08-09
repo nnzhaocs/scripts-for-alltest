@@ -43,7 +43,8 @@ def manifest_job_list():
             print "Downloaded %s"%key
         else:
             print "Not downloaded %s"%key
-            manifest_jobs.append(image_map[name])
+            manifest_jobs.append(image_map[key])
+    print manifest_jobs
 
     with open(manifest_jobs_filename, 'w') as f:
         for i in manifest_jobs:
