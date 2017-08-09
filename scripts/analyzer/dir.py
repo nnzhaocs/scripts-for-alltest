@@ -241,7 +241,7 @@ def load_dirs(layer_filename, filetype):
                 continue
 	    sub_dir = {}
             for dirname in subdirs:
-		print dirname
+		#print dirname
                 s_dir = os.path.join(path, dirname)
                 if not os.path.isdir(s_dir):
                     logging.warn('################### layer subdir %s is invalid ###################',
@@ -281,7 +281,7 @@ def load_dirs(layer_filename, filetype):
         return sub_dirs, -1
 
     if filetype == 'tar':
-        abs_gzip_file_name = os.path.join(extracting_dir, layer_file + '-compressed.tar.gz')
+        abs_gzip_file_name = os.path.join(extracting_dir, layer_filename + '-compressed.tar.gz')
         if not compress_tarball_tar(abs_gzip_file_name, layer_dir):
             clear_dir(layer_dir)
             return sub_dirs, -1
