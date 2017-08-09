@@ -35,8 +35,9 @@ layer_config_map_dir_filename = "layer_config_map_dir.json"
 layer_json_map_dir_filename = "layer_json_map_dir.json"
 manifest_map_dir_filename = "manifest_map_dir.json"
 
-dirs = ["/gpfs/docker_images_largefs/manifests-unique_name.out", "/gpfs/docker_images_largefs/configs",
-        "/gpfs/docker_images_largefs/layers", "/gpfs/docker_images_largefs/layer_db_json_bison02"]
+dirs = ["/gpfs/docker_images_largefs/manifests", "/gpfs/docker_images_largefs/configs",
+        "/gpfs/docker_images_largefs/layers", "/gpfs/docker_images_largefs/layer_db_json_bison02", 
+	"/gpfs/docker_images_largefs/layer_db_json"]
 
 # q_dir_images = multiprocessing.Queue()
 # q_layer_json_db = multiprocessing.Queue()

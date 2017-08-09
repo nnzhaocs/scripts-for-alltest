@@ -189,7 +189,7 @@ def load_dirs(layer_filename, filetype):
 
     if filetype == 'gzip':
         logging.debug('STAT Extracting gzip file ==========> %s' % layer_file)
-        abs_zip_file_name = os.path.join(extracting_dir, layer_file + '-uncompressed-archival.tar')
+        abs_zip_file_name = os.path.join(extracting_dir, layer_filename + '-uncompressed-archival.tar')
         if not decompress_tarball_gunzip(cp_layer_tarball_name, abs_zip_file_name):
             clear_dir(layer_dir)
             return sub_dirs, -1
@@ -198,7 +198,7 @@ def load_dirs(layer_filename, filetype):
             uncompressed_archival_size = os.lstat(abs_zip_file_name).st_size
             logging.debug("uncompressed_archival_size %d B, name: %s", uncompressed_archival_size, layer_file)
         else:
-            logging.debug("uncompressed_archival_wrong!!! name: %s", layer_file)
+            logging.debug("uncompressed_archival_wrong!!! name: %s", layer_filename)
             clear_dir(layer_dir)
             return sub_dirs, -1
 
