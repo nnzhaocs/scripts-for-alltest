@@ -5,14 +5,18 @@ from utilities_funcs import *
 
 unique_image_list_filename = "../downloader/image_names.list"
 manifest_jobs = []
-manifest_jobs_filename = "To_download_images.list"
+manifest_jobs_filename = "To_download_images-key.list"
 image_list = []
 image_map = {}
+#downloaded_manifest_map = {}
 
 def manifest_job_list():
     load_config()
     with open(os.path.join(dest_dir[0]['job_list_dir'], manifest_map_dir_filename)) as f:
         manifest_map_dir = json.load(f)
+	#for key, value in manifest_map_dir.items():
+	#     downloaded_manifest_map[key] = value
+
     manifest_list = manifest_map_dir.keys()
     print manifest_list
 
@@ -39,9 +43,11 @@ def manifest_job_list():
     print image_list
     #return
     for key in image_list:
-        if key in manifest_list:
+	try:
+	    repo_path = manifest_map_dir[key]
+        #if key in manifest_list:
             print "Downloaded %s"%key
-        else:
+        except:
             print "Not downloaded %s"%key
             manifest_jobs.append(image_map[key])
     print manifest_jobs
