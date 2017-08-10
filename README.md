@@ -4,7 +4,7 @@ Tool for downloading images from Docker Hub and analyzing them.
 
 This package contains three main components:
 
-1) Crowler crawls Docker Hub search page and extracts the
+1) Crawler crawls Docker Hub search page and extracts the
    list of all available public repositories.
 
 2) Downloader that downloads images and layers from the registry.
@@ -22,7 +22,7 @@ some components require some additional python and other packages.
 
 To install Python on CentOS 7.3:
 
-`yum install go python`
+`yum install python`
 
 TODO: split README (and code, if needed) based on requirements:
 
@@ -36,8 +36,11 @@ Go 1.7.4 or above (GOPATH variable must be set properly).
 
 `yum install go`
 
-TODO: Explain what exactly should be done
-setup GOPATH
+setup GOPATH environmental variable, e.g., add
+
+export GOPATH="/home/user/gosrc"
+
+to ~/.bashrc file.
 
 ### Analyzer 
 
@@ -67,11 +70,16 @@ comes from pip, while matplotlib should be installed usin yum:
 `sudo yum install python-matplotlib`
 `sudo pip install statistics`
 
-## Crowler
+## Crawler
 
-TODO: Explain how to use and what it produces.
+TODO: Explain how to use and what it produces. Give example for
+both official and non-official repos.
 
 ## Downloader
+
+Downloader takes a list of repositories to download (typically produced
+by the Crawler) and downloads correponding image manifests, layer tarballs,
+and configs.
 
 Downloader relies on a heroku/docker-registry-client library to download
 images and layers. This library allows to use Registry REST API directly
@@ -97,24 +105,33 @@ XXX: Modify to be able to graciously to shutdown the downloading process.
 
 `go get -v github.com/heroku/docker-registry-client`
 
-2.  Copy patch and downloader files to $GOPATH/src/github.com/heroku/docker-registry-client/ :
+You might get the following error:
 
-`cp down_loader.go auto_download_compressed_images.py patch-changes-to-manifest.patch $GOPATH/src/github.com/heroku/docker-registry-client/`
+"package github.com/heroku/docker-registry-client: no buildable Go source files in /home/vass/gosrc/src/github.com/heroku/docker-registry-client"
+
+and you can ignore it.
+
+2.  Copy patch and downloader files from this repository to $GOPATH/src/github.com/heroku/docker-registry-client/ :
+
+`cp scripts/downloader/down_loader.go scripts/downloader/auto_download_compressed_images.py scripts/downloader/patch-changes-to-manifest.patch $GOPATH/src/github.com/heroku/docker-registry-client/`
 	
-3. Apply the patch:
- 
+3. Apply the patch
+
+`cd $GOPATH/src/github.com/heroku/docker-registry-client` 
 `patch -p1 < patch-changes-to-manifest.patch`
 
 4. Compile the library
 
-`cd && make`
+`make`
 
 ### Downloader run example
 
 *1. Check if the downloader works by downloading  library/redis repo*
 
+`cd $GOPATH/src/github.com/heroku/docker-registry-client` 
 `go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test.manifest`
 
+`cd $GOPATH/src/github.com/heroku/docker-registry-client` 
 `go run down_loader.go -operation=download_blobs -repo=library/redis 
 -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test.tarball`
 
@@ -125,12 +142,15 @@ XXX: Modify to be able to graciously to shutdown the downloading process.
 `touch  /tmp/downloaded-layers.lst`
 `touch  /tmp/downloaded-images.lst`
 
+`scripts/downloader/image_names.list` file contains the complete list of repositories
+the crawler produced - official and non-official. The file is sorted by popularity,
+and every line contains just a single name of a single repo.
+
 `python auto_download_compressed_images.py
-	-f /tmp/repos_to_download.lst
+	-f scripts/downloader/image_names.list 
 	-d /tmp/downloaded/
 	-l /tmp/downloaded-layers.lst 
-	-r /tmp/downloaded-images.lst &> downloader.log &`
-
+	-r /tmp/downloaded-images.lst 2>&1 | tee /tmp/downloaded.log`
 
 ### Explanation of command line parameters
 
