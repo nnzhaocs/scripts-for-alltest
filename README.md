@@ -1,96 +1,146 @@
 # docker-remetrics
-A Tool for downloading all the images from docker hub and analyzing these images.
+
+Tool for downloading images from Docker Hub and analyzing them.
+
+This package contains three main components:
+
+1) Crowler crawls Docker Hub search page and extracts the
+   list of all available public repositories.
+
+2) Downloader that downloads images and layers from the registry.
+
+3) Analyzer that scans all layers and images and produces
+   JSON files with various metrics.
+
+4) Plotter that takes JSON files as an input and plots
+   various aggregated statistics.
 
 ## Installation
-### Requirments 
+
+All components require Python 2.7.4 or above. In addition,
+some components require some additional python and other packages.
+
+To install Python on CentOS 7.3:
+
+`yum install go python`
 
 TODO: split README (and code, if needed) based on requirements:
 
-For Downloader:
+### Crawler
 
-*Go 1.7.4 or above, and setup GOPATH*
+No additional dependencies.
 
-*Python 2.7.4 or above, and some python packages*
+### Downloader:
 
-yum install go python
+Go 1.7.4 or above (GOPATH variable must be set properly).
 
+`yum install go`
+
+TODO: Explain what exactly should be done
 setup GOPATH
 
-For Analyzer & Plotter:
+### Analyzer 
 
-* for example for CentOS 7.3*
+Analyzer essentially needs python-magic package to recognize
+file type based on the magic number. There are two versions
+of this package. We use the one installed via pip, not via yum!
 
-sudo yum -y install epel-release
-	for pip (which we later use for installing statistics package)
+In addition, Analyzer requires statistics package to compute
+various metrics during analysis. This package must also
+be installed using pip.
 
-sudo yum -y install python-pip
-	install pip from epel
+To install pip on CentOS 7.3:
 
-sudo pip install python-magic
-	INSTALL USING PIP
-	for file magic detection
-	ATTENTION: there are two Python packages named "magic" we must
-	use the one that runs via pip not via RPM.
+`sudo yum -y install epel-release`
+`sudo yum -y install python-pip`
 
-sudo yum install python-matplotlib
-	for plotting but imported in downloader and analyzer as well
+To install python-magic and statistics
 
+`sudo pip install python-magic`
+`sudo pip install statistic`
 
-sudo pip install statistics
+### Plotter
+
+Plotter requires statistics and matplotlib packages. Statistics package
+comes from pip, while matplotlib should be installed usin yum:
+
+`sudo yum install python-matplotlib`
+`sudo pip install statistics`
 
 ## Crowler
 
-Explain how to use and what it produces.
+TODO: Explain how to use and what it produces.
 
 ## Downloader
 
+Downloader relies on a heroku/docker-registry-client library to download
+images and layers. This library allows to use Registry REST API directly
+without running full Docker client.
+
+However, we needed to modify the original library because it only
+could download manifests of schema 2 (not multiarch), but we wanted to also
+download schema 1 and multiarchitect schema 2. The instructions
+below explain how to modify and compile updated heroku/docker-registry-client
+version.
+
 ### List of files
 
-xxx - short description
-xxx - short description
-xxx - short description
+`down_loader.go` - short description
+`auto_download_compressed_images.py` - short description
+`patch-changes-to-manifest.patch` - short description
 
 XXX: Modify to be able to graciously to shutdown the downloading process.
 
-### Setup docker-registry-client lib and downloader
+### Setup updated docker-registry-client
 
-1. go get -v github.com/heroku/docker-registry-client
-	Download the library from github.
+1.  Download heroku/docker-registry-client from github:
 
-2. cp down_loader.go auto_download_compressed_images.py ****.patch $GOPATH/src/github.com/heroku/docker-registry-client/
-	Copy downloader files to the directory ($GOPATH/src/github.com/heroku/docker-registry-client/)
+`go get -v github.com/heroku/docker-registry-client`
+
+2.  Copy patch and downloader files to $GOPATH/src/github.com/heroku/docker-registry-client/ :
+
+`cp down_loader.go auto_download_compressed_images.py patch-changes-to-manifest.patch $GOPATH/src/github.com/heroku/docker-registry-client/`
 	
-3. patch -p1 < patch-changes-to-manifest.patch
-	Apply the patch
+3. Apply the patch:
+ 
+`patch -p1 < patch-changes-to-manifest.patch`
 
-4.  cd && make
+4. Compile the library
 
+`cd && make`
 
-### Run downloader
-*1. Check if the down_loader works by downloading a repo library/redis*
+### Downloader run example
 
-go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test.manifest
+*1. Check if the downloader works by downloading  library/redis repo*
 
-(outfile is absfilename)
+`go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test.manifest`
 
-
-go run down_loader.go -operation=download_blobs -repo=library/redis 
--tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test.tarball
-
-(tag is also digest)
+`go run down_loader.go -operation=download_blobs -repo=library/redis 
+-tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test.tarball`
 
 *2. Run the downloader to massively download the repos*
 
-mkdir -p /tmp/downloaded/layers
-mkdir -p /tmp/downloaded/configs
-touch  /tmp/downloaded-layers.lst
-touch  /tmp/downloaded-images.lst
+`mkdir -p /tmp/downloaded/layers`
+`mkdir -p /tmp/downloaded/configs`
+`touch  /tmp/downloaded-layers.lst`
+`touch  /tmp/downloaded-images.lst`
 
-root# python auto_download_compressed_images.py
+`python auto_download_compressed_images.py
 	-f /tmp/repos_to_download.lst
 	-d /tmp/downloaded/
 	-l /tmp/downloaded-layers.lst 
-	-r /tmp/downloaded-images.lst &> downloader.log &
+	-r /tmp/downloaded-images.lst &> downloader.log &`
+
+
+### Explanation of command line parameters
+
+#### `down_loader.go`
+
+TODO: fill this in
+
+#### `auto_download_compressed_images.py`
+
+TODO: finish this list below and polish
 
 -f <file containing the list of repositories to download>
 	The format of the file is CSV with the first column is star count, second column
