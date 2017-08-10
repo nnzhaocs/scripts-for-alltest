@@ -11,14 +11,14 @@ dest_dirname = "/gpfs/docker_images_largefs"
 extracting_dir = "/mnt/extracting_dir"
 """mount flash array"""
 #extracting_dir = "/mnt/largessd"
-analyzed_absfilename = '/gpfs/docker_images_largefs/results/analyzed_layer_file-less-1g.out'
-layer_list_absfilename = '/gpfs/docker_images_largefs/job_list_dir/list_less_1g.out'
+analyzed_absfilename = '/gpfs/docker_images_largefs/results/analyzed_layer_file-less-50m.out'
+layer_list_absfilename = '/gpfs/docker_images_largefs/job_list_dir/list_less_50m.out'
 # list_less_1g.out
 # list_less_2g.out
 # list_bigger_2g.out
 """configurations for multithreading"""
 
-num_worker_process = 20
+num_worker_process = 60
 
 """contains all the global variables"""
 dest_dir = []
