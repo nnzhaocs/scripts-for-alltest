@@ -4,7 +4,7 @@ Tool for downloading images from Docker Hub and analyzing them.
 
 This package contains three main components:
 
-1) Crowler crawls Docker Hub search page and extracts the
+1) Crawler crawls Docker Hub search page and extracts the
    list of all available public repositories.
 
 2) Downloader that downloads images and layers from the registry.
@@ -22,7 +22,7 @@ some components require some additional python and other packages.
 
 To install Python on CentOS 7.3:
 
-`yum install go python`
+`yum install python`
 
 TODO: split README (and code, if needed) based on requirements:
 
@@ -36,8 +36,11 @@ Go 1.7.4 or above (GOPATH variable must be set properly).
 
 `yum install go`
 
-TODO: Explain what exactly should be done
-setup GOPATH
+setup GOPATH environmental variable, e.g., add
+
+export GOPATH="/home/user/gosrc"
+
+to ~/.bashrc file.
 
 ### Analyzer 
 
@@ -57,7 +60,7 @@ To install pip on CentOS 7.3:
 To install python-magic and statistics
 
 `sudo pip install python-magic`
-`sudo pip install statistic`
+`sudo pip install statistics`
 
 ### Plotter
 
@@ -67,11 +70,16 @@ comes from pip, while matplotlib should be installed usin yum:
 `sudo yum install python-matplotlib`
 `sudo pip install statistics`
 
-## Crowler
+## Crawler
 
-TODO: Explain how to use and what it produces.
+TODO: Explain how to use and what it produces. Give example for
+both official and non-official repos.
 
 ## Downloader
+
+Downloader takes a list of repositories to download (typically produced
+by the Crawler) and downloads correponding image manifests, layer tarballs,
+and configs.
 
 Downloader relies on a heroku/docker-registry-client library to download
 images and layers. This library allows to use Registry REST API directly
@@ -97,24 +105,33 @@ XXX: Modify to be able to graciously to shutdown the downloading process.
 
 `go get -v github.com/heroku/docker-registry-client`
 
-2.  Copy patch and downloader files to $GOPATH/src/github.com/heroku/docker-registry-client/ :
+You might get the following error:
 
-`cp down_loader.go auto_download_compressed_images.py patch-changes-to-manifest.patch $GOPATH/src/github.com/heroku/docker-registry-client/`
+"package github.com/heroku/docker-registry-client: no buildable Go source files in /home/vass/gosrc/src/github.com/heroku/docker-registry-client"
+
+and you can ignore it.
+
+2.  Copy patch and downloader files from this repository to $GOPATH/src/github.com/heroku/docker-registry-client/ :
+
+`cp scripts/downloader/down_loader.go scripts/downloader/auto_download_compressed_images.py scripts/downloader/patch-changes-to-manifest.patch $GOPATH/src/github.com/heroku/docker-registry-client/`
 	
-3. Apply the patch:
- 
+3. Apply the patch
+
+`cd $GOPATH/src/github.com/heroku/docker-registry-client` 
 `patch -p1 < patch-changes-to-manifest.patch`
 
 4. Compile the library
 
-`cd && make`
+`make`
 
 ### Downloader run example
 
 *1. Check if the downloader works by downloading  library/redis repo*
 
+`cd $GOPATH/src/github.com/heroku/docker-registry-client` 
 `go run down_loader.go -operation=download_manifest -repo=library/redis -tag=latest -absfilename=./test.manifest`
 
+`cd $GOPATH/src/github.com/heroku/docker-registry-client` 
 `go run down_loader.go -operation=download_blobs -repo=library/redis 
 -tag=44888ef5307528d97578efd747ff6a5635facbcfe23c84e79159c0630daf16de  -absfilename=./test.tarball`
 
@@ -125,12 +142,18 @@ XXX: Modify to be able to graciously to shutdown the downloading process.
 `touch  /tmp/downloaded-layers.lst`
 `touch  /tmp/downloaded-images.lst`
 
+`scripts/downloader/image_names.list` file contains the complete list of repositories
+the crawler produced - official and non-official. The file is sorted by popularity,
+and every line contains just a single name of a single repo.
+
 `python auto_download_compressed_images.py
-	-f /tmp/repos_to_download.lst
+	-f scripts/downloader/image_names.list 
 	-d /tmp/downloaded/
 	-l /tmp/downloaded-layers.lst 
-	-r /tmp/downloaded-images.lst &> downloader.log &`
+	-r /tmp/downloaded-images.lst 2>&1 | tee /tmp/downloaded.log`
 
+The script will create `bad_repo_list.out` and `bad_layer_list.out` files with 
+images and layers that the script could not download.
 
 ### Explanation of command line parameters
 
@@ -154,48 +177,84 @@ TODO: finish this list below and polish
 
 ## Analyzer
 
+Analyzer iterates over all downloaded layers and images, extracts them, scans resulting
+file system, collects information about the files, computes some additional statistics
+(e.g., median file size) and save these statistics to a JSON file.
+
+Analyzer implements several modes:
+
+1. Divider
+2. Layer-analyzer
+3. Filemapper
+4. Image-analyzer
+
+TODO: What is job list? What is job?
+
 ### setup config file in analyzer/config.py
 
 *1. config for setup*
 
-dest_dirname: directory with layers, manifests; <layers> and <manifests> subdirectories must exist and containe all the layers and manifest;
+All modes use the same `config.py` file for configuration. However,
+not all parameters are relevant to all modes.
 
-extracting_dir: directory that is used to store layer directories. This must be set based on compressed layer tarball size.
+TODO: Split the list below so that it is clear which mode
+needs which parameters.
+
+`dest_dirname`: directory with layers and manifests; <layers> and <manifests>
+subdirectories must exist. E.g., using the results from the previous
+section desination directory would be `/tmp/downloaded/`
+
+`extracting_dir`: directory that is used to temporary store extracted layers.
+In our setup this must be set based on compressed layer tarball size.
 	
 	1) use tmpfs for tarballs less than 1g.
 		mount -t tmpfs -o size=50960m tmpfs /mnt/extracting_dir
 		
 	2) use ssd for tarballer bigger than 1g.
 	
-num_worker_process: number of processes. This must be set based on extracting directory size and layer tarball size.
+`num_worker_process`: number of processes. This must be set based on extracting
+directory size and layer tarball size.
 
-	1) list_less_50m.json, 60
+	1) list_less_50m.out: 60,
 	
-	2) list_less_1g.json, 20,
+	2) list_less_1g.out: 20,
 	
-	3) list_less_2g.json, 5,
+	3) list_less_2g.out: 5,
 	
-	4) list_bigger_2g.json, 5
+	4) list_bigger_2g.out: 5
 	
-*2. config for input files*
+`analyzed_absfilename`: file containing list of layers that are already
+analyzed, newline separated layer digests. It is empty if this is
+the first time we run the analysis.
 
-analyzed_absfilename: file containing list of layers that are already analyzed, newline separated layer digests
+`layer_db_json_dirname`: directory containing all the layer profiles, json files.
 
-*2. Output directories no need to change*
+`image_db_json_dirnam`: directory containing all the image profiles (mapper), json files.
 
-layer_db_json_dirname: directory containing all the layer profiles, json files.
+`job_list_dirname`: the name of the subdirectory that  will be created
+inside `dest_dirname` directory and will store SOME intermediate files.
+Most importantly,
 
-image_db_json_dirname: directory containing all the image profiles (mapper), json files
+`list_less_50m.out`
+`list_less_1g.out`
+`list_less_2g.out`
+`list_bigger_2g.out`
 
-job_list_dirname: directory containing all the output files.
+files will be created by devider in this directory.  Typically you do not need
+to change the value of this varibale.  If you change it, make sure that you
+reflect the change in `layer_list_absfilenam` variable.
 
-layer_list_absfilename: file containing list of layers to be analyzed, newline separated layer digests
+`layer_list_absfilename`: file containing list of layers to be analyzed
+in json format.  This file will be generated by devider (four of them actually).
+Then later it will be used by the analyzer.
 
-layer_config_map_dir_filename: file containning a map between layer/config digest and the layer tarball path, json file.
+--------------
 
-layer_json_map_dir_filename: file containning a map between layer digest and the layer profile path, json file. 
+`layer_config_map_dir_filename`: file containning a map between layer/config digest and the layer tarball path, json file.
 
-manifest_map_dir_filename: : file containning a map between repo name and the manifest path, json file. 
+`layer_json_map_dir_filename`: file containning a map between layer digest and the layer profile path, json file. 
+
+`manifest_map_dir_filename`: : file containning a map between repo name and the manifest path, json file. 
 
 dirs: a list of directories that store layers, configs, and manifests
 
@@ -213,26 +272,26 @@ dirs: a list of directories that store layers, configs, and manifests
 
 1. Job divider (-J)
 
-python main.py [-D] -J 
+python analyer.py [-D] -J 
 
-Creates a directory "job_list_dir" which contains 
+Creates a directory `job_list_dir` which contains 
 four files:
 
-	1) list_less_50m.json,
+	1) list_less_50m.out,
 	
-	2) list_less_1g.json,
+	2) list_less_1g.out,
 	
-	3) list_less_2g.json,
+	3) list_less_2g.out,
 	
-	4) list_bigger_2g.json
+	4) list_bigger_2g.out
 
 -D - debug
 
 2. Layer analyzer (-L)
 
-python main.py [-D] -L 
+python analyzer.py [-D] -L 
 
-Creates a directory "layer_db_json_dirname" which contains 
+Creates a directory `layer_db_json_dirname` which contains 
 layer profile, json file.
 Creates files:
 
