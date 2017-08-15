@@ -7,6 +7,34 @@
 	2. our Dataset \\
 	(size, table)
 }
+
+Our methodology has two steps. First, We massively download the Docker images from Docker registry. Then we analyze the Docker images we download. Instead of using Docker (or Docker engine) to download Docker images, we wrote our own downloader that utilizes Docker Registry API to simultaneously download \textbf{original} manifests, config files, and layer tarballs. One reason is that docker engine will automatically convert the manifests from lower version (Schema 1) to higher Schema (Schema 2), which affects our result about manifest version statistics; the other reason is that layer content directories are not visible for some docker storage drivers, e.g., devicemapper, which is difficult to profile the layer content. Overall, We downloaded XXX Docker image with XXX Docker layers. Table~\ref{XXX} summaries the statistics of Docker image dataset we downloaded. Then, we profiled the layers, config files, and manifests we downloaded and calculated the statistic distribution for different metrics. 
+
+
+\subsection{Downloader}
+
+Our downloader is a python script that can download multiple images simultaneously and during each image downloading process, layers are downloaded in parallel. To download the original manifests, config files, and layer tarballs from Docker registry, downloader embeds a Docker registry client API~\cite{xxx} which only encapsulates manifest, config file and layer downloading functions in Docker engine without extracting layer tarball and converting manifest version. 
+
+To download a Docker image, the image's name and tag should be provided. To the best of our knowledge, Docker Hub doesn't provide a method to list their public images. Public Docker images stored in Docker registry can be divided into official images and non-official images. The number of Official images is only xxx. While estimating and obtaining all the non-official images requires crawling Docker Hub. We created Crawler to crawl Docker Hub websites, parse the website source code and get a list of public both official and non-official images.
+
+\subsubsection{Crawler}
+
+Docker Hub website provides search service for users to search for a specific docker image or a list of Docker images that contains a specific word/string. Each public non-official Docker image shown on the website is comprised of namespace (i.e., user name), `/', and repository name. In this case, we search for '/' and get a list of images which contains '/'. In other words, this method lists all the non-official images stored in Docker Hub. Then, crawler crawls the websites that contains search results, parses the website source code and get the list of non-official images'names. 
+
+A interesting observation is that we can get a similar list of images if we replace '/' with '*'. Note that from 5/30/2017-7/11/2017, we used this method to obtain the total amount of images stored in Docker Hub. But after 7/11/2017, the website shows nothing when we search for '/' for some unknown reasons. Hence, now we can search for '*' instead of '/' to get a list of Docker images.
+
+%The name space for official images is library. For example, official image redis's name is library/
+
+\subsubsection{Downloading the images}
+
+As shown in Figure~\ref{}, the downloader first obtains a list of images through crawling Docker Hub. Then, it build
+
+\subsubsection{Docker image dataset statistics}
+
+We ran Crawler first and got a list of Docker images on 5/30/2017. The amount of both official and non-official images we got is xxx. However, there are duplicated image names in the list. The reason probably is that Docker Hub adjusted websites'order or modified the websites because of the increasing of Docker images during our crawling process. Our crawler has a unavoidable delay between each HTTP requst and HTTP response. So it couldn't reflect the websites'order or website content changes. After reducing the repeated images, we got xxx distinct images totally. 
+
+Then we started downloading process to download those images. It took roughly 30 days to finish. Overall, we downloaded xxx images with xxx layers as shown in Table~\ref{XXX}. There are xxx of images we couldn't download. There are two reasons: first, around xxx of images were either deleted or empty. Second, around xxx of images doesn't have tag:latest. As we discussed before, we only downloaded the images with latest version.
+
 %Some embedded literal typset code might 
 %look like the following :
 %
