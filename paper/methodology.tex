@@ -3,35 +3,44 @@
 \nancomment{
 	TODO: \\
 	1. Polish \\
-	2. Complete \\
+	2. Complete fig and table\\
 }
 
-Our methodology has two steps. First, We massively download the Docker images from Docker registry. Then we analyze the Docker images we download. Instead of using Docker (or Docker engine) to download Docker images, we wrote our own downloader that utilizes Docker Registry API~\cite{} to simultaneously download \textbf{original} manifests, config files, and layer tarballs. There are two reasons. First, Docker Engine (starting from version 1.10) automatically converts the manifests from schema version 1 to schema version 2, which affects our result about manifest version statistics; the other reason is that layer content directories are not visible for some docker storage drivers, e.g., devicemapper, which is difficult to profile the layer content. Overall, We downloaded XXX Docker image with XXX Docker layers. Table~\ref{XXX} summaries the statistics of Docker image dataset we downloaded. Then, we profiled the layers, config files, and manifests we downloaded and calculated the statistic distribution for different metrics. 
-
+Our methodology has two steps. The first step is to massively download the Docker images from Docker registry. When the images are downloaded, we analyze them and calculate statistics distribution for different metrics. The details of each step are covered in the following sections.
 
 \subsection{Downloader}
 
-Our downloader is a python script that can download multiple images simultaneously and during each image downloading process, layers are downloaded in parallel. To download the original manifests, config files, and layer tarballs from Docker registry, downloader embeds a Docker registry client API~\cite{xxx} which only encapsulates manifest, config file and layer downloading functions in Docker engine without extracting layer tarball and converting manifest version. 
+Instead of using Docker (or Docker Engine) to download images, we wrote our own downloader python script that utilizes Docker Registry API~\cite{} to simultaneously download~\textbf{original} manifests and layers. There are two reasons. First, Docker Engine (starting from version 1.10) automatically converts the manifests from schema version 1 to schema version 2, which affects our results about manifest version statistics; Second, layer content directories are not visible for some Docker storage drivers, e.g., devicemapper, which is not feasible to analyze the layer content. 
 
-To download a Docker image, the image's name and tag should be provided. To the best of our knowledge, Docker Hub doesn't provide a method to list their public images. Public Docker images stored in Docker registry can be divided into official images and non-official images. The number of Official images is only xxx. While estimating and obtaining all the non-official images requires crawling Docker Hub. We created Crawler to crawl Docker Hub websites, parse the website source code and get a list of public both official and non-official images.
+Downloader can download multiple images simultaneously and within each image downloading process, layers are downloaded in parallel. To download the original manifests and layers from Docker registry, downloader embeds a Docker registry client API~\cite{xxx} which only encapsulates manifest, config file and layer downloading functions in Docker engine without extracting layer tarball and converting manifest version. 
+
+To download an image, the name should be provided. To the best of our knowledge, Docker Hub (i.e., Docker registry) doesn't provide a method to list their public images. Public images in Docker registry can be divided into official images and non-official images. The amount of official images is only xxx. While estimating and listing all the non-official images requires crawling Docker Hub. We created Crawler python script to crawl Docker Hub websites and list both official and non-official images.
 
 \subsubsection{Crawler}
 
-Docker Hub website provides search service for users to search for a specific docker image or a list of Docker images that contains a specific word/string. Each public non-official Docker image shown on the website is comprised of "<namespace (i.e., user name)>/<repository name>". In this case, we search for '/' and get a list of images which contains '/'. In other words, this method lists all the non-official images stored in Docker Hub. Then, crawler crawls the websites that contains search results, parses the website source code and get the list of non-official images'names. 
+Docker Hub website provides search engine which indexes public images for users to search for a specific image or a list of images that contains a certain letter or string. The name of non-official public image is comprised of ``$\langle namespace\rangle/\langle repository name \rangle$", where~\textit{namespace} is the user name. In this case, we search for `/' and obtain a list of images which contains '/'. In other words, this method lists all the non-official public images in Docker Hub. Crawler downloads all the pages which contains `/'. Once web pages are downloaded, it parses the web content and build a list of non-official images. 
 
-A interesting observation is that we can get a similar list of images if we replace '/' with '*'. Note that from 5/30/2017-7/11/2017, we used this method to obtain the total amount of images stored in Docker Hub. But after 7/11/2017, the website shows nothing when we search for '/' for some unknown reasons. Hence, now we can search for '*' instead of '/' to get a list of Docker images.
+A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub. But after 7/11/2017, the Docker Hub removed the index of `/'. Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images.
 
-%The name space for official images is library. For example, official image redis's name is library/
+\subsubsection{Downloading images}
 
-\subsubsection{Downloading the images}
+As shown in Figure~\ref{xxx}, downloader first obtains a list of public images through crawling Docker Hub. Then, it starts downloading process. It downloads two components: manifest and individual layer files. 
 
-As shown in Figure~\ref{}, the downloader first obtains a list of images through crawling Docker Hub. Then, it builds the HTTP request by using the image's name. The downloading process has two steps. First, it fetches the manifest and get the config file's digest and layer tarballs'digests. Second it builds the HTTP requests to download the config files and layer tarballs.
+The first step in downloading an image is to fetch the manifest by using the following url: $GET /v2/\langle name \rangle/manifests/\langle reference \rangle$, where~\textit{name} parameter refers to $\langle namespace\rangle/\langle repository name \rangle$. Note that the~\textit{namespace} of official is~\textit{library}. The reference can include a tag or digest. Note that we only downloaded the images with~\textit{latest} tag to shorten the downloading process. 
+
+Layers are stored as compressed tar archive in the registry, indexed by digest. As discussed in Section~\ref{xxx}, manifest consist of multiple layer digests. Note that Schema 2 version also contains a config file digest. Once the manifest is downloaded, the downloader will then use the digests to download individual layers (including config file for Schema 2 version) by using the following url: $GET /v2/\langle name \rangle/blobs/\langle digest \rangle$, where \textit{name} refers to the image name while~\textit{digest} refers to the layer digest or config file digest 
+
+%First, it fetches the manifest and get the config file's digest and layer tarballs'digests. Second it builds the HTTP requests to download the config files and layer tarballs.
 
 \subsubsection{Docker image dataset statistics}
 
-We ran Crawler first and got a list of Docker images on 5/30/2017. The amount of both official and non-official images we got is xxx. However, there are duplicated image names in the list. The reason probably is that Docker Hub adjusted websites'order or modified the websites because of the increasing of Docker images during our crawling process. Our crawler has a unavoidable delay between each HTTP requst and HTTP response. So it couldn't reflect the websites'order or website content changes. After reducing the repeated images, we got xxx distinct images totally. 
+Crawler delivered a list of xxx images on 5/30/2017. However, duplicated images exist in the list. After reducing the repeated images, our image dataset consists of xxx distinct images. 
 
-Then we started downloading process to download those images. It took roughly 30 days to finish. Overall, we downloaded xxx images with xxx layers as shown in Table~\ref{XXX}. There are xxx of images we couldn't download. There are two reasons: first, around xxx of images were either deleted or empty. Second, around xxx of images doesn't have tag:latest. As we discussed before, we only downloaded the images with latest version.
+The downloading process took roughly 30 days to finish. Overall, we downloaded xxx images with xxx layers as shown in Table~\ref{XXX}. xxx of images couldn't be downloaded. There are two reasons: first, xxx of images were either deleted or empty. Second, xxx of images doesn't have tag:~\textit{latest}. As we discussed in Section~\ref{}, we only downloaded the images with latest version to shorten the downloading process.
+
+%The reason probably is that Docker Hub adjusted websites'order or modified the websites because of the increasing of Docker images during our crawling process. Our crawler has a unavoidable delay between each HTTP requst and HTTP response. So it couldn't reflect the websites'order or website content changes. 
+
+%Overall, we downloaded XXX image with XXX layers. Table~\ref{XXX} summaries the statistics of Docker image dataset we downloaded. Then, we profiled the layers, config files, and manifests we downloaded and calculated the statistic distribution for different metrics. 
 
 %Some embedded literal typset code might 
 %look like the following :
