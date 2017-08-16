@@ -1,14 +1,12 @@
 
 \section{Methodology}
 \nancomment{
-	outline: \\
-	1. our method to collect and download images \\
-	(how, pull, extracting, manifest+layer tarball, server setup) \\
-	2. our Dataset \\
-	(size, table)
+	TODO: \\
+	1. Polish \\
+	2. Complete \\
 }
 
-Our methodology has two steps. First, We massively download the Docker images from Docker registry. Then we analyze the Docker images we download. Instead of using Docker (or Docker engine) to download Docker images, we wrote our own downloader that utilizes Docker Registry API to simultaneously download \textbf{original} manifests, config files, and layer tarballs. One reason is that docker engine will automatically convert the manifests from lower version (Schema 1) to higher Schema (Schema 2), which affects our result about manifest version statistics; the other reason is that layer content directories are not visible for some docker storage drivers, e.g., devicemapper, which is difficult to profile the layer content. Overall, We downloaded XXX Docker image with XXX Docker layers. Table~\ref{XXX} summaries the statistics of Docker image dataset we downloaded. Then, we profiled the layers, config files, and manifests we downloaded and calculated the statistic distribution for different metrics. 
+Our methodology has two steps. First, We massively download the Docker images from Docker registry. Then we analyze the Docker images we download. Instead of using Docker (or Docker engine) to download Docker images, we wrote our own downloader that utilizes Docker Registry API~\cite{} to simultaneously download \textbf{original} manifests, config files, and layer tarballs. There are two reasons. First, Docker Engine (starting from version 1.10) automatically converts the manifests from schema version 1 to schema version 2, which affects our result about manifest version statistics; the other reason is that layer content directories are not visible for some docker storage drivers, e.g., devicemapper, which is difficult to profile the layer content. Overall, We downloaded XXX Docker image with XXX Docker layers. Table~\ref{XXX} summaries the statistics of Docker image dataset we downloaded. Then, we profiled the layers, config files, and manifests we downloaded and calculated the statistic distribution for different metrics. 
 
 
 \subsection{Downloader}
@@ -19,7 +17,7 @@ To download a Docker image, the image's name and tag should be provided. To the 
 
 \subsubsection{Crawler}
 
-Docker Hub website provides search service for users to search for a specific docker image or a list of Docker images that contains a specific word/string. Each public non-official Docker image shown on the website is comprised of namespace (i.e., user name), `/', and repository name. In this case, we search for '/' and get a list of images which contains '/'. In other words, this method lists all the non-official images stored in Docker Hub. Then, crawler crawls the websites that contains search results, parses the website source code and get the list of non-official images'names. 
+Docker Hub website provides search service for users to search for a specific docker image or a list of Docker images that contains a specific word/string. Each public non-official Docker image shown on the website is comprised of "<namespace (i.e., user name)>/<repository name>". In this case, we search for '/' and get a list of images which contains '/'. In other words, this method lists all the non-official images stored in Docker Hub. Then, crawler crawls the websites that contains search results, parses the website source code and get the list of non-official images'names. 
 
 A interesting observation is that we can get a similar list of images if we replace '/' with '*'. Note that from 5/30/2017-7/11/2017, we used this method to obtain the total amount of images stored in Docker Hub. But after 7/11/2017, the website shows nothing when we search for '/' for some unknown reasons. Hence, now we can search for '*' instead of '/' to get a list of Docker images.
 
@@ -27,7 +25,7 @@ A interesting observation is that we can get a similar list of images if we repl
 
 \subsubsection{Downloading the images}
 
-As shown in Figure~\ref{}, the downloader first obtains a list of images through crawling Docker Hub. Then, it build
+As shown in Figure~\ref{}, the downloader first obtains a list of images through crawling Docker Hub. Then, it builds the HTTP request by using the image's name. The downloading process has two steps. First, it fetches the manifest and get the config file's digest and layer tarballs'digests. Second it builds the HTTP requests to download the config files and layer tarballs.
 
 \subsubsection{Docker image dataset statistics}
 
@@ -62,3 +60,11 @@ Then we started downloading process to download those images. It took roughly 30
 %in the source means a non-breaking space.  This way, your reference will
 %always be attached to the word that preceded it, instead of going to the
 %next line.
+
+\subsection{Analyzer}
+
+\subsubsection{Layer profile}
+
+\subsubsection{Config profile}
+
+\subsubsection{Image Profile}

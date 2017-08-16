@@ -2,12 +2,52 @@
 \section{Background}
 
 \nancomment{
-outline:\\
-1. Current public registries\\
-2. Docker:\\
-2.1 Docker engine, container, driver, Image, Layer \\
-3. Image structure \\
-3.1 Layer: Dir file \\
-4. Docker Registry: \\
-4.1 Pull Push \\
+TODO:\\
+1. complete:\\
+2. search for reference\\
 }\\
+
+\subsection{Docker}
+
+\subsubsection{Docker image}
+
+An “image” is a combination of a JSON manifest and individual layer files. 
+
+\begin{enumerate}
+	\item Manifest.
+	\item Config file.
+	\item Layer files.
+\end{enumerate}
+
+\subsubsection{Storage driver}
+
+ The storage driver controls how images and containers are stored and managed on Docker host using a pluggable architecture. 
+
+\begin{enumerate}
+	\item aufs.
+	\item zfs.
+	\item overlay/overlay2.
+	\item devicemapper.
+\end{enumerate}
+
+\subsubsection{Docker container}
+
+Containers are an abstraction at the app layer that packages code and dependencies together. 
+
+\begin{enumerate}
+	\item writable layer.
+	\item Copy-on-write.
+	\item Data volumes.
+\end{enumerate}
+
+\subsection{Docker Registry}
+
+The Registry is a stateless, highly scalable server side application that stores and lets you distribute Docker images.
+
+\begin{enumerate}
+	\item Registry versions.
+	\item Content addressability.
+	\item Pulling images.
+\end{enumerate}
+
+\subsection{Current public registry}
