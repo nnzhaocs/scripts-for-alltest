@@ -2,8 +2,7 @@
 \section{Methodology}
 \nancomment{
 	TODO: \\
-	1. Polish \\
-	2. Complete fig and table\\
+	1. Complete fig and table\\
 }
 
 Our methodology has two steps. The first step is to massively download the Docker images from Docker registry. When the images are downloaded, we analyze them and calculate statistics distribution for different metrics. The details of each step are covered in the following sections.
@@ -28,7 +27,10 @@ As shown in Figure~\ref{xxx}, downloader first obtains a list of public images t
 
 The first step in downloading an image is to fetch the manifest by using the following url: $GET /v2/\langle name \rangle/manifests/\langle reference \rangle$, where~\textit{name} parameter refers to $\langle namespace\rangle/\langle repository name \rangle$. Note that the~\textit{namespace} of official is~\textit{library}. The reference can include a tag or digest. Note that we only downloaded the images with~\textit{latest} tag to shorten the downloading process. 
 
-Layers are stored as compressed tar archive in the registry, indexed by digest. As discussed in Section~\ref{xxx}, manifest consist of multiple layer digests. Note that Schema 2 version also contains a config file digest. Once the manifest is downloaded, the downloader will then use the digests to download individual layers (including config file for Schema 2 version) by using the following url: $GET /v2/\langle name \rangle/blobs/\langle digest \rangle$, where \textit{name} refers to the image name while~\textit{digest} refers to the layer digest or config file digest 
+Layers are stored as compressed tar archive in the registry, indexed by digest. As discussed in Section~\ref{xxx}, manifest consist of multiple layer digests. Note that Schema 2 version also contains a config file digest. Once the manifest is downloaded, the downloader will then use the digests to download individual layers (including config file for Schema 2 version) by using the following url: $GET /v2/\langle name \rangle/blobs/\langle digest \rangle$, where \textit{name} refers to the image name while~\textit{digest} refers to the layer digest or config file digest.
+
+\nancomment{1. TODO
+	add a figure, downloader and analyzer} 
 
 %First, it fetches the manifest and get the config file's digest and layer tarballs'digests. Second it builds the HTTP requests to download the config files and layer tarballs.
 
@@ -36,9 +38,15 @@ Layers are stored as compressed tar archive in the registry, indexed by digest. 
 
 Crawler delivered a list of xxx images on 5/30/2017. However, duplicated images exist in the list. After reducing the repeated images, our image dataset consists of xxx distinct images. 
 
-The downloading process took roughly 30 days to finish. Overall, we downloaded xxx images with xxx layers as shown in Table~\ref{XXX}. xxx of images couldn't be downloaded. There are two reasons: first, xxx of images were either deleted or empty. Second, xxx of images doesn't have tag:~\textit{latest}. As we discussed in Section~\ref{}, we only downloaded the images with latest version to shorten the downloading process.
+The downloading process took roughly 30 days to finish. Overall, we downloaded xxx TB of xxx images with xxx layers as shown in Table~\ref{XXX}. xxx of images couldn't be downloaded. There are two reasons: first, xxx of images were either deleted or empty. Second, xxx of images doesn't have tag:~\textit{latest}. As we discussed in Section~\ref{}, we only downloaded the images with latest version to shorten the downloading process.
 
-%The reason probably is that Docker Hub adjusted websites'order or modified the websites because of the increasing of Docker images during our crawling process. Our crawler has a unavoidable delay between each HTTP requst and HTTP response. So it couldn't reflect the websites'order or website content changes. 
+\nancomment{2. TODO: add a table discribe:\\
+	how many images, duplicate ratio\\
+	how many cannot download, (removed, no latest)\\
+	how many layers, config, manifest\\
+	dataset}
+
+%The reason probably is that Docker Hub adjusted websites'order or modified the websites because of the increasing of Docker images during our crawling process. Our crawler has a unavoidable delay between each HTTP requst and HTTP response. So it couldn't reflect the websites'order or website content changes. Another reason is that search engine lists duplicated images 
 
 %Overall, we downloaded XXX image with XXX layers. Table~\ref{XXX} summaries the statistics of Docker image dataset we downloaded. Then, we profiled the layers, config files, and manifests we downloaded and calculated the statistic distribution for different metrics. 
 
@@ -72,8 +80,27 @@ The downloading process took roughly 30 days to finish. Overall, we downloaded x
 
 \subsection{Analyzer}
 
+Analyzer analyzes the images we downloaded and creates two kinds of files for each image: image profile and individual layer profiles. Image profile includes image metadata information, such as image pull count, layer count, etc., and image configuration information, such as os, architecture, etc.; While layer profile contains layer metadata information, such as layer size, file count, etc.; and directory metadata information for each subdirectory, such as directory depth, directory size, etc.; and file metadata information for each file, such as file size, file type, etc.
+
 \subsubsection{Layer profile}
 
-\subsubsection{Config profile}
+As discussed in Section~\ref{}, the layers we downloaded are compressed tar archive files. To analyze the layer content, analyzer first decompress and extract each layer tarball to a layer directory. Then, analyzer recursively goes through each subdirectory and obtains the metadata information for each subdirectory and each file as shown in figure~\ref{xxx}.
+
+\nancomment{3. TODO: 
+	add a fig: discribe all layer metadata, config metadata, and manifest metadata structure} 
+
+\nancomment{4. TODO: 
+	add a table\\
+	layer tarball format statistics, tar, compressed, non compressed\\
+	config statistics, txt, json\\
+	manifest statistics, txt, json}
 
 \subsubsection{Image Profile}
+
+As shown in figure~\ref{xxx}, Analyzer parses the manifest and obtains the configuration information such as os, architecture etc.. Note that manifest Schema version 2 stores configuration information in a config file as discussed in Section~\ref{xxx}. As shown in table~\ref{}, xxx of manifests are Schema version 2 while the rest are Schema version 1. 
+
+Once individual layers are analyzed, analyzer can build the whole image profile by including pointers to its layer profiles as shown in figure~\ref{xxx}. Table~\ref{} summaries the layer archive file, config file, and manifest statistics.
+ 
+
+%\subsubsection{Config profile}
+
