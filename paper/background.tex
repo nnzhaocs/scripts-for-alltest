@@ -21,8 +21,6 @@ Docker container is new popular container-based virtualization technology that e
 
 %AuFS (Advanced Multi-Layered Unification Filesystem) as a filesystem for containers. AuFS is a layered filesystem that can transparently overlay one or more existing filesystems. When a process needs to modify a file, AuFS creates a copy of that file. AuFS is capable of merging multiple layers into a single representation of a filesystem. This process is called copy-on-write. 
  
-
-
 %Docker using a high-level API that provides a lightweight virtualization solution to run processes in isolation. Docker is developed in the Go language and utilizes LXC, cgroups, and the Linux kernel itself. Since it’s based on LXC, a Docker container does not include a separate operating system; instead it relies on the operating system’s own functionality as provided by the underlying infrastructure. So Docker acts as a portable container engine, packaging the application and all its dependencies in a virtual container that can run on any Linux server.
  
 % packaging and delivery technology, combining lightweight application isolation with the flexibility of image-based deployment methods. 
@@ -37,27 +35,25 @@ Docker container is new popular container-based virtualization technology that e
  
  %Docker provides tools to make creating and working with containers as easy as possible. Containers sandbox processes from each other. For now, you can think of a container as a lightweight equivalent of a virtual machine.
  
+\subsection{Docker \& Docker container}
 
+%Docker is an open platform for developers and system administrators to build, ship, and run distributed applications using Docker Engine, a portable, lightweight runtime and packaging tool, and Docker Hub, a cloud service for sharing applications and automating workflows. The main advantage is that,
 
-\subsection{Docker and Docker container}
+%Docker allows packaging an application with its dependencies into a standardized, self-contained unit (a so-called container), which can be used for software development and to run the application on any system.
 
-Docker is an open platform for developers and system administrators to build, ship, and run distributed applications using Docker Engine, a portable, lightweight runtime and packaging tool, and Docker Hub, a cloud service for sharing applications and automating workflows. The main advantage is that,
-
-Docker allows packaging an application with its dependencies into a standardized, self-contained unit (a so-called container), which can be used for software development and to run the application on any system.
-
- Containers are an abstraction at the app layer that packages code and dependencies together. 
+%Containers are an abstraction at the app layer that packages code and dependencies together. 
  
 \nancomment{
 	1. TODO: add a docker architecture\\
 }\\
  
- \begin{enumerate}
- 	\item writable layer.
- 	\item Copy-on-write.
- 	\item Data volumes.
- \end{enumerate}
+ %\begin{enumerate}
+ %	\item writable layer.
+ %	\item Copy-on-write.
+ %	\item Data volumes.
+ %\end{enumerate}
  
-\subsubsection{Docker image}
+\subsection{Docker image \& Union File System}
 
 An “image” is a combination of a JSON manifest and individual layer files. 
 
@@ -67,16 +63,16 @@ An “image” is a combination of a JSON manifest and individual layer files.
 	\item Layer files.
 \end{enumerate}
 
-\subsubsection{Storage driver}
+%\subsubsection{Storage driver}
 
- The storage driver controls how images and containers are stored and managed on Docker host using a pluggable architecture. 
+% The storage driver controls how images and containers are stored and managed on Docker host using a pluggable architecture. 
 
-\begin{enumerate}
-	\item aufs.
-	\item zfs.
-	\item overlay/overlay2.
-	\item devicemapper.
-\end{enumerate}
+%\begin{enumerate}
+%	\item aufs.
+%	\item zfs.
+%	\item overlay/overlay2.
+%	\item devicemapper.
+%\end{enumerate}
 
 %\subsubsection{}
 
