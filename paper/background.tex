@@ -7,8 +7,56 @@ TODO:\\
 2. search for reference\\
 }\\
 
-\subsection{Docker}
+Hypervisors based server virtualization technologies (e.g., VMware~\cite{xxx}, Xen~\cite{xxx}, and KVM~\cite{xxx}) have been extensively used by most of cloud platforms such as Amazon EC2, which consists of a virtual machine monitor (VMM) on top of a host operating system that allows dynamically partitioning of a machine and sharing the available physical resources such as CPU, storage, memory and I/O devices to support the concurrent execution of multiple guest operating systems instances within virtual machines (VMs) and provide users with benefits ranging from application isolation through server consolidation to improve disaster recovery and faster server provisioning~\cite{xxx}.
 
+Nevertheless, hypervisor-based virtualization has a high performance overhead because of execution time overhead caused by executing privileged instructions and memory overhead caused by running multiple VMs. Guest OSs are normally executed at a reduced privilege level~\cite{}. Hypervisor intercepts traps from guest OSs and emulates the trapping instructions, which incurs execution time overheads, specially for applications which relies on I/O operations since I/O interrupt overhead is amplified for nested virtual machine. Memory overhead includes space reserved for the VMs buffer and various virtualization data structures, such as shadow page tables~\cite{}, which increases with the number of virtual CPUs and the configured memory for the guest OSs~\cite{}. 
+
+Recent container-based virtualization (such as Linux Containers(LXC)~\cite{xxx}, OpenVZ~\cite{bibid}, and Docker~\cite{}) emerges as a lightweigh virtualization, which promises a near-native performance. As opposed to virtual machines (VMs), container based virtualization works at operating system level and do not emulate another operating system. In this case, all the virtual instances share a single operating system kernel, which significantly reduces the overhead imposed through VMs. LXC offers isolation (of PIDs, IPCs, mount pints, and network) through (PID and network) \textit{namespaces} while manages resource and controls processes via \textit{cgroups}~\cite{}. 
+
+Docker container is new popular container-based virtualization technology that extends LXC with higher level APIs and additional functionality. It also uses namespaces to isolate applications inside containers. Moreover, Docker incorporates copy-on-write union filesystems (UnionFS) to avoid duplication and enable versioning. It couples the above two components with a number of features, like portability, re-use, and reproducibility.
+
+%Docker is an open source project that automates the deployment of applications inside Linux Containers, and provides the capability to package an application with its runtime dependencies into a container. It provides a Docker CLI command line tool for the lifecycle management of image-based containers. Linux containers enable rapid application deployment, simpler testing, maintenance, and troubleshooting while improving security. 
+
+%, and  that make it developer-centric (and therefore distinct from traditional virtual machines that attempt to hew as much as possible to the metaphor of machine): like deployment 
+
+%AuFS (Advanced Multi-Layered Unification Filesystem) as a filesystem for containers. AuFS is a layered filesystem that can transparently overlay one or more existing filesystems. When a process needs to modify a file, AuFS creates a copy of that file. AuFS is capable of merging multiple layers into a single representation of a filesystem. This process is called copy-on-write. 
+ 
+
+
+%Docker using a high-level API that provides a lightweight virtualization solution to run processes in isolation. Docker is developed in the Go language and utilizes LXC, cgroups, and the Linux kernel itself. Since it’s based on LXC, a Docker container does not include a separate operating system; instead it relies on the operating system’s own functionality as provided by the underlying infrastructure. So Docker acts as a portable container engine, packaging the application and all its dependencies in a virtual container that can run on any Linux server.
+ 
+% packaging and delivery technology, combining lightweight application isolation with the flexibility of image-based deployment methods. 
+ 
+%an extension of LXC’s capabilities that provides higher level APIs and functionality as a portable container engine. It aims to improve reproducibility of applications by enabling bundling of container contents into a single object that can be deployed across machines.
+
+%Docker is an open source project that automates the deployment of applications inside Linux Containers, and provides the capability to package an application with its runtime dependencies into a container. It provides a Docker CLI command line tool for the lifecycle management of image-based containers. Linux containers enable rapid application deployment, simpler testing, maintenance, and troubleshooting while improving security. 
+
+% Linux Containers LXC, a user-space control package for Linux Containers, constitute the core of Docker. 
+ 
+ %Docker harnesses some powerful kernel-level technology and puts it at our fingertips. The concept of a container in virtualization has been around for several years, but by providing a simple tool set and a unified API for managing some kernel-level technologies, such as LXCs (LinuX Containers), cgroups and a copy-on-write filesystem, Docker has created a tool that is greater than the sum of its parts. The result is a potential game-changer for DevOps, system administrators and developers.
+ 
+ %Docker provides tools to make creating and working with containers as easy as possible. Containers sandbox processes from each other. For now, you can think of a container as a lightweight equivalent of a virtual machine.
+ 
+
+
+\subsection{Docker and Docker container}
+
+Docker is an open platform for developers and system administrators to build, ship, and run distributed applications using Docker Engine, a portable, lightweight runtime and packaging tool, and Docker Hub, a cloud service for sharing applications and automating workflows. The main advantage is that,
+
+Docker allows packaging an application with its dependencies into a standardized, self-contained unit (a so-called container), which can be used for software development and to run the application on any system.
+
+ Containers are an abstraction at the app layer that packages code and dependencies together. 
+ 
+\nancomment{
+	1. TODO: add a docker architecture\\
+}\\
+ 
+ \begin{enumerate}
+ 	\item writable layer.
+ 	\item Copy-on-write.
+ 	\item Data volumes.
+ \end{enumerate}
+ 
 \subsubsection{Docker image}
 
 An “image” is a combination of a JSON manifest and individual layer files. 
@@ -30,15 +78,9 @@ An “image” is a combination of a JSON manifest and individual layer files.
 	\item devicemapper.
 \end{enumerate}
 
-\subsubsection{Docker container}
+%\subsubsection{}
 
-Containers are an abstraction at the app layer that packages code and dependencies together. 
 
-\begin{enumerate}
-	\item writable layer.
-	\item Copy-on-write.
-	\item Data volumes.
-\end{enumerate}
 
 \subsection{Docker Registry}
 
@@ -50,4 +92,4 @@ The Registry is a stateless, highly scalable server side application that stores
 	\item Pulling images.
 \end{enumerate}
 
-\subsection{Current public registries}
+%\subsection{Current public registries}
