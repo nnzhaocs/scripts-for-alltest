@@ -13,7 +13,7 @@ Nevertheless, hypervisor-based virtualization has a high performance overhead be
 
 Recent container-based virtualization (such as Linux Containers(LXC)~\cite{xxx}, OpenVZ~\cite{bibid}, and Docker~\cite{}) emerges as a lightweigh virtualization, which promises a near-native performance. As opposed to virtual machines (VMs), container based virtualization works at operating system level and do not emulate another operating system. In this case, all the virtual instances share a single operating system kernel, which significantly reduces the overhead imposed through VMs. LXC offers isolation (of PIDs, IPCs, mount pints, and network) through (PID and network) \textit{namespaces} while manages resource and controls processes via \textit{cgroups}~\cite{}. 
 
-Docker container is new popular container-based virtualization technology that extends LXC with higher level APIs and additional functionality. It also uses namespaces to isolate applications inside containers. Moreover, Docker incorporates copy-on-write union filesystems (UnionFS) to avoid duplication and enable versioning. It couples the above two components with a number of features, like portability, re-use, and reproducibility.
+Docker container is a new popular container-based virtualization technology that extends LXC with higher level APIs and additional functionality. It also uses namespaces to isolate applications inside containers. Moreover, Docker incorporates copy-on-write union filesystems (UnionFS) to avoid duplication and enable versioning. It couples the above two components with a number of features, like portability, re-use, and reproducibility.
 
 %Docker is an open source project that automates the deployment of applications inside Linux Containers, and provides the capability to package an application with its runtime dependencies into a container. It provides a Docker CLI command line tool for the lifecycle management of image-based containers. Linux containers enable rapid application deployment, simpler testing, maintenance, and troubleshooting while improving security. 
 
@@ -38,29 +38,48 @@ Docker container is new popular container-based virtualization technology that e
 \subsection{Docker \& Docker container}
 
 %Docker is an open platform for developers and system administrators to build, ship, and run distributed applications using Docker Engine, a portable, lightweight runtime and packaging tool, and Docker Hub, a cloud service for sharing applications and automating workflows. The main advantage is that,
-
 %Docker allows packaging an application with its dependencies into a standardized, self-contained unit (a so-called container), which can be used for software development and to run the application on any system.
-
 %Containers are an abstraction at the app layer that packages code and dependencies together. 
  
 \nancomment{
-	1. TODO: add a docker architecture\\
+	1. TODO: add a docker architecture pic\\
 }\\
- 
- %\begin{enumerate}
- %	\item writable layer.
- %	\item Copy-on-write.
- %	\item Data volumes.
- %\end{enumerate}
- 
-\subsection{Docker image \& Union File System}
+%how container isolate.
+Docker containers create a wrapped, controlled environment on the host machine in which applications can be run in isolated manner via two main Linux kernel features -- kernel namespaces which are used to split the view that processes have of the system and control groups (cgroups) that restricts the resource usage of a process or group of processes. Currently, Linux kernel provides six different namespaces, PID, IPC, NET, MNT, UTS, and USER for process IDs, IPC requests, networking, file-system mount points, host names, and user IDs~\cite{xxx}~\cite{xxx}. Controlled resources include CPU shares, RAM, network bandwidth, and disk I/O.
 
-An “image” is a combination of a JSON manifest and individual layer files. 
+%how container deameon. 
+
+As Figure~\ref{xxx} shows, Docker ecosystem includes various components, i.e., Docker daemon, Docker container, Docker image, and Docker Hub. Docker Deamon, known as Docker engine, can create images from Dockerfiles (through docker build), launch containers (through docker run), and fetch non-local images from Docker registry as well as publish new images to Docker registry such as Docker Hub (through docker pull or docker push). It controls isolation levels of containers including cgroups, namespaces, capabilities restrictions, and SELinux/Apparmorprofiles, monitor them to trigger actions such as restart, and spawn shells into running containers for administration purposes. 
+
+Docker container is created from Docker images which package an application with its runtime dependencies, such as binaries, and libraries. Images are read-only copies of file system data. All modifications to the container that add new or modify existing data are stored in this writable layer. When the container is deleted, the writable layer is also deleted. The underlying image remains unchanged. Because each container has its own writable container layer, and all changes are stored in this container layer, multiple containers can share access to the same underlying image and yet have their own data state~\cite{}.  
+ 
+\subsection{Docker image \& Docker storage drivers}
+
+\subsubsection{Docker image}
+
+% what is image containning
+
+Docker images are composed of a set of individual layers along with metadata in the JavaScript Object Notation (JSON) format called manifest. 
+
+% how to build, relation to container
 
 \begin{enumerate}
+	\item Layers.
 	\item Manifest.
-	\item Config file.
-	\item Layer files.
+	%\item Config file.
+\end{enumerate}
+
+\subsubsection{Copy-on-write storage}
+
+% what is .., benefit
+
+% different types
+
+\begin{enumerate}
+	\item aufs.
+	\item zfs.
+	\item overlay/overlay2.
+	\item devicemapper.
 \end{enumerate}
 
 %\subsubsection{Storage driver}
@@ -76,8 +95,6 @@ An “image” is a combination of a JSON manifest and individual layer files.
 
 %\subsubsection{}
 
-
-
 \subsection{Docker Registry}
 
 The Registry is a stateless, highly scalable server side application that stores and lets you distribute Docker images.
@@ -85,7 +102,7 @@ The Registry is a stateless, highly scalable server side application that stores
 \begin{enumerate}
 	\item Registry versions.
 	\item Content addressability.
-	\item Pulling images.
+	\item Pulling images/pushing images.
 \end{enumerate}
 
 %\subsection{Current public registries}
