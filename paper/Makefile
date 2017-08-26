@@ -1,33 +1,39 @@
+# You want latexmk to *always* run, because make does not have all the info.
+# Also, include non-file targets in .PHONY so they are run regardless of any
+# file of the given name existing.
+.PHONY: paper.pdf all clean
 
-filename=paper
+# The first rule in a Makefile is the one executed by default ("make"). It
+# should always be the "all" rule, so that "make" and "make all" are identical.
+all: paper.pdf
 
-pdf: ps
-	ps2pdf ${filename}.ps
+# CUSTOM BUILD RULES
 
-pdf-print: ps
-	ps2pdf -dColorConversionStrategy=/LeaveColorUnchanged -dPDFSETTINGS=/printer ${filename}.ps
+# In case you didn't know, '$@' is a variable holding the name of the target,
+# and '$<' is a variable holding the (first) dependency of a rule.
+# "raw2tex" and "dat2tex" are just placeholders for whatever custom steps
+# you might have.
 
-text: html
-	html2text -width 100 -style pretty ${filename}/${filename}.html | sed -n '/./,$$p' | head -n-2 >${filename}.txt
+%.tex: %.raw
+	./raw2tex $< > $@
 
-html:
-	@#latex2html -split +0 -info "" -no_navigation ${filename}
-	htlatex ${filename}
+%.tex: %.dat
+	./dat2tex $< > $@
 
-ps:	dvi
-	dvips -t letter ${filename}.dvi
+# MAIN LATEXMK RULE
 
-dvi:
-	latex ${filename}
-	bibtex ${filename}||true
-	latex ${filename}
-	latex ${filename}
+# -pdf tells latexmk to generate PDF directly (instead of DVI).
+# -pdflatex="" tells latexmk to call a specific backend with specific options.
+# -use-make tells latexmk to call make for generating missing files.
 
-read:
-	evince ${filename}.pdf &
+# -interaction=nonstopmode keeps the pdflatex backend from stopping at a
+# missing file reference and interactively asking you for an alternative.
 
-aread:
-	acroread ${filename}.pdf
+paper.pdf: paper.tex
+	latexmk -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make paper.tex
 
 clean:
-	rm -f ${filename}.{ps,pdf,log,aux,out,dvi,bbl,blg}
+	latexmk -CA
+	rm paper.bbl paper.blg
+	rm paper.ps paper.pdf paper.log paper.out paper.aux paper.dvi paper.tex.flc
+	rm *.kill kill*
