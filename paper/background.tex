@@ -51,36 +51,90 @@ Docker containers create a wrapped, controlled environment on the host machine i
 
 As Figure~\ref{xxx} shows, Docker ecosystem includes various components, i.e., Docker daemon, Docker container, Docker image, and Docker Hub. Docker Deamon, known as Docker engine, can create images from Dockerfiles (through docker build), launch containers (through docker run), and fetch non-local images from Docker registry as well as publish new images to Docker registry such as Docker Hub (through docker pull or docker push). It controls isolation levels of containers including cgroups, namespaces, capabilities restrictions, and SELinux/Apparmorprofiles, monitor them to trigger actions such as restart, and spawn shells into running containers for administration purposes. 
 
-Docker container is created from Docker images which package an application with its runtime dependencies, such as binaries, and libraries. Images are read-only copies of file system data. All modifications to the container that add new or modify existing data are stored in this writable layer. When the container is deleted, the writable layer is also deleted. The underlying image remains unchanged. Because each container has its own writable container layer, and all changes are stored in this container layer, multiple containers can share access to the same underlying image and yet have their own data state~\cite{}.  
+ 
  
 \subsection{Docker image \& Docker storage drivers}
 
 \subsubsection{Docker image}
 
 % what is image containning
-
-Docker images are composed of a set of individual layers along with metadata in the JavaScript Object Notation (JSON) format called manifest. 
-
+Docker image is an immutable and `executable' file that is essentially a snapshot of a container. Docker images packages an application only with its runtime dependencies, such as binaries, and libraries to maintain lightweight characteristics. Images are read-only copies of file system data. All modifications to the container that add new or modify existing data are stored in this writable layer. When the container is deleted, the writable layer is also deleted. The underlying image remains unchanged. Because each container has its own writable container layer, and all changes are stored in this container layer, multiple containers can share access to the same underlying image and yet have their own data state~\cite{}. 
 % how to build, relation to container
 
-\begin{enumerate}
-	\item Layers.
-	\item Manifest.
+There are two methods to build a Docker image: The first method is called interactive building which is carried out by starting a base image as a container (via `Docker run'), running commands to install the desired software on the running container, then committing the changes creating a new image on the local Docker repository~\cite{}. The second method is called building from a Dockerfile which is carried out by writing a Dockerfile. A Dockefile is a script file that contains all the commands one would normally execute manually in order to build an image. Dockerfile starts by loading a base image, followed by the list of Docker formatted commands to install the desired software. The image is built via `docker build'. 
+
+Docker images are composed of a set of individual layers along with metadata in the JavaScript Object Notation (JSON) format called manifest. Each layer contains the data modifications relative to the previous layer, starting from a base layer/image (typically, a lightweight Linux distribution). Each layer has a parent, except for the base layers/images, which are the roots of the trees. This structure avoid Docker pulling redundant layers. The manifest contains
+
+%\begin{enumerate}
+	%\item Layers.
+	%\item Manifest.
 	%\item Config file.
-\end{enumerate}
+%\end{enumerate}
 
 \subsubsection{Copy-on-write storage}
 
 % what is .., benefit
 
+The data management of container is superintend either by Docker storage drivers (e.g. AUFS, OverlayFS, Btrfs, etc) or by docker data volumes. Docker daemon can only run one storage driver and all containers created by that daemon instance use the same storage driver. Storage driver operate with copy-on-write technique, which thus provide more advantages for read intensive applications. Docker volume is mechanism to automatically provide data persistence for containers. A volume is a directory or a file that can be mounted directly inside the container. The I/O operations through this mount path are independent of storage driver and executed directly on the host. 
+
+Docker provides a variety of pluggable storage drivers that are based on Linux filesystem or volume manager, including advanced multi-layered unification filesystem (aufs), B-tree file system (Btrfs), virtual filesystem switch (VFS), device mapper, or OverlayFS. Aufs is a fast reliable unification file system with some new features like writable branch balancing. Btrfs
+(B-tree file system) is a modern CoW file system which implements many advanced features for fault tolerance, repair
+and easy administration. Overlayfs is another modern union file system which has a simpler design and is potentially faster
+than Aufs.
+
+Device mapper is a Linux kernel component; it provides a mechanism for mapping physical block devices onto virtual block devices. These mapped devices can be used as logical volumes. Device mapper provides a generic way for creating such mappings. Device mapper maintains a table which defines device mappings. The table specifies how to map each range of logical sectors of the device.
+
+%BTRFS is a Linux file system which has a poten-
+%tial of replacing the current Linux default file system,
+
+%The start value for the first line is always zero. For other
+%lines, start + length of the previous line should be equal
+%to start value of the current line. Device mapper sizes are
+%always specified in 512 bytes sectors. There are different
+%types of mapping targets linear, striped, mirror, snapshot,
+%snapshot-origin, etc.
+
+BTRFS (also knows as ”butter FS”) is basically a copy on write file system. Copy-on-write(CoW) means it does not update the data ever.[8] Instead, it cre-
+ates a new copy of that part of data which is stored some-
+where else on the disk keeping the old part as it is. Any-
+one with a decent file systems knowledge would under-
+stand that CoW requires more space because it stores the
+old copies of data as well. Also, it has a problem of frag-
+mentation. Then how can a CoW file system be used as a
+default Linux file system? Wouldn’t that reduce the per-
+formance? No need to mention the storage space prob-
+lem. Let’s dive into BTRFS to understand why it has
+become so popular.[9]
+The primary design goal of BTRFS was to develop
+a generic file system which can perform well with any
+use cases and workload. Most of the file systems per-
+form well for a particular specific file system benchmark,
+and the performance is no that great for other scenarios.
+Apart from this BTRFS also supports snapshots, cloning,
+and RAID (Level 0, 1, 10, 5, 6). This is more than any-
+one has bargained for from a file system before. One can
+understand the design complexity because Linux file sys-
+tems are deployed on all kinds of devices from computers
+and smart phones to small embedded devices.[10]
+The BTRFS layout is represented with B-trees, more
+like a forest of B-trees. These are copy-on-write friendly
+B-trees. As CoW file systems require a little more disk
+space, in general, BTRFS has a very sophisticated mech-
+anism for space reclamation. It has a garbage collector
+which makes use of reference counting to reclaims un-
+used disk space. For data integrity part, BTRFS uses
+check sums.
+
+%The commonly used storage drivers are 
+
 % different types
 
-\begin{enumerate}
-	\item aufs.
-	\item zfs.
-	\item overlay/overlay2.
-	\item devicemapper.
-\end{enumerate}
+%\begin{enumerate}
+%	\item aufs.
+%	\item zfs.
+%	\item overlay/overlay2.
+%	\item devicemapper.
+%\end{enumerate}
 
 %\subsubsection{Storage driver}
 
@@ -97,12 +151,16 @@ Docker images are composed of a set of individual layers along with metadata in 
 
 \subsection{Docker Registry}
 
-The Registry is a stateless, highly scalable server side application that stores and lets you distribute Docker images.
+The Docker Registry, known as Docker Hub, allows users push their Docker images to it and pulling Docker images from it.The repositories in Docker Hub is either public or private. All the non-repositories'names are in ``$\langle namespace\rangle/\langle repository name \rangle$" format, where~\textit{namespace} is the user name. The official repositories'names only contain ``repository name".
 
-\begin{enumerate}
-	\item Registry versions.
-	\item Content addressability.
-	\item Pulling images/pushing images.
-\end{enumerate}
+
+
+%The Registry is a stateless, highly scalable server side application that stores and lets you distribute Docker images.
+
+%\begin{enumerate}
+%	\item Registry versions.
+%	\item Content addressability.
+%	\item Pulling images/pushing images.
+%\end{enumerate}
 
 %\subsection{Current public registries}
