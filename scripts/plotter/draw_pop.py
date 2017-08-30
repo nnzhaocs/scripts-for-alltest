@@ -97,19 +97,22 @@
 # from utility import *
 # # from file import *
 
-import sys
-sys.path.append('../libraries/')
-sys.path.append('../analyzer/')
-from graph_related_libraries import *
-from config import *
+#import sys
+#sys.path.append('../libraries/')
+#sys.path.append('../analyzer/')
+#from graph_related_libraries import *
+#from config import *
+from draw_pic import *
 
 
 def main():
-        # parser = optparse.OptionParser()
-        # parser.add_option('-f', '--filename', action='store', dest="filename", help="The input file name. e.g., images.tsv", default="images.tsv")
-        # options, args = parser.parse_args()
+        parser = optparse.OptionParser()
+        parser.add_option('-f', '--filename', action='store', dest="filename", help="The input file name. e.g., images.tsv", default="images.tsv")
+        options, args = parser.parse_args()
         # #print parser.filename
-        # print ('Input file name: %s', options.filename)
+        print ('Input file name: %s', options.filename)
+
+	image_pop_filename = options.filename        
 
 	cmd_stars='awk -F\''+r','+'\' \'{print $1}\' %s > image_stars.txt' % image_pop_filename
 	cmd_pulls='awk -F\''+r','+'\' \'{print $2}\' %s > image_pulls.txt' % image_pop_filename
@@ -133,7 +136,7 @@ def main():
 	#plot_cdf(data_stars, 'stars', 128)
 	#plot_cdf(data_pulls, 'pulls', 5000)
 
-	fig = fig_size('small')  # 'large'
+	fig = fig_size('min')  # 'large'
 
 	data = data_stars
 	xlabel = 'Star count for each image'  # data = [x * 1.0 / 1024 / 1024 for x in data1]
@@ -149,7 +152,7 @@ def main():
 	xlim = 250  # max(data1)
 	ticks = 25
 	print xlim
-	plot_cdf_normal(fig, data, xlabel, xlim, ticks)
+	plot_cdf(fig, data, xlabel, xlim, ticks)
 
 if __name__=='__main__':
 	print 'here'

@@ -1,10 +1,15 @@
 
-from imports import *
+#from imports import *
+import sys
+sys.path.append('../libraries/')
+sys.path.append('../analyzer/')
+from graph_related_libraries import *
+from regular_libraries import *
 
 
 def fig_size(size):
     if size == 'min':
-	fig = plt.figure(figsize=(9, 5), dpi=80)
+	fig = plt.figure(figsize=(12, 6), dpi=80)
     if size == 'small':
 	fig = plt.figure(figsize=(16, 8), dpi=80)
     if size == 'median':
