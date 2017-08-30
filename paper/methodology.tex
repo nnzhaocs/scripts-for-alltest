@@ -5,40 +5,172 @@
 %	1. Complete fig and table\\
 %}
 
-Our methodology has two steps. The first step is to massively download the Docker images from Docker registry. When the images are downloaded, we analyze them and calculate statistics distribution for different metrics. The details of each step are covered in the following sections.
+Our methodology has two steps.
+%
+The first step is to massively download the Docker images from Docker registry.
+%
+When the images are downloaded, we analyze them and calculate statistics distribution for different metrics.
+%
+The details of each step are covered in the following sections.
+%
+\vcomment{I suggest to restructure this section simirarly to background to
+revolve around the figure. Once you add the diagram describing our methodology
+(like we put on the whiteboard ones), start describing components on it in the
+order they are used: crawler, downloader, analyzer. Having two subsection:
+``downloader'' and ``downloading images'' is confusing.
+%
+We might want to have less deep structure also:
+%
+3. Methodology
+  (Figure)
+3.1 Crawler
+3.2 Downloader
+3.3 Analyzer
+}
 
-\subsection{Downloader}
 
-Instead of using Docker (or Docker Engine) to download images, we wrote our own downloader python script that utilizes Docker Registry API~\cite{} to simultaneously download~\textbf{original} manifests and layers. There are two reasons. First, Docker Engine (starting from version 1.10) automatically converts the manifests from schema version 1 to schema version 2, which affects our results about manifest version statistics; Second, layer content directories are not visible for some Docker storage drivers, e.g., devicemapper, which is not feasible to analyze the layer content. 
 
-Downloader can download multiple images simultaneously and within each image downloading process, layers are downloaded in parallel. To download the original manifests and layers from Docker registry, downloader embeds a Docker registry client API~\cite{xxx} which only encapsulates manifest, config file and layer downloading functions in Docker engine without extracting layer tarball and converting manifest version. 
 
-To download an image, the name should be provided. To the best of our knowledge, Docker Hub (i.e., Docker registry) doesn't provide a method to list their public images. Public images in Docker registry can be divided into official images and non-official images. The amount of official images is only xxx. While estimating and listing all the non-official images requires crawling Docker Hub. We created Crawler python script to crawl Docker Hub websites and list both official and non-official images.
+\subsection{Image Downloader}
+
+Instead of using Docker (or Docker Engine) to download images, we wrote our own downloader python script that utilizes Docker Registry API~\cite{} to simultaneously download~\textbf{original} manifests and layers.
+%
+\vcomment{Should we mention and cite the library that we used here?}
+%
+There are two reasons.
+%
+First, Docker Engine (starting from version 1.10) automatically converts the manifests from schema version 1 to schema version 2, which affects our results about manifest version statistics.
+%
+Second, layer content directories are not visible for some Docker storage drivers, e.g., devicemapper, which is not feasible to analyze the layer content. 
+%
+\vcomment{I think most importantly it is faster because we do not need to perform extra steps that Docker client performs.}
+
+
+
+
+Downloader can download multiple images simultaneously and within each image downloading process, layers are downloaded in parallel.
+%
+To download the original manifests and layers from Docker registry, downloader embeds a Docker registry client API~\cite{xxx} which only encapsulates manifest, config file and layer downloading functions in Docker engine without extracting layer tarball and converting manifest version. 
+%
+\vcomment{I believe we never explained what is config file. We need to discuss in in background section.}
+%
+To download an image, the name should be provided.
+%
+\vcomment{Here and in the whole text we need to be very carefull distinguishing names of repository
+and image. Also discussion on image tags is missing, should be in background section.}
+%
+To the best of our knowledge, Docker Hub (i.e., Docker registry) doesn't provide an API to list their public images.
+%
+We therefore created Crawler to crawl Docker Hub website and list public images.
+%
+Public images in Docker registry can be divided into official images and non-official images.
+%
+The amount of official images is only XXX while 
+while the number of  non-official user images is XXX.
+
+
+
+
 
 \subsubsection{Crawler}
 
-Docker Hub website provides search engine which indexes public images for users to search for a specific image or a list of images that contains a certain letter or string. The name of non-official public image is comprised of ``$\langle namespace\rangle/\langle repository name \rangle$", where~\textit{namespace} is the user name. In this case, we search for `/' and obtain a list of images which contains '/'. In other words, this method lists all the non-official public images in Docker Hub. Crawler downloads all the pages which contains `/'. Once web pages are downloaded, it parses the web content and build a list of non-official images. 
+Docker Hub website provides search engine which indexes public images for users to search for a specific image or a list of images that contains a certain letter or string.
+%
+The name of non-official public image is comprised of ``$\langle namespace\rangle/\langle repository name \rangle$", where~\textit{namespace} is the user name.
+%
+In this case, we search for `/' and obtain a list of images which contains '/'.
+%
+In other words, this method lists all the non-official public images in Docker Hub.
+%
+Crawler downloads all the pages which contains `/'.
+%
+Once web pages are downloaded, it parses the web content and build a list of non-official images. 
 
-A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub. But after 7/11/2017, the Docker Hub removed the index of `/'. Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images.
+
+
+
+
+A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'.
+%
+Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub.
+%
+But after 7/11/2017, the Docker Hub removed the index of `/'.
+%
+Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images.
+%
+\vcomment{I'd comment out discussion on '*'---it has low importance.}
+
+
+
+
 
 \subsubsection{Downloading images}
 
-As shown in Figure~\ref{xxx}, downloader first obtains a list of public images through crawling Docker Hub. Then, it starts downloading process. It downloads two components: manifest and individual layer files. 
+\vcomment{definitely need to merge this subsection with Downloader subsection. See my comment for the whole section.}
+%
+As shown in Figure~\ref{xxx}, downloader first obtains a list of public images through crawling Docker Hub.
+%
+Then, it starts downloading process.
+%
+It downloads two components: manifest and individual layer files. 
 
-The first step in downloading an image is to fetch the manifest by using the following url: $GET /v2/\langle name \rangle/manifests/\langle reference \rangle$, where~\textit{name} parameter refers to $\langle namespace\rangle/\langle repository name \rangle$. Note that the~\textit{namespace} of official is~\textit{library}. The reference can include a tag or digest. Note that we only downloaded the images with~\textit{latest} tag to shorten the downloading process. 
 
-Layers are stored as compressed tar archive in the registry, indexed by digest. As discussed in Section~\ref{xxx}, manifest consist of multiple layer digests. Note that Schema 2 version also contains a config file digest. Once the manifest is downloaded, the downloader will then use the digests to download individual layers (including config file for Schema 2 version) by using the following url: $GET /v2/\langle name \rangle/blobs/\langle digest \rangle$, where \textit{name} refers to the image name while~\textit{digest} refers to the layer digest or config file digest.
+
+The first step in downloading an image is to fetch the manifest by using the following url: $GET /v2/\langle name \rangle/manifests/\langle reference \rangle$, where~\textit{name} parameter refers to $\langle namespace\rangle/\langle repository name \rangle$.
+%
+Note that the~\textit{namespace} of official is~\textit{library}.
+%
+The reference can include a tag or digest.
+%
+Note that we only downloaded the images with~\textit{latest} tag to shorten the downloading process.
+%
+\vcomment{Explain why, state that it is future work.} 
+
+
+
+
+Layers are transferred as compressed tar archive in the registry, indexed by digest.
+%
+\vcomment{What compression is used?}
+%
+As discussed in Section~\ref{xxx}, manifest consist of multiple layer digests.
+%
+Note that Schema 2 version also contains a config file digest.
+%
+Once the manifest is downloaded, the downloader will then use the digests to download individual layers (including config file for Schema 2 version) by using the following url: $GET /v2/\langle name \rangle/blobs/\langle digest \rangle$, where \textit{name} refers to the image name while~\textit{digest} refers to the layer digest or config file digest.
 
 \nancomment{1. TODO
 	add a figure, downloader and analyzer} 
 
 %First, it fetches the manifest and get the config file's digest and layer tarballs'digests. Second it builds the HTTP requests to download the config files and layer tarballs.
 
+
+
+
+
 \subsubsection{Docker image dataset statistics}
 
-Crawler delivered a list of xxx images on 5/30/2017. However, duplicated images exist in the list. After reducing the repeated images, our image dataset consists of xxx distinct images. 
+%
+\vcomment{I believe different parts of this section belong to different
+earlier parts: some to crawler, some to downloader.}
+%
+Crawler delivered a list of xxx images on 5/30/2017.
+%
+However, duplicated images exist in the list.
+%
+After reducing the repeated images, our image dataset consists of xxx distinct images. 
 
-The downloading process took roughly 30 days to finish. Overall, we downloaded xxx TB of xxx images with xxx layers as shown in Table~\ref{XXX}. xxx of images couldn't be downloaded. There are two reasons: first, xxx of images were either deleted or empty. Second, xxx of images doesn't have tag:~\textit{latest}. As we discussed in Section~\ref{}, we only downloaded the images with latest version to shorten the downloading process.
+The downloading process took roughly 30 days to finish.
+%
+Overall, we downloaded xxx TB of xxx images with xxx layers as shown in Table~\ref{XXX}.
+%
+xxx of images couldn't be downloaded.
+%
+There are two reasons: first, xxx of images were either deleted or empty.
+%
+Second, xxx of images doesn't have tag:~\textit{latest}.
+%
+As we discussed in Section~\ref{}, we only downloaded the images with latest version to shorten the downloading process.
 
 \nancomment{2. TODO: add a table discribe:\\
 	how many images, duplicate ratio\\
@@ -80,11 +212,22 @@ The downloading process took roughly 30 days to finish. Overall, we downloaded x
 
 \subsection{Analyzer}
 
-Analyzer analyzes the images we downloaded and creates two kinds of files for each image: image profile and individual layer profiles. Image profile includes image metadata information, such as image pull count, layer count, etc., and image configuration information, such as os, architecture, etc.; While layer profile contains layer metadata information, such as layer size, file count, etc.; and directory metadata information for each subdirectory, such as directory depth, directory size, etc.; and file metadata information for each file, such as file size, file type, etc.
+Analyzer analyzes the images we downloaded and creates two kinds of files for each image: image profile and individual layer profiles.
+%
+Image profile includes image metadata information, such as image pull count, layer count, etc., and image configuration information, such as os, architecture, etc.; While layer profile contains layer metadata information, such as layer size, file count, etc.; and directory metadata information for each subdirectory, such as directory depth, directory size, etc.; and file metadata information for each file, such as file size, file type, etc.
+%
+\vcomment{I think we do not need to discuss any metrics above, as you discuss them below in corresponding subsections.}
+
 
 \subsubsection{Layer profile}
 
-As discussed in Section~\ref{}, the layers we downloaded are compressed tar archive files. To analyze the layer content, analyzer first decompress and extract each layer tarball to a layer directory. Then, analyzer recursively goes through each subdirectory and obtains the metadata information for each subdirectory and each file as shown in figure~\ref{xxx}.
+As discussed in Section~\ref{}, the layers we downloaded are compressed tar archive files.
+%
+To analyze the layer content, analyzer first decompress and extract each layer tarball to a layer directory.
+%
+Then, analyzer recursively goes through each subdirectory and obtains the metadata information for each subdirectory and each file as shown in figure~\ref{xxx}.
+%
+\vcamment{I'm not sure what figure we want here. I think a table might suffice.}
 
 \nancomment{3. TODO: 
 	add a fig: discribe all layer metadata, config metadata, and manifest metadata structure} 
@@ -95,12 +238,24 @@ As discussed in Section~\ref{}, the layers we downloaded are compressed tar arch
 	config statistics, txt, json\\
 	manifest statistics, txt, json}
 
+
+
+
+
 \subsubsection{Image Profile}
 
-As shown in figure~\ref{xxx}, Analyzer parses the manifest and obtains the configuration information such as os, architecture etc.. Note that manifest Schema version 2 stores configuration information in a config file as discussed in Section~\ref{xxx}. As shown in table~\ref{}, xxx of manifests are Schema version 2 while the rest are Schema version 1. 
+As shown in figure~\ref{xxx}, Analyzer parses the manifest and obtains the configuration information such as os, architecture etc..
+%
+Note that manifest Schema version 2 stores configuration information in a config file as discussed in Section~\ref{xxx}.
+%
+As shown in table~\ref{}, xxx of manifests are Schema version 2 while the rest are Schema version 1. 
 
-Once individual layers are analyzed, analyzer can build the whole image profile by including pointers to its layer profiles as shown in figure~\ref{xxx}. Table~\ref{} summaries the layer archive file, config file, and manifest statistics.
- 
+Once individual layers are analyzed, analyzer can build the whole image profile by including pointers to its layer profiles as shown in figure~\ref{xxx}.
+%
+Table~\ref{} summaries the layer archive file, config file, and manifest statistics.
+
+
+\vcomment{This section (and some other places) contain a lot of ``etc.''. The general rul of thumb never to ue etc. in a scientific paper. Instead, say: "e.g.,", or "for example," or "for instance"}
 
 %\subsubsection{Config profile}
 
