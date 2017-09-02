@@ -1,11 +1,6 @@
-# import sys
-# sys.path.append('../')
-# from imports import *
-# from utility import *
+
 from config import *
 
-
-#out_put_filename = ""
 layer_json_map_dir = {}
 manifest_map_dir = {}
 layer_config_map_dir = {}

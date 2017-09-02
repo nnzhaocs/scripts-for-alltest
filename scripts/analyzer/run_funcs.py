@@ -1,5 +1,4 @@
 
-# from config import *
 from contruct_image_mapper import *
 from layers import *
 from jobdivider import *

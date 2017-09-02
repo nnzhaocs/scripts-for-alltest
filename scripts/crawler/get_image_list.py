@@ -11,7 +11,7 @@ import Queue
 #fout=open(filename, 'w+')
 #num_pages=600000
 #fout = None
-words=['/']
+words=['*']
 sstr_docker_non_official='https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=%d&pullCount=0&q=%s&starCount=0'
 sstr_docker_official='https://hub.docker.com/explore/?page=%d'
 
