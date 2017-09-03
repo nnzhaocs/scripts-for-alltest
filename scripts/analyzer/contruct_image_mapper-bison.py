@@ -83,10 +83,15 @@ def process_manifest(manifest_filename):
         #print('blobs_digests: %s, version: %s'% (blobs_digest, version))
 
     manifest_name_dir_map = {}
+    #layer_name_dir_map = {}
     config_name_dir_map = {}
-    layers_map = {}
-    non_downloaded_config = {}
-    non_analyzed_layer_tarballs = {}
+    layers_map = {} #defaultdict(list)
+    analyzer_layer_jobs = {}#[] #defaultdict(list)
+    
+    #bad_manifest = {}
+    #layer_analyzer_job = {}
+    
+    #json_data = {}
     
     manifest_name_dir_map[manifest_filename] = manifest_absfilename
     if config_digest:
@@ -95,44 +100,56 @@ def process_manifest(manifest_filename):
         except:
             """write to non-downloaded-configs.json: manfiest name and config digest"""
             print "except: non-downloaded-config: manfiest: %s; config: %s"%(manifest_filename, config_digest[0])
-            non_downloaded_config['non_downloaded_config_digest'] = config_digest[0]
+            bad_manifest[manifest_filename] = manifest_absfilename
+            json_data['bad_manifest'] = bad_manifest
+            print json_data
+            return json_data
 
         config_name_dir_map[config_digest[0]] = layer_config_map_dir[config_digest[0]]
     if not blobs_digest:
-        non_analyzed_layer_tarballs['non_blobs_in_manifest'] = True
+        bad_manifest[manifest_filename] = manifest_absfilename
+        json_data['bad_manifest'] = bad_manifest
+        print json_data
+        return json_data
 
     for layer_digest in blobs_digest:
         layer_name_dir_map = {}
+        # layer_analyzer_job = {}
 
+        try:
+            layer_config_map_dir[layer_digest]
+        except:
+            """write to non-download-layers.json: manifest name and layer digest"""
+            print "except: non-downloaded-layer: manfiest: %s; layer_digest: %s"%(manifest_filename, layer_digest)
+            bad_manifest[manifest_filename] = manifest_absfilename
+            json_data['bad_manifest'] = bad_manifest
+            #print json_data
+            return json_data
+
+        layer_name_dir_map['tarball_absfilename'] = layer_config_map_dir[layer_digest]
+        #layer_analyzer_job = {}
         try:
             layer_json_map_dir[layer_digest]
         except:
             """write to non-analyzed-layers.json: manifest name and layer digest"""
             print "except: non-analyzed-layertarball: manfiest: %s; layer_digest: %s"%(manifest_filename, layer_digest)
-            non_analyzed_layer_tarballs[layer_digest] = True
+            analyzer_layer_jobs[layer_digest] = layer_config_map_dir[layer_digest]
+            # analyzer_layer_jobs.append(layer_analyzer_job)
         else:
             layer_name_dir_map['json_absfilename'] = layer_json_map_dir[layer_digest]
             layers_map[layer_digest] = layer_name_dir_map
-
-    if non_downloaded_config or non_analyzed_layer_tarballs:
-        bad_image_mapper = {
-            'version': version,
-            'bad_manifest': manifest_name_dir_map,
-            'non_downloaded_config': non_downloaded_config,
-            'non_analyzed_layer_tarballs': non_analyzed_layer_tarballs
-        }
-
-        json_data['bad_image_mapper'] = bad_image_mapper
-        return json_data
-
+ 
     image_mapper = {
-        'version': version,
         'manifest': manifest_name_dir_map,
         'config': config_name_dir_map,
         'layers': layers_map
     }
 
     json_data['image_mapper'] = image_mapper
+    #if bad_manifest:
+    #    json_data['bad_manifest'] = bad_manifest
+    if analyzer_layer_jobs:
+        json_data['layer_analyzer_jobs'] = analyzer_layer_jobs
 
     """write to image_mapper.json: image_mapper"""
     #print json_data
@@ -160,12 +177,14 @@ def load_all_map_dir(manifest_map_dir, layer_json_map_dir, layer_config_map_dir)
 
 
 def write_json_datas(json_datas):
-    bad_image_mapper = []
-
+    bad_manifests = []
+    layer_analyzer_jobs = []
     image_mappers = []
     for json_data in json_datas:
-        if 'bad_image_mapper' in json_data:
-            bad_image_mapper.append(json_data['bad_image_mapper'])
+        if 'bad_manifest' in json_data:
+            bad_manifests.append(json_data['bad_manifest'])
+        if 'layer_analyzer_jobs' in json_data:
+            layer_analyzer_jobs.append(json_data['layer_analyzer_jobs']) # extend list
         if 'image_mapper' in json_data:
             image_mappers.append(json_data['image_mapper'])
 
@@ -173,9 +192,12 @@ def write_json_datas(json_datas):
     if image_mappers:
         with open(os.path.join(dest_dir[0]['job_list_dir'],'image_mapper.json'), 'w') as f:
             json.dump(image_mappers, f)
-    if bad_image_mapper:
-        with open(os.path.join(dest_dir[0]['job_list_dir'],'bad_image_mapper.json'), 'w') as f:
-            json.dump(bad_image_mapper, f)
+    if layer_analyzer_jobs:
+        with open(os.path.join(dest_dir[0]['job_list_dir'],'layer_analyzer_jobs.json'), 'w') as f:
+            json.dump(layer_analyzer_jobs, f)
+    if bad_manifests:
+        with open(os.path.join(dest_dir[0]['job_list_dir'],'bad_manifests.json'), 'w') as f:
+            json.dump(bad_manifests, f)
 
 
 def create_image_db():
@@ -188,7 +210,9 @@ def create_image_db():
     print len(manifest_names) #process_manifest
     print len(layer_json_map_dir)
     print "before map!"
-
+    #json_datas = []
+    #for i in manifest_names:
+    #    json_datas.append(process_manifest(i))
     json_datas = P.map(process_manifest, manifest_names)
     print "after map"
     print "write to files!"
