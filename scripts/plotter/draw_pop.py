@@ -31,7 +31,7 @@ def main():
 	fig = fig_size('min')  # 'large'
 
 	data = data_stars
-	xlabel = 'Star_count_for_each_image'  # data = [x * 1.0 / 1024 / 1024 for x in data1]
+	xlabel = 'Star count for each image'  # data = [x * 1.0 / 1024 / 1024 for x in data1]
 	xlim = 5  # max(data1)
 	ticks = 25
 	print xlim
@@ -40,7 +40,7 @@ def main():
 	fig = fig_size('min')  # 'large'
 	
 	data = data_pulls
-	xlabel = 'Pull_count_for_each_image'  # data = [x * 1.0 / 1024 / 1024 for x in data1]
+	xlabel = 'Pull count for each image'  # data = [x * 1.0 / 1024 / 1024 for x in data1]
 	xlim = 250  # max(data1)
 	ticks = 25
 	print xlim

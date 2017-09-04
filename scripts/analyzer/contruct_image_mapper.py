@@ -96,34 +96,34 @@ def process_manifest(manifest_filename):
             """write to non-downloaded-configs.json: manfiest name and config digest"""
             print "except: non-downloaded-config: manfiest: %s; config: %s"%(manifest_filename, config_digest[0])
             non_downloaded_config['non_downloaded_config_digest'] = config_digest[0]
-
-        config_name_dir_map[config_digest[0]] = layer_config_map_dir[config_digest[0]]
+	else:
+            config_name_dir_map[config_digest[0]] = layer_config_map_dir[config_digest[0]]
     if not blobs_digest:
         non_analyzed_layer_tarballs['non_blobs_in_manifest'] = True
+    else:
+    	for layer_digest in blobs_digest:
+            layer_name_dir_map = {}
 
-    for layer_digest in blobs_digest:
-        layer_name_dir_map = {}
+            try:
+            	layer_json_map_dir[layer_digest]
+            except:
+            	"""write to non-analyzed-layers.json: manifest name and layer digest"""
+            	print "except: non-analyzed-layertarball: manfiest: %s; layer_digest: %s"%(manifest_filename, layer_digest)
+            	non_analyzed_layer_tarballs[layer_digest] = True
+            else:
+            	layer_name_dir_map['json_absfilename'] = layer_json_map_dir[layer_digest]
+            	layers_map[layer_digest] = layer_name_dir_map
 
-        try:
-            layer_json_map_dir[layer_digest]
-        except:
-            """write to non-analyzed-layers.json: manifest name and layer digest"""
-            print "except: non-analyzed-layertarball: manfiest: %s; layer_digest: %s"%(manifest_filename, layer_digest)
-            non_analyzed_layer_tarballs[layer_digest] = True
-        else:
-            layer_name_dir_map['json_absfilename'] = layer_json_map_dir[layer_digest]
-            layers_map[layer_digest] = layer_name_dir_map
+    #if non_analyzed_layer_tarballs:
+    bad_image_mapper = {
+        'version': version,
+        'bad_manifest': manifest_name_dir_map,
+        'non_downloaded_config': non_downloaded_config,
+        'non_analyzed_layer_tarballs': non_analyzed_layer_tarballs
+    }
 
-    if non_downloaded_config or non_analyzed_layer_tarballs:
-        bad_image_mapper = {
-            'version': version,
-            'bad_manifest': manifest_name_dir_map,
-            'non_downloaded_config': non_downloaded_config,
-            'non_analyzed_layer_tarballs': non_analyzed_layer_tarballs
-        }
-
-        json_data['bad_image_mapper'] = bad_image_mapper
-        return json_data
+    json_data['bad_image_mapper'] = bad_image_mapper
+    # return json_data
 
     image_mapper = {
         'version': version,
@@ -188,7 +188,9 @@ def create_image_db():
     print len(manifest_names) #process_manifest
     print len(layer_json_map_dir)
     print "before map!"
-
+    #json_datas = []
+    #for i in manifest_names:
+    #	json_datas.append(process_manifest(i))
     json_datas = P.map(process_manifest, manifest_names)
     print "after map"
     print "write to files!"

@@ -8,10 +8,10 @@ def print_config():
     """configurations for setup"""
 
     print "dest_dirname = %s" % dest_dirname
-    print "extracting_dir = %s" % extracting_dir
+    # print "extracting_dir = %s" % extracting_dir
 
-    print "analyzed_absfilename = %s" % analyzed_absfilename
-    print "layer_list_absfilename = %s" % layer_list_absfilename
+    # print "analyzed_absfilename = %s" % analyzed_absfilename
+    # print "layer_list_absfilename = %s" % layer_list_absfilename
 
     """configurations for multithreading"""
 
