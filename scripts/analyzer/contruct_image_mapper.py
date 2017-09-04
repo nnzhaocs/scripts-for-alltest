@@ -124,12 +124,21 @@ def process_manifest(manifest_filename):
 
     json_data['bad_image_mapper'] = bad_image_mapper
     # return json_data
+    has_non_analyzed_layer_tarballs = False
+    has_non_downloaded_config = False
+
+    if non_analyzed_layer_tarballs:
+	has_non_analyzed_layer_tarballs = True
+    if non_downloaded_config:
+	has_non_downloaded_config = True
 
     image_mapper = {
         'version': version,
         'manifest': manifest_name_dir_map,
         'config': config_name_dir_map,
-        'layers': layers_map
+        'layers': layers_map,
+	'has_non_analyzed_layer_tarballs': has_non_analyzed_layer_tarballs,
+	'has_non_downloaded_config': has_non_downloaded_config
     }
 
     json_data['image_mapper'] = image_mapper
