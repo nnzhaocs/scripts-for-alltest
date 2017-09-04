@@ -1,10 +1,10 @@
 
 
 # import cStringIO
-from imports import *
+# from imports import *
 from draw_pic import *
-from utility import *
-# from file import *
+# from utility import *
+# # from file import *
 
 layer_base_info = {}
 size = defaultdict(list)

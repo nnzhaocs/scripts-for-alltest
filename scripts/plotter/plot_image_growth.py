@@ -1,23 +1,4 @@
 
-# import matplotlib, sys, os
-# matplotlib.use('Agg')
-#
-# import numpy as np
-# import matplotlib.pyplot as plt
-# from matplotlib.ticker import MultipleLocator
-
-
-# def get_data(filename)
-#cmd1 = 'awk -F\'' + r'\t' + '\' \'{print $3}\' %s > tmp1.txt' % 'search_images_count-1.tsv'
-#rc = os.system(cmd1)
-#assert (rc == 0)
-#
-#cmd = 'awk -F\'' + r'\t' + '\' \'{print $3}\' %s > tmp-.txt' % 'search_images_count.tsv'
-#rc = os.system(cmd)
-#assert (rc == 0)
-#
-#data1 = np.loadtxt("tmp1.txt")
-
 import sys
 sys.path.append('../libraries/')
 sys.path.append('../analyzer/')

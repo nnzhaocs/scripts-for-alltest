@@ -3,8 +3,9 @@ import sys
 sys.path.append('../libraries/')
 sys.path.append('../analyzer/')
 from graph_related_libraries import *
-from regular_libraries import *
-
+# from regular_libraries import *
+# from config import *
+from utilities_funcs import *
 
 def fig_size(size):
     if size == 'min':
