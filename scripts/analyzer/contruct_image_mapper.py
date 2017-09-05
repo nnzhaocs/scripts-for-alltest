@@ -44,7 +44,7 @@ def manifest_schema1(manifest):
             if 'blobSum' in i:
                 #print i['blobSum']
                 blobs_digest.append(i['blobSum'])
-    return blobs_digest
+    return list(set(blobs_digest)) # blobs_digest
 
 
 def process_manifest(manifest_filename):

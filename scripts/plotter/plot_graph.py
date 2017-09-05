@@ -32,6 +32,9 @@ def plot_all(args):
         print "cannot print file_cnt"
 
 
+def run_plotgraph():
+
+
 def plot_graph(type):
     #load_file()
     print "===========plot %s"%type

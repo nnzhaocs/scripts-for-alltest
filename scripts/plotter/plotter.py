@@ -38,14 +38,11 @@ def main():
     if args.getmetricsdata:
         run_getmetricsdata()
 
-    if args.plotgraph:
-        run_plotgraph()
-
-    if args.generatejoblist:
-        run_generatejoblist()
+    # if args.plotgraph:
+    #     run_plotgraph()
     #
-    # if args.listdirfiles:
-    #     run_listdirfiles()
+    # if args.generatejoblist:
+    #     run_generatejoblist()
 
 
 if __name__ == '__main__':
