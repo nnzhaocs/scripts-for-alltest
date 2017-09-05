@@ -8,6 +8,14 @@ from get_metrics_data import *
 
 
 def parseArg():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-D', '--debug',
+        help="Print lots of debugging statements",
+        action="store_const", dest="loglevel", const=logging.DEBUG,
+        default=logging.INFO,
+    )
+
     parser.add_argument(
         '-P', '--plotgraph',
         help="plot graphs",
@@ -21,10 +29,12 @@ def parseArg():
     )
 
     parser.add_argument(
-        '-G', '--generatejoblist',
+        '-J', '--generatejoblist',
         help="generate analyzer job list",
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
+
+    return parser.parse_args()
 
 
 def main():

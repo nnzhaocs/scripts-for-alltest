@@ -4,7 +4,7 @@ from draw_pic import *
 image_mappers = []
 layer_mappers = []
 
-image_metrics_data = []
+image_metrics_datas = []
 """image_metrics_data content
 
     version: schema1:
@@ -53,22 +53,29 @@ def run_getmetricsdata():
     load_image_mappers()
     load_layers_mappers()
 
-    calculate_repeat_layer_in_images()
+    #calculate_repeat_layer_in_images()
 
     print "create pool"
-    P1 = multiprocessing.Pool(60)
+    #P1 = multiprocessing.Pool(60)
     print "before map"
-    image_metrics_datas = P1.map(load_image_metrics_data, image_mappers)
+    #image_metrics_datas = P1.map(load_image_metrics_data, image_mappers)
+
+    #for image_mapper in image_mappers:
+    #    load_image_metrics_data(image_mapper)
+
     print "after map"
 
-    with open("image_metrics_datas.json", 'w+') as f_image_metrics_data:
-        json.dump(image_metrics_datas, f_image_metrics_data)
+    #with open("image_metrics_datas.json", 'w+') as f_image_metrics_data:
+    #    json.dump(image_metrics_datas, f_image_metrics_data)
 
     print "create pool"
     P2 = multiprocessing.Pool(60)
     print "before map"
     layer_metrics_datas = P2.map(load_layer_metrics_data, layer_mappers)
     print "after map"
+
+    #for layer_mapper in layer_mappers:
+    #    load_layer_metrics_data(layer_mapper)
 
     with open("layer_metrics_datas.json", 'w+') as f_layer_metrics_datas:
         json.dump(layer_metrics_datas, f_layer_metrics_datas)
@@ -100,7 +107,7 @@ def load_layer_metrics_data(layer_mapper):
             continue
 
         logging.debug('process layer_json file: %s', layer_json_absfilename)  # str(layer_id).replace("/", "")
-
+        json_data = None
         with open(layer_json_absfilename) as lj_f:
             try:
                 json_data = json.load(lj_f)
@@ -119,20 +126,26 @@ def load_layer_metrics_data(layer_mapper):
             dir_avg_depth = json_data['layer_depth']['dir_avg_depth']
 
             file_cnt = json_data['file_cnt']
-            dir_cnt = len(json_data['sub_dirs'])
+            dir_cnt = len(json_data['dirs'])
 
-            for subdir in json_data['sub_dirs']:
+            for subdir in json_data['dirs']:
+		#dir_cnt = dir_cnt + 1
                 for sub_file in subdir['files']:
                     layer_dir_files.append(sub_file)
 
-            del json_data
+        del json_data
+	lj_f.close()
 
     layer_metrics_data['uncompressed_sum_of_files'] = uncompressed_sum_of_files
     layer_metrics_data['compressed_size_with_method_gzip'] = compressed_size_with_method_gzip
     layer_metrics_data['archival_size'] = archival_size
+    if compressed_size_with_method_gzip > 0:
+        layer_metrics_data['sum_to_gzip_ratio'] = uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
+        layer_metrics_data['archival_to_gzip_ratio'] = archival_size * 1.0 / compressed_size_with_method_gzip
+    else:
+	layer_metrics_data['sum_to_gzip_ratio'] = None #uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
+        layer_metrics_data['archival_to_gzip_ratio'] = None#archival_size * 1.0 / compressed_size_with_method_gzip
 
-    layer_metrics_data['sum_to_gzip_ratio'] = uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
-    layer_metrics_data['archival_to_gzip_ratio'] = archival_size * 1.0 / compressed_size_with_method_gzip
 
     layer_metrics_data['dir_max_depth'] = dir_max_depth
     layer_metrics_data['dir_min_depth'] = dir_min_depth
@@ -144,8 +157,8 @@ def load_layer_metrics_data(layer_mapper):
 
     layer_metrics_data['files'] = layer_dir_files
 
-    logging.debug("layer_metrics_data: %s", layer_metrics_data)
-
+    logging.debug("layer_metrics_data['sum_to_gzip_ratio']: %s", layer_metrics_data['sum_to_gzip_ratio'])
+    gc.collect()
     return layer_metrics_data
 
 def load_image_metrics_data(image_mapper):
@@ -155,7 +168,7 @@ def load_image_metrics_data(image_mapper):
     #     'config': config_name_dir_map{},
     #     'layers': layers_map{:{:}}
     # }
-
+    image_metrics_data = {}
     uncompressed_sum_of_files = 0
     compressed_size_with_method_gzip = 0
     archival_size = 0
@@ -194,8 +207,12 @@ def load_image_metrics_data(image_mapper):
     image_metrics_data['compressed_size_with_method_gzip'] = compressed_size_with_method_gzip
     image_metrics_data['archival_size'] = archival_size
 
-    image_metrics_data['sum_to_gzip_ratio'] = uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
-    image_metrics_data['archival_to_gzip_ratio'] = archival_size * 1.0 / compressed_size_with_method_gzip
+    if compressed_size_with_method_gzip > 0:
+        image_metrics_data['sum_to_gzip_ratio'] = uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
+        image_metrics_data['archival_to_gzip_ratio'] = archival_size * 1.0 / compressed_size_with_method_gzip
+    else:
+        image_metrics_data['sum_to_gzip_ratio'] = None #uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
+        image_metrics_data['archival_to_gzip_ratio'] = None #archival_size * 1.0 / compressed_size_with_method_gzip
 
     image_metrics_data['file_cnt'] = file_cnt
 
@@ -207,20 +224,23 @@ def load_image_metrics_data(image_mapper):
 
 def calculate_repeates(l):
     logging.info("first file_sha256s list: %s", l[0])
-    l_dict = {i: l.count(i) for i in l}
-
-    for key, val in l.items():
-        logging.debug(key, val)
+    #l_dict = {i: l.count(i) for i in l}
+    l_dict = pd.DataFrame(l, columns=["x"]).groupby('x').size().to_dict()
+    #for key, val in l.items():
+    #    logging.debug(key, val)
 
     return l_dict
 
 
 def calaculate_file_metrics():
     """get repeat files"""
+    _file_metrics_datas = []
     for layer_metrics_data in layer_metrics_datas:
         layer_dir_files = layer_metrics_data['files']
-        file_metrics_datas.append(layer_dir_files)
+        _file_metrics_datas.append(layer_dir_files)
 
+    file_metrics_datas = list(chain(*_file_metrics_datas))
+    
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'file_metrics_datas.json'), 'w') as f:
         json.dump(file_metrics_datas, f)
 
@@ -285,9 +305,11 @@ def calculate_repeat_layer_in_images():
 
     """note that we remove the duplicates from schema 1's layer digests in contruct_image_mapper.py"""
 
-    layer_digests_dict = {i: layer_digests_union.count(i) for i in layer_digests_union}
-    for key, val in layer_digests_dict.items():
-        logging.debug(key, val)
+    layer_digests_dict = calculate_repeates(layer_digests_union)
+
+    #layer_digests_dict = {i: layer_digests_union.count(i) for i in layer_digests_union}
+    #for key, val in layer_digests_dict.items():
+    #    logging.debug(key, val)
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_layer_digests_dict.json'), 'w') as f:
         json.dump(layer_digests_dict, f)
@@ -304,6 +326,8 @@ def load_image_mappers():
 
     with open(os.path.join(dest_dir[0]['job_list_dir'],'image_mapper.json'), 'r') as f:
         _image_mappers = json.load(f)
+
+    logging.debug("load image_mapper: %s", os.path.join(dest_dir[0]['job_list_dir'],'image_mapper.json'))
 
     for _image_mapper in _image_mappers:
 
@@ -335,6 +359,9 @@ def load_image_mappers():
         }
 
         image_mappers.append(image_mapper)
+    
+    logging.debug("image_mappers[0]: %s", image_mappers[0])
+
 
 def load_layers_mappers():
     layer_mapper = {}
@@ -344,12 +371,19 @@ def load_layers_mappers():
                 layer_json_absfilename = val1 #json_absfilename
                 layer_mapper[key] = layer_json_absfilename
 
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_mappers.json'), 'w') as f:
-        json.dump(layer_mapper, f)
+    #print layer_mapper    
 
-    for key, val in layer_mapper:
+    for key, val in layer_mapper.items():
         tmp_mapper = {}
         tmp_mapper[key] = val
         layer_mappers.append(tmp_mapper)
+
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_mappers.json'), 'w') as f:
+        json.dump(layer_mapper, f)
+
+#    for key, val in layer_mapper:
+#        tmp_mapper = {}
+#        tmp_mapper[key] = val
+#        layer_mappers.append(tmp_mapper)
 
 
