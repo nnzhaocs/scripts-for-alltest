@@ -71,7 +71,10 @@ def run_getmetricsdata():
     print "create pool"
     P2 = multiprocessing.Pool(60)
     print "before map"
-    layer_metrics_datas = P2.map(load_layer_metrics_data, layer_mappers)
+
+    layer_mappers_slices = [layer_mappers[i:i + 24] for i in range(0, len(layer_mappers), 24)]
+    layer_metrics_datas = P2.map(load_layer_metrics_data, layer_mappers_slices)
+
     print "after map"
 
     #for layer_mapper in layer_mappers:
@@ -82,10 +85,7 @@ def run_getmetricsdata():
 
     calaculate_file_metrics()
 
-def load_layer_metrics_data(layer_mapper):
-    layer_dir_files = []
-    layer_metrics_data = {}
-
+def load_layer_metrics_data(_layer_mappers):
     uncompressed_sum_of_files = 0
     compressed_size_with_method_gzip = 0
     archival_size = 0
@@ -98,68 +98,75 @@ def load_layer_metrics_data(layer_mapper):
 
     dir_cnt = 0
 
-    for key, val in layer_mapper.items(): # only one entry
-        logging.debug("key: %s, val: %s!", key, val)
-        layer_json_absfilename = val
+    _layer_metrics_data = []
 
-        if not os.path.isfile(layer_json_absfilename):
-            logging.debug("layer json file %s is not valid!", layer_json_absfilename)
-            continue
+    for layer_mapper in _layer_mappers:
+        layer_dir_files = []
+        layer_metrics_data = {}
+        for key, val in layer_mapper.items(): # only one entry
+            logging.debug("key: %s, val: %s!", key, val)
+            layer_json_absfilename = val
 
-        logging.debug('process layer_json file: %s', layer_json_absfilename)  # str(layer_id).replace("/", "")
-        json_data = None
-        with open(layer_json_absfilename) as lj_f:
-            try:
-                json_data = json.load(lj_f)
-            except:
-                logging.debug("cannot load json file: layer json file %s is not valid!", layer_json_absfilename)
-                lj_f.close()
+            if not os.path.isfile(layer_json_absfilename):
+                logging.debug("layer json file %s is not valid!", layer_json_absfilename)
                 continue
 
-            uncompressed_sum_of_files = json_data['size']['uncompressed_sum_of_files']
-            compressed_size_with_method_gzip = json_data['size']['compressed_size_with_method_gzip']
-            archival_size = json_data['size']['archival_size']
+            logging.debug('process layer_json file: %s', layer_json_absfilename)  # str(layer_id).replace("/", "")
+            # json_data = None
+            with open(layer_json_absfilename) as lj_f:
+                try:
+                    json_data = json.load(lj_f)
+                except:
+                    logging.debug("cannot load json file: layer json file %s is not valid!", layer_json_absfilename)
+                    lj_f.close()
+                    continue
 
-            dir_max_depth = json_data['layer_depth']['dir_max_depth']
-            dir_min_depth = json_data['layer_depth']['dir_min_depth']
-            dir_median_depth = json_data['layer_depth']['dir_median_depth']
-            dir_avg_depth = json_data['layer_depth']['dir_avg_depth']
+                uncompressed_sum_of_files = json_data['size']['uncompressed_sum_of_files']
+                compressed_size_with_method_gzip = json_data['size']['compressed_size_with_method_gzip']
+                archival_size = json_data['size']['archival_size']
 
-            file_cnt = json_data['file_cnt']
-            dir_cnt = len(json_data['dirs'])
+                dir_max_depth = json_data['layer_depth']['dir_max_depth']
+                dir_min_depth = json_data['layer_depth']['dir_min_depth']
+                dir_median_depth = json_data['layer_depth']['dir_median_depth']
+                dir_avg_depth = json_data['layer_depth']['dir_avg_depth']
 
-            for subdir in json_data['dirs']:
-		#dir_cnt = dir_cnt + 1
-                for sub_file in subdir['files']:
-                    layer_dir_files.append(sub_file)
+                file_cnt = json_data['file_cnt']
+                dir_cnt = len(json_data['dirs'])
 
-        del json_data
-	lj_f.close()
+                for subdir in json_data['dirs']:
+            #dir_cnt = dir_cnt + 1
+                    for sub_file in subdir['files']:
+                        layer_dir_files.append(sub_file)
 
-    layer_metrics_data['uncompressed_sum_of_files'] = uncompressed_sum_of_files
-    layer_metrics_data['compressed_size_with_method_gzip'] = compressed_size_with_method_gzip
-    layer_metrics_data['archival_size'] = archival_size
-    if compressed_size_with_method_gzip > 0:
-        layer_metrics_data['sum_to_gzip_ratio'] = uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
-        layer_metrics_data['archival_to_gzip_ratio'] = archival_size * 1.0 / compressed_size_with_method_gzip
-    else:
-	layer_metrics_data['sum_to_gzip_ratio'] = None #uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
-        layer_metrics_data['archival_to_gzip_ratio'] = None#archival_size * 1.0 / compressed_size_with_method_gzip
+                del json_data
+            # lj_f.close()
+
+        layer_metrics_data['uncompressed_sum_of_files'] = uncompressed_sum_of_files
+        layer_metrics_data['compressed_size_with_method_gzip'] = compressed_size_with_method_gzip
+        layer_metrics_data['archival_size'] = archival_size
+        if compressed_size_with_method_gzip > 0:
+            layer_metrics_data['sum_to_gzip_ratio'] = uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
+            layer_metrics_data['archival_to_gzip_ratio'] = archival_size * 1.0 / compressed_size_with_method_gzip
+        else:
+            layer_metrics_data['sum_to_gzip_ratio'] = None #uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
+            layer_metrics_data['archival_to_gzip_ratio'] = None#archival_size * 1.0 / compressed_size_with_method_gzip
 
 
-    layer_metrics_data['dir_max_depth'] = dir_max_depth
-    layer_metrics_data['dir_min_depth'] = dir_min_depth
-    layer_metrics_data['dir_median_depth'] = dir_median_depth
-    layer_metrics_data['dir_avg_depth'] = dir_avg_depth
+        layer_metrics_data['dir_max_depth'] = dir_max_depth
+        layer_metrics_data['dir_min_depth'] = dir_min_depth
+        layer_metrics_data['dir_median_depth'] = dir_median_depth
+        layer_metrics_data['dir_avg_depth'] = dir_avg_depth
 
-    layer_metrics_data['file_cnt'] = file_cnt
-    layer_metrics_data['dir_cnt'] = dir_cnt
+        layer_metrics_data['file_cnt'] = file_cnt
+        layer_metrics_data['dir_cnt'] = dir_cnt
 
-    layer_metrics_data['files'] = layer_dir_files
+        layer_metrics_data['files'] = layer_dir_files
 
-    logging.debug("layer_metrics_data['sum_to_gzip_ratio']: %s", layer_metrics_data['sum_to_gzip_ratio'])
-    gc.collect()
-    return layer_metrics_data
+        logging.debug("layer_metrics_data['sum_to_gzip_ratio']: %s", layer_metrics_data['sum_to_gzip_ratio'])
+        # gc.collect()
+        _layer_metrics_data.append(layer_metrics_data)
+    return _layer_metrics_data
+
 
 def load_image_metrics_data(image_mapper):
     # image_mapper = {
@@ -235,7 +242,10 @@ def calculate_repeates(l):
 def calaculate_file_metrics():
     """get repeat files"""
     _file_metrics_datas = []
-    for layer_metrics_data in layer_metrics_datas:
+
+    _layer_metrics_datas = list(chain(*layer_metrics_datas))
+
+    for layer_metrics_data in _layer_metrics_datas:
         layer_dir_files = layer_metrics_data['files']
         _file_metrics_datas.append(layer_dir_files)
 
