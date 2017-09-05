@@ -3,7 +3,10 @@
 # sys.path.append('../libraries/')
 # from config import *
 # from draw_pic import *
-from get_metrics_data import *
+from get_metrics_image_data import *
+from get_metrics_layer_data import *
+from get_metrics_file_data import *
+
 # from plot_graph import *
 
 
@@ -23,8 +26,20 @@ def parseArg():
     )
 
     parser.add_argument(
-        '-G', '--getmetricsdata',
-        help="get metrics data",
+        '-I', '--getmetrics_image_data',
+        help="get metrics image data",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
+    parser.add_argument(
+        '-L', '--getmetrics_layer_data',
+        help="get metrics layer data",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
+    parser.add_argument(
+        '-F', '--getmetrics_file_data',
+        help="get metrics file data",
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
@@ -45,12 +60,17 @@ def main():
     logging.basicConfig(level=args.loglevel, format=fmt)
     load_config()
 
-    if args.getmetricsdata:
-        run_getmetricsdata()
+    if args.getmetrics_image_data:
+        run_getmetrics_image_data()
+
+    if args.getmetrics_layer_data:
+        run_getmetrics_layer_data()
+
+    if args.getmetrics_file_data:
+        run_getmetrics_file_data()
 
     # if args.plotgraph:
     #     run_plotgraph()
-    #
     # if args.generatejoblist:
     #     run_generatejoblist()
 
