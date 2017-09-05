@@ -24,7 +24,7 @@ import magic
 # json, hashlib, argparse, logging, shutil, sys, time, optparse
 # import itertools
 # import random, string
-# from collections import defaultdict
+from collections import defaultdict
 # from itertools import groupby
 import statistics
 import subprocess
