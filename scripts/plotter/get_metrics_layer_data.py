@@ -1,25 +1,24 @@
 
 from algorithm_funcs import *
 
-image_mappers = []
-layer_mappers = []
+# layer_mappers = []
 
-image_metrics_datas = []
-"""image_metrics_data content
+# image_metrics_datas = []
+# """image_metrics_data content
+#
+#     version: schema1:
+#             schema2:
+#             schemalist:
+#     size: compressed
+#             sum of
+#             archival
+#     compression ratio:
+#     repeat layer cnt:
+#     file cnt:
+#     layer depth:
+# """
 
-    version: schema1:
-            schema2:
-            schemalist:
-    size: compressed
-            sum of 
-            archival
-    compression ratio:
-    repeat layer cnt:
-    file cnt:
-    layer depth:
-"""
-
-layer_metrics_datas = []
+# layer_metrics_datas = []
 """layer_metrics_data content
     size: compressed
             sum of 
@@ -37,8 +36,10 @@ layer_metrics_datas = []
 def run_getmetrics_layer_data():
     logging.info('=============> run_getmetricsdata <===========')
 
-    load_image_mappers()
-    load_layers_mappers()
+    layer_mappers = load_layers_mappers()
+    # layer_metrics_datas = []
+
+    # load_layers_mappers()
 
     print "create pool"
     P2 = multiprocessing.Pool(60)
@@ -130,7 +131,7 @@ def load_layer_metrics_data(_layer_mappers):
     return _layer_metrics_data
 
 
-def load_image_mappers():
+def load_layers_mappers():
     """load_image_mappers"""
     # image_mapper = {
     #     'version': version,
@@ -139,10 +140,14 @@ def load_image_mappers():
     #     'layers': layers_map{:{:}}
     # }
 
+    layer_mappers = []
+
     with open(os.path.join(dest_dir[0]['job_list_dir'],'image_mapper.json'), 'r') as f:
         _image_mappers = json.load(f)
 
     logging.debug("load image_mapper: %s", os.path.join(dest_dir[0]['job_list_dir'],'image_mapper.json'))
+
+    image_mappers = []
 
     for _image_mapper in _image_mappers:
 
@@ -177,8 +182,6 @@ def load_image_mappers():
     
     logging.debug("image_mappers[0]: %s", image_mappers[0])
 
-
-def load_layers_mappers():
     layer_mapper = {}
     for image_mapper in image_mappers:
         for key, val in image_mapper['layers'].items():
@@ -194,6 +197,26 @@ def load_layers_mappers():
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_mappers.json'), 'w') as f:
         json.dump(layer_mapper, f)
+
+    return layer_mappers
+
+
+# def load_layers_mappers():
+#     layer_mapper = {}
+#     for image_mapper in image_mappers:
+#         for key, val in image_mapper['layers'].items():
+#             for key1, val1 in val.items(): # only one entry
+#                 layer_json_absfilename = val1 #json_absfilename
+#                 layer_mapper[key] = layer_json_absfilename
+#
+#
+#     for key, val in layer_mapper.items():
+#         tmp_mapper = {}
+#         tmp_mapper[key] = val
+#         layer_mappers.append(tmp_mapper)
+#
+#     with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_mappers.json'), 'w') as f:
+#         json.dump(layer_mapper, f)
 
 
 
