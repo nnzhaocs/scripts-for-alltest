@@ -1,5 +1,4 @@
 
-
 from draw_pic import *
 
 type = []
@@ -47,17 +46,17 @@ def plot_graph(type):
     print "===========> plot %s <=========="%type
     fig = fig_size('min')  # 'large'
 
-    if type == 'type':
-        data = type
-        xlabel = 'File types'
-        # data = [x * 1.0 / 1024 / 1024 for x in data1]
-        xlim = int(mean(data))
-    elif type == 'stat_type':
-        data = stat_type
-        xlabel = 'File stat type'
-        # data = [x * 1.0 / 1024 / 1024 for x in data1]
-        xlim = max(data)
-    elif type == 'stat_size':
+    # if type == 'type':
+    #     data = type
+    #     xlabel = 'File types'
+    #     # data = [x * 1.0 / 1024 / 1024 for x in data1]
+    #     xlim = int(mean(data))
+    # elif type == 'stat_type':
+    #     data = stat_type
+    #     xlabel = 'File stat type'
+    #     # data = [x * 1.0 / 1024 / 1024 for x in data1]
+    #     xlim = max(data)
+    if type == 'stat_size':
         data1 = stat_size
         xlabel = 'File size (KB)'
         data = [x * 1.0 / 1024 for x in data1]
@@ -76,20 +75,36 @@ def plot_graph(type):
     #     data = file_cnt
     #     xlabel = 'File count for each image'
     #     xlim = 300
+
     elif type == 'sha256':
         data = sha256
         xlabel = 'Repeate files across all images'
         xlim = max(data)
 
-    print "mean = %f, len = %d"%(xlim, len(data))
+    print "xlim = %f, len = %d"%(xlim, len(data))
     plot_cdf(fig, data, xlabel, xlim, 0)
 
 
-def plot_repeates(type):
+def plot_repeates(type1):
     print "===========> plot %s <=========="%type
     fig = fig_size('min')  # 'large'
-    if type == 'repeate_layer_digests':
-        data = repeate_layer_digests
+    if type1 == 'type':
+        data = type
+        xlabel = 'File types'
+        ylabel = 'File types across all images'
+        # data = [x * 1.0 / 1024 / 1024 for x in data1]
+        xlim = int(mean(data))
+
+        lists = sorted(data.items(), key=lambda x: (-x[1], x[0]))
+
+    elif type1 == 'stat_type':
+        data = stat_type
+        xlabel = 'File stat type'
+        ylabel = 'File stat types across all images'
+        # data = [x * 1.0 / 1024 / 1024 for x in data1]
+        xlim = max(data)
+    # if type == 'repeate_layer_digests':
+    #     data = repeate_layer_digests
         ylabel = 'Repeate layer count across all images'
         xlabel = 'Layer digest'
 

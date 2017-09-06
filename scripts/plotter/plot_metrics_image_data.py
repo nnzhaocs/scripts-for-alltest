@@ -9,6 +9,7 @@ sum_to_gzip_ratio = []
 archival_to_gzip_ratio = []
 file_cnt = []
 repeate_layer_digests = {}
+repeate_layer_digests_list = []
 
 
 def run_plotmetrics_image_data():
@@ -81,7 +82,7 @@ def plot_graph(type):
 
         """herer we add a cdf for repeat layer cnt"""
     elif type == 'repeate_layer_digests':
-        data = repeate_layer_digests
+        data = repeate_layer_digests_list
         xlabel = 'Repeat layer count across all images'
         xlim = max(data)
 
@@ -128,4 +129,5 @@ def load_image_metrics_data_file():
         json_datas = json.load(f_repeate_layer_digests_dict)
         for key, val in json_datas.items():
             repeate_layer_digests[key] = val
+            repeate_layer_digests_list.append(val)
 
