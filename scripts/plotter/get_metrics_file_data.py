@@ -82,21 +82,16 @@ def load_file_metrics_data(_layer_mappers):
 def calaculate_file_metrics():
     """get repeat files"""
 
-    file_metrics_datas_type = []
-    file_metrics_datas_sha256 = []
-    file_metrics_datas_stat_type = []
-    file_metrics_datas_stat_size = []
+    file_types = []
+    file_sha256s = []
+    file_stat_types = []
 
-    for file_metrics_data in file_metrics_datas:
-        file_metrics_datas_type.append(file_metrics_data['type'])
-        file_metrics_datas_sha256.append(file_metrics_data['sha256'])
-        file_metrics_datas_stat_type.append(file_metrics_data['stat_type'])
-        file_metrics_datas_stat_size.append(file_metrics_data['stat_size'])
+    _file_metrics_datas = list(chain(*file_metrics_datas))
 
-    file_types = list(chain(*file_metrics_datas_type))
-    file_sha256s = list(chain(*file_metrics_datas_sha256))
-    file_stat_types = list(chain(*file_metrics_datas_stat_type))
-    file_stat_sizes = list(chain(*file_metrics_datas_stat_size))
+    for file_metrics_data in _file_metrics_datas:
+        file_types.append(file_metrics_data['type'])
+        file_sha256s.append(file_metrics_data['sha256'])
+        file_stat_types.append(file_metrics_data['stat_type'])
 
     file_sha256s_dict = calculate_repeates(file_sha256s)
 
@@ -112,17 +107,10 @@ def calaculate_file_metrics():
 
     """file stat_type"""
 
-    file_types_dict = calculate_repeates(file_stat_types)
+    file_stat_types_dict = calculate_repeates(file_stat_types)
 
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_types_dict.json'), 'w') as f:
-        json.dump(file_types_dict, f)
-
-    """file size"""
-
-    file_stat_sizes_dict = calculate_repeates(file_stat_sizes)
-
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_stat_sizes_dict.json'), 'w') as f:
-        json.dump(file_stat_sizes_dict, f)
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_stat_types_dict.json'), 'w') as f:
+        json.dump(file_stat_types_dict, f)
 
 
 def load_image_mappers():

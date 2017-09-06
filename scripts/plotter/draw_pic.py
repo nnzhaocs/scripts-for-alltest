@@ -104,7 +104,7 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
     plt.legend(cd+nd, [l.get_label() for l in (cd+nd)], loc='center right', prop={'size':14})
 
     plt.grid()
-    name = '2distribution%s.png' % xlabel
+    name = 'distribution%s.png' % xlabel.replace(" ", "_")
     fig.savefig(name)
 
 
@@ -113,8 +113,8 @@ def plot_bar_pic(fig, x, y, xlabel, ylabel, xlim, ticks):
     ax = fig.add_subplot(111)
 
     ax.set_xlim(xlim / ticks, xlim)
-    ax.set_xlabel(xlabel, fontsize=24)
-    ax.set_ylabel(ylabel, fontsize=24)
+    ax.set_xlabel(xlabel, fontsize=12)
+    ax.set_ylabel(ylabel, fontsize=12)
 
     xmajorLocator = MultipleLocator(xlim / ticks) 
     ax.xaxis.set_major_locator(xmajorLocator)
@@ -123,9 +123,9 @@ def plot_bar_pic(fig, x, y, xlabel, ylabel, xlim, ticks):
 
     ax.bar(x, y, width=width)
     ax.grid()
-    name = 'bar_%s%s' % (xlabel, ylabel)
+    name = 'bar_%s%s.png' % (xlabel, ylabel)
 
-    bar_label_text(ax, x, y, xlim)
+    # bar_label_text(ax, x, y, xlim)
 
     fig.savefig(name)
 
