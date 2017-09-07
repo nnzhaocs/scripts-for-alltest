@@ -5,6 +5,9 @@ def run_generatejoblist():
 
     bad_image_mappers = load_bad_image_mappers()
     image_mappers = load_image_mappers()
+    analyzed_layers = load_layers_mappers()
+
+    print "analyzed_layers: %d" % analyzed_layers
 
     list_50mb = load_job_list('list_less_50m.out')
     list_1gb = load_job_list('list_less_1g.out')
@@ -210,3 +213,19 @@ def load_image_mappers():
 
     logging.debug("image_mappers[0]: %s", image_mappers[0])
     return image_mappers
+
+
+def load_layers_mappers():
+    layer_mappers = []
+
+    # analyzed_layers = 0
+
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_mappers.json'), 'r') as f:
+        _layer_mapper = json.laod(f)
+
+    for key, val in _layer_mapper.items():
+        tmp_mapper = {}
+        tmp_mapper[key] = val
+        layer_mappers.append(tmp_mapper)
+
+    return len(layer_mappers)
