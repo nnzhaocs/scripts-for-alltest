@@ -18,10 +18,14 @@ def run_generatejoblist():
     layer_list_b_2gb = {}
 
     for image_mapper in bad_image_mappers:
-        config.append(image_mapper['non_downloaded_config_digest'])
-        _digests.append(image_mapper['non_analyzed_layer_tarballs_digests'])
+	if image_mapper['non_downloaded_config_digest']:
+            config.append(image_mapper['non_downloaded_config_digest'])
+	if len(image_mapper['non_analyzed_layer_tarballs_digests']):
+            _digests.append(image_mapper['non_analyzed_layer_tarballs_digests'])
 
-    digests = list(chain(*_digests))
+    digests = list(set(list(chain(*_digests))))
+    print len(digests)
+    print "check the size"
 
     """check the size"""
     for digest in digests:
@@ -68,9 +72,12 @@ def run_generatejoblist():
 
 def extract_layer_config_name(filename):
     sstr = filename.split("-")
-    name = "sha256:"+sstr[1]
-    print "layer or config: name: %s, abs_filename: %s"%(name, filename)
-    return name
+    if len(sstr) > 1:
+    	name = "sha256:"+sstr[1]
+    #print "layer or config: name: %s, abs_filename: %s"%(name, filename)
+    	return name
+    else:
+	return None
 
 
 def load_job_list(filename):
@@ -78,12 +85,14 @@ def load_job_list(filename):
     with open(os.path.join(dest_dir[0]['job_list_dir'], filename), 'r') as f:
         json_data = json.load(f)
 
-    for key, val in json_data:
+    for key, val in json_data.items():
         tmp_dict = {}
         tmp_dict[key] = val
         digest = extract_layer_config_name(key)
-        job_dict[digest] = tmp_dict
+	if digest:
+            job_dict[digest] = tmp_dict
 
+    print "load job list"
     return job_dict
 
 
@@ -97,7 +106,8 @@ def load_bad_image_mappers():
     # }
 
     bad_image_mappers = []
-
+    non_downloaded_config_digest = None
+    
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'bad_image_mapper.json'), 'r') as f:
         _image_mappers = json.load(f)
 
@@ -123,6 +133,8 @@ def load_bad_image_mappers():
         }
 
         bad_image_mappers.append(bad_image_mapper)
+	
+    print bad_image_mappers[0]
 
     return bad_image_mappers
 
