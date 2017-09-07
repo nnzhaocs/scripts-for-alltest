@@ -16,6 +16,9 @@ def run_generatejoblist():
     image_names_with_no_configs = 0
     image_names_with_no_analyzed_layers = 0
 
+    image_names_with_full_analyzed_layers = 0    
+    image_names = 0
+
     layer_list_50mb = {}
     layer_list_1gb = {}
     layer_list_2gb = {}
@@ -32,13 +35,18 @@ def run_generatejoblist():
     print "check the size"
 
     for image_mapper in image_mappers:
-        if image_mapper['has_non_analyzed_layer_tarballs']:
-            image_names_with_no_configs = image_names_with_no_configs + 1
+	image_names = image_names + 1
         if image_mapper['has_non_downloaded_config']:
+            image_names_with_no_configs = image_names_with_no_configs + 1
+        if image_mapper['has_non_analyzed_layer_tarballs']:
             image_names_with_no_analyzed_layers = image_names_with_no_analyzed_layers + 1
+	if not image_mapper['has_non_analyzed_layer_tarballs']:
+	    image_names_with_full_analyzed_layers = image_names_with_full_analyzed_layers + 1
 
-    print "image_names_with_no_configs: %s" % image_names_with_no_configs
-    print "image_names_with_no_analyzed_layers: %s" % image_names_with_no_analyzed_layers
+    print "image_names_with_no_configs: %d" % image_names_with_no_configs
+    print "image_names_with_no_analyzed_layers: %d" % image_names_with_no_analyzed_layers
+    print "image_names_with_full_analyzed_layers: %d" % image_names_with_full_analyzed_layers
+    print "image_names: %d" % image_names
 
     """check the size"""
     for digest in digests:
@@ -162,7 +170,7 @@ def load_image_mappers():
     #     'layers': layers_map{:{:}}
     # }
 
-    image_mappers = {}
+    image_mappers = []
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'image_mapper.json'), 'r') as f:
         _image_mappers = json.load(f)
@@ -201,4 +209,4 @@ def load_image_mappers():
         image_mappers.append(image_mapper)
 
     logging.debug("image_mappers[0]: %s", image_mappers[0])
-
+    return image_mappers
