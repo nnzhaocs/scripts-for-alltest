@@ -27,15 +27,26 @@ def run_generatejoblist():
     layer_list_2gb = {}
     layer_list_b_2gb = {}
 
+    bad_layer_downloader_job_list = defaultdict(list)
+
     for image_mapper in bad_image_mappers:
 	if image_mapper['non_downloaded_config_digest']:
             config.append(image_mapper['non_downloaded_config_digest'])
 	if len(image_mapper['non_analyzed_layer_tarballs_digests']):
             _digests.append(image_mapper['non_analyzed_layer_tarballs_digests'])
+	    bad_layer_downloader_job_list[image_mapper['bad_manifest']] = image_mapper['non_analyzed_layer_tarballs_digests']
 
     digests = list(set(list(chain(*_digests))))
     print len(digests)
     print "check the size"
+
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'bad_layer_downloader_job_list.out'), 'w+') as f_out:
+        json.dump(bad_layer_downloader_job_list, f_out)
+
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'non_analyzed_layer_digests.out'), 'w+') as f_out:
+        #json.dump(layer_list_50mb, f_out)
+	for digest in digests:
+	    f_out.write(digest+'\n')
 
     for image_mapper in image_mappers:
 	image_names = image_names + 1
@@ -221,7 +232,7 @@ def load_layers_mappers():
     # analyzed_layers = 0
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_mappers.json'), 'r') as f:
-        _layer_mapper = json.laod(f)
+        _layer_mapper = json.load(f)
 
     for key, val in _layer_mapper.items():
         tmp_mapper = {}
