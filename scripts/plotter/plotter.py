@@ -6,6 +6,7 @@
 from get_metrics_image_data import *
 from get_metrics_layer_data import *
 from get_metrics_file_data import *
+from generate_job_list import *
 
 # from plot_graph import *
 
@@ -71,8 +72,8 @@ def main():
 
     # if args.plotgraph:
     #     run_plotgraph()
-    # if args.generatejoblist:
-    #     run_generatejoblist()
+    if args.generatejoblist:
+        run_generatejoblist()
 
 
 if __name__ == '__main__':
