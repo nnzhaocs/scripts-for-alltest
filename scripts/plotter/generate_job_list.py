@@ -4,6 +4,8 @@ def run_generatejoblist():
     logging.info('=============> run_generatejoblist <===========')
 
     bad_image_mappers = load_bad_image_mappers()
+    image_mappers = load_image_mappers()
+
     list_50mb = load_job_list('list_less_50m.out')
     list_1gb = load_job_list('list_less_1g.out')
     list_2gb = load_job_list('list_less_2g.out')
@@ -11,6 +13,8 @@ def run_generatejoblist():
 
     config = []
     _digests = []
+    image_names_with_no_configs = 0
+    image_names_with_no_analyzed_layers = 0
 
     layer_list_50mb = {}
     layer_list_1gb = {}
@@ -26,6 +30,15 @@ def run_generatejoblist():
     digests = list(set(list(chain(*_digests))))
     print len(digests)
     print "check the size"
+
+    for image_mapper in image_mappers:
+        if image_mapper['has_non_analyzed_layer_tarballs']:
+            image_names_with_no_configs = image_names_with_no_configs + 1
+        if image_mapper['has_non_downloaded_config']:
+            image_names_with_no_analyzed_layers = image_names_with_no_analyzed_layers + 1
+
+    print "image_names_with_no_configs: %s" % image_names_with_no_configs
+    print "image_names_with_no_analyzed_layers: %s" % image_names_with_no_analyzed_layers
 
     """check the size"""
     for digest in digests:
@@ -77,6 +90,7 @@ def extract_layer_config_name(filename):
     #print "layer or config: name: %s, abs_filename: %s"%(name, filename)
     	return name
     else:
+        print "layer or config: filename: %s" % filename
 	return None
 
 
@@ -139,4 +153,52 @@ def load_bad_image_mappers():
     return bad_image_mappers
 
 
+def load_image_mappers():
+    """load_image_mappers"""
+    # image_mapper = {
+    #     'version': version,
+    #     'manifest': manifest_name_dir_map{},
+    #     'config': config_name_dir_map{},
+    #     'layers': layers_map{:{:}}
+    # }
+
+    image_mappers = {}
+
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'image_mapper.json'), 'r') as f:
+        _image_mappers = json.load(f)
+
+    logging.debug("load image_mapper: %s", os.path.join(dest_dir[0]['job_list_dir'], 'image_mapper.json'))
+
+    for _image_mapper in _image_mappers:
+
+        manifest_name_dir_map = {}
+        config_name_dir_map = {}
+        layers_map = {}
+
+        for key, val in _image_mapper['manifest'].items():
+            manifest_name_dir_map[key] = val
+
+        if _image_mapper['config']:
+            for key, val in _image_mapper['config'].items():
+                config_name_dir_map[key] = val
+
+        if _image_mapper['layers']:
+            layer_name_dir_map = {}
+            for key, val in _image_mapper['layers'].items():
+                for key1, val1 in val.items():
+                    layer_name_dir_map[key1] = val1
+                layers_map[key] = layer_name_dir_map
+
+        image_mapper = {
+            'version': _image_mapper['version'],
+            'manifest': manifest_name_dir_map,
+            'config': config_name_dir_map,
+            'layers': layers_map,
+            'has_non_analyzed_layer_tarballs': _image_mapper['has_non_analyzed_layer_tarballs'],
+            'has_non_downloaded_config': _image_mapper['has_non_downloaded_config']
+        }
+
+        image_mappers.append(image_mapper)
+
+    logging.debug("image_mappers[0]: %s", image_mappers[0])
 
