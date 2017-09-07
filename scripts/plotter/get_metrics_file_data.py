@@ -74,7 +74,7 @@ def load_file_metrics_data(_layer_mappers):
 
                 del json_data
 
-    logging.debug("layer_metrics_data: %s", file_metrics_data)
+    logging.debug("layer_metrics_data[size]: %s", file_metrics_data['stat_size'])
     return file_metrics_data
 
 
