@@ -45,20 +45,21 @@ def download_blobs(repo_name, blobs_digest, finished_layers):
     for blob_digest in blobs_digest:
         if blob_digest in finished_layers:
             print "Layer Already Exist!"
-            is_layer_exist = False  # need to download
+            is_layer_exist = True  # need to download
         else:
-            is_layer_exist = True  # dont need to download
+            is_layer_exist = False  # dont need to download
             print "Layer Not Exist!"
 
         if not is_layer_exist:
-            filename = os.path.join(dest_dir[0]['layer_dir'], str(digest).replace(':', '-') + '-' + str(timestamp))
+            timestamp = time.time()
+            filename = os.path.join(dest_dir[0]['layer_dir'], str(blob_digest).replace(':', '-') + '-' + str(timestamp))
             print filename
-            str_digest = str(digest).split('sha256:')
+            str_digest = str(blob_digest).split('sha256:')
             # print str_digest
             if str_digest[1]:
                 print str_digest[1]
                 req = {
-                    'repo_name': repo['name'],
+                    'repo_name': repo_name,
                     'repo_tag': str_digest[1],
                     'operation': 'download_blobs',
                     'absfilename': filename
@@ -90,8 +91,8 @@ def download(layer_mappers_slices, finished_layers, finished_repos):
                 continue
 
             blobs_digest = list(set(val))  # remove redundant sha
-            layer_states['finished_repo'] = key
-            layer_states['finished_layers'].append(download_blobs(key, blobs_digest, finished_layers))
+            layer_states['repo_name'] = key
+            layer_states['layer_states'].append(download_blobs(key, blobs_digest, finished_layers))
     return layer_states
 
 
@@ -201,20 +202,6 @@ def create_dirs(dirname, filename):
     dest_dir.append(dir)
 
 
-def flush_file(fd, q_name, lock_file):
-    while True:
-        item = q_name.get()
-        if item is None:
-            print str(q_name) + "queue empty!"
-            break
-        """write to file"""
-        print "f_finished_item: " + item
-        with lock_file:
-            fd.write(item + "\n")
-            fd.flush()
-        q_name.task_done()
-
-
 def parseArg():
     parser = OptionParser()
 
@@ -300,17 +287,21 @@ def main():
 
     print "after map"
 
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'bad_repo_list.out'), 'a+') as f_bad_repo_list:
-        for layer_state in layer_states:
-            if len(layer_state['bad_layers']):
-                for layer_digest in layer_state['bad_layers']:
-                    f_bad_repo_list.write(layer_digest+'\n')
+    bad_layers = []
+    downloaded_layers = []
 
-        layer_states['downloaded_layers'] = downloaded_layers
-    # f_finished_repo = open(options.finished_repo_file, 'a+')
-    # f_bad_repo = open("bad_repo_list.out", 'a+')
-    # # f_finished_layer = open(options.finished_layer_file, 'a+')
-    # f_bad_layer = open("bad_layer_list.out", 'a+')
+    for layer_state in layer_states:
+        if len(layer_state['layer_states']):
+            for layer_status in layer_state['layer_states']:
+                bad_layers = layer_status['bad_layers']
+                downloaded_layers = layer_status['downloaded_layers']
+
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'bad_repo_list.out'), 'a+') as f_bad_repo_list:
+        for bad_layer_digest in bad_layers:
+            f_bad_repo_list.write(bad_layer_digest+'\n')
+    with open(options.finished_layer_file, 'a+'):
+        for layer_digest in downloaded_layers:
+            f_bad_repo_list.write(layer_digest+'\n')
 
     """close files"""
     elapsed = time.time() - start
