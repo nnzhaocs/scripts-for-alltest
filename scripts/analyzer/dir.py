@@ -78,9 +78,13 @@ def extract_tarball(layer_dir_filename, layer_dir):
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
-        logging.debug('###################%s: exit code: %s; %s###################',
+        if "Unexpected EOF in archive" in e:
+            logging.debug('###################%s: Pass exit code: %s; %s###################',
                       layer_dir_filename, e.returncode, e.output)
-        return False
+        else:
+            logging.debug('###################%s: exit code: %s; %s###################',
+                          layer_dir_filename, e.returncode, e.output)
+            return False
 
     elapsed = time.time() - start
     logging.info('tar extract tarball, consumed time ==> %f s', elapsed)
