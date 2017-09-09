@@ -29,12 +29,17 @@ def run_generatejoblist():
 
     bad_layer_downloader_job_list = defaultdict(list)
 
+    unique_digest = []
+
     for image_mapper in bad_image_mappers:
 	if image_mapper['non_downloaded_config_digest']:
             config.append(image_mapper['non_downloaded_config_digest'])
 	if len(image_mapper['non_analyzed_layer_tarballs_digests']):
             _digests.append(image_mapper['non_analyzed_layer_tarballs_digests'])
-	    bad_layer_downloader_job_list[image_mapper['bad_manifest']] = image_mapper['non_analyzed_layer_tarballs_digests']
+            for digest in image_mapper['non_analyzed_layer_tarballs_digests']:
+                if digest not in unique_digest:
+                    unique_digest.append(digest)
+                    bad_layer_downloader_job_list[image_mapper['bad_manifest']].append(digest) #= image_mapper['non_analyzed_layer_tarballs_digests']
 
     digests = list(set(list(chain(*_digests))))
     print len(digests)

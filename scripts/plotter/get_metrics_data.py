@@ -69,7 +69,7 @@ def run_getmetricsdata():
     #    json.dump(image_metrics_datas, f_image_metrics_data)
 
     print "create pool"
-    P2 = multiprocessing.Pool(60)
+    P2 = multiprocessing.Pool(10)
     print "before map"
 
     layer_mappers_slices = [layer_mappers[i:i + 24] for i in range(0, len(layer_mappers), 24)]

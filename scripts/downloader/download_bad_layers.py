@@ -3,43 +3,11 @@ import re
 import threading, Queue
 import argparse
 from optparse import OptionParser
-#import requests
 import subprocess
 
-q = Queue.Queue()
-finished_layers_q = Queue.Queue()  # finished layer queue
-finished_repo_q = Queue.Queue()  # finished repo queue
+dest_dirname = "/home/nannan/2tb_hdd"
+dirname = dest_dirname
 
-bad_layer_q = Queue.Queue()  # layers that cannot be downloaded
-bad_repo_q = Queue.Queue()  # repos that cannot be downloaded
-
-flush_finished_layer_q = Queue.Queue()
-flush_finished_repo_q = Queue.Queue()
-flush_bad_layer_q = Queue.Queue()  # layers that cannot be downloaded
-flush_bad_repo_q = Queue.Queue()  # repos that cannot be downloaded
-
-num_worker_threads = 9
-num_layer_worker_threads = 6
-num_flush_threads = 6
-
-lock = threading.Lock()
-lock_repo = threading.Lock()
-# flush_condition = threading.Condition()
-
-lock_f_finished_repo = threading.Lock()
-lock_f_bad_repo = threading.Lock()
-lock_f_finished_layer = threading.Lock()
-lock_f_bad_layer = threading.Lock()
-
-threads = []
-flush_threads = []
-repos = []
-
-# /* TODO
-# 	1. add log file (store all the errors)
-#
-# 	2. catch exceptions (input, timeout)
-# */
 
 """dest_dir contains three directories:
     0: root_dir
@@ -68,51 +36,21 @@ def make_request(req):
         return None
 
 
-def download_manifest(repo):
-    """download manifest first"""
-    # url = repo['docker_io_http'] + 'manifest' + '/' + repo['tag']
-    # print 'manifest url: %s' % url
-    timestamp = time.time()
-    filename = os.path.join(dest_dir[0]['manifest_dir'], str(repo['name']).replace("/", "-") + '-' + repo['tag'] + '-' + str(timestamp) + '.json')
-    print filename
-    req = {
-        'repo_name': repo['name'],
-        'repo_tag': repo['tag'],
-        'operation': 'download_manifest',
-        'absfilename': filename
-    }
-    make_request(req)
-    if not os.path.isfile(filename):
-        return None
-    with open(filename) as manifest_file:
-        resp = json.load(manifest_file)
-    if not resp:
-        return None
-    else:
-        """return json"""
-        #print resp
-        return resp
-
-
-def download_blobs(repo, blobs_digest):
+def download_blobs(repo_name, blobs_digest, finished_layers):
     """download image blob tar files"""
-    # digest_list = list(set(blobs_digest))  # remove redundant sha
-    while True:
-        digest = blobs_digest.get()
-        if digest is None:
-            print "layer queue is empty"
-            break
-        with lock:
-            if digest in finished_layers_q.queue:
-                print "Layer Already Exist!"
-                is_layer_exist = False  # need to download
-            else:
-                is_layer_exist = True  # dont need to download
-                finished_layers_q.put(digest)  # !!!layers might be duplicated
-                print "Layer Not Exist!"
+    bad_layers = []
+    downloaded_layers = []
+    layer_states = defaultdict(list)
+
+    for blob_digest in blobs_digest:
+        if blob_digest in finished_layers:
+            print "Layer Already Exist!"
+            is_layer_exist = False  # need to download
+        else:
+            is_layer_exist = True  # dont need to download
+            print "Layer Not Exist!"
 
         if not is_layer_exist:
-            timestamp = time.time()
             filename = os.path.join(dest_dir[0]['layer_dir'], str(digest).replace(':', '-') + '-' + str(timestamp))
             print filename
             str_digest = str(digest).split('sha256:')
@@ -127,126 +65,38 @@ def download_blobs(repo, blobs_digest):
                 }
                 error = make_request(req)
                 if error:
-                    bad_layer_q.put(digest)
+                    bad_layers.append(blob_digest)
                     print "flush bad layer q!"
-                    flush_bad_layer_q.put(digest)
                 else:
                     print "flush finished layer q!"
-                    flush_finished_layer_q.put(digest)
-        blobs_digest.task_done()
+                    downloaded_layers.append(blob_digest)
+    layer_states['bad_layers'] = bad_layers
+    layer_states['downloaded_layers'] = downloaded_layers
+    return layer_states
 
 
-def manifest_schemalist(manifest):
-    blobs_digest = []
-    if 'manifests' in manifest and isinstance(manifest['manifests'], list) and len(manifest['manifests']) > 0:
-        for i in manifest['manifests']:
-            if 'digest' in i:
-                print i['digest']
-                blobs_digest.append(i['digest'])
-    return blobs_digest
-
-
-def manifest_schema2(manifest):
-    blobs_digest = []
-    if 'config' in manifest and 'digest' in manifest['config']:
-        config_digest = manifest['config']['digest']
-        blobs_digest.append(config_digest)
-    if 'layers' in manifest and isinstance(manifest['layers'], list) and len(manifest['layers']) > 0:
-        for i in manifest['layers']:
-            if 'digest' in i:
-                print i['digest']
-                blobs_digest.append(i['digest'])
-    return blobs_digest
-
-
-def manifest_schema1(manifest):
-    blobs_digest = []
-    if 'fsLayers' in manifest and isinstance(manifest['fsLayers'], list) and len(manifest['fsLayers']) > 0:
-        for i in manifest['fsLayers']:
-            if 'blobSum' in i:
-                print i['blobSum']
-                blobs_digest.append(i['blobSum'])
-    return blobs_digest
-
-
-def download():
-    while True:
-        repo = q.get()
-        if repo is None:
-            print "repo queue is empty!"
-            break
-        """check if this repo already downloaded"""
-        #with lock_repo:
-        name =  repo['name'].replace("/", "-") + '-' + repo['tag']
-        if name in finished_repo_q.queue:
-            print "Repo Already Exist!"
-            is_repo_exist = False  #need to download
-        else:
-            is_repo_exist = True   #dont need to download
-            print "Layer Not Exist!"
-
-        if is_repo_exist:
-            q.task_done()
-            continue
-
-        manifest = download_manifest(repo)
-        if manifest is None:
-            bad_repo_q.put(repo['name'])
-            print "flush bad repo q"
-            flush_bad_repo_q.put(repo['name'])
-            q.task_done()
-            continue
-
-        blobs_digest = []
-        layer_threads = []
-        if 'schemaVersion' in manifest and manifest['schemaVersion'] == 2:
-            if 'mediaType' in manifest and 'list' in manifest['mediaType']:
-                blobs_digest = manifest_schemalist(manifest)
+def download(layer_mappers_slices, finished_layers, finished_repos):
+    layer_states = defaultdict(list)
+    for layer_mapper in layer_mappers_slices:
+        for key, val in layer_mapper:
+            if key in finished_repos:
+                print "Repo Already Exist!"
+                is_repo_exist = True  #need to download
             else:
-                blobs_digest = manifest_schema2(manifest)
+                is_repo_exist = False   #dont need to download
+                print "Repo Not Exist!"
 
-        elif 'schemaVersion' in manifest and manifest['schemaVersion'] == 1:
-            blobs_digest = manifest_schema1(manifest)
+            if is_repo_exist:
+                continue
 
-        digest_list = list(set(blobs_digest))  # remove redundant sha
-        blobs_digest_q = Queue.Queue()
-        for i in digest_list:
-            blobs_digest_q.put(i)
-        for i in range(num_layer_worker_threads):
-            t = threading.Thread(target=download_blobs, args=(repo, blobs_digest_q))
-            t.start()
-            layer_threads.append(t)
-
-        blobs_digest_q.join()
-        print 'layer wait here!'
-        for i in range(num_layer_worker_threads):
-            blobs_digest_q.put(None)
-        print 'layer put here!'
-        for t in layer_threads:
-            t.join()
-        print 'layer done here!'
-
-        """repo is unique so ...."""
-        finished_repo_q.put(repo['name'])
-        print "flush finished repo q"
-        flush_finished_repo_q.put(repo['name'])
-
-        q.task_done()
+            blobs_digest = list(set(val))  # remove redundant sha
+            layer_states['finished_repo'] = key
+            layer_states['finished_layers'].append(download_blobs(key, blobs_digest, finished_layers))
+    return layer_states
 
 
-#def get_image_names(name):
-#    """process image file list and store the names in a file"""
-#    cmd1 = 'cp %s image-list.xls' % name
-#    cmd2 = 'awk -F\'' + ',' + '\' \'{print $3}\' image-list.xls > image-names.xls'
-#    print cmd1
-#    print cmd2
-#    rc = os.system(cmd1)
-#    assert (rc == 0)
-#    rc = os.system(cmd2)
-#    assert (rc == 0)
-
-
-def queue_names(filename):
+def load_repos(filename):
+    repos = []
     with open(filename) as fd:
         for name1 in fd:
             if not name1:
@@ -269,10 +119,44 @@ def queue_names(filename):
             repos.append(repo)
 
             print repo
-            q.put(repo)
+            repos.append(repo)
+            # q.put(repo)
 
 
-def load_finished_file(filename, q_name):
+def load_bad_layers_mappers():
+    with open(os.path.join(dest_dirname, 'bad_layer_downloader_job_list.out'), 'r') as f_out:
+        bad_layer_downloader_job_list = json.load(f_out)
+
+    layer_mapper = defaultdict(list)
+
+    for key, val in bad_layer_downloader_job_list:
+        digests = []
+        if len(val):
+            for digest in val:
+                digests.append(digest)
+        layer_mapper[key] = digests
+
+    return layer_mapper
+
+
+def update_repo_names(repos, bad_layer_mappers):
+    keys = bad_layer_mappers.keys()
+    layer_mappers = []
+    for repo in repos:
+        layer_mapper = {}
+        name = repo['name'].replace("/", "-") + '-' + repo['tag']
+        if name in keys:
+            print "Find A Non Analyzed Layer Repo"
+            layer_mapper[repo['name']] = bad_layer_mappers[name]
+            layer_mappers.append(layer_mapper)
+        else:
+            print "Layer Repo Already Analyzed!"
+    print layer_mappers[0]
+    return layer_mappers
+
+
+def load_finished_file(filename):
+    finished_items = []
     with open(filename) as f:
         # lines = f.readlines()
     # print lines
@@ -280,7 +164,8 @@ def load_finished_file(filename, q_name):
             print line
             if line:
                 print line.replace("\n", "")
-                q_name.put(line.replace("\n", ""))
+                finished_items.append(line.replace("\n", ""))
+    return finished_items
 
 
 def create_dirs(dirname, filename):
@@ -384,66 +269,48 @@ def main():
         if not os.path.isfile(options.finished_layer_file):
             print '%s is not a valid file' % options.finished_layer_file
             return
-        load_finished_file(options.finished_layer_file, finished_layers_q)
+        finished_layers = load_finished_file(options.finished_layer_file)
 
     if options.finished_repo_file:
         print 'finished repo file: ', options.finished_repo_file
         if not os.path.isfile(options.finished_repo_file):
             print '%s is not a valid file' % options.finished_repo_file
             return
-        load_finished_file(options.finished_repo_file, finished_repo_q)
+        finished_repos = load_finished_file(options.finished_repo_file)
 
-    #get_image_names(options.filename)
     create_dirs(options.dirname, options.filename)
 
-    f_finished_repo = open(options.finished_repo_file, 'a+')
-    f_bad_repo = open("bad_repo_list.out", 'a+')
-    f_finished_layer = open(options.finished_layer_file, 'a+')
-    f_bad_layer = open("bad_layer_list.out", 'a+')
-
-    queue_names(options.filename)
+    repos = load_repos(options.filename)
     start = time.time()
-    for i in range(num_worker_threads):
-        t = threading.Thread(target=download)
-        t.start()
-        threads.append(t)
 
-    for j in range(num_flush_threads):
-        t1 = threading.Thread(target=flush_file, args=(f_finished_repo, flush_finished_repo_q, lock_f_finished_repo))
-        t2 = threading.Thread(target=flush_file, args=(f_finished_layer, flush_finished_layer_q, lock_f_finished_layer))
-        t3 = threading.Thread(target=flush_file, args=(f_bad_repo, flush_bad_repo_q, lock_f_bad_repo))
-        t4 = threading.Thread(target=flush_file, args=(f_bad_layer, flush_bad_layer_q, lock_f_bad_layer))
-        t1.start()
-        t2.start()
-        t3.start()
-        t4.start()
-        flush_threads.append(t1)
-        flush_threads.append(t2)
-        flush_threads.append(t3)
-        flush_threads.append(t4)
+    logging.info('=============> run_getmetricsdata <===========')
 
-    q.join()
-    print 'wait here!'
-    for i in range(num_worker_threads):
-        q.put(None)
-    print 'put here!'
-    for t in threads:
-        t.join()
-    print 'done here!'
+    bad_layer_mappers = load_bad_layers_mappers()
 
-    flush_finished_repo_q.join()
-    flush_finished_layer_q.join()
-    flush_bad_repo_q.join()
-    flush_bad_layer_q.join()
+    layer_mappers = update_repo_names(repos, bad_layer_mappers)
 
-    print "flush queues wait here!"
-    for i in range(num_flush_threads):
-        flush_finished_repo_q.put(None)
-        flush_finished_layer_q.put(None)
-        flush_bad_repo_q.put(None)
-        flush_bad_layer_q.put(None)
-    for t in flush_threads:
-        t.join()
+    print "create pool"
+    P2 = multiprocessing.Pool(60)
+    print "before map"
+
+    func = partial(download, finished_layers, finished_repos)
+
+    layer_mappers_slices = [layer_mappers[i:i + 24] for i in range(0, len(layer_mappers), 24)]
+    layer_states = P2.map(func, layer_mappers_slices)
+
+    print "after map"
+
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'bad_repo_list.out'), 'a+') as f_bad_repo_list:
+        for layer_state in layer_states:
+            if len(layer_state['bad_layers']):
+                for layer_digest in layer_state['bad_layers']:
+                    f_bad_repo_list.write(layer_digest+'\n')
+
+        layer_states['downloaded_layers'] = downloaded_layers
+    # f_finished_repo = open(options.finished_repo_file, 'a+')
+    # f_bad_repo = open("bad_repo_list.out", 'a+')
+    # # f_finished_layer = open(options.finished_layer_file, 'a+')
+    # f_bad_layer = open("bad_layer_list.out", 'a+')
 
     """close files"""
     elapsed = time.time() - start
