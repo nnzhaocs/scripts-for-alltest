@@ -238,7 +238,45 @@ def load_dirs(layer_filename, filetype):
             if not len(subdirs):
                 #logging.warn("################### subdirs is None ###################")
                 #clear_dir(layer_dir)
-                continue
+                if not len(files):
+                    sub_dir = {
+                        'subdir': None,
+                        'dir_depth': 0,
+                        'file_cnt': 0,
+                        'files': None,  # full path of f = dir/files
+                        'dir_size': 0
+                    }
+                    sub_dirs.append(sub_dir)
+                    continue
+                else:
+                    sub_dir = {}
+                    # for f in os.listdir(path):
+                    #     dir_level = s_dir.count(os.sep) - layer_dir_level
+                    s_dir_files = []
+                    for f in os.listdir(path):
+                        try:
+                            filename = os.path.isfile(os.path.join(path, f))
+                        except:
+                            exc_type, exc_value, exc_traceback = sys.exc_info()
+                            traceback.print_exception(exc_type, exc_value, exc_traceback,
+                                                      limit=2, file=sys.stdout)
+                            continue
+
+                        if os.path.isfile(os.path.join(path, f)):
+                            s_dir_file = load_file(os.path.join(path, f))
+                            if s_dir_file:
+                                s_dir_files.append(s_dir_file)
+
+                    sub_dir = {
+                        'subdir': None,
+                        'dir_depth': 0,
+                        'file_cnt': len(s_dir_files),
+                        'files': s_dir_files,  # full path of f = dir/files
+                        'dir_size': sum_dir_size(s_dir_files)
+                    }
+                    sub_dirs.append(sub_dir)
+                    continue
+
 	    sub_dir = {}
             for dirname in subdirs:
 		#print dirname
