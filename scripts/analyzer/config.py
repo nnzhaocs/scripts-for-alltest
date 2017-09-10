@@ -16,6 +16,12 @@ num_worker_process = 20
 
 dest_dir = []
 
+extracting_dir = "/home/nannan/120g_ssd_j/extracting_dir/"
+layer_db_json_dirname = "/home/nannan/120g_ssd_k/non-analyzed-jsons"
+
+analyzed_absfilename = "/home/nannan/2tb_hdd/job_list_dir/analyzed_absfilename.out"
+layer_list_absfilename = "/home/nannan/2tb_hdd/job_list_dir/list_less_50m.out"#test_non_analyzed_layers.json"
+
 """Output directories which are no need to change"""
 
 image_db_json_dirname = 'image_db_json'
@@ -34,8 +40,8 @@ dirs = ["/home/nannan/2tb_hdd/manifests",
         "/home/nannan/2tb_hdd/layer_db_json_bigger_2g"]
 
 """files for plotting"""
-image_pop_filename = ''
-image_growth_filename = ''
+#image_pop_filename = ''
+#image_growth_filename = ''
 
 # ===============================================
 

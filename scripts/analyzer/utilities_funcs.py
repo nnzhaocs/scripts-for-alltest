@@ -26,20 +26,20 @@ def load_config():
         logging.error('%s is not a valid dir', dest_dirname)
         return
 
-    # layer_dir = os.path.join(dest_dirname, "layers")
-    # if not os.path.isdir(layer_dir):
-    #     logging.error('%s is not a valid dir', layer_dir)
-    #     return
+    layer_dir = os.path.join(dest_dirname, "layers")
+    if not os.path.isdir(layer_dir):
+        logging.error('%s is not a valid dir', layer_dir)
+        return
 
     manifest_dir = os.path.join(dest_dirname, 'manifests')
     if not os.path.isdir(manifest_dir):
         logging.error('%s is not a valid dir', manifest_dir)
         return
 
-    # logging.info('extracting_dir is: %s', extracting_dir)
-    # if not os.path.isdir(extracting_dir):
-    #     logging.error('%s is not a valid file', extracting_dir)
-    #     return
+    logging.info('extracting_dir is: %s', extracting_dir)
+    if not os.path.isdir(extracting_dir):
+        logging.error('%s is not a valid file', extracting_dir)
+        return
 
     job_list_dir = os.path.join(dest_dirname, 'job_list_dir')
     if not os.path.isdir(job_list_dir):
@@ -52,16 +52,16 @@ def load_config():
             print '###################' + e.output + '###################'
             return
 
-    # layer_db_json_dir = os.path.join(dest_dirname, layer_db_json_dirname)
-    # if not os.path.isdir(layer_db_json_dir):
-    #     logging.debug('make layer_db_json dir ==========> %s' % layer_db_json_dir)
-    #     cmd1 = 'mkdir %s' % layer_db_json_dir
-    #     logging.debug('The shell command: %s', cmd1)
-    #     try:
-    #         subprocess.check_output(cmd1, shell=True)
-    #     except subprocess.CalledProcessError as e:
-    #         print '###################' + e.output + '###################'
-    #         return
+    layer_db_json_dir = layer_db_json_dirname
+    if not os.path.isdir(layer_db_json_dir):
+        logging.debug('make layer_db_json dir ==========> %s' % layer_db_json_dir)
+        cmd1 = 'mkdir %s' % layer_db_json_dir
+        logging.debug('The shell command: %s', cmd1)
+        try:
+            subprocess.check_output(cmd1, shell=True)
+        except subprocess.CalledProcessError as e:
+            print '###################' + e.output + '###################'
+            return
 
     image_db_json_dir = os.path.join(dest_dirname, 'image_db_json')
     if not os.path.isdir(image_db_json_dir):
@@ -77,10 +77,10 @@ def load_config():
     dir = {
         'dirname': dest_dirname,
         'manifest_dir': manifest_dir,
-        # #'config_dir': config_dir,
-        # 'layer_dir': layer_dir,
-        # 'extracting_dir': extracting_dir,
-        # 'layer_db_json_dir': layer_db_json_dir,
+        #'config_dir': config_dir,
+        'layer_dir': layer_dir,
+        'extracting_dir': extracting_dir,
+        'layer_db_json_dir': layer_db_json_dir,
         'image_db_json_dir': image_db_json_dir,
         'job_list_dir': job_list_dir
     }
