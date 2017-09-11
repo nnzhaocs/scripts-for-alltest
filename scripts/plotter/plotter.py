@@ -7,6 +7,7 @@ from get_metrics_image_data import *
 from get_metrics_layer_data import *
 from get_metrics_file_data import *
 from generate_job_list import *
+from plot_metrics_image_data import *
 
 # from plot_graph import *
 
@@ -18,12 +19,6 @@ def parseArg():
         help="Print lots of debugging statements",
         action="store_const", dest="loglevel", const=logging.DEBUG,
         default=logging.INFO,
-    )
-
-    parser.add_argument(
-        '-P', '--plotgraph',
-        help="plot graphs",
-        action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
     parser.add_argument(
@@ -50,6 +45,24 @@ def parseArg():
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
+    parser.add_argument(
+        '-i', '--plotgraph_image',
+        help="plot image graphs",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
+    parser.add_argument(
+        '-l', '--plotgraph_layer',
+        help="plot layer graphs",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
+    parser.add_argument(
+        '-f', '--plotgraph_file',
+        help="plot file graphs",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
     return parser.parse_args()
 
 
@@ -70,10 +83,11 @@ def main():
     if args.getmetrics_file_data:
         run_getmetrics_file_data()
 
-    # if args.plotgraph:
-    #     run_plotgraph()
     if args.generatejoblist:
         run_generatejoblist()
+
+    if args.plotgraph_image:
+        run_plotmetrics_image_data()
 
 
 if __name__ == '__main__':
