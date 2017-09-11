@@ -26,7 +26,7 @@ import magic
 # import random, string
 from collections import defaultdict
 # from itertools import groupby
-import statistics
+from statistics  import mean
 import subprocess
 # from collections import OrderedDict
 # from collections import defaultdict
