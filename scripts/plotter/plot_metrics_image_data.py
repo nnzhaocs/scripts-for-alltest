@@ -17,33 +17,40 @@ def run_plotmetrics_image_data():
     try:
         plot_graph('uncompressed_sum_of_files')
     except:
-        print "Cannot plot uncompressed_sum_of_files"
+        print "Cannot plot uncompressed_sum_of_files: ", sys.exc_info()
+	traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('compressed_size_with_method_gzip')
     except:
-        print "cannot plot compressed_size_with_method_gzip"
+        print "cannot plot compressed_size_with_method_gzip:", sys.exc_info()
+	traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('archival_size')
     except:
-        print "cannot print archival_size"
+        print "cannot print archival_size:", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
     try:
         plot_graph('sum_to_gzip_ratio')
     except:
-        print "cannot print sum_to_gzip_ratio"
+        print "cannot print sum_to_gzip_ratio:", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('archival_to_gzip_ratio')
     except:
-        print "cannot print archival_to_gzip_ratio"
+        print "cannot print archival_to_gzip_ratio:", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
     try:
         plot_graph('file_cnt')
     except:
-        print "cannot print file_cnt"
+        print "cannot print file_cnt:", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
     try:
         plot_repeates('repeate_layer_digests')
     except:
-        print "cannot print repeate_layer_digests"
+        print "cannot print repeate_layer_digests:", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
 
 def plot_graph(type):
@@ -54,8 +61,11 @@ def plot_graph(type):
         data1 = uncompressed_sum_of_files
         xlabel = 'Uncompressed layer size (MB) as sum of files'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
+	#print mean(data)
         xlim = int(mean(data))
-    elif type == 'compressed_size_with_method_gzip (MB)':
+        #print mean(data)
+        #print xlim
+    elif type == 'compressed_size_with_method_gzip':
         data1 = compressed_size_with_method_gzip
         xlabel = 'Compressed layer tarball size (MB)'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
@@ -131,3 +141,4 @@ def load_image_metrics_data_file():
             repeate_layer_digests[key] = val
             repeate_layer_digests_list.append(val)
 
+    print repeate_layer_digests_list[0]

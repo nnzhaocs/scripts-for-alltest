@@ -1,9 +1,11 @@
 import os, sys, subprocess, select, random, urllib2, time, json, tempfile, shutil
 import re
-import threading, Queue
+import multiprocessing
 import argparse
 from optparse import OptionParser
 import subprocess
+from collections import defaultdict
+from functools import partial
 
 dest_dirname = "/home/nannan/2tb_hdd"
 dirname = dest_dirname
@@ -77,9 +79,11 @@ def download_blobs(repo_name, blobs_digest, finished_layers):
 
 
 def download(layer_mappers_slices, finished_layers, finished_repos):
+    #print "downloading"
     layer_states = defaultdict(list)
     for layer_mapper in layer_mappers_slices:
-        for key, val in layer_mapper:
+        for key, val in layer_mapper.items():
+	    print key
             if key in finished_repos:
                 print "Repo Already Exist!"
                 is_repo_exist = True  #need to download
@@ -118,19 +122,19 @@ def load_repos(filename):
                 'tag': 'latest'  # here we use latest as all images tags
             }
             repos.append(repo)
-
             print repo
-            repos.append(repo)
+            #repos.append(repo)
+    return repos
             # q.put(repo)
 
 
 def load_bad_layers_mappers():
-    with open(os.path.join(dest_dirname, 'bad_layer_downloader_job_list.out'), 'r') as f_out:
+    with open(os.path.join(dest_dirname, 'job_list_dir/bad_layer_downloader_job_list.out'), 'r') as f_out:
         bad_layer_downloader_job_list = json.load(f_out)
 
     layer_mapper = defaultdict(list)
 
-    for key, val in bad_layer_downloader_job_list:
+    for key, val in bad_layer_downloader_job_list.items():
         digests = []
         if len(val):
             for digest in val:
@@ -141,18 +145,26 @@ def load_bad_layers_mappers():
 
 
 def update_repo_names(repos, bad_layer_mappers):
-    keys = bad_layer_mappers.keys()
+    #keys = bad_layer_mappers.keys()
     layer_mappers = []
     for repo in repos:
         layer_mapper = {}
         name = repo['name'].replace("/", "-") + '-' + repo['tag']
-        if name in keys:
-            print "Find A Non Analyzed Layer Repo"
-            layer_mapper[repo['name']] = bad_layer_mappers[name]
-            layer_mappers.append(layer_mapper)
-        else:
-            print "Layer Repo Already Analyzed!"
+	try:
+	    a = bad_layer_mappers[name]
+	except:
+	    print "Layer Repo Already Analyzed!"
+	    pass
+	else:
+        #if name in keys:
+            print "Find A Non Analyzed Layer Repo %s: %s" % (repo['name'], name)
+	    if len(bad_layer_mappers[name]):
+            	layer_mapper[repo['name']] = bad_layer_mappers[name]
+            	layer_mappers.append(layer_mapper)
+        #else:
+        #    print "Layer Repo Already Analyzed!"
     print layer_mappers[0]
+    print len(layer_mappers)
     return layer_mappers
 
 
@@ -256,21 +268,21 @@ def main():
         if not os.path.isfile(options.finished_layer_file):
             print '%s is not a valid file' % options.finished_layer_file
             return
-        finished_layers = load_finished_file(options.finished_layer_file)
+        _finished_layers = load_finished_file(options.finished_layer_file)
 
     if options.finished_repo_file:
         print 'finished repo file: ', options.finished_repo_file
         if not os.path.isfile(options.finished_repo_file):
             print '%s is not a valid file' % options.finished_repo_file
             return
-        finished_repos = load_finished_file(options.finished_repo_file)
+        _finished_repos = load_finished_file(options.finished_repo_file)
 
     create_dirs(options.dirname, options.filename)
 
     repos = load_repos(options.filename)
     start = time.time()
 
-    logging.info('=============> run_getmetricsdata <===========')
+    #logging.info('=============> run_getmetricsdata <===========')
 
     bad_layer_mappers = load_bad_layers_mappers()
 
@@ -280,9 +292,10 @@ def main():
     P2 = multiprocessing.Pool(60)
     print "before map"
 
-    func = partial(download, finished_layers, finished_repos)
+    func = partial(download, finished_layers=_finished_layers, finished_repos= _finished_repos)
 
     layer_mappers_slices = [layer_mappers[i:i + 24] for i in range(0, len(layer_mappers), 24)]
+    print len(layer_mappers_slices)
     layer_states = P2.map(func, layer_mappers_slices)
 
     print "after map"
@@ -296,12 +309,12 @@ def main():
                 bad_layers = layer_status['bad_layers']
                 downloaded_layers = layer_status['downloaded_layers']
 
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'bad_repo_list.out'), 'a+') as f_bad_repo_list:
+    with open(os.path.join(dest_dirname, 'job_list_dir/bad_repo_list.out'), 'a+') as f_bad_repo_list:
         for bad_layer_digest in bad_layers:
             f_bad_repo_list.write(bad_layer_digest+'\n')
-    with open(options.finished_layer_file, 'a+'):
+    with open(options.finished_layer_file, 'a+') as f_out:
         for layer_digest in downloaded_layers:
-            f_bad_repo_list.write(layer_digest+'\n')
+            f_out.write(layer_digest+'\n')
 
     """close files"""
     elapsed = time.time() - start
