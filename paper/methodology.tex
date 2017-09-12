@@ -27,15 +27,19 @@ We might want to have less deep structure also:
 3.2 Downloader
 3.3 Analyzer
 }
+%
+\nancomment{addressed}
 
 
 
 
-\subsection{Image Downloader}
+\subsection{Downloader}
 
 Instead of using Docker (or Docker Engine) to download images, we wrote our own downloader python script that utilizes Docker Registry API~\cite{} to simultaneously download~\textbf{original} manifests and layers.
 %
 \vcomment{Should we mention and cite the library that we used here?}
+%
+\nancomment{addressed (cited in the following para)}
 %
 There are two reasons.
 %
@@ -227,7 +231,7 @@ To analyze the layer content, analyzer first decompress and extract each layer t
 %
 Then, analyzer recursively goes through each subdirectory and obtains the metadata information for each subdirectory and each file as shown in figure~\ref{xxx}.
 %
-\vcamment{I'm not sure what figure we want here. I think a table might suffice.}
+\vcomment{I'm not sure what figure we want here. I think a table might suffice.}
 
 \nancomment{3. TODO: 
 	add a fig: discribe all layer metadata, config metadata, and manifest metadata structure} 
