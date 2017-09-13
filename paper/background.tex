@@ -7,23 +7,25 @@
 %2. redunce some trival details
 %}\\
 
-Hypervisors based server virtualization technologies (e.g., VMware~\cite{xxx}, Xen~\cite{xxx}, and KVM~\cite{xxx}) have been extensively used by most of cloud platforms such as Amazon EC2, which consists of a virtual machine monitor (VMM) on top of a host operating system that allows dynamically partitioning of a machine and sharing the available physical resources such as CPU, storage, memory and I/O devices to support the concurrent execution of multiple guest operating systems instances within virtual machines (VMs) and provide users with benefits ranging from application isolation through server consolidation to improve disaster recovery and faster server provisioning~\cite{xxx}.
+Hypervisors based server virtualization technologies (e.g., VMware~\cite{xxx}, Xen~\cite{xxx}, and KVM~\cite{xxx}) have been extensively used by most of cloud platforms such as Amazon EC2, which consists of a virtual machine monitor (VMM) on top of a host operating system. It supports the concurrent execution of multiple guest operating systems instances within virtual machines (VMs) and provide users with benefits ranging from application isolation through server consolidation to improve disaster recovery and faster server provisioning~\cite{xxx}. Nevertheless, hypervisor-based virtualization has a high performance overhead because of execution time overhead caused by executing privileged instructions, specially for applications which relies on I/O operations and memory overhead caused by space reservation for the VMs buffer and various virtualization data structures.
+%that allows dynamically partitioning of a machine and sharing the available physical resources such as CPU, storage, memory and I/O devices. 
 % 
 \vcomment{The sentence above is 12 (!) lines long (in pdf)! We need to break it (and other such sentences) in
 several sentences.  In a scientific paper, an optimal sentence is of about 3 lines long and almost never longer than 6 lines (I'm talking about 2-column format, as used by FAST).}
+\nancomment{addressed}
 %
 \vcomment{The paragraph above might be too detailed or out-of-scope of the paper. Let's see how it reads later.}
+\nancomment{addressed}
 
 
 
-
-Nevertheless, hypervisor-based virtualization has a high performance overhead because of execution time overhead caused by executing privileged instructions and memory overhead caused by running multiple VMs.
 %
-Guest OSs are normally executed at a reduced privilege level~\cite{}.
 %
-Hypervisor intercepts traps from guest OSs and emulates the trapping instructions, which incurs execution time overheads, specially for applications which relies on I/O operations since I/O interrupt overhead is amplified for nested virtual machine.
+%Guest OSs are normally executed at a reduced privilege level~\cite{}.
 %
-Memory overhead includes space reserved for the VMs buffer and various virtualization data structures, such as shadow page tables~\cite{}, which increases with the number of virtual CPUs and the configured memory for the guest OSs~\cite{}. 
+%Hypervisor intercepts traps from guest OSs and emulates the trapping instructions, which incurs execution time overheads, specially for applications which relies on I/O operations since I/O interrupt overhead is amplified for nested virtual machine.
+%
+%Memory overhead includes space reserved for the VMs buffer and various virtualization data structures, such as shadow page tables~\cite{}, which increases with the number of virtual CPUs and the configured memory for the guest OSs~\cite{}. 
 %
 \vcomment{First, I think we do not need to explain so much details of CPU overhead.
 %
@@ -34,6 +36,7 @@ I think for this paper it is sufficient to list overheads: memory, I/O, CPU and 
 Second, for memory overhead, we need to mention that hyperviser-based virtualization keeps complete copy of every guest OS in memory (compared to containers).
 %
 Third, somewhere we need to state that VM start time is long (give estimates) (comared to containers).}
+\nancomment{addressed}
 
 
 
@@ -43,21 +46,20 @@ Recent container-based virtualization (such as Linux Containers(LXC)~\cite{xxx},
 %
 As opposed to virtual machines (VMs), container based virtualization works at operating system level and do not emulate another operating system.
 %
-In this case, all the virtual instances share a single operating system kernel, which significantly reduces theoverhead imposed through VMs.
+In this case, all the virtual instances share a single operating system kernel, which significantly reduces the overhead imposed through VMs.
 %
-Linux containers offer isolation (of PIDs, IPCs, mount pints, and network) through (PID and network) \textit{namespaces} while manages resource and controls processes via \textit{cgroups}~\cite{}.
+Linux containers offer isolation through~\textit{namespaces} while manages resource and controls processes via \textit{cgroups}~\cite{}.
 % 
 Docker container is a new popular container-based virtualization technology that extends LXC with higher level APIs and additional functionality.
 %
 \vcomment{Here, we briefly need to state what are added Docker functionalities and benefits,
 rather than going into details about CoW. Basically, we need to say that Docker combines
 sofware packaging with containerization which allows bla-bla-bla.}
+\nancomment{I think these are two basic techniques for docker}
 %
 Docker incorporates copy-on-write union filesystems (UnionFS) to avoid duplication and enable versioning.
 %
 It couples the above two components with a number of features, like portability, re-use, and reproducibility.
-
-
 
 
 %Docker is an open source project that automates the deployment of applications inside Linux Containers, and provides the capability to package an application with its runtime dependencies into a container. It provides a Docker CLI command line tool for the lifecycle management of image-based containers. Linux containers enable rapid application deployment, simpler testing, maintenance, and troubleshooting while improving security. 
@@ -80,24 +82,6 @@ It couples the above two components with a number of features, like portability,
  
  %Docker provides tools to make creating and working with containers as easy as possible. Containers sandbox processes from each other. For now, you can think of a container as a lightweight equivalent of a virtual machine.
 
-
-
-
- 
-\subsection{Docker}
-\vcomment{Nannan, we need to move ALL subsections to separate *.tex files.}
-
-%Docker is an open platform for developers and system administrators to build, ship, and run distributed applications using Docker Engine, a portable, lightweight runtime and packaging tool, and Docker Hub, a cloud service for sharing applications and automating workflows. The main advantage is that,
-%Docker allows packaging an application with its dependencies into a standardized, self-contained unit (a so-called container), which can be used for software development and to run the application on any system.
-%Containers are an abstraction at the app layer that packages code and dependencies together. 
- 
-\nancomment{
-	1. TODO: add a docker architecture pic}\\
-
-
-
-
-
 %how container isolate.
 Docker containers create a wrapped, controlled environment on the host machine in which applications can be run in isolated manner via two main Linux kernel features -- kernel namespaces which are used to split the view that processes have of the system and control groups (cgroups) that restricts the resource usage of a process or group of processes.
 %
@@ -106,9 +90,18 @@ Currently, Linux kernel provides six different namespaces, PID, IPC, NET, MNT, U
 Controlled resources include CPU shares, RAM, network bandwidth, and disk I/O.
 %
 \vcomment{This paragraph seems to belong to the Section above (on containerization) rather than to Docker section}.
+\nancomment{addressed}
 
-
-
+ 
+\subsection{Docker}
+\vcomment{Nannan, we need to move ALL subsections to separate *.tex files.}
+\nancomment{will do it soon}
+%Docker is an open platform for developers and system administrators to build, ship, and run distributed applications using Docker Engine, a portable, lightweight runtime and packaging tool, and Docker Hub, a cloud service for sharing applications and automating workflows. The main advantage is that,
+%Docker allows packaging an application with its dependencies into a standardized, self-contained unit (a so-called container), which can be used for software development and to run the application on any system.
+%Containers are an abstraction at the app layer that packages code and dependencies together. 
+ 
+\nancomment{
+	1. TODO: add a docker architecture pic}\\
 
 
 %how container deameon. 
