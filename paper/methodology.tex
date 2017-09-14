@@ -29,6 +29,14 @@ We might want to have less deep structure also:
 }
 %
 \nancomment{addressed}
+
+\nancomment{
+	open google drive:
+	https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
+	fig is in figures/fig-downloader-analyzer.pdf}\\
+
+
+%how container deameon.
 %
 \subsection{Crawler}
 %
@@ -127,7 +135,7 @@ To download the original manifests and layers from Docker Hub, downloader embeds
 \vcomment{definitely need to merge this subsection with Downloader subsection. See my comment for the whole section.}
 \nancomment{addressed}
 %
-As shown in Figure~\ref{xxx}, downloader first obtains a list of public images through crawling Docker Hub.
+As shown in Figure~\ref{fig-downloader-analyzer}, downloader first obtains a list of public images through crawling Docker Hub.
 %
 Then, it starts downloading process.
 %
@@ -232,7 +240,7 @@ As discussed in Section~\ref{xxx}, the layers we downloaded are gzip compressed 
 %
 To analyze the layer content, analyzer first decompress and extract each layer tarball to a layer directory.
 %
-Then, analyzer recursively goes through each subdirectory and obtains the metadata information for each subdirectory and each file as shown in figure~\ref{xxx}. Each layer profile contains layer metadata information, such as layer size and file count; and directory metadata information for each subdirectory, such as directory depth and directory size; and file metadata information for each file, such as file size and file type.
+Then, analyzer recursively goes through each subdirectory and obtains the metadata information for each subdirectory and each file as shown in figure~\ref{fig-downloader-analyzer}. Each layer profile contains layer metadata information, such as layer size and file count; and directory metadata information for each subdirectory, such as directory depth and directory size; and file metadata information for each file, such as file size and file type.
 %
 \vcomment{I'm not sure what figure we want here. I think a table might suffice.}
 \nancomment{addressed}
@@ -251,7 +259,7 @@ Then, analyzer recursively goes through each subdirectory and obtains the metada
 
 \subsubsection{Image Profile}
 
-As shown in figure~\ref{xxx}, Analyzer parses the manifest and obtains the configuration information such as os, architecture etc..
+As shown in figure~\ref{fig-downloader-analyzer}, Analyzer parses the manifest and obtains the configuration information such as os, architecture etc..
 %
 Note that manifest Schema version 2 stores configuration information in a config file as discussed in Section~\ref{xxx}.
 %
