@@ -47,7 +47,7 @@ def run_plotmetrics_image_data():
         print "cannot print file_cnt:", sys.exc_info()
         traceback.print_exc(file=sys.stdout)
     try:
-        plot_repeates('repeate_layer_digests')
+        plot_graph('repeate_layer_digests')
     except:
         print "cannot print repeate_layer_digests:", sys.exc_info()
         traceback.print_exc(file=sys.stdout)
@@ -59,42 +59,42 @@ def plot_graph(type):
 
     if type == 'uncompressed_sum_of_files':
         data1 = uncompressed_sum_of_files
-        xlabel = 'Uncompressed layer size (MB) as sum of files'
+        xlabel = 'Uncompressed image size (MB) as sum of files'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
 	#print mean(data)
-        xlim = int(mean(data))
+        xlim = 600#int(mean(data))
         #print mean(data)
         #print xlim
     elif type == 'compressed_size_with_method_gzip':
         data1 = compressed_size_with_method_gzip
-        xlabel = 'Compressed layer tarball size (MB)'
+        xlabel = 'Compressed image size (MB)'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
-        xlim = max(data)
+        xlim = 50#max(data)
     elif type == 'archival_size':
         data1 = archival_size
-        xlabel = 'Uncompressed layer tarball size (MB)'
+        xlabel = 'Uncompressed image size (MB)'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
         xlim = 250
 
     elif type == 'sum_to_gzip_ratio':
         data = sum_to_gzip_ratio
-        xlabel = 'Compression ratio: Uncompressed layer size as sum of files / compressed_size_with_method_gzip'
-        xlim = max(data)
+        xlabel = 'Compression ratio: Uncompressed image size as sum of files / compressed_size_with_method_gzip'
+        xlim = 10#max(data)
     elif type == 'archival_to_gzip_ratio':
         data = archival_to_gzip_ratio
-        xlabel = 'Compression ratio: Uncompressed layer tarball size / compressed_size_with_method_gzip'
-        xlim = max(data)
+        xlabel = 'Compression ratio: Uncompressed image size / compressed_size_with_method_gzip'
+        xlim = 10#max(data)
 
     elif type == 'file_cnt':
         data = file_cnt
         xlabel = 'File count for each image'
-        xlim = 300
+        xlim = 500
 
         """herer we add a cdf for repeat layer cnt"""
     elif type == 'repeate_layer_digests':
         data = repeate_layer_digests_list
         xlabel = 'Repeat layer count across all images'
-        xlim = max(data)
+        xlim = 10#max(data)
 
     print "xlim = %f, len = %d"%(xlim, len(data))
     plot_cdf(fig, data, xlabel, xlim, 0)
@@ -141,4 +141,4 @@ def load_image_metrics_data_file():
             repeate_layer_digests[key] = val
             repeate_layer_digests_list.append(val)
 
-    print repeate_layer_digests_list[0]
+    print repeate_layer_digests_list

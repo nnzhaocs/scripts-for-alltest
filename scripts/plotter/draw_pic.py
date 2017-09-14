@@ -65,7 +65,9 @@ def plot_cdf_normal(fig, data1, xlabel, xlim, ticks):
 
 """plot two lines: pdf and cdf"""
 def plot_cdf(fig, data1, xlabel, xlim, ticks):
-    data = np.array(data1)
+    data0 = np.array(data1)    
+    data = data0[data0 != np.array(None)]
+    #data = np.array(data)
     print("plot: min = %d" % data.min())
     print("plot: max = %d" % data.max())
     print("plot: median = %d" % np.median(data))
@@ -104,7 +106,7 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
     plt.legend(cd+nd, [l.get_label() for l in (cd+nd)], loc='center right', prop={'size':14})
 
     plt.grid()
-    name = 'distribution%s.png' % xlabel.replace(" ", "_")
+    name = 'distribution%s.png' % xlabel.replace(" ", "_").replace("/","divided_by").replace(":","")
     fig.savefig(name)
 
 
