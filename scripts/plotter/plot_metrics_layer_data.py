@@ -18,42 +18,50 @@ dir_cnt = []
 
 
 def run_plotmetrics_layer_data():
-    load_image_metrics_data_file()
+    load_layer_metrics_data_file()
     try:
         plot_graph('uncompressed_sum_of_files')
     except:
-        print "Cannot plot uncompressed_sum_of_files"
+        print "Cannot plot uncompressed_sum_of_files", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('compressed_size_with_method_gzip')
     except:
-        print "cannot plot compressed_size_with_method_gzip"
+        print "cannot plot compressed_size_with_method_gzip", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('archival_size')
     except:
-        print "cannot print archival_size"
+        print "cannot print archival_size", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
     try:
         plot_graph('sum_to_gzip_ratio')
     except:
-        print "cannot print sum_to_gzip_ratio"
+        print "cannot print sum_to_gzip_ratio", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('archival_to_gzip_ratio')
     except:
-        print "cannot print archival_to_gzip_ratio"
+        print "cannot print archival_to_gzip_ratio", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
     try:
         plot_graph('file_cnt')
     except:
-        print "cannot print file_cnt"
+        print "cannot print file_cnt", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('dir_cnt')
     except:
-        print "cannot print dir_cnt"
+        print "cannot print dir_cnt", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
     try:
         plot_graph('dir_max_depth')
     except:
-        print "cannot print dir_max_depth"
+        print "cannot print dir_max_depth", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
 
 def plot_graph(type):
@@ -102,8 +110,20 @@ def plot_graph(type):
     print "xlim = %f, len = %d"%(xlim, len(data))
     plot_cdf(fig, data, xlabel, xlim, 0)
 
+""""        archival_size": 58003968,
+            "archival_to_gzip_ratio": 3.194986725738297,
+            "compressed_size_with_method_gzip": 18154682,
+            "dir_avg_depth": 4.337016574585635,
+            "dir_cnt": 543,
+            "dir_max_depth": 9,
+            "dir_median_depth": 4,
+            "dir_min_depth": 1,
+            "file_cnt": 4271,
+            "sum_to_gzip_ratio": 3.0582276241467627,
+            "uncompressed_sum_of_files": 55521150
+"""
 
-def load_image_metrics_data_file():
+def load_layer_metrics_data_file():
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas.json'), 'r') as f_layer_metrics_datas:
         _json_datas = json.load(f_layer_metrics_datas)
@@ -121,7 +141,7 @@ def load_image_metrics_data_file():
             archival_to_gzip_ratio.append(json_data['archival_to_gzip_ratio'])
             file_cnt.append(json_data['file_cnt'])
 
-            # dir_max_depth = []
+            dir_max_depth.append(json_data['dir_max_depth'])
             # dir_min_depth = []
             # dir_median_depth = []
             # dir_avg_depth = []
