@@ -1,9 +1,9 @@
 
-import os,json
+import os, json, multiprocessing#,logging
 
 
 manifest_names = []
-
+dest_dirname = "/home/nannan/2tb_hdd/job_list_dir/"
 manifest_map_dir = {}
 manifest_map_dir_filename = "manifest_map_dir.json"
 
@@ -151,7 +151,7 @@ def process_manifest(manifest_filename):
 
 
 def load_all_map_dir(manifest_map_dir):
-    with open(os.path.join(dest_dir[0]['job_list_dir'], manifest_map_dir_filename)) as f:
+    with open(os.path.join(dest_dirname, manifest_map_dir_filename)) as f:
         _manifest_map_dir = json.load(f)
     for key, val in _manifest_map_dir.items():
         manifest_map_dir[key] = val
@@ -182,9 +182,9 @@ def load_all_map_dir(manifest_map_dir):
     #         return repos
 
     #manifest_names = list(manifest_map_dir.keys())
-    # for i in manifest_map_dir.keys():
-    #     manifest_names.append(i)
-    # print "manifest_names: %s"%manifest_names
+    for i in manifest_map_dir.keys():
+        manifest_names.append(i)
+    print "manifest_names: %s"%manifest_names
     # with open(os.path.join(dest_dir[0]['job_list_dir'],layer_json_map_dir_filename)) as f:
     #     _layer_json_map_dir = json.load(f)
     # for key, val in _layer_json_map_dir.items():
@@ -208,16 +208,16 @@ def write_json_datas(json_datas):
 
     """write image mapper"""
     if image_mappers:
-        with open(os.path.join(dest_dir[0]['job_list_dir'],'imagename_mapper_digests.json'), 'w') as f:
+        with open(os.path.join(dest_dirname,'imagename_mapper_digests.json'), 'w') as f:
             json.dump(image_mappers, f)
     if bad_manifest:
-        with open(os.path.join(dest_dir[0]['job_list_dir'],'bad_image_manifest.json'), 'w') as f:
+        with open(os.path.join(dest_dirname,'bad_image_manifest.json'), 'w') as f:
             json.dump(bad_manifest, f)
 
 
 def create_image_mapper():
     """create image mapper as a json file"""
-    logging.info('=============> create_image_mapper: create image mapper {repo_name: digest list} <===========')
+    print('=============> create_image_mapper: create image mapper {repo_name: digest list} <===========')
     load_all_map_dir(manifest_map_dir)
     print "create pool"
     P = multiprocessing.Pool(60)
