@@ -20,7 +20,7 @@ import zipfile, tarfile
 import magic
 
 """other libraries"""
-# from functools import reduce
+from functools import partial
 # json, hashlib, argparse, logging, shutil, sys, time, optparse
 # import itertools
 # import random, string

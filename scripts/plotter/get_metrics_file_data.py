@@ -74,7 +74,7 @@ def load_file_metrics_data(_layer_mappers):
 
                 del json_data
 
-    logging.debug("layer_metrics_data[size]: %s", file_metrics_data['stat_size'])
+    #logging.debug("layer_metrics_data[size]: %s", file_metrics_data['stat_size'])
     return file_metrics_data
 
 
@@ -116,7 +116,7 @@ def load_layers_mappers():
     layer_mappers = []
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_mappers.json'), 'r') as f:
-        _layer_mapper = json.laod(f)
+        _layer_mapper = json.load(f)
 
     for key, val in _layer_mapper.items():
         tmp_mapper = {}

@@ -63,7 +63,7 @@ def load_file_metrics_data(type, _layer_mappers):
 
     for layer_mapper in _layer_mappers:
         for key, val in layer_mapper.items(): # only one entry
-            logging.debug("key: %s, val: %s!", key, val)
+            #logging.debug("key: %s, val: %s!", key, val)
             layer_json_absfilename = val
 
             if not os.path.isfile(layer_json_absfilename):
@@ -88,7 +88,7 @@ def load_file_metrics_data(type, _layer_mappers):
 
                 del json_data
 
-    logging.debug("layer_metrics_data: %s", file_metrics_data)
+    logging.debug("layer_metrics_data: number %s", len(file_metrics_data))
     return file_metrics_data
 
 
@@ -105,7 +105,7 @@ def load_layers_mappers():
     layer_mappers = []
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_mappers.json'), 'r') as f:
-        _layer_mapper = json.laod(f)
+        _layer_mapper = json.load(f)
 
     for key, val in _layer_mapper.items():
         tmp_mapper = {}

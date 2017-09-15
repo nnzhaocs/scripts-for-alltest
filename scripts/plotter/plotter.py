@@ -5,7 +5,7 @@
 # from draw_pic import *
 from get_metrics_image_data import *
 from get_metrics_layer_data import *
-from get_metrics_file_data import *
+from get_metrics_file_data_each import *
 from generate_job_list import *
 from plot_metrics_image_data import *
 from plot_metrics_layer_data import *
