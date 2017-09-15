@@ -33,16 +33,16 @@ def run_getmetrics_file_data():
 
         func = partial(load_file_metrics_data, type)
 
-        file_metrics_datas = P2.map(func, layer_mappers_slices)
+        P2.map(func, layer_mappers_slices)
 
         print "after map"
 
-        with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas_%s.json'%type), 'w+') as f_layer_metrics_datas:
-            json.dump(file_metrics_datas, f_layer_metrics_datas)
-
-        calaculate_file_metrics(file_metrics_datas, type)
-
-        del file_metrics_datas
+        # with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas_%s.json'%type), 'w+') as f_layer_metrics_datas:
+        #     json.dump(file_metrics_datas, f_layer_metrics_datas)
+        #
+        # calaculate_file_metrics(file_metrics_datas, type)
+        #
+        # del file_metrics_datas
 
 
 # def load_file_metrics_data_files():
@@ -54,7 +54,7 @@ def run_getmetrics_file_data():
 #         calaculate_file_metrics(file_metrics_datas, type)
 
 def load_file_metrics_data(type, _layer_mappers):
-
+    processname = multiprocessing.current_process().name
     """file stat_type file type file size"""
     base_types = ['type', 'sha256']
     stat_types = ['stat_type', 'stat_size']
@@ -89,7 +89,15 @@ def load_file_metrics_data(type, _layer_mappers):
                 del json_data
 
     logging.debug("layer_metrics_data: number %s", len(file_metrics_data))
-    return file_metrics_data
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas_%s-%s.json'
+            % (type,processname)), 'a+') as f_layer_metrics_datas:
+        for data in file_metrics_data:
+            f_layer_metrics_datas.write(data + '\n')
+
+    # with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas_%s.json' % type),
+    #           'w+') as f_layer_metrics_datas:
+        # json.dump(file_metrics_datas, f_layer_metrics_datas)
+    # return file_metrics_data
 
 
 def calaculate_file_metrics(file_metrics_datas, type):

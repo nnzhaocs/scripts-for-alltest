@@ -53,6 +53,8 @@ def load_image_metrics_data(image_mapper):
     archival_size = 0
     file_cnt = 0
 
+    image_name = None
+
     for key, val in image_mapper['layers'].items():
         for key1, val1 in val.items(): # only one entry
             layer_json_absfilename = val1 #json_absfilename
@@ -96,6 +98,7 @@ def load_image_metrics_data(image_mapper):
     image_metrics_data['file_cnt'] = file_cnt
 
     image_metrics_data['version'] = image_mapper['version']
+    image_metrics_data['image_name'] = image_mapper['manifest']
 
     logging.debug("image_metrics_data: %s", image_metrics_data)
     return image_metrics_data

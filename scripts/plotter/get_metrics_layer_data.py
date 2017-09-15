@@ -72,6 +72,8 @@ def load_layer_metrics_data(_layer_mappers):
 
     _layer_metrics_data = []
 
+    digest = None
+
     for layer_mapper in _layer_mappers:
         layer_metrics_data = {}
         for key, val in layer_mapper.items(): # only one entry
@@ -103,6 +105,7 @@ def load_layer_metrics_data(_layer_mappers):
 
                 file_cnt = json_data['file_cnt']
                 dir_cnt = len(json_data['dirs'])
+                digest = layer_json_absfilename
 
                 del json_data
 
@@ -124,6 +127,8 @@ def load_layer_metrics_data(_layer_mappers):
 
         layer_metrics_data['file_cnt'] = file_cnt
         layer_metrics_data['dir_cnt'] = dir_cnt
+
+        layer_metrics_data['digest'] = digest
 
         logging.debug("layer_metrics_data: %s", layer_metrics_data)
 
