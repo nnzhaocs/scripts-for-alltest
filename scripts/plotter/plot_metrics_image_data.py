@@ -8,6 +8,7 @@ archival_size = []
 sum_to_gzip_ratio = []
 archival_to_gzip_ratio = []
 file_cnt = []
+layer_cnt = []
 repeate_layer_digests = {}
 repeate_layer_digests_list = []
 
@@ -50,6 +51,12 @@ def run_plotmetrics_image_data():
         plot_graph('repeate_layer_digests')
     except:
         print "cannot print repeate_layer_digests:", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
+
+    try:
+        plot_graph('layer_cnt')
+    except:
+        print "cannot print layer_cnt:", sys.exc_info()
         traceback.print_exc(file=sys.stdout)
 
 
@@ -96,6 +103,11 @@ def plot_graph(type):
         xlabel = 'Repeat layer count across all images'
         xlim = 10#max(data)
 
+    elif type == 'layer_cnt':
+        data = layer_cnt
+        xlabel = 'Layer count per images'
+        xlim = max(data)#max(data)
+
     print "xlim = %f, len = %d"%(xlim, len(data))
     plot_cdf(fig, data, xlabel, xlim, 0)
 
@@ -134,6 +146,7 @@ def load_image_metrics_data_file():
             sum_to_gzip_ratio.append(json_data['sum_to_gzip_ratio'])
             archival_to_gzip_ratio.append(json_data['archival_to_gzip_ratio'])
             file_cnt.append(json_data['file_cnt'])
+            layer_cnt.append(json_data['layer_cnt'])
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_layer_digests_dict.json'), 'r') as f_repeate_layer_digests_dict:
         json_datas = json.load(f_repeate_layer_digests_dict)
