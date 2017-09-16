@@ -46,18 +46,21 @@ def run_getmetrics_layer_data():
     print "before map"
 
     layer_mappers_slices = [layer_mappers[i:i + 24] for i in range(0, len(layer_mappers), 24)]
-    layer_metrics_datas = P2.map(load_layer_metrics_data, layer_mappers_slices)
+    P2.map(load_layer_metrics_data, layer_mappers_slices)
 
     print "after map"
 
     #for layer_mapper in layer_mappers:
     #    load_layer_metrics_data(layer_mapper)
 
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas.json'), 'w+') as f_layer_metrics_datas:
-        json.dump(layer_metrics_datas, f_layer_metrics_datas)
+    # with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas.json'), 'w+') as f_layer_metrics_datas:
+    #     json.dump(layer_metrics_datas, f_layer_metrics_datas)
 
 
 def load_layer_metrics_data(_layer_mappers):
+
+    processname = multiprocessing.current_process().name
+
     uncompressed_sum_of_files = 0
     compressed_size_with_method_gzip = 0
     archival_size = 0
@@ -70,9 +73,14 @@ def load_layer_metrics_data(_layer_mappers):
 
     dir_cnt = 0
 
-    _layer_metrics_data = []
+    # _layer_metrics_data = []
+
+    base_types = ['type', 'sha256']
+    stat_types = ['stat_type', 'stat_size']
 
     digest = None
+
+    file_metrics_data = {}
 
     for layer_mapper in _layer_mappers:
         layer_metrics_data = {}
@@ -104,8 +112,25 @@ def load_layer_metrics_data(_layer_mappers):
                 dir_avg_depth = json_data['layer_depth']['dir_avg_depth']
 
                 file_cnt = json_data['file_cnt']
-                dir_cnt = len(json_data['dirs'])
+                dir_cnt = len([x for x in json_data['dirs'] if x['subdir']])
                 digest = layer_json_absfilename
+
+                for subdir in json_data['dirs']:
+                    for sub_file in subdir['files']:
+                        file_metrics_data['type'] = sub_file['type']
+                        file_metrics_data['sha256'] = sub_file['sha256']
+
+                        file_metrics_data['stat_type'] = sub_file['file_info']['stat_type'] #['sha256']
+                        file_metrics_data['stat_size'] = sub_file['file_info']['stat_size']
+
+                        with open('layer_metrics_datas_%s.json' % processname, 'a+') as f_file_metrics_datas:
+                            json.dump(file_metrics_data, f_file_metrics_datas)
+                            f_layer_metrics_datas.write(os.linesep)
+
+                        # if type in base_types:
+                        #     file_metrics_data.append(sub_file[type])
+                        # elif type in stat_types:
+                        #     file_metrics_data.append(sub_file['file_info'][type])
 
                 del json_data
 
@@ -132,8 +157,21 @@ def load_layer_metrics_data(_layer_mappers):
 
         logging.debug("layer_metrics_data: %s", layer_metrics_data)
 
-        _layer_metrics_data.append(layer_metrics_data)
-    return _layer_metrics_data
+        # logging.debug("layer_metrics_data: number %s", len(file_metrics_data))
+        # with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas-%s.json' % processname),
+        #           'a+') as f_layer_metrics_datas:
+        #     for data in file_metrics_data:
+        #         f_layer_metrics_datas.write(data + '\n')
+        with open('layer_metrics_datas_%s.json' % processname, 'a+') as f_layer_metrics_datas:
+            json.dump(layer_metrics_data, f_layer_metrics_datas)
+            f_layer_metrics_datas.write(os.linesep)
+
+
+            # for data in file_metrics_data:
+            #     if data:
+            #         f_layer_metrics_datas.write(str(data) + '\n')
+        # _layer_metrics_data.append(layer_metrics_data)
+    # return _layer_metrics_data
 
 
 def load_layers_mappers():
