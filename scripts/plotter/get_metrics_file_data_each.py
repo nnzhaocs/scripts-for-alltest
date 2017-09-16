@@ -34,6 +34,8 @@ def run_getmetrics_file_data():
         func = partial(load_file_metrics_data, type)
 
         P2.map(func, layer_mappers_slices)
+	#for layer_mappers_slice in layer_mappers_slices:
+	#    func(layer_mappers_slice)
 
         print "after map"
 
@@ -75,10 +77,11 @@ def load_file_metrics_data(type, _layer_mappers):
 
                 del json_data
 
-    logging.debug("layer_metrics_data: number %s", len(file_metrics_data))
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas_%s-%s.json'%(type, processname)), 'a+') as f_layer_metrics_datas:
+    logging.debug("file_metrics_data: number %s", len(file_metrics_data))
+    with open('file_metrics_datas_%s-%s.json'%(type, processname), 'a+') as f_layer_metrics_datas:
         for data in file_metrics_data:
-            f_layer_metrics_datas.write(data + '\n')
+	    if data:
+            	f_layer_metrics_datas.write(str(data) + '\n')
 
     # with open(os.path.join(dest_dir[0]['job_list_dir'], 'layer_metrics_datas_%s.json' % type),
     #           'w+') as f_layer_metrics_datas:
