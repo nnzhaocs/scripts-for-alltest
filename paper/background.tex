@@ -1,11 +1,10 @@
 
 \section{Background}
 
-%\nancomment{
-%TODO:\\
-%1. add more detail info about driver? maybe:\\
-%2. redunce some trival details
-%}\\
+\nancomment{
+	figures are stored in google drive, the link is pinned in slacker;
+	%https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
+	figures/fig-docker-architecture.pdf}\\
 
 Hypervisors based server virtualization technologies (e.g., VMware~\cite{xxx}, Xen~\cite{xxx}, and KVM~\cite{xxx}) have been extensively used by most of cloud platforms such as Amazon EC2, which consists of a virtual machine monitor (VMM) on top of a host operating system. It supports the concurrent execution of multiple guest operating systems instances within virtual machines (VMs) and provide users with benefits ranging from application isolation through server consolidation to improve disaster recovery and faster server provisioning~\cite{xxx}. Nevertheless, hypervisor-based virtualization has a high performance overhead because of execution time overhead caused by executing privileged instructions, specially for applications which relies on I/O operations and memory overhead caused by space reservation for the VMs buffer and various virtualization data structures.
 %that allows dynamically partitioning of a machine and sharing the available physical resources such as CPU, storage, memory and I/O devices.
@@ -99,12 +98,6 @@ Controlled resources include CPU shares, RAM, network bandwidth, and disk I/O.
 %Docker is an open platform for developers and system administrators to build, ship, and run distributed applications using Docker Engine, a portable, lightweight runtime and packaging tool, and Docker Hub, a cloud service for sharing applications and automating workflows. The main advantage is that,
 %Docker allows packaging an application with its dependencies into a standardized, self-contained unit (a so-called container), which can be used for software development and to run the application on any system.
 %Containers are an abstraction at the app layer that packages code and dependencies together.
-
-\nancomment{
-	open google drive:
-	https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
-	fig is in figures/fig-docker-architecture.pdf}\\
-
 
 %how container deameon.
 As Figure~\ref{fig-docker-architecture} shows, Docker ecosystem includes various components, i.e., Docker daemon, Docker container, Docker image, and Docker Hub.

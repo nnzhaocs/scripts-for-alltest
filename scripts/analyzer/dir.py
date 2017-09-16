@@ -71,6 +71,31 @@ def clear_dir(layer_dir):
     return True
 
 
+def remove_file(layer_file):
+    """ delete the dir """
+    # layer_dir = os.path.join(extracting_dir, layer_id)
+    if not os.path.isdir(layer_dir):
+        logging.error('###################%s is not valid###################', layer_dir)
+        return False
+
+    start = time.time()
+    cmd4 = 'rm -rf %s' % (layer_dir+'*')
+    logging.debug('The shell command: %s', cmd4)
+    try:
+        subprocess.check_output(cmd4, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
+    except subprocess.CalledProcessError as e:
+        logging.error('###################%s: exit code: %s; %s###################',
+                      dir, e.returncode, e.output)
+        return False
+
+    elapsed = time.time() - start
+    logging.info('clear dirs, consumed time ==> %f s', elapsed)
+    return True
+
+
+def choose_extracting_dir():
+
+
 def extract_tarball(layer_dir_filename, layer_dir):
     start = time.time()
     cmd = 'tar -pxf %s -C %s' % (layer_dir_filename, layer_dir)
@@ -84,7 +109,7 @@ def extract_tarball(layer_dir_filename, layer_dir):
         else:
             logging.debug('###################%s: exit code: %s; %s###################',
                           layer_dir_filename, e.returncode, e.output)
-            return False
+            #return False
 
     elapsed = time.time() - start
     logging.info('tar extract tarball, consumed time ==> %f s', elapsed)
