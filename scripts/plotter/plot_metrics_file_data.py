@@ -8,37 +8,28 @@ stat_size = []
 
 
 def run_plotmetrics_image_data():
-    load_image_metrics_data_file()
+    load_file_metrics_data_file()
     try:
         plot_graph('type')
     except:
-        print "Cannot plot type"
+        print "Cannot plot type", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('sha256')
     except:
-        print "cannot plot sha256"
+        print "cannot plot sha256", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('stat_type')
     except:
-        print "cannot print stat_type"
+        print "cannot print stat_type", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
     try:
         plot_graph('stat_size')
     except:
-        print "cannot print stat_size"
-    # try:
-    #     plot_graph('archival_to_gzip_ratio')
-    # except:
-    #     print "cannot print archival_to_gzip_ratio"
-    #
-    # try:
-    #     plot_graph('file_cnt')
-    # except:
-    #     print "cannot print file_cnt"
-    # try:
-    #     plot_graph('repeate_layer_digests')
-    # except:
-    #     print "cannot print repeate_layer_digests"
+        print "cannot print stat_size", sys.exc_info()
+        traceback.print_exc(file=sys.stdout)
 
 
 def plot_graph(type):
@@ -46,35 +37,11 @@ def plot_graph(type):
     print "===========> plot %s <=========="%type
     fig = fig_size('min')  # 'large'
 
-    # if type == 'type':
-    #     data = type
-    #     xlabel = 'File types'
-    #     # data = [x * 1.0 / 1024 / 1024 for x in data1]
-    #     xlim = int(mean(data))
-    # elif type == 'stat_type':
-    #     data = stat_type
-    #     xlabel = 'File stat type'
-    #     # data = [x * 1.0 / 1024 / 1024 for x in data1]
-    #     xlim = max(data)
     if type == 'stat_size':
         data1 = stat_size
         xlabel = 'File size (KB)'
         data = [x * 1.0 / 1024 for x in data1]
         xlim = 250
-
-    # elif type == 'sum_to_gzip_ratio':
-    #     data = sum_to_gzip_ratio
-    #     xlabel = 'Compression ratio: Uncompressed layer size as sum of files / compressed_size_with_method_gzip'
-    #     xlim = max(data)
-    # elif type == 'archival_to_gzip_ratio':
-    #     data = archival_to_gzip_ratio
-    #     xlabel = 'Compression ratio: Uncompressed layer tarball size / compressed_size_with_method_gzip'
-    #     xlim = max(data)
-    #
-    # elif type == 'file_cnt':
-    #     data = file_cnt
-    #     xlabel = 'File count for each image'
-    #     xlim = 300
 
     elif type == 'sha256':
         data = sha256
@@ -85,56 +52,34 @@ def plot_graph(type):
     plot_cdf(fig, data, xlabel, xlim, 0)
 
 
-def plot_repeates(type1):
-    print "===========> plot %s <=========="%type
-    fig = fig_size('min')  # 'large'
-    if type1 == 'type':
-        data = type
-        xlabel = 'File types'
-        ylabel = 'File types across all images'
-        # data = [x * 1.0 / 1024 / 1024 for x in data1]
-        xlim = int(mean(data))
+def load_file_metrics_data_file():
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'image_metrics_datas_stat_size.json'), 'r') as f_file_metrics_data:
+        for line in f_file_metrics_data:
+            stat_size.append(line)
 
-        lists = sorted(data.items(), key=lambda x: (-x[1], x[0]))
+    type_dict = []
+    sha256_dict = []
+    stat_type_dict = []
 
-    elif type1 == 'stat_type':
-        data = stat_type
-        xlabel = 'File stat type'
-        ylabel = 'File stat types across all images'
-        # data = [x * 1.0 / 1024 / 1024 for x in data1]
-        xlim = max(data)
-    # if type == 'repeate_layer_digests':
-    #     data = repeate_layer_digests
-        ylabel = 'Repeate layer count across all images'
-        xlabel = 'Layer digest'
-
-        lists = sorted(data.items(), key=lambda x: (-x[1], x[0]))  # sorted by value, return a list of tuples
-
-        x, y = zip(*lists)
-
-        xlim = len(x)
-
-        ticks = 25
-
-        plot_bar_pic(fig, x, y, xlabel, ylabel, xlim, ticks)
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_type.json'), 'w') as f:
+        for key, val in f.items():
+            type_dict[key] = val
+            type.append(val)
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_sha256.json'), 'w') as f:
+        for key, val in f.items():
+            sha256_dict[key] = val
+            sha256.append(val)
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_stat_type.json'), 'w') as f:
+        for key, val in f.items():
+            stat_type_dict[key] = val
+            stat_type.append(val)
 
 
-def load_image_metrics_data_file():
+def main():
+    run_plotmetrics_image_data()
 
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'image_metrics_datas.json'), 'r') as f_image_metrics_data:
-        json_datas = json.load(f_image_metrics_data)
 
-        for json_data in json_datas:
-            uncompressed_sum_of_files.append(json_data['uncompressed_sum_of_files'])
-            compressed_size_with_method_gzip.append(json_data['compressed_size_with_method_gzip'])
-            archival_size.append(json_data['archival_size'])
-
-            sum_to_gzip_ratio.append(json_data['sum_to_gzip_ratio'])
-            archival_to_gzip_ratio.append(json_data['archival_to_gzip_ratio'])
-            file_cnt.append(json_data['file_cnt'])
-
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_layer_digests_dict.json'), 'r') as f_repeate_layer_digests_dict:
-        json_datas = json.load(f_repeate_layer_digests_dict)
-        for key, val in json_datas.items():
-            repeate_layer_digests.append(val)
-
+if __name__ == '__main__':
+    print 'start!'
+    main()
+    print 'finished!'
