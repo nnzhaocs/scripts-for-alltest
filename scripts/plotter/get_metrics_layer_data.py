@@ -123,7 +123,7 @@ def load_layer_metrics_data(_layer_mappers):
                         file_metrics_data['stat_type'] = sub_file['file_info']['stat_type'] #['sha256']
                         file_metrics_data['stat_size'] = sub_file['file_info']['stat_size']
 
-                        with open('layer_metrics_datas_%s.json' % processname, 'a+') as f_file_metrics_datas:
+                        with open('file_metrics_datas_%s.json' % processname, 'a+') as f_file_metrics_datas:
                             json.dump(file_metrics_data, f_file_metrics_datas)
                             f_file_metrics_datas.write(os.linesep)
 
