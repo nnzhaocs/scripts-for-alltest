@@ -75,8 +75,8 @@ def load_layer_metrics_data(_layer_mappers):
 
     # _layer_metrics_data = []
 
-    base_types = ['type', 'sha256']
-    stat_types = ['stat_type', 'stat_size']
+    #base_types = ['type', 'sha256']
+    #stat_types = ['stat_type', 'stat_size']
 
     digest = None
 
@@ -123,9 +123,9 @@ def load_layer_metrics_data(_layer_mappers):
                         file_metrics_data['stat_type'] = sub_file['file_info']['stat_type'] #['sha256']
                         file_metrics_data['stat_size'] = sub_file['file_info']['stat_size']
 
-                        with open('layer_metrics_datas_%s.json' % processname, 'a+') as f_file_metrics_datas:
+                        with open('file_metrics_datas_%s.json' % processname, 'a+') as f_file_metrics_datas:
                             json.dump(file_metrics_data, f_file_metrics_datas)
-                            f_layer_metrics_datas.write(os.linesep)
+                            f_file_metrics_datas.write(os.linesep)
 
                         # if type in base_types:
                         #     file_metrics_data.append(sub_file[type])

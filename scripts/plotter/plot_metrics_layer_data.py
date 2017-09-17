@@ -78,7 +78,7 @@ def plot_graph(type):
         data1 = compressed_size_with_method_gzip
         xlabel = 'Compressed layer tarball size (MB)'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
-        xlim = max(data)
+        xlim = 50
     elif type == 'archival_size':
         data1 = archival_size
         xlabel = 'Uncompressed layer tarball size (MB)'
@@ -88,24 +88,24 @@ def plot_graph(type):
     elif type == 'sum_to_gzip_ratio':
         data = sum_to_gzip_ratio
         xlabel = 'Compression ratio: Uncompressed layer size as sum of files / compressed_size_with_method_gzip'
-        xlim = max(data)
+        xlim = 10
     elif type == 'archival_to_gzip_ratio':
         data = archival_to_gzip_ratio
         xlabel = 'Compression ratio: Uncompressed layer tarball size / compressed_size_with_method_gzip'
-        xlim = max(data)
+        xlim = 100
 
     elif type == 'file_cnt':
         data = file_cnt
         xlabel = 'File count for each image'
-        xlim = 300
+        xlim = 50
     elif type == 'dir_cnt':
         data = dir_cnt
         xlabel = 'Layer directory count across all images'
-        xlim = max(data)
+        xlim = 200
     elif type == 'dir_max_depth':
         data = dir_max_depth
         xlabel = 'Layer directory depth for each image'
-        xlim = max(data)
+        xlim = 25
 
     print "xlim = %f, len = %d"%(xlim, len(data))
     plot_cdf(fig, data, xlabel, xlim, 0)
