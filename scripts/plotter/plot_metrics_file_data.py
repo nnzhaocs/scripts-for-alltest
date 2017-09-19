@@ -1,29 +1,29 @@
 
 from draw_pic import *
 
-type = []
+# type = []
 sha256 = []
 stat_type = []
-stat_size = []
+# stat_size = []
 
 
 def run_plotmetrics_image_data():
     load_file_metrics_data_file()
-    try:
-        plot_graph('type')
-    except:
-        print "Cannot plot type", sys.exc_info()
-        traceback.print_exc(file=sys.stdout)
+    # try:
+    #     plot_graph('type')
+    # except:
+    #     print "Cannot plot type", sys.exc_info()
+    #     traceback.print_exc(file=sys.stdout)
     try:
         plot_graph('sha256')
     except:
         print "cannot plot sha256", sys.exc_info()
         traceback.print_exc(file=sys.stdout)
-    try:
-        plot_graph('stat_type')
-    except:
-        print "cannot print stat_type", sys.exc_info()
-        traceback.print_exc(file=sys.stdout)
+    # try:
+    #     plot_graph('stat_type')
+    # except:
+    #     print "cannot print stat_type", sys.exc_info()
+    #     traceback.print_exc(file=sys.stdout)
 
     try:
         plot_graph('stat_size')
@@ -48,31 +48,38 @@ def plot_graph(type):
         xlabel = 'Repeate files across all images'
         xlim = max(data)
 
+    # elif type == 'type':
+    #     data = sha256
+    #     xlabel = 'Repeate file type across all images'
+    #     xlim = max(data)
+
     print "xlim = %f, len = %d"%(xlim, len(data))
     plot_cdf(fig, data, xlabel, xlim, 0)
 
 
 def load_file_metrics_data_file():
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'image_metrics_datas_stat_size.json'), 'r') as f_file_metrics_data:
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'file_metrics_datas_stat_size.json'), 'r') as f_file_metrics_data:
         for line in f_file_metrics_data:
             stat_size.append(line)
 
-    type_dict = []
-    sha256_dict = []
-    stat_type_dict = []
+    # type_dict = []
+    # sha256_dict = []
+    # stat_type_dict = []
 
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_type.json'), 'w') as f:
-        for key, val in f.items():
-            type_dict[key] = val
-            type.append(val)
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_sha256.json'), 'w') as f:
-        for key, val in f.items():
-            sha256_dict[key] = val
-            sha256.append(val)
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_stat_type.json'), 'w') as f:
-        for key, val in f.items():
-            stat_type_dict[key] = val
-            stat_type.append(val)
+    # with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_type.json'), 'w') as f:
+    #     for line in f:
+    #         # type_dict[key] = val
+    #         val = line.split(" ")[0]
+    #         type.append(val)
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'file_sha256_uniq.cnt.json'), 'w') as f:
+        for line in f:
+            # sha256_dict[key] = val
+            val = line.split(" ")[0]
+            sha256.append(val) # repeat count
+    # with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_file_stat_type.json'), 'w') as f:
+    #     for key, val in f.items():
+    #         stat_type_dict[key] = val
+    #         stat_type.append(val)
 
 
 def main():
