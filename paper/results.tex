@@ -10,22 +10,32 @@
 
 \subsubsection{Growth  of images at docker registry}
 
-1. Fig: The total number of images increases from May 30th to Sept. XXX (May 30th - July 11th)(July 11th - Sept. XXX)
+%1. Fig: The total number of images increases from May 30th to Sept. XXX (May 30th - July 11th)(July 11th - Sept. 1)
+%!!!!!replace image with repositories.
+Figure~\ref{fig_image_growth} show the total number of images in Docker hub increases from May 30th to Sept. 17th 2017. As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub search engine, crawled the web page, and obtained the totoal number of non-official public repositories in Docker hub each day. By summing both official image count and non-official image count, we got the total number of images in Docker hub each day. Figure~\ref{fig_image_growth_first} shows the total number of images in Docker hub each day from May 30th to July 11th. The total number of images increased from xxx to xxx, with almost 1,300 images created per day. 
+
+A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub. But after 7/11/2017, the Docker Hub removed the index of `/'. Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images. As shown in figure~\ref{fig_image_growth_second}, the total number of images increased from xxx to xxx, with almost xxxx images created per day. 
 
 \subsubsection{Image popularity distribution}
 
-1. Fig: The avg. number of images pulled per day from May 30th to Sept. 1
-2. Fig: The total number of images pulled by Sept. 1
+\nancomment{TODO: 1. Fig: The avg. number of images pulled per day from May 30th to Sept. 1}
+
+%2. Fig: The total number of images pulled by May 30th.
+Figure~\ref{fig_pull_cnt_total} shows the image popularity distribution. The x-axies show the total number of pull count for each image ranges from 0 to 250. The blue line shows the cumulative distribution of total number of pull count per image while the red line shows the frequency distribution of total number of pull count per image. 85\% of the images are pulled than 250 totally. The greatest pull count is xxx which is official image~\textit{nginx}. About 12,000 has a pull count of ~xxx.
 
 \subsubsection{Image size distribution}
 
-1. Fig: Image compression size as the sum of its gzip compressed layer size.
+%1. Fig: Image compression size as the sum of its gzip compressed layer size.
+%56\%
+Figure~\ref{fig_image_size_compression} shows the image compression size distribution. The x-axies shows the image compression size which is the sum of its compressed layer size. The blue line shows the cumulative distribution of image compression size. 56\% of images are less than 50 MB. xxx of images are less than xxx MB. The biggest image is xxx GB while around 120,000 of images are less than ~2 MB. We can conclude that most of the images in Docker hub are small images, less than xxx MB.
+
 2. Fig: Image Decompressed size as the sum of its layer decompression size.
 
+Figure~\ref{fig_image_size_decompression}
 
 \subsubsection{Compression rate distribution}
 
-1. Fig: Compression ration as the sum of its layer decompression size divided by the sum of its gzip compressed layer size.
+1. Fig: Compression ratio as the sum of its layer decompression size divided by the sum of its gzip compressed layer size.
 
 \subsubsection{Layer count distribution}
 
