@@ -2,31 +2,67 @@
 
 \vcomment{The text below is work in progress. Do not review yet.}
 
-Briefly, what is process/application containerization and why is it needed?
+%Virtualization of computational resources is a
+%wider spread technique that providides
+%in many application fields, ranging
+%$from HPC to XXX, to XXX.
 %
-Virtualization of OS resources.
+%Cloud computing relies on compute, storage, and network
+%virtualization to provide efficient, elastic, and inexpensive.
+%Virtual machines acted as an enabler for Cloud Computing,
+
+Virtual Machines serve as a corner stone of resources virtualization both in
+Cloud and traditional deployments.
 %
-Leight-weight: less memory, I/O, CPU overhead.
+In the recent years, however, another approach to
+virtualization---containers---became especially popular.
 %
-Storage for containers is a booming area - cite cite - cite
+According to polls, over 87\% of enterprises are at various stages of adopting
+containers and by 2020 it will be \$2.5 billion makrket.
+%
+Container is a groups of processes for which OS kernel
+creates an illusion that they run alone on the machine.
+%
+Linux provides visibility isolation using namespaces
+while performance isolation using cgroups.
+%
+Compared to virtual machines, containers are
+light-weight---they use less memory and are much faster to start.
 
 
-Docker combines runtime packaging with containerization.
+Though much research was done on containerization in general,
+storage for containers still remains a raging war of opinions.
+XXX: cite login and something esle.
 %
-Storage is a big time of enviroment --- a file system.
+A number of research and engineering projects proposed
+various innovation. Cite.
 %
-Represented as images of much smaller size than VMs.
+However, one of the problems with proposing solutions,
+configuring, and evaluation is that very little known
+what user run in containers.
+
+
+Containers are especially popular now, in part, thanks
+to Docker technology.
 %
-Futhermore layers to reuse.
-
-
+Docker combines runtime packaging with containerization
+using the concept of multi-layered images.
 %
-Registry what is it for. 
+Images are stored at the cenralized registry
+and are pulled from the registry when need to be run by a client.
 %
+Our estimate show that Docker Hub stores around 400,000 images
+covering almost 2,000,000 layers---counting only public once.
+%
+Such a massive set of data allows to understand what applications
+people run in containers, what they store in images, and other questions.
 
 
-
-
+In this work we perform and exhaustive characterization of Docker registry
+contents.
+%
+We downloaded over 55TB of Docker images and layers and analyzed layer size,
+file size, file type, compression ratio and other distribution.
 %
 What can we learn from registry contents? How can it help?
 %
@@ -41,7 +77,3 @@ A number of companies already provide registry as a service.
 
 Why usefull?  Registry design, overall Docker improvement.
 Understand what data people store in general
-
-Contributions:
- -
- - This paper provide a first in-depth analysis
