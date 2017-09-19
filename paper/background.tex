@@ -6,6 +6,7 @@
 	%https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
 	figures/fig-docker-architecture.pdf}\\
 
+
 Hypervisors based server virtualization technologies (e.g., VMware~\cite{xxx}, Xen~\cite{xxx}, and KVM~\cite{xxx}) have been extensively used by most of cloud platforms such as Amazon EC2, which consists of a virtual machine monitor (VMM) on top of a host operating system. It supports the concurrent execution of multiple guest operating systems instances within virtual machines (VMs) and provide users with benefits ranging from application isolation through server consolidation to improve disaster recovery and faster server provisioning~\cite{xxx}. Nevertheless, hypervisor-based virtualization has a high performance overhead because of execution time overhead caused by executing privileged instructions, specially for applications which relies on I/O operations and memory overhead caused by space reservation for the VMs buffer and various virtualization data structures.
 %that allows dynamically partitioning of a machine and sharing the available physical resources such as CPU, storage, memory and I/O devices.
 %
@@ -110,7 +111,12 @@ It controls isolation levels of containers including cgroups, namespaces, capabi
 and their relationship using a figure. I think it is fine. But we desperately need the figure to write/revise this text consciously.}
 
 
-
+\begin{figure}
+	\centering
+	% Requires \usepackage{graphicx}
+	\includegraphics[width=0.45\textwidth]{graphs/fig-docker-architecture}\\
+	\caption{Docker ecosystem}\label{fig-docker-architecture}
+\end{figure}
 
 
 \subsection{Docker storage}
