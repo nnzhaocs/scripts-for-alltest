@@ -60,14 +60,14 @@ def load_file(abs_filename):
         if f_size > 1000000000:
             logging.warn("##################### Too large file %d > 100000000000, name: %s ################", f_size, abs_filename)
 
-        try:
-            sha256 = hashlib.md5(open(abs_filename, 'rb').read()).hexdigest()
-        except MemoryError as e:
+        #try:
+            #sha256 = hashlib.md5(open(abs_filename, 'rb').read()).hexdigest()
+        #except MemoryError as e:
             #logging.debug("##################### Memory Error #####################: %s", e)
-            logging.debug("##################### Too large file %d, name: %s ################", f_size, abs_filename)
+            #logging.debug("##################### Too large file %d, name: %s ################", f_size, abs_filename)
 	    #e = sys.exc_info()[0]
-	    logging.debug("###################### Error: %s #####################", e)
-            read_size = 1024  # You can make this bigger
+	    #logging.debug("###################### Error: %s #####################", e)
+            read_size = 1024*1024*1024  # You can make this bigger
             sha256 = hashlib.md5()
             with open(abs_filename, 'rb') as f:
                 data = f.read(read_size)
@@ -75,8 +75,11 @@ def load_file(abs_filename):
                     sha256.update(data)
                     data = f.read(read_size)
             sha256 = sha256.hexdigest()
-	except IOError as e:
-	    logging.debug("###################### filename: %s, %s ####################", abs_filename, e)
+        else:
+            try:
+                sha256 = hashlib.md5(open(abs_filename, 'rb').read()).hexdigest()
+            except IOError as e:
+                logging.debug("###################### filename: %s, %s ####################", abs_filename, e)
         try:
 	    f_type = me.from_file(abs_filename)
 	except:
