@@ -67,48 +67,55 @@ def run_plotmetrics_layer_data():
 def plot_graph(type):
 
     print "===========> plot %s <=========="%type
-    fig = fig_size('min')  # 'large'
-
+    fig = fig_size('min')#min')  # 'large'
+    #fig = fig_size('large')
+    y_type = "layers"
     if type == 'uncompressed_sum_of_files':
         data1 = uncompressed_sum_of_files
         xlabel = 'Uncompressed layer size (MB) as sum of files'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
         xlim = int(mean(data))
-    elif type == 'compressed_size_with_method_gzip (MB)':
+	#xlim = max(data)
+    elif type == 'compressed_size_with_method_gzip':
         data1 = compressed_size_with_method_gzip
         xlabel = 'Compressed layer tarball size (MB)'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
         xlim = 50
+	#xlim = max(data)
     elif type == 'archival_size':
         data1 = archival_size
         xlabel = 'Uncompressed layer tarball size (MB)'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
         xlim = 250
-
+	#xlim = max(data)
     elif type == 'sum_to_gzip_ratio':
         data = sum_to_gzip_ratio
         xlabel = 'Compression ratio: Uncompressed layer size as sum of files / compressed_size_with_method_gzip'
         xlim = 10
+	#xlim = max(data)
     elif type == 'archival_to_gzip_ratio':
         data = archival_to_gzip_ratio
         xlabel = 'Compression ratio: Uncompressed layer tarball size / compressed_size_with_method_gzip'
         xlim = 100
-
+	#xlim = max(data)
     elif type == 'file_cnt':
         data = file_cnt
         xlabel = 'File count for each image'
         xlim = 50
+	#xlim = max(data)
     elif type == 'dir_cnt':
         data = dir_cnt
         xlabel = 'Layer directory count across all images'
         xlim = 200
+	#xlim = max(data)
     elif type == 'dir_max_depth':
         data = dir_max_depth
         xlabel = 'Layer directory depth for each image'
         xlim = 25
+	#xlim = max(data)
 
     print "xlim = %f, len = %d"%(xlim, len(data))
-    plot_cdf(fig, data, xlabel, xlim, 0)
+    plot_cdf(fig, data, xlabel, xlim, 0, y_type)
 
 """"        archival_size": 58003968,
             "archival_to_gzip_ratio": 3.194986725738297,

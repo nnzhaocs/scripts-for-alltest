@@ -63,7 +63,8 @@ def run_plotmetrics_image_data():
 def plot_graph(type):
     print "===========> plot %s <=========="%type
     fig = fig_size('min')  # 'large'
-
+    #fig = fig_size('large')
+    y_type = "images"
     if type == 'uncompressed_sum_of_files':
         data1 = uncompressed_sum_of_files
         xlabel = 'Uncompressed image size (MB) as sum of files'
@@ -72,44 +73,48 @@ def plot_graph(type):
         xlim = 600#int(mean(data))
         #print mean(data)
         #print xlim
+	#xlim = max(data)
     elif type == 'compressed_size_with_method_gzip':
         data1 = compressed_size_with_method_gzip
         xlabel = 'Compressed image size (MB)'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
-        xlim = 50#max(data)
+        xlim = 50
+	#xlim = max(data)
     elif type == 'archival_size':
         data1 = archival_size
         xlabel = 'Uncompressed image size (MB)'
         data = [x * 1.0 / 1024 / 1024 for x in data1]
         xlim = 250
-
+	#xlim = max(data)
     elif type == 'sum_to_gzip_ratio':
         data = sum_to_gzip_ratio
         xlabel = 'Compression ratio: Uncompressed image size as sum of files / compressed_size_with_method_gzip'
         xlim = 10#max(data)
+	#xlim=max(data)
     elif type == 'archival_to_gzip_ratio':
         data = archival_to_gzip_ratio
         xlabel = 'Compression ratio: Uncompressed image size / compressed_size_with_method_gzip'
         xlim = 10#max(data)
-
+	#xlim = max(data)
     elif type == 'file_cnt':
         data = file_cnt
         xlabel = 'File count for each image'
         xlim = 500
+	#xlim = max(data)
 
         """herer we add a cdf for repeat layer cnt"""
     elif type == 'repeate_layer_digests':
         data = repeate_layer_digests_list
         xlabel = 'Repeat layer count across all images'
         xlim = 10#max(data)
-
+	#xlim = max(data)
     elif type == 'layer_cnt':
         data = layer_cnt
         xlabel = 'Layer count per images'
         xlim = max(data)#max(data)
 
     print "xlim = %f, len = %d"%(xlim, len(data))
-    plot_cdf(fig, data, xlabel, xlim, 0)
+    plot_cdf(fig, data, xlabel, xlim, 0, y_type)
 
 
 def plot_repeates(type):
@@ -146,7 +151,7 @@ def load_image_metrics_data_file():
             sum_to_gzip_ratio.append(json_data['sum_to_gzip_ratio'])
             archival_to_gzip_ratio.append(json_data['archival_to_gzip_ratio'])
             file_cnt.append(json_data['file_cnt'])
-            layer_cnt.append(json_data['layer_cnt'])
+            #layer_cnt.append(json_data['layer_cnt'])
 
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'repeate_layer_digests_dict.json'), 'r') as f_repeate_layer_digests_dict:
         json_datas = json.load(f_repeate_layer_digests_dict)

@@ -9,9 +9,9 @@ from utilities_funcs import *
 
 def fig_size(size):
     if size == 'min':
-	fig = plt.figure(figsize=(12, 6), dpi=80)
+	fig = plt.figure(figsize=(12, 8), dpi=80)
     if size == 'small':
-	fig = plt.figure(figsize=(16, 8), dpi=80)
+	fig = plt.figure(figsize=(20, 6), dpi=80)
     if size == 'median':
         fig = plt.figure(figsize=(48, 16), dpi=80)
     elif size == 'large':
@@ -54,7 +54,7 @@ def plot_cdf_normal(fig, data1, xlabel, xlim, ticks):
     ax.set_ylim(0, 1*100)
 
     ax.set_xlabel(xlabel, fontsize=26)
-    ax.set_ylabel('Cumulative % of images', fontsize=14) #24
+    ax.set_ylabel('Cumulative % of images', fontsize=24) #24,>14
     ax.get_yaxis().set_tick_params(labelsize = 12)
     ax.get_xaxis().set_tick_params(labelsize = 12)
 
@@ -64,7 +64,7 @@ def plot_cdf_normal(fig, data1, xlabel, xlim, ticks):
 
 
 """plot two lines: pdf and cdf"""
-def plot_cdf(fig, data1, xlabel, xlim, ticks):
+def plot_cdf(fig, data1, xlabel, xlim, ticks, y_type):
     data0 = np.array(data1)    
     data = data0[data0 != np.array(None)]
     #data = np.array(data)
@@ -80,6 +80,10 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
     counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
     cdf = np.cumsum(counts_cdf)
 
+    print counts_cdf
+    print cdf
+    print base_cdf
+
     print "start plotting!"
 
     cd = ax.plot(base_cdf[1:], [x*100 for x in cdf], 'b-', linewidth=1, label='Cumulative Distribution') #8
@@ -90,23 +94,23 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks):
     ax.set_xlim(xmin=1, xmax=xlim)
     ax.set_ylim(0, 1*100)
     ax2.set_ylim(0, max(counts_pdf))
-    ax.set_xlabel(xlabel, fontsize=14)
-    ax.set_ylabel('Cumulative % of layers', fontsize=14)
-    ax2.set_ylabel('Number of layers', fontsize=14)
+    ax.set_xlabel(xlabel, fontsize=24)
+    ax.set_ylabel('Cumulative % of'+y_type, fontsize=24)
+    ax2.set_ylabel('Number of'+y_type, fontsize=24)
 
     ax.get_yaxis().set_major_formatter(
     matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
     ax2.get_yaxis().set_major_formatter(
     matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
-    ax.get_yaxis().set_tick_params(labelsize = 12)
-    ax2.get_yaxis().set_tick_params(labelsize = 12)
-    ax.get_xaxis().set_tick_params(labelsize = 12)
+    ax.get_yaxis().set_tick_params(labelsize = 24)
+    ax2.get_yaxis().set_tick_params(labelsize = 24)
+    ax.get_xaxis().set_tick_params(labelsize = 24)
 
-    plt.legend(cd+nd, [l.get_label() for l in (cd+nd)], loc='center right', prop={'size':14})
+    plt.legend(cd+nd, [l.get_label() for l in (cd+nd)], loc='center right', prop={'size':24})
 
     plt.grid()
-    name = 'distribution%s.png' % xlabel.replace(" ", "_").replace("/","divided_by").replace(":","")
+    name = '%s.png' % xlabel.replace(" ", "_").replace("/","divided_by").replace(":","")
     fig.savefig(name)
 
 
