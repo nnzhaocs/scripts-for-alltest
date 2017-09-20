@@ -9,7 +9,7 @@ from get_metrics_file_data_each import *
 from generate_job_list import *
 from plot_metrics_image_data import *
 from plot_metrics_layer_data import *
-
+from plot_metrics_file_data import *
 # from plot_graph import *
 
 
@@ -92,6 +92,9 @@ def main():
 
     if args.plotgraph_layer:
         run_plotmetrics_layer_data()
+
+    if args.plotgraph_file:
+        run_plotmetrics_file_data()
 
 
 if __name__ == '__main__':

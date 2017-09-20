@@ -3,11 +3,11 @@ from draw_pic import *
 
 # type = []
 sha256 = []
-stat_type = []
-# stat_size = []
+#stat_type = []
+stat_size = []
 
 
-def run_plotmetrics_image_data():
+def run_plotmetrics_file_data():
     load_file_metrics_data_file()
     # try:
     #     plot_graph('type')
@@ -58,6 +58,7 @@ def plot_graph(type):
 
 
 def load_file_metrics_data_file():
+    print "load file"+os.path.join(dest_dir[0]['job_list_dir'], 'file_metrics_datas_stat_size.json')
     with open(os.path.join(dest_dir[0]['job_list_dir'], 'file_metrics_datas_stat_size.json'), 'r') as f_file_metrics_data:
         for line in f_file_metrics_data:
             stat_size.append(line)
@@ -71,7 +72,8 @@ def load_file_metrics_data_file():
     #         # type_dict[key] = val
     #         val = line.split(" ")[0]
     #         type.append(val)
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'file_sha256_uniq.cnt.json'), 'w') as f:
+    print "load file"+os.path.join(dest_dir[0]['job_list_dir'], 'file_sha256_uniq.cnt')
+    with open(os.path.join(dest_dir[0]['job_list_dir'], 'file_sha256_uniq.cnt'), 'w') as f:
         for line in f:
             # sha256_dict[key] = val
             val = line.split(" ")[0]
@@ -82,11 +84,11 @@ def load_file_metrics_data_file():
     #         stat_type.append(val)
 
 
-def main():
-    run_plotmetrics_image_data()
+#def main():
+ #   run_plotmetrics_image_data()
 
 
-if __name__ == '__main__':
-    print 'start!'
-    main()
-    print 'finished!'
+#if __name__ == '__main__':
+#    print 'start!'
+#    main()
+#    print 'finished!'
