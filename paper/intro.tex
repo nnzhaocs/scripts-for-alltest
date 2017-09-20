@@ -1,7 +1,5 @@
 \section{Introduction}
 
-\vcomment{The text below is work in progress. Do not review yet.}
-
 %Virtualization of computational resources is a
 %wider spread technique that providides
 %in many application fields, ranging
@@ -11,35 +9,44 @@
 %virtualization to provide efficient, elastic, and inexpensive.
 %Virtual machines acted as an enabler for Cloud Computing,
 
-Virtual Machines serve as a corner stone of resources virtualization both in
-Cloud and traditional deployments.
+For years virtual machines served as a cornerstone of resource virtualization
+both on premises and in cloud deployments~\cite{rosenblum2005virtual}.
 %
-In the recent years, however, another approach to
-virtualization---containers---became especially popular.
+Recently, however, \emph{container-based} virtualization solutions started to
+get significant traction.
 %
 According to polls, over 87\% of enterprises are at various stages of adopting
-containers and by 2020 it will be \$2.5 billion makrket.
+containers; analysts also predict that by 2020 containers can constitute an
+attractive \$2.5 billion market~\cite{container-grow-by2020}.
 %
-Container is a groups of processes for which OS kernel
-creates an illusion that they run alone on the machine.
+At its core, software container is a set of processes which operating system's
+kernel isolate to provide an illusion that they
+%the containerized processes
+run in the system alone.
 %
-Linux provides visibility isolation using namespaces
-while performance isolation using cgroups.
+For instance, Linux performs user, file-system, and other isolations using
+namespaces~\cite{man-namespaces}, while performance isolation with the help of
+control groups~\cite{kernel-doc-cgroups}.
 %
-Compared to virtual machines, containers are
-light-weight---they use less memory and are much faster to start.
+Compared to virtual machines, containers use less memory and storage, are much
+faster to start, typically cause less overhead, which explains the increased
+interest to this disruptive technology.
 
 
-Though much research was done on containerization in general,
-storage for containers still remains a raging war of opinions.
-XXX: cite login and something esle.
+Though much research was devoted to containerization in
+general~\vcomment{Cite}, storage for containers remains a widely unexplored
+territory~\cite{login-container-storage-options}.
 %
-A number of research and engineering projects proposed
-various innovation. Cite.
+Before building an optimal solution it is important to understand the
+properties of containerized workloads.
 %
-However, one of the problems with proposing solutions,
-configuring, and evaluation is that very little known
-what user run in containers.
+However, one of the problems with proposing solutions, configuring, and
+evaluation is that very little known what user run in containers.
+%
+It is not easy to get access to the environments where people run containers
+and get access to the data.
+%
+But things are about to change.
 
 
 Containers are especially popular now, in part, thanks

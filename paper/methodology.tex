@@ -101,7 +101,7 @@ In the future, we will download all the images with different tags.
 %
 \subsection{Downloader}
 
-Instead of using Docker (or Docker Engine) to download images, we wrote our own downloader python script that utilizes Docker Registry API library~\cite{XXX} to simultaneously download~\textbf{original} manifests and layers.
+Instead of using Docker (or Docker Engine) to download images, we wrote our own downloader python script that utilizes Docker Registry API library citeXXX to simultaneously download~\textbf{original} manifests and layers.
 %
 \vcomment{Should we mention and cite the library that we used here?}
 %
@@ -120,7 +120,7 @@ Second, layer content directories are not visible for some Docker storage driver
 %
 Downloader can download multiple images simultaneously and within each image downloading process, layers are downloaded in parallel.
 %
-To download the original manifests and layers from Docker Hub, downloader embeds a library called Docker registry client API~\cite{xxx} which only encapsulates manifest and layer downloading functions in Docker engine without extracting layer tarball and converting manifest version. 
+To download the original manifests and layers from Docker Hub, downloader embeds a library called Docker registry client API citeXXX which only encapsulates manifest and layer downloading functions in Docker engine without extracting layer tarball and converting manifest version. 
 %
 \vcomment{I believe we never explained what is config file. We need to discuss in in background section.}
 \nancomment{addressed}
