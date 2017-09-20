@@ -5,9 +5,10 @@ sys.path.append('../analyzer/')
 from graph_related_libraries import *
 from config import *
 
-image_growth_filename = 'images-5-30-7-11-cnt.txt'
+image_growth_filename1 = 'images-5-30-7-11-cnt.txt'
+image_growth_filename2 = "images-7-26-9-20-cnt.txt"
 
-data0 = np.loadtxt(image_growth_filename)
+data0 = np.loadtxt(image_growth_filename2)
 
 images_cnt = [data0[i] for i in range(0, len(data0), 24)]
 
@@ -23,20 +24,21 @@ print len(data0)
 
 x = np.arange(0, len(data0), 1)
 
-base = datetime.datetime(2017, 5, 30)
-arr = np.array([base + datetime.timedelta(days=i) for i in xrange(len(data0))])
+base1 = datetime.datetime(2017, 5, 30)
+base2 = datetime.datetime(2017, 7, 26)
+arr = np.array([base2 + datetime.timedelta(days=i) for i in xrange(len(data0))])
 
 print arr
 
-plt.rcParams.update({'font.size': 12})
-fig = plt.figure(figsize=(12, 6), dpi=80)
+plt.rcParams.update({'font.size': 20})
+fig = plt.figure(figsize=(12, 8), dpi=80)
 
 ax = fig.add_subplot(111)
 
 plt.xlabel('Time (Days)')
-plt.ylabel('Number of images in Docker Hub')
+plt.ylabel('Number of repositories in Docker hub')
 
-ax.xaxis.set_major_locator(DayLocator(interval=3))
+#ax.xaxis.set_major_locator(DayLocator(interval=6))
 ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%m/%d'))
 
 #ax.xaxis.set_major_locator(WeekdayLocator(byweekday=MO, interval=4))
@@ -57,4 +59,5 @@ plt.setp(line, color='r', linewidth=1.0)
 # ax.xaxis.set_major_locator(xmajorLocator)
 #plt.xlim(datetime.date(2017, 5, 30), datetime.date(2017, 7, 11), auto=True)
 # plt.plot(x, data_pulls, 'r')
-plt.savefig('image_growth.png')
+plt.grid()
+plt.savefig('growth_%s.png'%image_growth_filename2.replace(".txt",""))

@@ -35,7 +35,7 @@ def main():
 	xlim = 5  # max(data1)
 	ticks = 25
 	print xlim
-	plot_cdf(fig, data, xlabel, xlim, ticks)
+	plot_cdf(fig, data, xlabel, xlim, ticks, "stars")
 	
 	fig = fig_size('min')  # 'large'
 	
@@ -44,7 +44,7 @@ def main():
 	xlim = 250  # max(data1)
 	ticks = 25
 	print xlim
-	plot_cdf(fig, data, xlabel, xlim, ticks)
+	plot_cdf(fig, data, xlabel, xlim, ticks, "pull count")
 
 if __name__=='__main__':
 	print 'here'
