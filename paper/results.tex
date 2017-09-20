@@ -1,10 +1,10 @@
 
 \section{Results}
 
-\nancomment{
-	figures are stored in google drive, the link is pinned in slacker;
-	%https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
-	figures/*.pdf}\\
+%\nancomment{
+%	figures are stored in google drive, the link is pinned in slacker;
+%	%https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
+%	figures/*.pdf}\\
 
 \subsection{Image}
 
@@ -12,29 +12,42 @@
 
 %1. Fig: The total number of images increases from May 30th to Sept. XXX (May 30th - July 11th)(July 11th - Sept. 1)
 %!!!!!replace image with repositories.
-Figure~\ref{fig_image_growth} show the total number of images in Docker hub increases from May 30th to Sept. 17th 2017. As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub search engine, crawled the web page, and obtained the totoal number of non-official public repositories in Docker hub each day. By summing both official image count and non-official image count, we got the total number of images in Docker hub each day. Figure~\ref{fig_image_growth_first} shows the total number of images in Docker hub each day from May 30th to July 11th. The total number of images increased from xxx to xxx, with almost 1,300 images created per day.
+Figure~\ref{fig_image_growth} show the total number of images in Docker hub increases from May 30th to Sept. 17th 2017. As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub search engine, crawled the web page, and obtained the totoal number of non-official public repositories in Docker hub each day. By summing both official repository count and non-official repository count, we got the total number of repositories in Docker hub each day. Figure~\ref{fig_image_growth} shows the total number of repositories in Docker hub each day from May 30th to July 11th. The total number of repositories increased from 633,915 to 687,292, with ~1,241 repositories created per day.
 
 \begin{figure}
   \centering
   % Requires \usepackage{graphicx}
   \includegraphics[width=0.5\textwidth]{graphs/image_growth}\\
-  \caption{Total number of images in Docker hub from May 30th to Sept. XXX}\label{fig_image_growth}
+  \caption{Total number of repositories in Docker hub from May 30th to Sept. 20th}\label{fig_image_growth}
 \end{figure}
 
-A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub. But after 7/11/2017, the Docker Hub removed the index of `/'. Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images. As shown in figure~\ref{fig_image_growth_second}, the total number of images increased from xxx to xxx, with almost xxxx images created per day.
+%\begin{figure*}
+%	\centering
+%	\subfigure[Total num. of repositories from May 30th to Jul. 11th]{\label{exp-64-erases}
+%		\includegraphics[width=0.45\textwidth]{graphs/image_growth_5-10-7-11}
+%	}
+%	\subfigure[Total num. of repositories from Jul. 26th to Sept. 20th.]{\label{exp-64-writes}
+%		\includegraphics[width=0.45\textwidth]{graphs/growth_images-7-26-9-20-cnt}
+%	}
+%	\caption{Total number of repositories in Docker hub from May 30th to Sept. XXX}
+%	\label{fig_image_growth}
+%\end{figure*}
+
+A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub. But after 7/11/2017, the Docker Hub removed the index of `/'. Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images. As shown in figure~\ref{fig_image_growth}, the total number of repositories increased from 708,647 to 784,182, with ~1325 new repositories created per day.
 
 \subsubsection{Image popularity distribution}
 
-\nancomment{TODO: 1. Fig: The avg. number of images pulled per day from May 30th to Sept. 1}
+%\nancomment{TODO: 1. Fig: The avg. number of images pulled per day from May 30th to Sept. 1}
 
 %2. Fig: The total number of images pulled by May 30th.
-Figure~\ref{fig_pull_cnt_total} shows the image popularity distribution. The x-axies show the total number of pull count for each image ranges from 0 to 250. The blue line shows the cumulative distribution of total number of pull count per image while the red line shows the frequency distribution of total number of pull count per image. 85\% of the images are pulled than 250 totally. The greatest pull count is xxx which is official image~\textit{nginx}. About 12,000 has a pull count of ~xxx.
+Figure~\ref{fig_pull_cnt_total} shows the repository popularity distribution by May 31th. The x-axies show the total number of pull count for each repository ranges from 0 to 250. The blue line shows the cumulative distribution of total number of pull count per repository while the red line shows the frequency distribution of total number of pull count per repository. 85\% of the repositories are pulled than 250 totally. The greatest pull count is 654,088,410 which is official repository~\textit{nginx}. 
+%About 12,000 has a pull count of ~xxx.(May 31th)
 
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/2distributionPull_count_for_each_image.png}\\
-	\caption{Total number of pull count for each image by May 30th}\label{fig_pull_cnt_total}
+	\includegraphics[width=0.5\textwidth]{graphs/Pull_count_for_each_image.png}\\
+	\caption{Total num. of pull count for each repository by May 30th}\label{fig_pull_cnt_total}
 \end{figure}
 
 
@@ -47,7 +60,7 @@ Figure~\ref{fig_image_size_compression} shows the image compression size distrib
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionCompressed_image_size_(MB)}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Compressed_image_size_(MB)}\\
 	\caption{Image compression size distribution}\label{fig_image_size_compression}
 \end{figure}
 
@@ -56,14 +69,14 @@ Figure~\ref{fig_image_size_compression} shows the image compression size distrib
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionUncompressed_image_size_(MB)_as_sum_of_files}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Uncompressed_image_size_(MB)_as_sum_of_files}\\
 	\caption{image decompression size as sum of files}\label{fig_image_size_compression}
 \end{figure}
 
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionUncompressed_image_size_(MB)}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Uncompressed_image_size_(MB)}\\
 	\caption{Image decompression size (archival)}\label{fig_image_size_compression}
 \end{figure}
 
@@ -76,14 +89,14 @@ Figure~\ref{fig_image_size_decompression}
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionCompression_ratio_Uncompressed_image_size_as_sum_of_files_divided_by_compressed_size_with_method_gzip}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Compression_ratio_Uncompressed_image_size_as_sum_of_files_divided_by_compressed_size_with_method_gzip}\\
 	\caption{Compression rate}\label{fig_image_size_compression}
 \end{figure}
 
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionCompression_ratio_Uncompressed_image_size_divided_by_compressed_size_with_method_gzip.png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Compression_ratio_Uncompressed_image_size_divided_by_compressed_size_with_method_gzip.png}\\
 	\caption{Compression rate}\label{fig_image_size_compression}
 \end{figure}
 
@@ -99,7 +112,7 @@ Figure~\ref{fig_image_size_decompression}
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionRepeat_layer_count_across_all_images}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Repeat_layer_count_across_all_images}\\
 	\caption{Repeat layer count distribution}\label{fig_image_size_compression}
 \end{figure}
 
@@ -110,7 +123,7 @@ Figure~\ref{fig_image_size_decompression}
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionFile_count_for_each_image.png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/File_count_for_each_image.png}\\
 	\caption{File count distribution}\label{fig_image_size_compression}
 \end{figure}
 
@@ -125,7 +138,7 @@ Figure~\ref{fig_image_size_decompression}
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionCompressed_layer_tarball_size_(MB).png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Compressed_layer_tarball_size_(MB).png}\\
 	\caption{Layer compression size}\label{fig_image_size_compression}
 \end{figure}
 
@@ -134,14 +147,14 @@ Figure~\ref{fig_image_size_decompression}
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionUncompressed_layer_size_(MB)_as_sum_of_files.png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Uncompressed_layer_size_(MB)_as_sum_of_files.png}\\
 	\caption{Layer decompression size (sum of file)}\label{fig_image_size_compression}
 \end{figure}
 
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionUncompressed_layer_tarball_size_(MB).png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Uncompressed_layer_tarball_size_(MB).png}\\
 	\caption{Layer decompression size (archival)}\label{fig_image_size_compression}
 \end{figure}
 
@@ -152,14 +165,14 @@ Figure~\ref{fig_image_size_decompression}
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionCompression_ratio_Uncompressed_layer_size_as_sum_of_files_divided_by_compressed_size_with_method_gzip.png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Compression_ratio_Uncompressed_layer_size_as_sum_of_files_divided_by_compressed_size_with_method_gzip.png}\\
 	\caption{Compression rate}\label{fig_image_size_compression}
 \end{figure}
 
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionCompression_ratio_Uncompressed_layer_tarball_size_divided_by_compressed_size_with_method_gzip.png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Compression_ratio_Uncompressed_layer_tarball_size_divided_by_compressed_size_with_method_gzip.png}\\
 	\caption{Compression rate}\label{fig_image_size_compression}
 \end{figure}
 
@@ -170,7 +183,7 @@ Figure~\ref{fig_image_size_decompression}
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionLayer_directory_depth_for_each_image.png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Layer_directory_depth_for_each_image.png}\\
 	\caption{Layer depth distribution}\label{fig_image_size_compression}
 \end{figure}
 
@@ -186,7 +199,7 @@ Figure~\ref{fig_image_size_decompression}
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/distributionLayer_directory_count_across_all_images.png}\\
+	\includegraphics[width=0.5\textwidth]{graphs/Layer_directory_count_across_all_images.png}\\
 	\caption{Directory count distribution}\label{fig_image_size_compression}
 \end{figure}
 
