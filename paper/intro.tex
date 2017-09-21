@@ -1,86 +1,90 @@
 \section{Introduction}
 
-%Virtualization of computational resources is a
-%wider spread technique that providides
-%in many application fields, ranging
-%$from HPC to XXX, to XXX.
-%
-%Cloud computing relies on compute, storage, and network
-%virtualization to provide efficient, elastic, and inexpensive.
-%Virtual machines acted as an enabler for Cloud Computing,
-
 For years virtual machines served as a cornerstone of resource virtualization
 both on premises and in cloud deployments~\cite{rosenblum2005virtual}.
 %
-Recently, however, \emph{container-based} virtualization solutions started to
-get significant traction.
+Recently, however, \emph{container-based} virtualization started to get
+significant traction~\cite{process-containers-linux}.
 %
 According to polls, over 87\% of enterprises are at various stages of adopting
-containers; analysts also predict that by 2020 containers can constitute an
-attractive \$2.5 billion market~\cite{container-grow-by2020}.
+containers; analysts also predict that by 2020 containers can constitute a
+lucrative \$2.5 billion market~\cite{container-grow-by2020}.
 %
 At its core, software container is a set of processes which operating system's
-kernel isolate to provide an illusion that they
+kernel isolates to provide an illusion that they
 %the containerized processes
-run in the system alone.
+are the only one in the system.
 %
-For instance, Linux performs user, file-system, and other isolations using
-namespaces~\cite{man-namespaces}, while performance isolation with the help of
-control groups~\cite{kernel-doc-cgroups}.
+Linux, for instance, performs visibility isolation (e.g., user, file system,
+network) using namespaces~\cite{man-namespaces}, while enforces resource
+utilization constraints with control groups~\cite{kernel-doc-cgroups}.
 %
 Compared to virtual machines, containers use less memory and storage, are much
-faster to start, typically cause less overhead, which explains the increased
-interest to this disruptive technology.
+faster to start, and typically cause less execution overhead.
 
 
-Though much research was devoted to containerization in
-general~\vcomment{Cite}, storage for containers remains a widely unexplored
+
+Though much research was focused on various aspects of
+containerization~\vcomment{Cite}, storage for containers remains an unexplored
 territory~\cite{login-container-storage-options}.
 %
-Before building an optimal solution it is important to understand the
-properties of containerized workloads.
+To start designing a novel storage solution for containers, or to optimize and
+fairly evaluate existing ones, it is imperative to understand in sufficient
+details  real-world use cases and workload profiles.
 %
-However, one of the problems with proposing solutions, configuring, and
-evaluation is that very little known what user run in containers.
+Unfortunately, little is known about how containers are used in the real world.
 %
-It is not easy to get access to the environments where people run containers
-and get access to the data.
-%
-But things are about to change.
+In part, this is due to the privacy concerns that organizations and individuals
+have when sharing details of their computing environments.
 
 
-Containers are especially popular now, in part, thanks
-to Docker technology.
+
+Docker is another technology whose popularity grew rapidly in the recent
+years~\cite{docker}.
 %
-Docker combines runtime packaging with containerization
-using the concept of multi-layered images.
+It combines process containerization with efficient and effective runtime
+environment packaging.
 %
-Images are stored at the cenralized registry
-and are pulled from the registry when need to be run by a client.
+Docker packs software in \emph{images} each consisting of a manifest (which
+describes, e.g., what command to start in the container) and several read-only
+\emph{layers}.
 %
-Our estimate show that Docker Hub stores around 400,000 images
-covering almost 2,000,000 layers---counting only public once.
+Read-only layers can be shared between different images and encapsulate file
+system trees for dockerized processes.
 %
-Such a massive set of data allows to understand what applications
-people run in containers, what they store in images, and other questions.
+When Docker starts a container, it combines read-only layers (and additional
+writable layer to store changes) into a single namespace and starts the binary
+defined in the manifest in the created namespace~\cite{docker-driver-eval}.
 
 
-In this work we perform and exhaustive characterization of Docker registry
-contents.
-%
-We downloaded over 55TB of Docker images and layers and analyzed layer size,
-file size, file type, compression ratio and other distribution.
-%
-What can we learn from registry contents? How can it help?
-%
-Use cases: 
-- Containerize every user application (like git).
-- Containerize services.
-- Containerize whole OSes - 
-%
-Number of images is growing and layers. Currently XXX.
-%
-A number of companies already provide registry as a service.
 
-Why usefull?  Registry design, overall Docker improvement.
-Understand what data people store in general
+Docker images are stored at the centralized \emph{registry} and are pushed to
+and pulled from the registry by clients as needed. 
+%
+The most known Docker registry installation is Docker Hub which according to
+our estimates stores at least 400,000 \emph{public} images that consist of at
+least 2,000,000 layers.
+%
+Our insight is that this massive dataset can be used to understand what
+applications run in containers, how much data they store, and the properties of
+the data.
+
+
+
+
+In this work we perform first exhaustive, large-scale characterization of
+Docker registry contents.
+%
+We downloaded over 55TB of Docker images from Docker Hub and analyzed
+traditional storage properties (e.g., file sizes and types, compression ratios,
+directory depths) as well as Docker-specific properties (e.g., number of layers
+in images and amount of layer sharing between layers.)
+%
+\vcomment{Here we need to stick an example or two of interesting findings.}
+
+\vcomment{ Why usefull?  Registry design, overall Docker improvements,
+Understand what data people store in general Use cases: - Containerize every
+user application (like git).  - Containerize services.  - Containerize whole
+OSes}
+%
+
