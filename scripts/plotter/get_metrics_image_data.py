@@ -1,9 +1,11 @@
 
 from algorithm_funcs import *
 
+# image_metrics_datas = []
+
+layer_metrics_datas = {}
 image_mappers = []
 
-image_metrics_datas = []
 """image_metrics_data content
 
     version: schema1:
@@ -29,15 +31,16 @@ def run_getmetrics_image_data():
     print "create pool"
     P1 = multiprocessing.Pool(60)
     print "before map"
-    image_metrics_datas = P1.map(load_image_metrics_data, image_mappers)
+    #image_metrics_datas = 
+    P1.map(load_image_metrics_data, image_mappers)
 
     #for image_mapper in image_mappers:
     #    load_image_metrics_data(image_mapper)
 
     print "after map"
 
-    with open(os.path.join(dest_dir[0]['job_list_dir'], 'image_metrics_datas.json'), 'w+') as f_image_metrics_data:
-       json.dump(image_metrics_datas, f_image_metrics_data)
+    #with open(os.path.join(dest_dir[0]['job_list_dir'], 'image_metrics_datas.json'), 'w+') as f_image_metrics_data:
+    #   json.dump(image_metrics_datas, f_image_metrics_data)
 
 
 def load_image_metrics_data(image_mapper):
@@ -47,13 +50,17 @@ def load_image_metrics_data(image_mapper):
     #     'config': config_name_dir_map{},
     #     'layers': layers_map{:{:}}
     # }
+
+    processname = multiprocessing.current_process().name
+
     image_metrics_data = {}
     uncompressed_sum_of_files = 0
     compressed_size_with_method_gzip = 0
     archival_size = 0
     file_cnt = 0
-
-    image_name = None
+    dir_cnt = 0
+    layer_cnt = 0
+    # image_name = None
 
     for key, val in image_mapper['layers'].items():
         for key1, val1 in val.items(): # only one entry
@@ -62,27 +69,33 @@ def load_image_metrics_data(image_mapper):
                 laogging.debug('The layer_json_absfilename is empty!')
                 continue
 
-            if not os.path.isfile(layer_json_absfilename):
+            try:
+                json_data = layer_metrics_datas[layer_json_absfilename]
+            except:
                 logging.debug("layer json file %s is not valid!", layer_json_absfilename)
                 continue
 
+            # if not os.path.isfile(layer_json_absfilename):
+            #     logging.debug("layer json file %s is not valid!", layer_json_absfilename)
+            #     continue
+
             logging.debug('process layer_json file: %s', layer_json_absfilename)  # str(layer_id).replace("/", "")
 
-            with open(layer_json_absfilename) as lj_f:
-                try:
-                    json_data = json.load(lj_f)
-                except:
-                    logging.debug("cannot load json file: layer json file %s is not valid!", layer_json_absfilename)
-                    lj_f.close()
-                    continue
+            # with open(layer_json_absfilename) as lj_f:
+            #     try:
+            #         json_data = json.load(lj_f)
+            #     except:
+            #         logging.debug("cannot load json file: layer json file %s is not valid!", layer_json_absfilename)
+            #         lj_f.close()
+            #         continue
 
-                uncompressed_sum_of_files = uncompressed_sum_of_files + json_data['size']['uncompressed_sum_of_files']
-                compressed_size_with_method_gzip = compressed_size_with_method_gzip + json_data['size']['compressed_size_with_method_gzip']
-                archival_size = archival_size + json_data['size']['archival_size']
-
-                file_cnt = file_cnt + json_data['file_cnt']
-
-                del json_data
+            uncompressed_sum_of_files = uncompressed_sum_of_files + json_data['size']['uncompressed_sum_of_files']
+            compressed_size_with_method_gzip = compressed_size_with_method_gzip + json_data['size']['compressed_size_with_method_gzip']
+            archival_size = archival_size + json_data['size']['archival_size']
+	    layer_cnt = layer_cnt + 1
+            file_cnt = file_cnt + json_data['file_cnt']
+	    dir_cnt = dir_cnt + len([x for x in json_data['dirs'] if x['subdir']])
+            del json_data
 
     image_metrics_data['uncompressed_sum_of_files'] = uncompressed_sum_of_files
     image_metrics_data['compressed_size_with_method_gzip'] = compressed_size_with_method_gzip
@@ -94,14 +107,17 @@ def load_image_metrics_data(image_mapper):
     else:
         image_metrics_data['sum_to_gzip_ratio'] = None #uncompressed_sum_of_files * 1.0 / compressed_size_with_method_gzip
         image_metrics_data['archival_to_gzip_ratio'] = None #archival_size * 1.0 / compressed_size_with_method_gzip
-
+    image_metrics_data['layer_cnt'] = layer_cnt
     image_metrics_data['file_cnt'] = file_cnt
-
+    image_metrics_da['dir_cnt'] = dir_cnt
     image_metrics_data['version'] = image_mapper['version']
     image_metrics_data['image_name'] = image_mapper['manifest']
 
     logging.debug("image_metrics_data: %s", image_metrics_data)
-    return image_metrics_data
+    # return image_metrics_data
+    with open('image_metrics_datas_%s.json' % processname, 'a+') as f_image_metrics_datas:
+        json.dump(image_metrics_data, f_image_metrics_datas)
+        f_image_metrics_datas.write(os.linesep)
 
 
 def calculate_repeat_layer_in_images():
@@ -135,6 +151,14 @@ def load_image_mappers():
     #     'config': config_name_dir_map{},
     #     'layers': layers_map{:{:}}
     # }
+
+    logging.debug(os.path.join(dest_dir[0]['job_list_dir'],'layer_metrics_datas_Poolworkers.json'))
+    with open(os.path.join(dest_dir[0]['job_list_dir'],'layer_metrics_datas_Poolworkers.json'), 'r') as f:
+        for line in f:
+            data_json = json.load(line)
+            key = data_json['digest']
+            print "read"+key
+        layer_metrics_datas[key] = data_json
 
     with open(os.path.join(dest_dir[0]['job_list_dir'],'image_mapper.json'), 'r') as f:
         _image_mappers = json.load(f)
@@ -171,5 +195,5 @@ def load_image_mappers():
         }
 
         image_mappers.append(image_mapper)
-    
-    logging.debug("image_mappers[0]: %s", image_mappers[0])
+
+    logging.debug("image_mapper[0]: %s", image_mappers[0])
