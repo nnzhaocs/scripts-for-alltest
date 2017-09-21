@@ -7,6 +7,7 @@ from get_metrics_image_data import *
 from get_metrics_layer_data import *
 from get_metrics_file_data_each import *
 from generate_job_list import *
+from parse_metrics_data_to_files import *
 from plot_metrics_image_data import *
 from plot_metrics_layer_data import *
 from plot_metrics_file_data import *
@@ -64,6 +65,12 @@ def parseArg():
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
+    parser.add_argument(
+        '-p', '--parsemetrics_data',
+        help="plot file graphs",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
     return parser.parse_args()
 
 
@@ -95,6 +102,9 @@ def main():
 
     if args.plotgraph_file:
         run_plotmetrics_file_data()
+
+    if args.parsemetrics_data:
+        run_parsemetrics_data()
 
 
 if __name__ == '__main__':

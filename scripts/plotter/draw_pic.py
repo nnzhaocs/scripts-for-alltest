@@ -30,7 +30,7 @@ def bar_label_text(ax, x, y, xlim):
 
 
 """ only plot the cdf """
-def plot_cdf_normal(fig, data1, xlabel, xlim, ticks):
+def plot_cdf_normal(fig, data1, xlabel, xlim, ticks, y_type):
     data = np.array(data1)
     print("plot: min = %d" % data.min())
     print("plot: max = %d" % data.max())
@@ -53,13 +53,13 @@ def plot_cdf_normal(fig, data1, xlabel, xlim, ticks):
     ax.set_xlim(xmin=1, xmax=xlim)
     ax.set_ylim(0, 1*100)
 
-    ax.set_xlabel(xlabel, fontsize=26)
-    ax.set_ylabel('Cumulative % of images', fontsize=24) #24,>14
-    ax.get_yaxis().set_tick_params(labelsize = 12)
-    ax.get_xaxis().set_tick_params(labelsize = 12)
+    ax.set_xlabel(xlabel, fontsize=24)
+    ax.set_ylabel('Cumulative % of '+y_type, fontsize=24) #24,>14
+    ax.get_yaxis().set_tick_params(labelsize = 24)
+    ax.get_xaxis().set_tick_params(labelsize = 24)
 
     plt.grid()
-    name = 'distribution%s.png' % xlabel
+    name = '%s.png' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "")
     fig.savefig(name)
 
 
@@ -112,6 +112,43 @@ def plot_cdf(fig, data1, xlabel, xlim, ticks, y_type):
     plt.grid()
     name = '%s.png' % xlabel.replace(" ", "_").replace("/","divided_by").replace(":","")
     fig.savefig(name)
+
+
+""""""
+def calculate_cdf(data1, ticks):
+    data0 = np.array(data1)
+    data = data0[data0 != np.array(None)]
+    #data = np.array(data)
+    print("plot: min = %d" % data.min())
+    print("plot: max = %d" % data.max())
+    print("plot: median = %d" % np.median(data))
+
+    # ax = fig.add_subplot(111)
+
+    bins = ticks #np.arange(np.ceil(data.min()), np.floor(data.max()))
+    print "cdf and pdf calculating: bins = %d" % len(bins)
+    counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
+    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
+    cdf = np.cumsum(counts_cdf)
+
+    print counts_cdf
+    print counts_pdf
+    print cdf
+    print base_cdf
+
+    print "start saving to files!"
+
+    write_to_file('counts_cdf', counts_cdf, 'calculate')
+    write_to_file('counts_pdf', counts_pdf, 'calculate')
+    write_to_file('cdf', cdf, 'calculate')
+    write_to_file('base_cdf', base_cdf, 'calculate')
+
+
+def write_to_file(type, line, t_class):
+
+    with open('%s_metrics_datas_%s.lst' % (t_class, type), 'a+') as f:
+        json.dump(line, f)
+        f.write(os.linesep)
 
 
 def plot_bar_pic(fig, x, y, xlabel, ylabel, xlim, ticks):
