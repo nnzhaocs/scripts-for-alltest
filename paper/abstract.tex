@@ -1,20 +1,36 @@
-\subsection*{Abstract}
+\begin{abstract}
 
 Docker containers are becoming increasingly popular due to their isolation
 properties, low overhead, and efficient packaging of execution environment.
+%
 Containers are created from images which preserve software dependencies,
 environment configuration, and other parameters that affect application's
-runtime. Docker registry stores images and allows clients to push images to and
-pull images from it. The total amount of images stored in Docker Hub registry
-is 457,627 now and is continuing to increase. As the amount of images stored in
-public and private Docker registries increases it becomes important to
-study images' characteristics. Such knowledge can help to improve storage
-performance both at Docker registry and Docker client sides.
-
-Our goal is to collect statistics from a large amount of Docker images and
-perform a large-scale characterization of Docker images. So far, we downloaded
-143,784 images from Docker Hub registry (20TB, 31\% of the whole dataset) and
-performed the first in-depth analysis for these images. We characterize images
-using multiple metrics, e.g., image size distribution, file size and type
-distribution, the number of layers per image, the amount of redundant data
-between images and layers, temporal trends.
+runtime.
+%
+Docker registry stores images and allows users to exchange them
+between each other.
+%
+The amount of data Docker registries store is massive; Docker Hub,
+for instance, stores at least half million public images.
+%
+%As the amount of images stored in public and private Docker registries
+%increases it becomes important to study images' characteristics.
+%
+%
+We utilize this massive dataset to study data-centric properties 
+of containerized applications.
+%
+%Our goal is to collect statistics from a large amount of Docker images and
+%perform a large-scale characterization of Docker images.
+%
+We downloaded over 50TB of images from Docker Hub
+and performed the first in-depth analysis of these images.
+%
+We characterize images using multiple metrics, e.g., image size distribution,
+file size and type distribution, the number of layers per image, the amount of
+redundant data between images and layers.
+%
+Our findings can help to make conscious decisions
+when designing storage for containers and Docker in particular.
+ 
+\end{abstract}
