@@ -1,5 +1,5 @@
-
 \section{Results}
+\label{sec:results}
 
 %\nancomment{
 %	figures are stored in google drive, the link is pinned in slacker;
@@ -12,7 +12,7 @@
 
 %1. Fig: The total number of images increases from May 30th to Sept. XXX (May 30th - July 11th)(July 11th - Sept. 1)
 %!!!!!replace image with repositories.
-<<<<<<< HEAD
+%<<<<<<< HEAD
 Figure~\ref{fig_image_growth} show the total number of images in Docker hub increases from May 30th to Sept. 17th 2017. As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub search engine, crawled the web page, and obtained the totoal number of non-official public repositories in Docker hub each day. By summing both official repository count and non-official repository count, we got the total number of repositories in Docker hub each day. Figure~\ref{fig_image_growth} shows the total number of repositories in Docker hub each day from May 30th to July 11th. The total number of repositories increased from 633,915 to 687,292, with ~1,241 repositories created per day.
 %=======
 %Figure~\ref{fig_image_growth} show the total number of images in Docker hub increases from May 30th to Sept. 17th 2017. As discussed in citeXXX, Crawler searched for `/' by using Docker hub search engine, crawled the web page, and obtained the totoal number of non-official public repositories in Docker hub each day. By summing both official image count and non-official image count, we got the total number of images in Docker hub each day. Figure~\ref{fig_image_growth_first} shows the total number of images in Docker hub each day from May 30th to July 11th. The total number of images increased from xxx to xxx, with almost 1,300 images created per day.
@@ -37,7 +37,7 @@ Figure~\ref{fig_image_growth} show the total number of images in Docker hub incr
 %	\label{fig_image_growth}
 %\end{figure*}
 
-A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub. But after 7/11/2017, the Docker Hub removed the index of `/'. Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images. As shown in figure~\ref{fig_image_growth}, the total number of repositories increased from 708,647 to 784,182, with ~1325 new repositories created per day.
+A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub. But after 7/11/2017, the Docker Hub removed the index of `/'. Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images. As shown in figure~\ref{fig_image_growth}, the total number of repositories increased from 708,647 to 784,182, with ~1325 new repositories created per day. Overall, the total number of repositories is increasing, although there are two troughs during the period of 08/06-08/07 and 08/13-08/15.
 
 \subsubsection{Image popularity distribution}
 
@@ -59,7 +59,8 @@ Figure~\ref{fig_pull_cnt_total} shows the repository popularity distribution by 
 
 %1. Fig: Image compression size as the sum of its gzip compressed layer size.
 %56\%
-Figure~\ref{fig_image_size_compression} shows the image compression size distribution. The x-axies shows the image compression size which is the sum of its compressed layer size. The blue line shows the cumulative distribution of image compression size. 56\% of images are less than 50 MB. xxx of images are less than xxx MB. The biggest image is xxx GB while around 120,000 of images are less than ~2 MB. We can conclude that most of the images in Docker hub are small images, less than xxx MB.
+Figure~\ref{fig_image_size_compression} shows the image compression size distribution. The x-axies shows the image compression size which is the sum of its compressed layer size (i.e., original size after downloaded). Note that the compression method used by docker is gzip. The blue line shows the cumulative distribution of images while the red line shows the frequency distribution of images 
+56\% of images are less than 50 MB. xxx of images are less than xxx MB. The biggest image is xxx GB while around 120,000 of images are less than ~2 MB. We can conclude that most of the images in Docker hub are small images, less than xxx MB.
 
 \begin{figure}
 	\centering
