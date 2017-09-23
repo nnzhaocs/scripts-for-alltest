@@ -89,12 +89,12 @@ def load_image_metrics_data(image_mapper):
             #         lj_f.close()
             #         continue
 
-            uncompressed_sum_of_files = uncompressed_sum_of_files + json_data['size']['uncompressed_sum_of_files']
-            compressed_size_with_method_gzip = compressed_size_with_method_gzip + json_data['size']['compressed_size_with_method_gzip']
-            archival_size = archival_size + json_data['size']['archival_size']
+            uncompressed_sum_of_files = uncompressed_sum_of_files + json_data['uncompressed_sum_of_files']
+            compressed_size_with_method_gzip = compressed_size_with_method_gzip + json_data['compressed_size_with_method_gzip']
+            archival_size = archival_size + json_data['archival_size']
 	    layer_cnt = layer_cnt + 1
             file_cnt = file_cnt + json_data['file_cnt']
-	    dir_cnt = dir_cnt + len([x for x in json_data['dirs'] if x['subdir']])
+	    dir_cnt = dir_cnt + json_data['dir_cnt'] #len([x for x in json_data['dirs'] if x['subdir']])
             del json_data
 
     image_metrics_data['uncompressed_sum_of_files'] = uncompressed_sum_of_files
@@ -109,7 +109,7 @@ def load_image_metrics_data(image_mapper):
         image_metrics_data['archival_to_gzip_ratio'] = None #archival_size * 1.0 / compressed_size_with_method_gzip
     image_metrics_data['layer_cnt'] = layer_cnt
     image_metrics_data['file_cnt'] = file_cnt
-    image_metrics_da['dir_cnt'] = dir_cnt
+    image_metrics_data['dir_cnt'] = dir_cnt
     image_metrics_data['version'] = image_mapper['version']
     image_metrics_data['image_name'] = image_mapper['manifest']
 
@@ -155,10 +155,24 @@ def load_image_mappers():
     logging.debug(os.path.join(dest_dir[0]['job_list_dir'],'layer_metrics_datas_Poolworkers.json'))
     with open(os.path.join(dest_dir[0]['job_list_dir'],'layer_metrics_datas_Poolworkers.json'), 'r') as f:
         for line in f:
-            data_json = json.load(line)
+	    layer_data_json = {}
+            data_json = json.loads(line)
             key = data_json['digest']
+	    if not key:
+		break
             print "read"+key
-        layer_metrics_datas[key] = data_json
+	
+	    layer_data_json['archival_to_gzip_ratio'] = data_json['archival_to_gzip_ratio']
+	    layer_data_json['dir_max_depth'] = data_json['dir_max_depth']
+	    layer_data_json['archival_size'] = data_json['archival_size']
+	    layer_data_json['file_cnt'] = data_json['file_cnt']
+	    layer_data_json['dir_cnt'] = data_json['dir_cnt']
+
+	    layer_data_json['compressed_size_with_method_gzip'] = data_json['compressed_size_with_method_gzip']
+	    layer_data_json['uncompressed_sum_of_files'] = data_json['uncompressed_sum_of_files']
+	    layer_data_json['sum_to_gzip_ratio'] = data_json['sum_to_gzip_ratio']
+
+            layer_metrics_datas[key] = layer_data_json
 
     with open(os.path.join(dest_dir[0]['job_list_dir'],'image_mapper.json'), 'r') as f:
         _image_mappers = json.load(f)
