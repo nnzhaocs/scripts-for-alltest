@@ -1,5 +1,5 @@
+
 \section{Results}
-\label{sec:results}
 
 \subsection{Image}
 
@@ -100,28 +100,12 @@ As discussed in~\ref{sec-image-layers}, images are consisted of a set of layers.
 
 Figure~\ref{fig_hist_layer_cnt} shows the histogram of images by layer count in images. About 51,300 images have 8 layers, which is the peak value in the figure. The maximum layer count is 121. The average is 10. 7,060 images have only 1 layer. 
 
-%\begin{figure}
-%	\centering
-%	\begin{minipage}{0.25\textwidth}
-%		\centering
-%		\includegraphics[width=1\textwidth]{graphs/layer_cnt_less.pdf}
-%		\caption{CDF of images by layer count}
-%		\label{fig-layer-cnt1}
-%	\end{minipage}%
-%	\begin{minipage}{0.25\textwidth}
-%		\centering
-%		\includegraphics[width=1\textwidth]{graphs/repeate_layer.pdf}
-%		\caption{CDF of layers by repeat layer count}
-%		\label{fig-repeat-layer-cnt}
-%	\end{minipage}
-%\end{figure}
-
 \begin{figure}[!t]
 	\centering
 	\subfigure[CDF of layer by layer count]{\label{fig_repeate_layer}
 		\includegraphics[width=0.22\textwidth]{graphs/repeate_layer.pdf}
 	}
-	\subfigure[Histogram of images by Layer count in images]{\label{fig_hist_repeate_layer}
+	\subfigure[Histogram of images by layer count in images]{\label{fig_hist_repeate_layer}
 		\includegraphics[width=0.23\textwidth]{graphs/hist_repeate_layer.pdf}
 	}
 	\caption{Compression rate distribution}
@@ -153,101 +137,99 @@ Figure~\ref{fig_hist_repeate_layer} shows the histogram of layers by repeat coun
 \end{figure}
 
 Figure~\ref{fig-dir} shows the cumulative image frequency by directories. 90\% of images have less than 7,344 directories. Half of images have less than 296 directories. The maximum is 1,168,160 while the minimum is 1. The average is 2705. 
-%\begin{figure}
-%	\centering
-%	% Requires \usepackage{graphicx}
-%	\includegraphics[width=0.5\textwidth]{graphs/File_count_for_each_image.png}\\
-%	\caption{File count distribution}\label{fig_image_size_compression}
-%\end{figure}
 
 \subsubsection{File count distribution}
 
-Figure~\ref{fig-file} shows the cumulative image frequency by files. 90\% of images have less than 64,780 directories. Half of images have less than 1,090 files. The maximum is 8,509,958 while the minimum is 1. The average is 21,413. 
+Figure~\ref{fig-file} shows the cumulative image frequency by files. 90\% of images have less than 64,780 files. Half of images have less than 1,090 files. The maximum is 8,509,958 while the minimum is 1. The average is 21,413. 
 
 \subsection{Layer}
 
 \subsubsection{Layer size distribution}
 
-1. Fig: Layer compression size
-
-\begin{figure}
+\begin{figure}[!t]
 	\centering
-	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/Compressed_layer_tarball_size_(MB).png}\\
-	\caption{Layer compression size}\label{fig_image_size_compression}
+	\subfigure[CDF of layers by layer size]{\label{fig_layer_size_cdf}
+		\includegraphics[width=0.22\textwidth]{graphs/layer_size_mb.pdf}
+	}
+	\subfigure[Histogram of layers by layer size]{\label{fig_hist_layer_size}
+		\includegraphics[width=0.23\textwidth]{graphs/hist_layer_size.pdf}
+	}
+	\caption{Layer size distribution}
+	\label{fig-layer-size}
 \end{figure}
 
-2. Fig: Layer Decompressed size
+Like image size, we also measured three kinds of layer size: archival size, compression size, and the sum of containing file size. Compression size is the original layer size after downloaded; The archival size is the decompressed layer size without extracting and unpacking; The sum of containing file size is the sum of its containing file size after decompression with extracting and unpacking.
 
-\begin{figure}
+Figure~\ref{fig_layer_size_cdf} shows the cumulative layer probability by layer size for three kinds of layer size.
+As shown in figure~\ref{fig_layer_size_cdf}, the red curve and blue curve are almost overlapped, which means that the distribution of archival size and the distribution of sum of file size are similar. 90\% of layers have a less than 177 MB uncompression size (i.e., archival size or the sum of containing file size), while 90\% of layers have a less than 63 MB compression size. Half of layers are less than ~4 MB (i.e., uncompression size or compression size). The largest uncompression image size is ~29 GB (23 GB for the sum of file size) while the largest compression size is only 19 GB.
+Figure~\ref{fig_hist_layer_size} shows the histogram of layer by layer size. About 1,080,000 of the layers' compression size is less than 5 MB while 985,000 layers' archival size less than 5 MB, 820,000 layers' sum of file size is less than 5 MB. 
+Figure~\ref{fig-layer-size} shows that the majority of the layers in Docker hub have a smaller size. 90\% of layer can be compressed with less than 63 MB and 77\% of images are less than 63 MB even without compression. 
+
+\subsubsection{Layer compression ratio distribution}
+
+\begin{figure}[!t]
 	\centering
-	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/Uncompressed_layer_size_(MB)_as_sum_of_files.png}\\
-	\caption{Layer decompression size (sum of file)}\label{fig_image_size_compression}
+	\subfigure[CDF of layers by layer size]{\label{fig_cdf_compression_ratio}
+		\includegraphics[width=0.22\textwidth]{graphs/cdf_compression_ratio.pdf}
+	}
+	\subfigure[Histogram of layers by layer size]{\label{fig_his_compression_ratio}
+		\includegraphics[width=0.23\textwidth]{graphs/his_compression_ratio.pdf}
+	}
+	\caption{Layer compression ratio distribution}
+	\label{fig-compression-ratio}
 \end{figure}
 
-\begin{figure}
-	\centering
-	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/Uncompressed_layer_tarball_size_(MB).png}\\
-	\caption{Layer decompression size (archival)}\label{fig_image_size_compression}
-\end{figure}
+Since three kinds of layer size are measured: archival size, compression size, and the sum of containing file size. Thus, we calculated two kinds of compression ratio: the ratio of archival size to compression size and the ratio of Sum of file size to compression size. 
 
-\subsubsection{Compression rate distribution}
+Figure~\ref{fig_cdf_compression_ratio} shows the cumulative layer probability by compression ratio. Overall, we can see that the ratio of archival size to compression size is greater than the ratio of the sum of file size to the compression size. 90\% of images have a archival-to-compression ratio less than ~4 while 90\% of images have a sum of file-to-compression ratio less than 30. Half of the images have a compression ratio (both archival-to-compression and sum of files-to-compression) around 3. The maximum compression ratio are 512,930 and 1026 for the ratio of sum to file size to compression size and the ratio of archival to compression size respectively.
+Figure~\ref{fig_his_compression_ratio} shows a histogram of layer by compression ratio. 587,000 images have a ratio of sum of file size to compression size of 3 and 331,000 images have a ratio of archival size to compression size of 3, which are two peaks shown in the graph.
 
-1. Fig: Compression ration as the layer decompression size divided by the gzip compressed layer size.
-
-\begin{figure}
-	\centering
-	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/Compression_ratio_Uncompressed_layer_size_as_sum_of_files_divided_by_compressed_size_with_method_gzip.png}\\
-	\caption{Compression rate}\label{fig_image_size_compression}
-\end{figure}
-
-\begin{figure}
-	\centering
-	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/Compression_ratio_Uncompressed_layer_tarball_size_divided_by_compressed_size_with_method_gzip.png}\\
-	\caption{Compression rate}\label{fig_image_size_compression}
-\end{figure}
+Figure~\ref{fig-compression-ratio} suggests that layers have a great potential for compression to save space.
 
 \subsubsection{Layer depth distribution}
 
-1. Fig: Layer depth
+After extracting and unpacking gzip compressed layer archival files, we calculated the layer directory depth (i.e., the maximum directory depth). 
+Figure~\ref{fig_layer_depth} shows the cumulative layer probability by layer directory depth. Around 90\% of layers' directory depth is less than 10. 50\% of layers' directory depth is less than 4. 
 
-\begin{figure}
+Figure~\ref{fig_hist_layer_depth} shows the histogram of layers by layer directory depth. About 313,000 layers' layer directory depth is 3, which is the peak value in the figure. The maximum repeat count is 444 while the median is 4. The average is ~5.
+
+\begin{figure}[!t]
 	\centering
-	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/Layer_directory_depth_for_each_image.png}\\
-	\caption{Layer depth distribution}\label{fig_image_size_compression}
+	\subfigure[CDF of layers by layer directory depth]{\label{fig_layer_depth}
+		\includegraphics[width=0.23\textwidth]{graphs/layer_depth.pdf}
+	}
+	\subfigure[Histogram of layers by layer directory depth]{\label{fig_hist_layer_depth}
+		\includegraphics[width=0.22\textwidth]{graphs/hist_layer_depth.pdf}
+	}
+	\caption{Layer directory depth distribution}
+	\label{fig-layer-dir}
 \end{figure}
-
-
-\subsubsection{File count distribution}
-
-1. Fig: File count distribution.
 
 \subsubsection{Directory count distribution}
 
-1. Fig: Directory count distribution.
+Figure~\ref{fig_dir_cnt} shows the cumulative layer probability by directories. 90\% of images have less than 826 directories. Half of images have less than 11 directories. The maximum is 111,940 while the minimum is 1. The average is 273. 
 
 \begin{figure}
 	\centering
-	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/Layer_directory_count_across_all_images.png}\\
-	\caption{Directory count distribution}\label{fig_image_size_compression}
+	\begin{minipage}{0.25\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/dir_cnt.pdf}
+		\caption{Directory count distribution}
+		\label{fig_dir_cnt}
+	\end{minipage}%
+	\begin{minipage}{0.26\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/file_cnt.pdf}
+		\caption{File count distribution}
+		\label{fig_file_cnt}
+	\end{minipage}
 \end{figure}
 
-\subsubsection{Layer directory depth distribution}
+\subsubsection{File count distribution}
 
-1. Fig: Layer directory depth distribution.
-
-
-\subsubsection{Other metrics, layer age}
+Figure~\ref{fig_file_cnt} shows the cumulative image frequency by files. 90\% of images have less than 7,410 files. Half of images have less than 30 files. The maximum is 826,196 while the minimum is 1. The average is 2,200.
 
 \subsection{File}
-
-%\subsubsection{File count distribution}
 
 \subsubsection{File size distribution}
 
@@ -263,4 +245,4 @@ SYMTYPE: 282379663
 	\caption{file type distribution (archival)}\label{xxx}
 \end{figure*}
 
-\subsubsection{Repeat file count distribution}
+%\subsubsection{Repeat file count distribution}
