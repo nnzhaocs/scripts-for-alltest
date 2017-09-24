@@ -1,95 +1,130 @@
 \section{Introduction}
 
 For years, virtual machines served as a cornerstone of resource virtualization
-both on premises and in cloud~\cite{rosenblum2005virtual}.
+both on premises and in the cloud~\cite{rosenblum2005virtual}.
 %
-Recently, however, \emph{container-based} virtualization started to get
+Recently, however, \emph{container-based} virtualization started to gain
 significant traction~\cite{process-containers-linux}.
 %
 According to polls, over 87\% of enterprises are at various stages of adopting
-containers; analysts also predict that by 2020 containers will constitute a
+containers; analysts also predict that by 2020, containers will constitute a
 lucrative \$2.5 billion market~\cite{container-grow-by2020}.
+
+At its core, a container is a set of processes which are isolated by the operating
+system kernel in terms of visibility and resources. This allows containers to share
+the same kernel without being aware of each other.
 %
-At its core, software container is a set of processes which operating system's
-kernel isolates to provide them an illusion that they
-%the containerized processes
-use the system exclusively.
-%
-Linux, for instance, performs visibility isolation (for user identifiers, file systems,
+For example, Linux performs visibility isolation (for user identifiers, file systems,
 network, etc.) using namespaces~\cite{man-namespaces} and enforces resource
 utilization constraints with control groups~\cite{kernel-doc-cgroups}.
 %
 Compared to virtual machines, containers use less memory and storage, are much
-faster to start, and typically cause less execution overhead.
+faster to start, and typically cause less execution
+overhead~\cite{felter2015updated, container-efficiency}.
 
+The rapid increase in use of container technology was largely made possible by
+container management frameworks with Docker~\cite{docker} being one of the most
+popular solutions. Docker combines process containerization with efficient and
+effective runtime environment packaging. Software is packaged in container
+\emph{images}, each consisting of several read-only \emph{layers} and a manifest
+which describes container metadata, \eg what layers make up an image and which command
+to run at container startup. Read-only layers can be shared between different images
+and encapsulate file-system trees for dockerized processes.
 
-
-Though much research was focused on various aspects of
-containerization~\vcomment{Cite}, storage for containers remains an unexplored
-territory~\cite{login-container-storage-options}.
+%Docker is another technology whose popularity grew rapidly in the recent
+%years~\cite{docker}.
 %
-To start designing a novel storage solution for containers,
-or to optimize and fairly evaluate existing ones,
-it is imperative to understand containers' real-world
-use cases and workloads in sufficient details.
+%When Docker starts a container, it combines read-only layers (and an additional
+%writable layer to store changes) into a single namespace and starts the process
+%declared in the manifest in the new namespace~\cite{docker-driver-eval}.
+
+Docker images are stored in a centralized \emph{registry} and are pushed to
+and pulled from the registry by clients as needed. DockerHub~\cite{dockerhub} is
+the most widely used Docker registry installation which, according to our estimates,
+stores more than 400,000 \emph{public} images comprising a total of 2 million layers.
+This amount is steadily increasing and we observed a linear growth of the number of
+images over a period from June to September 2017.
+
+While this massive dataset presents challenges to the registry storage infrastructure,
+it also provides opportunities to better understand how containers are
+used in practice. Currently, there is little known about the contents, use cases, and
+workloads of production containers. In part, this is due to the privacy concerns that
+organizations and individuals have when sharing details of their computing
+environments. However, this knowledge is imperative to design and evaluate novel
+approaches to improve the performance and reliability of containers.
+
+In particular, storage for containers has remained a largely unexplored
+area~\cite{login-container-storage-options}. We believe one of the prime
+reasons is the limited understanding of what data is stored inside containers.
+This knowledge can not only help to directly improve the registry and container
+storage infrastructure but also allows to infer container use cases and from that
+derive representative workloads. While existing work as focused on various
+aspects of containerization~\cite{prev-work-1, prev-work-2, prev-work-3},
+analyzing the contents of images and layers has not received much attention.
+
+%Though much research was focused on various aspects of
+%containerization~\cite{prev-work-1, prev-work-2, prev-work-3}, storage for containers
+%remains an unexplored territory~\cite{login-container-storage-options}.
 %
-Unfortunately, little is known about how containers are used in the real world.
+%To start designing a novel storage solution for containers,
+%or to optimize and fairly evaluate existing ones,
+%it is imperative to understand containers' real-world
+%use cases and workloads in sufficient details.
 %
-In part, this is due to the privacy concerns that organizations and individuals
-have when sharing details of their computing environments.
+%Unfortunately, little is known about how containers are used in the real world.
+%
+%In part, this is due to the privacy concerns that organizations and individuals
+%have when sharing details of their computing environments.
 
 
+%Docker images are stored at the centralized \emph{registry} and are pushed to
+%and pulled from the registry by clients as needed. 
+%
+%The most known Docker registry installation is Docker Hub which according to
+%our estimates stores at least 400,000 \emph{public} images that consist of at
+%least 2,000,000 layers.
 
-Docker is another technology whose popularity grew rapidly in the recent
-years~\cite{docker}.
+In this paper we perform a first, comprehensive, large-scale characterization of
+Docker registry contents.
 %
-It combines process containerization with efficient and effective runtime
-environment packaging.
-%
-Docker packs software in \emph{images} each consisting of a manifest (which
-describes, e.g., what command to start in the container) and several read-only
-\emph{layers}.
-%
-Read-only layers can be shared between different images and encapsulate file-system
-trees for dockerized processes.
-%
-When Docker starts a container, it combines read-only layers (and an additional
-writable layer to store changes) into a single namespace and starts the process
-declared in the manifest in the new namespace~\cite{docker-driver-eval}.
-
-
-
-Docker images are stored at the centralized \emph{registry} and are pushed to
-and pulled from the registry by clients as needed. 
-%
-The most known Docker registry installation is Docker Hub which according to
-our estimates stores at least 400,000 \emph{public} images that consist of at
-least 2,000,000 layers.
+We downloaded over 55TB of Docker images from Docker Hub and analyzed
+traditional storage properties---\eg, file sizes and types, data compression
+ratios, directory depths---as well as Docker-specific properties---e.g., the number
+of layers per image and the amount of layer sharing.
 %
 Our insight in this study is that this massive dataset can be used to understand what
 applications run in containers, how much data they store, and the properties of
 the data.
 
-
-
-
-In this paper we perform first, comprehensive, large-scale characterization of
-Docker registry contents.
-%
-We downloaded over 55TB of Docker images from Docker Hub and analyzed
-traditional storage properties---e.g., file sizes and types, data compression
-ratios, directory depths---as well as Docker-specific properties---e.g., the number
-of layers per image and the amount of layer sharing.
-%
 We found, for example, XXX.
 %
 \vcomment{Here we need to stick an example or two of interesting findings.}
 
-
+From our findings, we infer a set of propositions to describe how Docker is
+used in the real world:
+\lrcomment{Can we summarize our findings in a few propositions to put here?}.
+%
 We believe our findings will improve the understanding of containers' data and lay
 a solid ground for future storage optimizations at clients and registries in
-Docker and beyond. The rest of the paper is organized as follows. We explain
-relevant Docker details in Section~\ref{sec:background} and our methodology in
-Section~\ref{sec:methodology}. We present dataset characterization in
-Section~\ref{sec:results}, describe related work in Section~\ref{sec:related},
-and conclude in Section~\ref{sec:conclusion}.
+Docker and beyond.
+
+After introducing the relevant Docker background~(\S\ref{sec:background}),
+this paper makes the following contributions:
+\begin{compactitemize}
+  \item we describe a comprehensive methodology to retrieve the complete set of
+  	images stored in DockerHub~(\S\ref{sec:methodology});
+  \item we perform the first in-depth analysis of container images stored in
+    DockerHub~(\S\ref{sec:results});
+  \item based on our analysis, we formulate propositions on how Docker is currently
+    used to help guide optimizations and benchmark
+    workloads~(\S\ref{sec:propositions}).
+\end{compactitemize}
+
+After discussing related work~(\S\ref{sec:related}),
+the paper concludes~(\S\ref{sec:conclusion}).
+
+%The rest of the paper is organized as follows. We explain
+%relevant Docker details in Section~\ref{sec:background} and our methodology in
+%Section~\ref{sec:methodology}. We present dataset characterization in
+%Section~\ref{sec:results}, describe related work in Section~\ref{sec:related},
+%and conclude in Section~\ref{sec:conclusion}.
