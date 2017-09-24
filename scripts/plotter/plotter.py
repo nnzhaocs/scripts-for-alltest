@@ -5,12 +5,12 @@
 # from draw_pic import *
 from get_metrics_image_data import *
 from get_metrics_layer_data import *
-from get_metrics_file_data_each import *
+#from get_metrics_file_data_each import *
 from generate_job_list import *
-from parse_metrics_data_to_files import *
-from plot_metrics_image_data import *
-from plot_metrics_layer_data import *
-from plot_metrics_file_data import *
+#from parse_metrics_data_to_files import *
+#from plot_metrics_image_data import *
+#from plot_metrics_layer_data import *
+#from plot_metrics_file_data import *
 # from plot_graph import *
 
 
@@ -35,11 +35,11 @@ def parseArg():
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
-    parser.add_argument(
-        '-F', '--getmetrics_file_data',
-        help="get metrics file data",
-        action="store_true",  # dest="loglevel", const=logging.INFO,
-    )
+#    parser.add_argument(
+#        '-F', '--getmetrics_file_data',
+#        help="get metrics file data",
+#        action="store_true",  # dest="loglevel", const=logging.INFO,
+#    )
 
     parser.add_argument(
         '-J', '--generatejoblist',
@@ -47,29 +47,29 @@ def parseArg():
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
-    parser.add_argument(
-        '-i', '--plotgraph_image',
-        help="plot image graphs",
-        action="store_true",  # dest="loglevel", const=logging.INFO,
-    )
-
-    parser.add_argument(
-        '-l', '--plotgraph_layer',
-        help="plot layer graphs",
-        action="store_true",  # dest="loglevel", const=logging.INFO,
-    )
-
-    parser.add_argument(
-        '-f', '--plotgraph_file',
-        help="plot file graphs",
-        action="store_true",  # dest="loglevel", const=logging.INFO,
-    )
-
-    parser.add_argument(
-        '-p', '--parsemetrics_data',
-        help="plot file graphs",
-        action="store_true",  # dest="loglevel", const=logging.INFO,
-    )
+#    parser.add_argument(
+#        '-i', '--plotgraph_image',
+#        help="plot image graphs",
+#        action="store_true",  # dest="loglevel", const=logging.INFO,
+#    )
+#
+#    parser.add_argument(
+#        '-l', '--plotgraph_layer',
+#        help="plot layer graphs",
+#        action="store_true",  # dest="loglevel", const=logging.INFO,
+#    )
+#
+#    parser.add_argument(
+#        '-f', '--plotgraph_file',
+#        help="plot file graphs",
+#        action="store_true",  # dest="loglevel", const=logging.INFO,
+#    )
+#
+#    parser.add_argument(
+#        '-p', '--parsemetrics_data',
+#        help="plot file graphs",
+#        action="store_true",  # dest="loglevel", const=logging.INFO,
+#    )
 
     return parser.parse_args()
 
@@ -94,17 +94,17 @@ def main():
     if args.generatejoblist:
         run_generatejoblist()
 
-    if args.plotgraph_image:
-        run_plotmetrics_image_data()
-
-    if args.plotgraph_layer:
-        run_plotmetrics_layer_data()
-
-    if args.plotgraph_file:
-        run_plotmetrics_file_data()
-
-    if args.parsemetrics_data:
-        run_parsemetrics_data()
+#    if args.plotgraph_image:
+#        run_plotmetrics_image_data()
+#
+#    if args.plotgraph_layer:
+#        run_plotmetrics_layer_data()
+#
+#    if args.plotgraph_file:
+#        run_plotmetrics_file_data()
+#
+#    if args.parsemetrics_data:
+#        run_parsemetrics_data()
 
 
 if __name__ == '__main__':
