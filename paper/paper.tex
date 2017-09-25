@@ -30,6 +30,7 @@
 \usepackage{graphicx}
 \usepackage{subfigure}
 \usepackage{url}
+\usepackage{xspace}
 \usepackage[hyperfootnotes=false,breaklinks]{hyperref}
 \hypersetup{
 	colorlinks,
@@ -37,6 +38,9 @@
 	linkcolor=blue,
 	urlcolor=blue
 }
+
+\newlength{\gapspace}
+\newcommand{\gap}[1][0cm]{\setlength{\gapspace}{#1}\vspace{.5\gapspace}\textbf{\color{red}[...]}\vspace{.5\gapspace}\xspace}
 
 %\newcommand{\nancomment}[2][blue]{\textcolor{#1}{\textit{#2}}}
 \newcommand{\nancomment}[1]{\noindent\textcolor{blue}{\bf $\blacksquare$ Nannan: #1}}
