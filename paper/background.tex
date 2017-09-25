@@ -1,37 +1,44 @@
 \section{Background}
 \label{sec:background}
 
-\nancomment{
-	figures are stored in google drive, the link is pinned in slacker;
-	%https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
-	figures/fig-docker-architecture.pdf}\\
+%\nancomment{
+%	figures are stored in google drive, the link is pinned in slacker;
+%	%https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
+%	figures/fig-docker-architecture.pdf}\\
 
 
-Hypervisors based server virtualization technologies (e.g., VMware~\cite{xxx},
-Xen~\cite{xxx}, and KVM~\cite{xxx}) have been extensively used by most of cloud
-platforms such as Amazon EC2, which consists of a virtual machine monitor (VMM) on
-top of a host operating system. It supports the concurrent execution of multiple
-guest operating systems instances within virtual machines (VMs) and provide users
-with benefits ranging from application isolation through server consolidation to
-improve disaster recovery and faster server provisioning~\cite{xxx}. Nevertheless,
-hypervisor-based virtualization has a high performance overhead because of execution
-time overhead caused by executing privileged instructions, specially for applications
-which relies on I/O operations and memory overhead caused by space reservation for
-the VMs buffer and various virtualization data structures.
+Virtual machine (VM) based server virtualization technologies (\eg, VMware~\cite{xxx},
+Xen~\cite{xxx}, or KVM~\cite{xxx}) have been extensively used by most cloud
+platforms such as Amazon EC2 as it provides strong isolation guarantees.
+%
+%which consists of a virtual machine monitor (VMM) on top of a host operating system.
+%It supports the concurrent execution of multiple
+%guest operating systems instances within virtual machines (VMs) and provide users
+%with benefits ranging from application isolation through server consolidation to
+%improve disaster recovery and faster server provisioning~\cite{xxx}.
+%
+However, they also come with high overhead in terms of CPU, memory, and I/O as
+each VM requires its own operating system kernel and system calls have to go
+through a privileged hypervisor. This causes long VM startup times and slows down
+processing.
+%
+%Nevertheless,
+%hypervisor-based virtualization has a high performance overhead because of execution
+%time overhead caused by executing privileged instructions, specially for applications
+%which relies on I/O operations and memory overhead caused by space reservation for
+%the VMs buffer and various virtualization data structures.
 %that allows dynamically partitioning of a machine and sharing the available physical
 %resources such as CPU, storage, memory and I/O devices.
 %
-\vcomment{The sentence above is 12 (!) lines long (in pdf)! We need to break it (and
-other such sentences) in several sentences.  In a scientific paper, an optimal
-sentence is of about 3 lines long and almost never longer than 6 lines (I'm talking
-about 2-column format, as used by FAST).}
-\nancomment{addressed}
-%
-\vcomment{The paragraph above might be too detailed or out-of-scope of the paper.
-Let's see how it reads later.}
-\nancomment{addressed}
-
-
+%\vcomment{The sentence above is 12 (!) lines long (in pdf)! We need to break it (and
+%other such sentences) in several sentences.  In a scientific paper, an optimal
+%sentence is of about 3 lines long and almost never longer than 6 lines (I'm talking
+%about 2-column format, as used by FAST).}
+%\nancomment{addressed}
+%%
+%\vcomment{The paragraph above might be too detailed or out-of-scope of the paper.
+%Let's see how it reads later.}
+%\nancomment{addressed}
 
 %
 %
@@ -45,55 +52,49 @@ Let's see how it reads later.}
 %virtualization data structures, such as shadow page tables~\cite{}, which increases
 %with the number of virtual CPUs and the configured memory for the guest OSs~\cite{}.
 %
-\vcomment{First, I think we do not need to explain so much details of CPU overhead.
+%\vcomment{First, I think we do not need to explain so much details of CPU overhead.
 %
-I think for this paper it is sufficient to list overheads: memory, I/O, CPU and have
-corresponding citations.
+%I think for this paper it is sufficient to list overheads: memory, I/O, CPU and have
+%corresponding citations.
 %
-(Notice I/O and memory overheads are more prominent in hypervisor virtualization).
+%(Notice I/O and memory overheads are more prominent in hypervisor virtualization).
 %
-Second, for memory overhead, we need to mention that hyperviser-based virtualization
-keeps complete copy of every guest OS in memory (compared to containers).
+%Second, for memory overhead, we need to mention that hyperviser-based virtualization
+%keeps complete copy of every guest OS in memory (compared to containers).
 %
-Third, somewhere we need to state that VM start time is long (give estimates)
-(comared to containers).}
-\nancomment{addressed}
+%Third, somewhere we need to state that VM start time is long (give estimates)
+%(comared to containers).}
+%\nancomment{addressed}
 
 
+Recent container-based virtualization (such as Linux Containers~(LXC)~\cite{xxx} or
+OpenVZ~\cite{bibid}) has emerged as a lightweight virtualization alternative
+which promises near native performance.
+%
+Compared to VMs, container virtualization works at the
+operating system level. %and does not emulate another operating system.
+%
+All containers are isolated from each other but still share the same operating
+system kernel. This significantly reduces overhead as less storage and memory is
+required and system calls go directly to the kernel. 
+%
+Linux containers offer namespace isolation through
+\textit{namespaces}~\cite{linux-namespaces}
+while managing resources via \textit{cgroups}~\cite{linux-cgroups}.
 
 
+%\vcomment{Here, we briefly need to state what are added Docker functionalities and
+%benefits, rather than going into details about CoW. Basically, we need to say that
+%Docker combines sofware packaging with containerization which allows bla-bla-bla.}
+%\nancomment{I think these are two basic techniques for docker}
+%
+%Docker incorporates copy-on-write union filesystems (UnionFS) to avoid duplication
+%and enable versioning.
+%
+%It couples the above two components with a number of features, like portability,
+%re-use, and reproducibility.
 
-Recent container-based virtualization (such as Linux Containers(LXC)~\cite{xxx},
-OpenVZ~\cite{bibid}, and Docker~\cite{}) emerges as a lightweigh virtualization,
-which promises a near-native performance.
-%
-As opposed to virtual machines (VMs), container based virtualization works at
-operating system level and do not emulate another operating system.
-%
-In this case, all the virtual instances share a single operating system kernel,
-which significantly reduces the overhead imposed through VMs.
-%
-Linux containers offer isolation through~\textit{namespaces} while manages resource
-and controls processes via \textit{cgroups}~\cite{}.
-%
-Docker container is a new popular container-based virtualization technology that
-extends LXC with higher level APIs and additional functionality.
-%
-\vcomment{Here, we briefly need to state what are added Docker functionalities and
-benefits, rather than going into details about CoW. Basically, we need to say that
-Docker combines sofware packaging with containerization which allows bla-bla-bla.}
-\nancomment{I think these are two basic techniques for docker}
-%
-Docker incorporates copy-on-write union filesystems (UnionFS) to avoid duplication
-and enable versioning.
-%
-It couples the above two components with a number of features, like portability,
-re-use, and reproducibility.
-
-
-%Docker is an open source project that automates the deployment of applications
-%inside Linux Containers, and provides the capability to package an application with
-%its runtime dependencies into a container. It provides a Docker CLI command line
+%It provides a Docker CLI command line
 %tool for the lifecycle management of image-based containers. Linux containers enable
 %rapid application deployment, simpler testing, maintenance, and troubleshooting
 %while improving security.
@@ -147,24 +148,29 @@ re-use, and reproducibility.
 %container as a lightweight equivalent of a virtual machine.
 
 %how container isolate.
-Docker containers create a wrapped, controlled environment on the host machine in
-which applications can be run in isolated manner via two main Linux kernel
-features -- kernel namespaces which are used to split the view that processes have
-of the system and control groups (cgroups) that restricts the resource usage of a
-process or group of processes.
-%
-Currently, Linux kernel provides six different namespaces, PID, IPC, NET, MNT,
-UTS, and USER for process IDs, IPC requests, networking, file-system mount points,
-host names, and user IDs~\cite{xxx}~\cite{xxx}.
-%
-Controlled resources include CPU shares, RAM, network bandwidth, and disk I/O.
-%
-\vcomment{This paragraph seems to belong to the Section above (on containerization)
-rather than to Docker section}.
-\nancomment{addressed}
+%Docker containers create a wrapped, controlled environment on the host machine in
+%which applications can be run in isolated manner via two main Linux kernel
+%features -- kernel namespaces which are used to split the view that processes have
+%of the system and control groups (cgroups) that restricts the resource usage of a
+%process or group of processes.
+%%
+%Currently, Linux kernel provides six different namespaces, PID, IPC, NET, MNT,
+%UTS, and USER for process IDs, IPC requests, networking, file-system mount points,
+%host names, and user IDs~\cite{xxx}~\cite{xxx}.
+%%
+%Controlled resources include CPU shares, RAM, network bandwidth, and disk I/O.
+%%
+%\vcomment{This paragraph seems to belong to the Section above (on containerization)
+%rather than to Docker section}.
+%\nancomment{addressed}
 
 
 \subsection{Docker}
+
+Docker is a new popular container-based virtualization technology that extends LXC
+with higher level APIs and additional functionality. It automates the deployment of
+applications inside Linux Containers, and provides the capability to package an
+application with its runtime dependencies into a container.
 
 \vcomment{Nannan, we need to move ALL subsections to separate *.tex files.}
 \nancomment{will do it soon}
@@ -178,67 +184,89 @@ rather than to Docker section}.
 %Containers are an abstraction at the app layer that packages code and dependencies
 %together.
 
-%how container deameon.
-As Figure~\ref{fig-docker-architecture} shows, Docker ecosystem includes various
-components, i.e., Docker daemon, Docker container, Docker image, and Docker Hub.
-%
-Docker Deamon, known as Docker engine, can create images from Dockerfiles
-(through `\textit{docker build}'), launch containers (through `\textit{docker run}'),
-and fetch non-local images from Docker registry as well as publish new images to
-Docker registry such as Docker Hub (through `\textit{docker pull}' or
-`\textit{docker push}').
-%
-It controls isolation levels of containers including cgroups, namespaces,
-capabilities restrictions, etc., and monitor them to trigger actions such as
-restart, and spawn shells into running containers for administration purposes.
-%
-\vcomment{@Nannan, I think I see the structure  you propose for this section:
-describe Docker components and their relationship using a figure. I think it is
-fine. But we desperately need the figure to write/revise this text consciously.}
-
-
 \begin{figure}
 	\centering
 	% Requires \usepackage{graphicx}
 	\includegraphics[width=0.5\textwidth]{graphs/fig-docker-architecture}
-	\caption{Docker ecosystem}\label{fig-docker-architecture}
+	\caption{Docker ecosystem \lrcomment{We need to update the figure to capture
+	all the main interactions between the components and remove some unneeded
+	detail, \eg official and unofficial repositories}}\label{fig-docker-architecture}
 \end{figure}
 
+As shown in Figure~\ref{fig-docker-architecture}, the Docker ecosystem consists
+of a variety of components:
+%i.e., Docker daemon, Docker container, Docker image, and Docker Hub.
+%
+Users can interact with Docker via the Docker \emph{client}, which sends commands
+to the Docker \emph{daemon}. The daemon is responsible for \emph{running} containers
+from existing images. Additionally, the daemon supports \emph{building} new images and
+\emph{pushing} them to a Docker \emph{registry}. In case a user wants to launch a
+container from an image that is not available locally, the daemon will \emph{pull}
+the required image from the registry.
 
-\subsection{Docker storage}
+%Docker Deamon, known as Docker engine, can create images from Dockerfiles
+%(through `\textit{docker build}'), launch containers (through `\textit{docker run}'),
+%and fetch non-local images from Docker registry as well as publish new images to
+%Docker registry such as Docker Hub (through `\textit{docker pull}' or
+%`\textit{docker push}').
+%%
+%It controls isolation levels of containers including cgroups, namespaces,
+%capabilities restrictions, etc., and monitor them to trigger actions such as
+%restart, and spawn shells into running containers for administration purposes.
+%%
+%\vcomment{@Nannan, I think I see the structure  you propose for this section:
+%describe Docker components and their relationship using a figure. I think it is
+%fine. But we desperately need the figure to write/revise this text consciously.}
 
-\subsubsection{Docker image and layers}
+
+%\subsection{Docker storage}
+
+\subsection{Images and layers}
 \label{sec-image-layers}
-% what is image containning
-Docker image is an immutable and ``executable'' package that is essentially a
-snapshot of a container. Docker lunches its containers from Docker images.
-%
-\vcomment{I don't think the statement above is accurate. Image is not a ``file'',
-right?}
-\nancomment{addressed.}
-%
-Docker images packages an application only with its runtime dependencies, such as
-binaries, and libraries to maintain lightweight characteristics. Docker images are
-composed of a series of individual layers along with metadata in the JavaScript
-Object Notation (JSON) format called manifest. Every Docker image starts from a
-base image (typically, a lightweight Linux distribution). When users start a
-container via ``docker run", Docker add a new writable layer on top of the
-underlying layers. Instead of directly writing the changes, such as writing new
-files, modifying existing files, and deleting files, to the image of the container,
-Docker write the modifications to the writable layer. The writable layer is deleted
-when the container is deleted. For example, if the user
 
+At the center of Docker is the concept of container images for packaging,
+distributing, and running specific applications.
+%
+%Images are
+%Docker image is an immutable and ``executable'' package that is essentially a
+%snapshot of a container. Docker lunches its containers from Docker images.
+%
+%\vcomment{I don't think the statement above is accurate. Image is not a ``file'',
+%right?}
+%\nancomment{addressed.}
+%
+Docker images package an application with all its runtime dependencies, \eg
+binaries and shared libraries.
+%to maintain lightweight characteristics.
+Docker images are composed of a series of individual \emph{layers}.
+A layer contains a subset of the files in the image and 
+usually represents a specific component/dependency of the image, \eg libc or
+Java. This modular design allows layers to be shared between two containers if both
+container images depend on the same component. 
+
+%Docker images are
+%composed of a series of individual layers along with metadata in the JavaScript
+%Object Notation (JSON) format called manifest. Every Docker image starts from a
+%base image (typically, a lightweight Linux distribution).
+
+Layers are read-only. When users start a
+container via ``docker run'', Docker creates a new writable layer on top of the
+underlying layers. Any changes made to files in the image will only be made
+inside the writable layer via a copy-on-write mechanism. This leaves layers
+unmodified throughout the lifetime of a container and enables the sharing of
+layers across different containers. The writable layer is deleted
+when the container is deleted.
  
 
-Since each container has its own writable layer, and all changes are stored in this
-layer, multiple containers can share access to the same underlying image and yet
-have their own data state~\cite{xxx} since the underlying image is read-only copy
-of file system data. In this case, each layer contains the data modifications
-relative to the previous layer and each layer has a \textit{parent}, except for
-the base images. The base images therefore organizes the images in trees and the
-base images are the roots of trees. This structure makes the image distribution
-process more efficiently since only the modification related to a image needs to
-be distributed.
+%Since each container has its own writable layer, and all changes are stored in this
+%layer, multiple containers can share access to the same underlying image and yet
+%have their own data state~\cite{xxx} since the underlying image is read-only copy
+%of file system data. In this case, each layer contains the data modifications
+%relative to the previous layer and each layer has a \textit{parent}, except for
+%the base images. The base images therefore organizes the images in trees and the
+%base images are the roots of trees. This structure makes the image distribution
+%process more efficiently since only the modification related to a image needs to
+%be distributed.
 
 %, which are the roots of the trees.
 %
@@ -274,45 +302,44 @@ be distributed.
 %modifying existing files, and deleting files, are written to this thin writable
 %layer.
 %
-\vcomment{Need to exlain at which granularity are the changes maintained.}
+%\vcomment{Need to exlain at which granularity are the changes maintained.}
 %
 %Each layer has a parent, except for the base layers/images, which are the roots of
 %the trees.
 %
 %This structure avoid Docker pulling redundant layers.
 %
-\vcomment{Explain the last sentence in a bit more details.
+%\vcomment{Explain the last sentence in a bit more details.
 %
-Right now it is not clear who pulls what and why layers reduce pulling.
+%Right now it is not clear who pulls what and why layers reduce pulling.
 %
-In fact, we use ``pull'' here for the very first time.
+%In fact, we use ``pull'' here for the very first time.
 %
-Maybe we need to explain it earlier, in Docker section.}
-\nancomment{addressed.}
-
-
+%Maybe we need to explain it earlier, in Docker section.}
+%\nancomment{addressed.}
 
 %
+Besides the layers, an image also contains a \emph{manifest}.
+The manifests describe the various constituents of a docker image, such as the
+target platform which the image runs on and the \lrcomment{the following is unclear}
+configuration the runtime uses to set up the container.
+%
+Moreover, it contains a list of layer digests for all layers required by the image.
+%
+The Manifest has two versions: schema version 1 and schema version 2.
+%
+Schema version 2 uses a config field, which references a JSON file that contains the
+configuration information.
+%
+Schema version 2 also allows multi-architecture images through a \emph{fat manifest},
+which references image manifests for platform-specific versions of an image.
+
+\lrcomment{What about schema version 1? How are they different and why is it relevant
+for the paper?}
+
 \vcomment{I think it would be good to have here a simple figure that depicts
 relationship between image, image manifest, and layers, and how sharing of layers
 happens.}
-%
-Image manifests describe the various constituents of a docker image, such as platform
-which the image runs on and the configuration the runtime uses to set up the
-container.
-%
-Moreover, it contains a list of file system layers'digests contained in this image.
-%
-Manifest has two versions: schema version 1 and schema version 2.
-%
-Schema version 2 uses a config field references a JSON file that contains the
-configuration information.
-%
-Schema version 2 allows multi-architecture images, through a `fat manifest' which
-references image manifests for platform-specific versions of an image.
-
-
-
 
 
 %uses a config field references a configuration object for
@@ -341,8 +368,10 @@ references image manifests for platform-specific versions of an image.
 \subsubsection{Docker client storage}
 % what is .., benefit
 
+\lrcomment{TODO: shorten to one paragraph and merge with previous section}
 \vcomment{need to make sure that we talk about Docker client storage, not registry or
 anything else.}
+
 %
 The data management of container is superintend either by Docker storage drivers
 (e.g. AUFS, OverlayFS, Btrfs, etc) or by docker data volumes.
@@ -538,11 +567,11 @@ entire file.
 
 
 
-\subsection{Docker Hub Registry}
+\subsection{DockerHub Registry}
 
-A Docker registry is a Software-as-a-Service platform for storing and sharing Docker
-images (both public and private). Docker hub is one of the most popular Docker
-registries, via which users can upload their images and download them. Users can
+A Docker registry is a platform for storing and sharing container
+images. DockerHub is one of the most popular registries, via which users can upload
+their images and download them. Users can
 also search for published images and download them through RESTful APIs with the
 Docker client.
 %Furthermore,
@@ -551,16 +580,17 @@ Docker client.
 %The Docker Hub Registry is a central storage of images and 
 %allows users push their Docker images to it and pulling Docker images from it.
 %
-\vcomment{Docker Hub is just one instance of registry installed.
+%\vcomment{Docker Hub is just one instance of registry installed.
 %
-I.e., Docker Registy != Docker Hub. Rephrase above.
+%I.e., Docker Registy != Docker Hub. Rephrase above.
 %
-}
-%
-A Docker hub repository stores a set of Docker images with different tagged versions.
-%The repositories in Docker Hub is either public or private.
+%}
 %
 
+Images are stored in the registry in \emph{repositories}. A repository is
+\lrcomment{describe what a repository is} and stores different versions, tagged
+by their version number, of a specific image. DockerHub supports both public and
+private repositories.
 The user repositories are namespaced, that is, their name is
 ``$\langle namespace\rangle/\langle repository name \rangle$",
 where~\textit{namespace} is the user name. While the official repositories which
@@ -568,39 +598,46 @@ are directly provided by Docker Inc. called ``$\langle repository name \langle$"
 %
 \vcomment{We need to exlain what is a repository.}
 %
-\vcomment{Somewhere we need to say that clients talk to registries using REST API.}
+%\vcomment{Somewhere we need to say that clients talk to registries using REST API.}
 
 
 
-Before Docker v1.10, every image and layer were assigned a randomly generated string
-called UUID identifier.
+Before Docker v1.10, every image and layer was assigned a randomly generated UUID
+as an identifier.
 %
 \vcomment{how long was UUID?}
 %\nancomment{long or short.}
 %
-Starting from v1.10 Docker registry implemented a content addressable method using an
-ID (i.e., digest), based on a secure hash (i.e., SHA-256) of the image and layer data.
+Starting from v1.10, the Docker registry implemented a content addressable method
+using an ID (also called \emph{digest}), based on a secure hash (SHA-256) of the
+image and layer data \lrcomment{Is both image and layer data used to compute hash for
+a layer?}.
 %
-This new method avoids ID collisions and guarantee data integrity after pull, push,
-load, or save.
+This new method makes ID collisions highly unlikely and allows to verify data
+integrity after pulling or pushing an image.
 %
-\vcomment{Hashes theoretically can still collide.}
+%\vcomment{Hashes theoretically can still collide.}
 %
-\vcomment{I think we need to say which hash is used}
-\nancomment{addressed.}
+%\vcomment{I think we need to say which hash is used}
+%\nancomment{addressed.}
 %
-It also brings better sharing of layers by allowing many images to share their
-layers even if they didn't come from the same build.
+%It also brings better sharing of layers by allowing many images to share their
+%layers even if they didn't come from the same build.
 %
-Addressing images by their content also lets Docker engine more easily detect
-if something has already been downloaded during a pulling to avoid pulling
-duplicate layers.
+Addressing images by their content also enables faster checks for whether a
+layer is shared between two containers and whether it is already available
+in local storage.
+%Docker engine more easily detect
+%if something has already been downloaded during a pulling to avoid pulling
+%duplicate layers.
 %
-\vcomment{Are the last two sentences state the same or not?}
-\nancomment{addressed. no}
+%\vcomment{Are the last two sentences state the same or not?}
+%\nancomment{addressed. no}
 
-
-
+\lrcomment{I think we need another paragraph, describing, how images are stored
+in the registry (tarballs) and where they are stored (independently from images
+or duplicated for each image that depends on them. It would also be interesting
+to describe, how the storage driver model maps to the registry.}
 
 
 %Content addressability is the foundation for the new distribution features. The
