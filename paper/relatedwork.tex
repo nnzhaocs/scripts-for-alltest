@@ -1,5 +1,21 @@
 \section{Related work}
 \label{sec:related}
 
-\nancomment{do we need a relatedwork?}\\
-\vcomment{Absolutely!}
+%\nancomment{do we need a relatedwork?}\\
+%\vcomment{Absolutely!}
+\textbf{Analysis on Docker}:
+A lot of analysis are conducted on Docker container due to its popularity currently. 
+Harter, Salmon, Liu, and Arpaci-Dusseau developed a benchmark named HelloBench to characterized 57 images (compression ratio, layer depth, and file size), and evaluate the pull, push, and run time of 57 containers~\cite{xxx}.
+Cito, Schermann, Wittern, Leitner, Zumberi, and Gall conducted an empirical study for characterizing the Docker ecosystem, prevalent quality issues, and the evolution of Docker files based on a data set of 70,000 Docker files~\cite{xxx}.
+DOCKERFINDER is a microservice-based prototype that allows searching for images based on multiple attributes, e.g., image name, image size, or supported software distributions~\cite{xxx}. It also crawls images from remote Docker registry.
+Shu, Gu, and Enck studied the security vulnerabilities in Docker Hub images based on a dataset of 356,218 images and found there is a strong need for more automated and systematic methods of applying security updates to Docker images.
+Bhimani, Yang, and Mi characterized the performance of persistent storage option for I/O intensive containerized applications with NVMe SSDs.
+
+\textbf{Analysis on file systems}:
+File system contents have been widely studied in different operating system environments.
+Douceur and Bolosky collected and analyzed over ten-thousand Windows file systems~\cite{xxx}. They found that the size of file and directory are fairly consistent across file systems, but file lifetimes and file-name extensions vary based on the job function of the users. 
+Agrawal, Bolosky, Douceur, and Lorch collected and analyzed a five-year file-system metadata over 60,000 Windows file systems, and presented the temporal trends relating to file size, file type, and directory size~\cite{xxx}.
+Sienknecht, Friedrich, Martinka, Friedenbach collected file system data from UNIX systems based on a dataset of 46 systems, 267 file systems, 151,000 directories and 2,300,000 files and found small files dominate in count~\cite{xxx}.
+%Traeger, Zadok, Joukov, and Wright surveyed 415 file system and storage benchmarks from 106 recent papers~\cite{xxx}.  
+
+
