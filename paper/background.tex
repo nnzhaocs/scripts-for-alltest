@@ -7,7 +7,7 @@
 %	figures/fig-docker-architecture.pdf}\\
 
 
-Virtual machine (VM) based server virtualization technologies (\eg, VMware~\cite{xxx},
+Virtual Machine (VM) based server virtualization technologies (\eg, VMware~\cite{xxx},
 Xen~\cite{xxx}, or KVM~\cite{xxx}) have been extensively used by most cloud
 platforms such as Amazon EC2 as it provides strong isolation guarantees.
 %
@@ -169,11 +169,11 @@ while managing resources via \textit{cgroups}~\cite{linux-cgroups}.
 
 Docker is a new popular container-based virtualization technology that extends LXC
 with higher level APIs and additional functionality. It automates the deployment of
-applications inside Linux Containers, and provides the capability to package an
+applications inside Linux containers, and provides the capability to package an
 application with its runtime dependencies into a container.
 
-\vcomment{Nannan, we need to move ALL subsections to separate *.tex files.}
-\nancomment{will do it soon}
+%\vcomment{Nannan, we need to move ALL subsections to separate *.tex files.}
+%\nancomment{will do it soon}
 %Docker is an open platform for developers and system administrators to build, ship,
 %and run distributed applications using Docker Engine, a portable, lightweight
 %runtime and packaging tool, and Docker Hub, a cloud service for sharing applications
@@ -194,10 +194,10 @@ application with its runtime dependencies into a container.
 \end{figure}
 
 As shown in Figure~\ref{fig-docker-architecture}, the Docker ecosystem consists
-of a variety of components:
+of a variety of components.
 %i.e., Docker daemon, Docker container, Docker image, and Docker Hub.
 %
-Users can interact with Docker via the Docker \emph{client}, which sends commands
+Users interact with Docker via the Docker \emph{client}, which sends commands
 to the Docker \emph{daemon}. The daemon is responsible for \emph{running} containers
 from existing images. Additionally, the daemon supports \emph{building} new images and
 \emph{pushing} them to a Docker \emph{registry}. In case a user wants to launch a
@@ -221,7 +221,7 @@ the required image from the registry.
 
 %\subsection{Docker storage}
 
-\subsection{Images and layers}
+\subsection{Docker images and layers}
 \label{sec-image-layers}
 
 At the center of Docker is the concept of container images for packaging,
@@ -240,7 +240,7 @@ binaries and shared libraries.
 %to maintain lightweight characteristics.
 Docker images are composed of a series of individual \emph{layers}.
 A layer contains a subset of the files in the image and 
-usually represents a specific component/dependency of the image, \eg libc or
+usually represents a specific component/dependency of the image, \eg C library or
 Java. This modular design allows layers to be shared between two containers if both
 container images depend on the same component. 
 
@@ -249,13 +249,16 @@ container images depend on the same component.
 %Object Notation (JSON) format called manifest. Every Docker image starts from a
 %base image (typically, a lightweight Linux distribution).
 
-Layers are read-only. When users start a
+Image layers are read-only. However, when users start a
 container via ``docker run'', Docker creates a new writable layer on top of the
-underlying layers. Any changes made to files in the image will only be made
-inside the writable layer via a copy-on-write mechanism. This leaves layers
+underlying read-only layers. Any changes made to files in the image will be
+reflected inside the writable layer via a copy-on-write mechanism. This leaves layers
 unmodified throughout the lifetime of a container and enables the sharing of
-layers across different containers. The writable layer is deleted
-when the container is deleted.
+layers across different containers.
+Docker supports multiple storage drivers, e.g., Aufs, OverlayFS, Btrfs,
+device-mapper, to efficiently combine read-only and writable layers
+in a single namespace~\cite{docker-driver-eval}.
+The writable layer is deleted when the container is deleted.
  
 
 %Since each container has its own writable layer, and all changes are stored in this
@@ -320,26 +323,25 @@ when the container is deleted.
 
 %
 Besides the layers, an image also contains a \emph{manifest}.
-The manifests describe the various constituents of a docker image, such as the
-target platform which the image runs on and the \lrcomment{the following is unclear}
-configuration the runtime uses to set up the container.
+The manifest describes the various constituents of a Docker image, such as the
+target hardware platform and environment settings.
 %
-Moreover, it contains a list of layer digests for all layers required by the image.
+Moreover, the manifest contains a list of layer digests for all layers required by the image.
 %
-The Manifest has two versions: schema version 1 and schema version 2.
+%Manifests come in two schemas: older schema 1 and newer schema 2.
 %
-Schema version 2 uses a config field, which references a JSON file that contains the
-configuration information.
+%Schema version 2 uses a config field, which references a JSON file that contains the
+%configuration information.
 %
-Schema version 2 also allows multi-architecture images through a \emph{fat manifest},
-which references image manifests for platform-specific versions of an image.
+%Schema version 2 also allows multi-architecture images through a \emph{fat manifest},
+%which references image manifests for platform-specific versions of an image.
 
-\lrcomment{What about schema version 1? How are they different and why is it relevant
-for the paper?}
-
-\vcomment{I think it would be good to have here a simple figure that depicts
-relationship between image, image manifest, and layers, and how sharing of layers
-happens.}
+%\lrcomment{What about schema version 1? How are they different and why is it relevant
+%for the paper?}
+%
+%\vcomment{I think it would be good to have here a simple figure that depicts
+%relationship between image, image manifest, and layers, and how sharing of layers
+%happens.}
 
 
 %uses a config field references a configuration object for
@@ -365,71 +367,71 @@ happens.}
 %\end{enumerate}
 
 
-\subsubsection{Docker client storage}
+%\subsubsection{Docker client storage}
 % what is .., benefit
 
-\lrcomment{TODO: shorten to one paragraph and merge with previous section}
-\vcomment{need to make sure that we talk about Docker client storage, not registry or
-anything else.}
+%\lrcomment{TODO: shorten to one paragraph and merge with previous section}
+%\vcomment{need to make sure that we talk about Docker client storage, not registry or
+%anything else.}
 
 %
-The data management of container is superintend either by Docker storage drivers
-(e.g. AUFS, OverlayFS, Btrfs, etc) or by docker data volumes.
+%The data management of container is superintend either by Docker storage drivers
+%(e.g. AUFS, OverlayFS, Btrfs, etc) or by docker data volumes.
 %
-Storage driver manage container storage and mounting, which provides a view of layer
-data via a mount point that the container uses as its root file system.
+%Storage driver manage container storage and mounting, which provides a view of layer
+%data via a mount point that the container uses as its root file system.
 %
-Storage driver usually implements copy-on-write (CoW) technique which means it does
-not update the data.
+%Storage driver usually implements copy-on-write (CoW) technique which means it does
+%not update the data.
 %
-Instead, storage driver creates a new copy of that part of data which is stored
-somewhere else on the disk keeping the old part as it is.
+%Instead, storage driver creates a new copy of that part of data which is stored
+%somewhere else on the disk keeping the old part as it is.
 %
-\vcomment{In previous three sentences "it" is used 3 times :)
+%\vcomment{In previous three sentences "it" is used 3 times :)
 %
-It's hard to follow the logic.
+%It's hard to follow the logic.
 %
-In general, in formal text, where possible pronouncs (it, they, etc.) should be
-avoided and actual nouns used instead.}
-\nancomment{addressed.}
+%In general, in formal text, where possible pronouncs (it, they, etc.) should be
+%avoided and actual nouns used instead.}
+%\nancomment{addressed.}
 %
-Docker volume is mechanism to automatically provide data persistence for containers.
+%Docker volume is mechanism to automatically provide data persistence for containers.
 %
-A volume is a directory or a file that can be mounted directly inside the container.
+%A volume is a directory or a file that can be mounted directly inside the container.
 %
-The I/O operations through this mount path are independent of storage driver and
-executed directly on the host.
+%The I/O operations through this mount path are independent of storage driver and
+%executed directly on the host.
 
 
 
-Docker provides a variety of pluggable storage drivers that are based on Linux
-filesystem or volume manager, including advanced multi-layered unification
-filesystem (aufs), B-tree file system (Btrfs), device mapper, or OverlayFS.
+%Docker provides a variety of pluggable storage drivers that are based on Linux
+%filesystem or volume manager, including advanced multi-layered unification
+%filesystem (aufs), B-tree file system (Btrfs), device mapper, or OverlayFS.
 %
-All of them use Copy-on-write(CoW) strategy to maximize storage efficiency.
+%All of them use Copy-on-write(CoW) strategy to maximize storage efficiency.
 %
 %AUFS is the default storage driver for Docker container.
-Aufs and device mapper are most commonly used in modern Linux distributions
+%Aufs and device mapper are most commonly used in modern Linux distributions
 %
-\vcomment{It is not default in RHEL/CentOS, where device-mapper is the default.
+%\vcomment{It is not default in RHEL/CentOS, where device-mapper is the default.
 %
-I think we can say
-that Aufs and DM are most commonly used in modern distributions.
+%I think we can say
+%that Aufs and DM are most commonly used in modern distributions.
 %
-Notice, you also then need to adjust/remove/rewrite the sentences below.}
-\nancomment{addressed.}
+%Notice, you also then need to adjust/remove/rewrite the sentences below.}
+%\nancomment{addressed.}
 %
-Aufs is a union filesystem which allows files and directories in different file
-systems to be combined and presented as a single consistent file system. 
-The modification made to an existing file is performed via copy$\_$up operation,
-which is to copy the entire file from the image layer where it exists to the
-writable container layer. The container then writes the changes to the new copy
-of the file in the container layer. Device mapper operates at the block level,
-rather than file level for maximum performance during copy-on-write (CoW)
-operations. To Update an existing file, only the relevant block of the file is
-read from the nearest layer where it exists. When the container writes the file,
-only the modified blocks are written to the container's writable layer instead of
-entire file.
+%Aufs is a union filesystem which allows files and directories in different file
+%systems to be combined and presented as a single consistent file system. 
+%The modification made to an existing file is performed via copy$\_$up operation,
+%which is to copy the entire file from the image layer where it exists to the
+%writable container layer. The container then writes the changes to the new copy
+%of the file in the container layer. Device mapper operates at the block level,
+%rather than file level for maximum performance during copy-on-write (CoW)
+%operations. To Update an existing file, only the relevant block of the file is
+%read from the nearest layer where it exists. When the container writes the file,
+%only the modified blocks are written to the container's writable layer instead of
+%entire file.
 %
 %The unification process is referred to a union mount.
 %
@@ -567,13 +569,15 @@ entire file.
 
 
 
-\subsection{DockerHub Registry}
+\subsection{Docker registry}
 
-A Docker registry is a platform for storing and sharing container
-images. DockerHub is one of the most popular registries, via which users can upload
-their images and download them. Users can
-also search for published images and download them through RESTful APIs with the
-Docker client.
+Docker registry is a platform for storing and sharing container
+images. Docker Hub is one of the most popular public registries,
+via which users can upload, search, and download images.
+%
+%Users can
+%also search for published images and download them through RESTful APIs with the
+%Docker client.
 %Furthermore,
 %a storage and content delivery system, holding named Docker images, available in
 %different tagged versions.
@@ -586,32 +590,36 @@ Docker client.
 %
 %}
 %
-
-Images are stored in the registry in \emph{repositories}. A repository is
-\lrcomment{describe what a repository is} and stores different versions, tagged
-by their version number, of a specific image. DockerHub supports both public and
+%
+Registry stores images in \emph{repositories},
+each containing different versions of the same image.
+Docker Hub supports both public and
 private repositories.
 The user repositories are namespaced, that is, their name is
 ``$\langle namespace\rangle/\langle repository name \rangle$",
 where~\textit{namespace} is the user name. While the official repositories which
-are directly provided by Docker Inc. called ``$\langle repository name \langle$".
-%
-\vcomment{We need to exlain what is a repository.}
+are directly provided by Docker Inc. and partners are called
+``$\langle repository name \rangle$".
 %
 %\vcomment{Somewhere we need to say that clients talk to registries using REST API.}
 
 
 
+Docker registry stores and exchanges layers as compressed tarballs and images
+as JSON-based manifests.
+%
 Before Docker v1.10, every image and layer was assigned a randomly generated UUID
 as an identifier.
 %
-\vcomment{how long was UUID?}
+%\vcomment{how long was UUID?}
 %\nancomment{long or short.}
 %
 Starting from v1.10, the Docker registry implemented a content addressable method
 using an ID (also called \emph{digest}), based on a secure hash (SHA-256) of the
-image and layer data \lrcomment{Is both image and layer data used to compute hash for
-a layer?}.
+image and layer data.
+%
+%\lrcomment{Is both image and layer data used to compute hash for
+%a layer?}.
 %
 This new method makes ID collisions highly unlikely and allows to verify data
 integrity after pulling or pushing an image.
@@ -633,11 +641,12 @@ in local storage.
 %
 %\vcomment{Are the last two sentences state the same or not?}
 %\nancomment{addressed. no}
+%
 
-\lrcomment{I think we need another paragraph, describing, how images are stored
-in the registry (tarballs) and where they are stored (independently from images
-or duplicated for each image that depends on them. It would also be interesting
-to describe, how the storage driver model maps to the registry.}
+%\lrcomment{I think we need another paragraph, describing, how images are stored
+%in the registry (tarballs) and where they are stored (independently from images
+%or duplicated for each image that depends on them. It would also be interesting
+%to describe, how the storage driver model maps to the registry.}
 
 
 %Content addressability is the foundation for the new distribution features. The
