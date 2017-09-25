@@ -8,7 +8,7 @@
 
 
 Virtual Machine (VM) based server virtualization technologies (\eg, VMware~\cite{vmware},
-Xen~\cite{xen}, or KVM~\cite{kvm}) have been extensively used by most cloud
+Xen~\cite{xen}, or KVM~\cite{kvm}) have been extensively used by major cloud
 platforms such as Amazon EC2 as it provides strong isolation guarantees.
 %
 %which consists of a virtual machine monitor (VMM) on top of a host operating system.
@@ -235,12 +235,12 @@ distributing, and running specific applications.
 %right?}
 %\nancomment{addressed.}
 %
-Docker images package an application with all its runtime dependencies, \eg
+Docker images package an application with all its runtime dependencies, \eg,
 binaries and shared libraries.
 %to maintain lightweight characteristics.
 Docker images are composed of a series of individual \emph{layers}.
 A layer contains a subset of the files in the image and 
-usually represents a specific component/dependency of the image, \eg C library or
+usually represents a specific component/dependency of the image, \eg, C library or
 Java. This modular design allows layers to be shared between two containers if both
 container images depend on the same component. 
 
@@ -254,11 +254,11 @@ container via ``docker run'', Docker creates a new writable layer on top of the
 underlying read-only layers. Any changes made to files in the image will be
 reflected inside the writable layer via a copy-on-write mechanism. This leaves layers
 unmodified throughout the lifetime of a container and enables the sharing of
-layers across different containers.
+layers across containers.
 Docker supports multiple storage drivers, e.g., Aufs, OverlayFS, Btrfs,
-device-mapper, to efficiently combine read-only and writable layers
+device-mapper, that efficiently combine read-only and writable layers
 in a single namespace~\cite{docker-driver-eval}.
-The writable layer is deleted when the container is deleted.
+The writable layers are deleted when the container is deleted.
  
 
 %Since each container has its own writable layer, and all changes are stored in this
@@ -322,7 +322,7 @@ The writable layer is deleted when the container is deleted.
 %\nancomment{addressed.}
 
 %
-Besides the layers, an image also contains a \emph{manifest}.
+Besides the layers, an image contains a \emph{manifest}.
 The manifest describes the various constituents of a Docker image, such as the
 target hardware platform and environment settings.
 %
@@ -573,7 +573,11 @@ Moreover, the manifest contains a list of layer digests for all layers required 
 \label{sec:docker-registry}
 
 Docker registry is a platform for storing and sharing container
-images. Docker Hub is one of the most popular public registries,
+images. It stores images in \emph{repositories}, each containing
+different versions of the same image.
+%
+Docker Hub is one of the most popular public registries,
+supporting both public and private repositories,
 via which users can upload, search, and download images.
 %
 %Users can
@@ -592,13 +596,9 @@ via which users can upload, search, and download images.
 %}
 %
 %
-Registry stores images in \emph{repositories},
-each containing different versions of the same image.
-Docker Hub supports both public and
-private repositories.
-The user repositories are namespaced, that is, their name is
-``$\langle namespace\rangle/\langle repository name \rangle$",
-where~\textit{namespace} is the user name. While the official repositories which
+The user repositories are namespaced by user name, i.e.,
+``$\langle username\rangle/\langle repository name \rangle$",
+while the official repositories, which
 are directly provided by Docker Inc. and partners are called
 ``$\langle repository name \rangle$".
 %
