@@ -45,15 +45,7 @@ The details of each step are covered in the following sections.
 %	%https://drive.google.com/open?id=0B4jePsYXW6SSTTRLb0FHVXVjNUk
 %	figures/fig-docker-architecture.pdf}\\
 
-\begin{figure}
-	\centering
-	% Requires \usepackage{graphicx}
-	\includegraphics[width=0.5\textwidth]{graphs/fig-downloader-analyzer.pdf}\\
-	\caption{Crawler, Downloader, and Analyzer
-		\vcomment{Can we add colors to this figure? Also, increase the font a bit.}
-		}
-	\label{fig-downloader-analyzer}
-\end{figure}
+\input{fig-downloader-analyzer.tex}
 
 %how container deameon.
 %
@@ -172,7 +164,7 @@ and plan to analyze images with other tags in the future.
 Instead of using Docker CLI to download images,
 %via the Docker Engine,
 we wrote our own downloader that calls Docker registry API directly.
-We used Docker registry client API~\vcomment{insert the name, \nancomment{it is called Docker registry client API}} library~\cite{docker-registry-library} to simultaneously
+We used Docker registry client~\vcomment{insert the name, \nancomment{it is called Docker registry client}} library~\cite{dockerregistryclient} to simultaneously
 download \emph{original} manifests and image layers. \lrcomment{What does
 `original' mean here? \nancomment{without any modification}}
 %

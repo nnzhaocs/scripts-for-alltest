@@ -22,7 +22,7 @@ utilization constraints with control groups~\cite{kernel-doc-cgroups}.
 %
 Compared to virtual machines, containers use less memory and storage, are much
 faster to start, and typically cause less execution
-overhead~\cite{felter2015updated,container-efficiency}.
+overhead~\cite{felter2015updated, Disco, HypervisorsvsLightweight}.
 
 The rapid increase in use of container technology was largely made possible by
 container management frameworks, with Docker being one of the most popular
@@ -50,9 +50,9 @@ file-system trees for dockerized processes.
 Docker images are stored in a centralized \emph{registry} and are pushed to and
 pulled from the registry by clients as needed.
 %
-Docker Hub~\cite{dockerhub} is the most widely used Docker registry
+Docker Hub~\cite{docker-hub} is the most widely used Docker registry
 installation which, according to our estimates, stores more than 400,000
-\emph{public} images comprising a total of 2 million layers.
+\emph{public} image repositories comprising a total of 2 million layers.
 %
 This amount is steadily increasing and we observed a linear growth of the
 number of images over a period from June to September 2017.
@@ -86,7 +86,7 @@ storage infrastructure but also allows to infer container use cases and derive
 representative workloads from that.
 %
 While existing work as focused on various aspects of
-containerization~\cite{prev-work-1, prev-work-2, prev-work-3}, analyzing the
+containerization~\cite{slacker, dockervulnerabile, dockerfinder, analysisdockergithub, dockerssd}, analyzing the
 contents of images and layers has not received much attention.
 
 
