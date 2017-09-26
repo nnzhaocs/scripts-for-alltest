@@ -8,7 +8,7 @@
 
 \lrcomment{ I think in general it would be good if we emphasize in this section, what
 was challenging about downloading all this data and how the presented approach
-overcame these challenges.}
+overcame these challenges. \nancomment{challenges include: 1. obtaining a list of all the repositories in docker hub; 2. effectively downloading all the images. 3. indept analysis}}
 
 Our methodology consists of three steps~(Figure~\ref{fig-downloader-analyzer}):
 1)~crawl Docker Hub to list all official and unofficial repositories;
@@ -172,9 +172,9 @@ and plan to analyze images with other tags in the future.
 Instead of using Docker CLI to download images,
 %via the Docker Engine,
 we wrote our own downloader that calls Docker registry API directly.
-We used XXX~\vcomment{insert the name} library~\cite{docker-registry-library} to simultaneously
+We used Docker registry client API~\vcomment{insert the name, \nancomment{it is called Docker registry client API}} library~\cite{docker-registry-library} to simultaneously
 download \emph{original} manifests and image layers. \lrcomment{What does
-`original' mean here?}
+`original' mean here? \nancomment{without any modification}}
 %
 %\vcomment{Should we mention and cite the library that we used here?}
 %
@@ -411,15 +411,15 @@ and files:
 %
 %\vcomment{I'm not sure what figure we want here. I think a table might suffice.}
 %\nancomment{addressed}
-\nancomment{3. TODO: 
-	add a fig: discribe all layer metadata, config metadata, and manifest metadata structure} 
-
-\nancomment{4. TODO: 
-	add a table\\
-	layer tarball format statistics, tar, compressed, non compressed\\
-	config statistics, txt, json\\
-	manifest statistics, txt, json}
-\vcomment{Instead of the table, let's us the itemized list above for now}
+%\nancomment{3. TODO: 
+%	add a fig: discribe all layer metadata, config metadata, and manifest metadata structure} 
+%
+%\nancomment{4. TODO: 
+%	add a table\\
+%	layer tarball format statistics, tar, compressed, non compressed\\
+%	config statistics, txt, json\\
+%	manifest statistics, txt, json}
+\vcomment{Instead of the table, let's us the itemized list above for now, \nancomment{already add table 1. and we dont need to list metrics here since we present them in results}}
 
 
 \paragraph{Image profile.}
