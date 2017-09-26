@@ -131,12 +131,12 @@ of layers per image and the amount of layer sharing.
 %
 We found, for example:
 \begin{compactenumerate}
-	\item 90\% of the repositories only have a very small pull count (less than 333), which suggests that Docker hub is a good fit for caching few popular repositories or images, which can significantly improve the \textit{pull} or \textit{push} performance.
-	\item majority of the images and layers in Docker hub have a smaller size. 90\% of images can be compressed with less than 500 MB and 70\% of images are less than 500 MB even without compression. 90\% of layer can be compressed with less than 63 MB and 77\% of images are less than 63 MB even without compression.
+	\item 90\% of the repositories only have a very small pull count (less than 333), which suggests that Docker hub is a good fit for caching few popular repositories or images.
+	\item majority of the images and layers in Docker hub have a smaller size. 90\% of images can be compressed with less than 500 MB and 70\% of images are less than 500 MB even without compression. 90\% of layer can be compressed with less than 63 MB and 77\% of layers are less than 63 MB even without compression.
 	\item Docker images has a great potential for compression to save space.
 	\item 90\% of images have less than 18 layers. Half of images have less than 8 layers. 
 	\item 10\% of layers are referenced more than one image.
-	\item Around 90\% of layers' directory depth is less than 30 KB. 50\% of layers' directory depth is less than ~3.
+	\item Around 90\% of layers' directory depth is less than 30. 50\% of layers' directory depth is less than ~3.
 	\item Around 30\% of files are ASCII text files. 
 	About 11\% files are gzip compressed files 
 	Interestingly, about 1\% of files are empty. 
