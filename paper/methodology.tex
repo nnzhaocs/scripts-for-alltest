@@ -10,10 +10,11 @@
 was challenging about downloading all this data and how the presented approach
 overcame these challenges.}
 
-Our methodology consists of three steps~(see Figure~\ref{fig-downloader-analyzer}):
-1)~crawl Docker Hub to list all official and unofficial repositories; 2)~download the
-latest image from each repository in parallel based on the crawler results; 3)~analyze
-the images by computing different metrics.
+Our methodology consists of three steps~(Figure~\ref{fig-downloader-analyzer}):
+1)~crawl Docker Hub to list all official and unofficial repositories;
+2)~download the latest image (and referenced layers) from each repository based
+on the crawler results; 3) unpack and analyze images and layers.
+%
 %
 %The first step is to massively download the Docker images from Docker registry.
 %
@@ -48,7 +49,10 @@ The details of each step are covered in the following sections.
 	\centering
 	% Requires \usepackage{graphicx}
 	\includegraphics[width=0.5\textwidth]{graphs/fig-downloader-analyzer.pdf}\\
-	\caption{Crawler, Downloader, and Analyzer}\label{fig-downloader-analyzer}
+	\caption{Crawler, Downloader, and Analyzer
+		\vcomment{Can we add colors to this figure? Also, increase the font a bit.}
+		}
+	\label{fig-downloader-analyzer}
 \end{figure}
 
 %how container deameon.
@@ -56,30 +60,24 @@ The details of each step are covered in the following sections.
 \subsection{Crawler}
 \label{sec:crawler}
 
-As shown in Figure~\ref{fig-downloader-analyzer}, the crawler is responsible
-for providing a list of images to the downloader.
 %
 To download a particular image, %or set of images (i.e., a repository)
-the name of the repository name, to which the image belongs, should be provided
-as mentioned in Section~\ref{sec:docker-registry}. 
+the name of the repository name which the image belongs to should be provided.
+The crawler is responsible
+for generating a list of repositories for the downloader.
+%as mentioned in Section~\ref{sec:docker-registry}. 
 %
-A repository is a set of Docker images, labeled with \emph{version tags}.
-%The different images in the repository are labeled with tags.
 %
-For example, \texttt{ubuntu:latest} is the latest version of the Ubuntu image in the
-public Ubuntu repository.
-%
-If no tag is provided, the Docker daemon uses the \texttt{:latest} tag as a default
-when pulling an image. For example, \texttt{docker pull ubuntu} will pull the
-\texttt{ubuntu:latest} image.
 %
 %\vcomment{Here and in the whole text we need to be very carefull distinguishing names 
 %of repository and image. Also discussion on image tags is missing, should be in
 %background section.}
 %\nancomment{addressed.}
-
-Public repositories in Docker registry are divided into official repositories 
-and non-official repositories.
+%
+Public repositories in Docker registry are divided into official
+repositories---served by the Docker Hub's partners---and non-official
+repositories---provided
+by regular users and third-party organizations.
 %, where For example, official repository Ubuntu Here is an example of the shared 
 %repository official repository Ubuntu and one of its tags. 
 %
@@ -88,21 +86,26 @@ and non-official repositories.
 %Public repositories in Docker registry can be divided into official images and non-official 
 %images.
 %
-The amount of official repositories is around 100. The list of official repositories
-can be retrieved via \lrcomment{add how to list official repos}. However, the majority
-of repositories in Docker Hub are non-official repositories (around \lrcomment{add number}).
-Listing non-official repositories requires crawling because to the best of our knowledge,
-Docker Hub does not provide an API to conveniently retrieve their names.
+The number official repositories is less than 200,
+% The list of official repositories
+%can be retrieved via \lrcomment{add how to list official repos}
+while, the majority
+of repositories in Docker Hub (about 400 thousands)
+are non-official.
+% (around \lrcomment{add number}).
+Listing non-official repositories requires web crawling because
+%to the best of our knowledge,
+Docker Hub does not provide an API to retrieve all repository names.
 
 Therefore, we implemented a Crawler to crawl Docker Hub and list all non-official
 repositories.
 %
 Docker Hub provides a search engine which indexes public repositories and allows
-users to search for a specific repository or a list of repositories according to
+users to search for a repository according to
 some search string. 
 %
 As the name of non-official repositories is comprised
-of the username and the repository name separated by a ``/'',
+of the user name and the repository name separated by a ``/'',
 we can search for ``/'' and obtain a list of all non-official
 repositories.
 %``$\langle namespace\rangle/\langle repository name \rangle $", where~\textit{namespace}
@@ -117,22 +120,21 @@ The Crawler downloads all pages from the search result.
 Once web pages are downloaded, it parses the web content to build a list of
 all non-official repositories.
 
-\lrcomment{It may be good to discuss how accurate this method is. Can we miss anything?
-Can we get wrong results?}
+%\lrcomment{It may be good to discuss how accurate this method is. Can we miss anything?
+%Can we get wrong results?}
 
 
 
-We ran the Crawler on 5/30/2017 and it delivered a list of 634,412 repositories.
+We ran the crawler on May 30th, 2017 and it delivered a list of 634,412 repositories.
 %
-However, the obtained list contained duplicate entries because \lrcomment{Why?}.
+However, the obtained list contained duplicate entries because 
+the crawling process is not atomic and some repositories have ``/'' in their description.
 %
 After removing all duplicates, the final repository list consists of 457,627
 distinct repositories. 
 %
-Note that currently we only include images with the \texttt{latest} tag to
-shorten the downloading process. 
-%
-In the future, we plan to also download images with different tags.
+
+
 %
 %\vcomment{Explain why, state that it is future work.} 
 %\nancomment{addressed}
@@ -145,12 +147,32 @@ In the future, we plan to also download images with different tags.
 \subsection{Downloader}
 \label{sec:downloader}
 
-The downloader takes the list from the crawler as an input and retrieves
-all the listed images from Docker Hub (see Figure~\ref{fig-downloader-analyzer}).
+Docker repository is a set of images labeled with \emph{version tags}.
+%The different images in the repository are labeled with tags.
 %
-Instead of using the Docker CLI to download images via the Docker Engine,
-we wrote our own downloader. The downloader utilizes the Docker registry client API
-library~\cite{docker-registry-library} to simultaneously
+For example, \texttt{ubuntu:17.10} refers to image version \texttt{17.10} in the
+\texttt{ubuntu} repository.
+%
+If user does not provide a tag when pulling an image, 
+Docker daemon uses the \texttt{:latest} tag by default.
+For example, \texttt{docker pull ubuntu} command pulls the
+\texttt{ubuntu:latest} image.
+%
+In this work we only download images with the \texttt{:latest} tag to
+make the analysis more feasible.  We believe that the latest
+images versions represent most up-to-date state of  Docker images
+%
+and plan to analyze images with other tags in the future.
+
+
+
+%The downloader takes the list from the crawler as an input and retrieves
+%all the listed images from Docker Hub (see Figure~\ref{fig-downloader-analyzer}).
+%
+Instead of using Docker CLI to download images,
+%via the Docker Engine,
+we wrote our own downloader that calls Docker registry API directly.
+We used XXX~\vcomment{insert the name} library~\cite{docker-registry-library} to simultaneously
 download \emph{original} manifests and image layers. \lrcomment{What does
 `original' mean here?}
 %
@@ -158,23 +180,30 @@ download \emph{original} manifests and image layers. \lrcomment{What does
 %
 %\nancomment{addressed (cited in the following para)}
 %
-
-We decided to implement a separate downloader due to several reasons:
 %
-First, our downloader runs faster than \texttt{docker pull}-based downloading because
-Docker Engine performs additional operations other than downloading when
-pulling an image.
+%We decided to implement a separate downloader due to several reasons:
+%
+Our downloader runs significantly
+faster than \texttt{docker pull}-based downloader
+because the latter one performs
+operations other than downloading the
+image.
 %such as extracting
 %tar archive files and converting manifest version. 
 %
-For example, it automatically extracts each layer tar archive file
-and converts the manifests that are schema version 1 to schema version 2
-(starting from Docker engine version 1.10). This
-not only consumes considerable time but also affects
-our results about manifest version statistics;
+For example, it automatically extracts each layer's tar archive file
+and creates corresponding read-only snapshot with  configured Docker storage driver.
+%and converts the manifests that are schema version 1 to schema version 2
+%(starting from Docker engine version 1.10).
+This
+not only takes considerable amount of time but also leads
+to overly high storage space utilization.
 %
-Second, in some cases, the local storage format of Docker makes it difficult
-to analyze the contents of each image layer separately.
+% affects
+%our results about manifest version statistics;
+%
+Furthermore, the local storage format of Docker client makes it difficult
+to analyze the contents of each layer separately.
 %Second, layer content directories are not visible for some Docker storage
 %drivers, e.g., devicemapper, which is not feasible to analyze the layer
 %content. 
@@ -184,7 +213,7 @@ to analyze the contents of each image layer separately.
 %\nancomment{addressed}
 %
 
-Our Downloader can download multiple images simultaneously and fetch
+Our downloader can download multiple images simultaneously and fetch
 the individual layers of an image in parallel.
 %within each image downloading process, layers are downloaded in parallel.
 %
@@ -206,36 +235,40 @@ the individual layers of an image in parallel.
 %Then, it starts downloading process.
 %
 %It mainly downloads two components: manifest and individual layer files. 
-The process consists of two steps:
+The process consists of two steps.
 %
-The first step is to fetch the manifest by sending a \texttt{GET} request to the
-following URL: $/v2/\langle name \rangle/manifests/\langle reference \rangle$,
+First, fetching the manifest by sending a \texttt{GET} request to
+$/v2/\langle name \rangle/manifests/\langle reference \rangle$,
 where~\textit{name} refers to
-$\langle namespace\rangle/\langle repository name \rangle$.
+$\langle namespace\rangle/\langle repository name \rangle$
+and \textit{reference} is typically a version $\langle tag \rangle$.
 %
-\lrcomment{Are the following 4 sentences needed?}
-Note that the~\textit{namespace} of official is~\textit{library}.
 %
-The reference can include a tag or digest.
+%\lrcomment{Are the following 4 sentences needed?}
+%Note that the~\textit{namespace} of official is~\textit{library}.
+%
+%The reference can include a tag or digest.
 %
 %Note that currently we only downloaded the images with~\textit{latest} tag to shorten
 %the downloading process. In the future, we will download all the images with different tags.
 %
-As discussed in Section~\ref{xxx}, manifest consist of multiple layer digests.
+%As discussed in Section~\ref{xxx}, manifest consist of multiple layer digests.
 %
-Note that Schema 2 versioned manifest also contains a config file digest.
-\vcomment{I believe we never explained what is config file. We need to discuss in
-in background section.}
-\lrcomment{Do we use config files in the analysis? If they contain the command
-to run in the container, I think that could give us some interesting insights into
-how people use containers.}
-
-
-Once the manifest is downloaded, the downloader will then use the layer digests to
-download individual layers (including the config file for Schema 2 versioned manifest)
-by using the following url: $GET /v2/\langle name \rangle/blobs/\langle digest \rangle$.
-\textit{name} again refers to $\langle namespace\rangle/\langle repository name \rangle$
-while~\textit{digest} refers to the layer digest or config file digest.
+%Note that Schema 2 versioned manifest also contains a config file digest.
+%\vcomment{I believe we never explained what is config file. We need to discuss in
+%in background section.}
+%\lrcomment{Do we use config files in the analysis? If they contain the command
+%to run in the container, I think that could give us some interesting insights into
+%how people use containers.}
+%
+Second, once the manifest is downloaded, the downloader uses the layer digests to
+download individual layers
+%(including the config file for Schema 2 versioned manifest)
+by sending $GET$ request to $/v2/\langle name \rangle/blobs/\langle digest \rangle$.
+\textit{Name}, as for manifests,
+refers to $\langle namespace\rangle/\langle repository name \rangle$
+while~\textit{digest} refers to the layer digest.
+%or config file digest.
 Layers are transferred as gzip compressed tar archives.
 %\vcomment{What compression is used?}
 %\nancomment{addressed}
@@ -247,24 +280,26 @@ Layers are transferred as gzip compressed tar archives.
 %
 
 
-The whole downloading process took roughly 30 days to finish.
+The whole downloading process took around 30 days.
 %
-Overall, we downloaded 51 TB of 355,319 images with 1,792,609 layers as shown
-in Table~\ref{tab-dataset-summary}.
+Overall, we downloaded 51~TB of data in 355,319 image manifests with 1,792,609
+compressed layers.
 %
-A total of \gap images couldn't be downloaded due to two reasons:
+A total of \gap images could not be downloaded due to two reasons.
 %
-First, \gap of the images require authentication and
-second, \gap of the images do not have a tag \texttt{latest} tag.
+First, \gap of the images required authentication and
+second, \gap of the images did not have the \texttt{latest} tag.
 %
-As we discussed in Section~\ref{sec:crawler}, we only downloaded the \texttt{latest}
-version of an image to shorten the downloading process.
+%As we discussed in Section~\ref{sec:crawler}, we only downloaded the \texttt{latest}
+%version of an image to shorten the downloading process.
+Table~\ref{tab-dataset-summary} summarizes the properties of downloaded
+dataset.
 
-\nancomment{2. TODO: add a table discribe:\\
-	how many images, duplicate ratio\\
-	how many cannot download, (removed, no latest)\\
-	how many layers, config, manifest\\
-	dataset}
+%\nancomment{2. TODO: add a table discribe:\\
+%	how many images, duplicate ratio\\
+%	how many cannot download, (removed, no latest)\\
+%	how many layers, config, manifest\\
+%	dataset}
 
 %\subsubsection{Docker image dataset statistics}
 
@@ -319,7 +354,7 @@ version of an image to shorten the downloading process.
 		\hline
 		634,412                 & 457,627                 & 346,243                    & 1,763,354  \\
 		\hline
-		Num. of images analyzed & Num. of layers analyzed & Total dataset              &  xxx \\
+		Num. of images analyzed & Num. of layers analyzed & Compressed dataset size              &  Uncompressed dataset size \\
 		\hline
 		xxx                     & xxx                     & 51TB                        & xxx  \\
 		\hline
@@ -329,34 +364,44 @@ version of an image to shorten the downloading process.
 \subsection{Analyzer}
 \label{sec:analyzer}
 
-The Analyzer analyzes the downloaded images and creates two profiles
-for each image: an image profile and an individual layer profiles.
+The analyzer analyzes extracts downloaded layers
+and analyzes them along with image manifests.
+It creates two types of profiles for each image:
+an image profile and individual layer profiles.
 Each profile contains different metrics for the whole image and
-its individual layers respectively.
+its individual layers, respectively.
+Profiles are stored in JSON format.
+
+
 %
 %\vcomment{I think we do not need to discuss any metrics above, as you
 %discuss them below in corresponding subsections.}
 %\nancomment{addressed}
 %
 
-\subsubsection{Layer profile}
+\paragraph{Layer profile.}
 
-The layer profile contains metadata about the layer, its directories,
-and its files. Layer metadata includes metrics such as layer size and
-file count while directory metadata covers directory depth and size
-and file metadata includes size and type. The full set of metrics
-covered by the layer profile is shown in Table~\ref{xxx}.
-
-
-As discussed in Section~\ref{sec:downloader}, the layers are downloaded
-as gzip compressed tar archive files.
+Layers are downloaded as compressed tar archive files.
 %
 To produce the layer profile, the analyzer first decompresses and extracts each
 layer tarball to a layer directory.
 %
 Then, it recursively traverses each subdirectory and obtains
-the metadata information for each subdirectory and each file as shown
-in figure~\ref{fig-downloader-analyzer}.
+the metadata information for each subdirectory.
+
+The layer profile contains metadata about the layer, its directories,
+and files: 
+\begin{compactitemize}
+	\item XXX
+	\item XXX
+	\item XXX
+	\item XXX
+\end{compactitemize}
+
+%file count while directory metadata covers directory depth and size
+%and file metadata includes size and type. The full set of metrics
+%covered by the layer profile is shown in Table~\ref{xxx}.
+
 
 %Each layer profile contains
 %layer metadata information, such as layer size and file count; and
@@ -374,28 +419,37 @@ in figure~\ref{fig-downloader-analyzer}.
 	layer tarball format statistics, tar, compressed, non compressed\\
 	config statistics, txt, json\\
 	manifest statistics, txt, json}
+\vcomment{Instead of the table, let's us the itemized list above for now}
 
 
-\subsubsection{Image Profile}
+\paragraph{Image profile.}
 
-Once individual layers are analyzed, the Analyzer can build the whole image
-profile by including pointers to its layer profiles as shown in
-Figure~\ref{xxx}. Each image profile includes image metadata information,
-such as image pull count and layer count, and image configuration
-information, such as OS version and architecture. All metrics
-in the image profile are shown in Table~\ref{xxx}.
+To create the image profile, the analyzer parses the manifest
+and obtains the configuration information such as OS and architecture.
+Further, once individual layers are analyzed, the analyzer can build the whole image
+profile by including pointers to its layer profiles. In total, image profile includes
+the following information:
 
-To create the image profile, the Analyzer parses the manifest
-and obtains the configuration information such as OS, architecture
-etc. (see Figure~\ref{fig-downloader-analyzer}).
+\begin{compactitemize}
+	\item XXX
+	\item XXX
+	\item XXX
+	\item XXX
+\end{compactitemize}
+
+% image metadata information,
+%such as image pull count and layer count, and image configuration
+%information, such as OS version and architecture. All metrics
+%in the image profile are shown in Table~\ref{xxx}.
+
+%Note that schema version 2 manifests store configuration information in a
+%config file as discussed in Section~\ref{sec-image-layers}.
+%\lrcomment{I think we removed the part about different manifest versions from
+%the background, should add it back.}
 %
-Note that schema version 2 manifests store configuration information in a
-config file as discussed in Section~\ref{sec-image-layers}.
-\lrcomment{I think we removed the part about different manifest versions from
-the background, should add it back.}
-%
-As shown in table~\ref{xxx}, \gap of manifests are Schema version 2 while the
-rest are Schema version 1. 
+%As shown in table~\ref{xxx}, \gap of manifests are Schema version 2 while the
+%rest are Schema version 1. 
+
 %
 %
 %While layer profile
@@ -404,8 +458,8 @@ rest are Schema version 1.
 %depth and directory size; and file metadata information for each file, such
 %as file size and file type.
 %
-Table~\ref{xxx} summaries the layer archive file, config file, and manifest
-statistics.
+%Table~\ref{xxx} summaries the layer archive file, config file, and manifest
+%statistics.
 
 
 %\vcomment{This section (and some other places) contain a lot of ``etc.''. The
