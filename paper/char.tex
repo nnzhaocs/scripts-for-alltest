@@ -1,0 +1,44 @@
+\section{Characterization}
+\label{sec:char}
+
+In this section we perform storage-oriented characterization of the Docker Hub
+dataset and draw our insights.
+%
+After presenting registry growth trends, we characterize layers
+(\S~\ref{sec:layers}) and then proceed to images (\S~\ref{sec:images}).
+%
+\paragraph{Docker Hub growth.} Figure~\ref{fig_image_growth} shows the total
+number of repositories in Docker Hub from May 30 to September 20, 2017.
+%
+%As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub
+%search engine, crawled the web page, and obtained the total number of
+%non-official public repositories in Docker hub each day. By summing both
+%official repository count and non-official repository count, we got the total
+%number of repositories in Docker hub each day.
+%
+During this 110-day period the total number of repositories increased from
+633,915 to 687,292, resulting to 1,241 repositories created per day on average.
+%
+The graph is missing the points for the July 11 to July 26 because Docker Hub
+stopped indexing ``/'' symbol in the repository names (which we originally used
+to search for repositories).
+%
+We noticed this issues on July 26 and started to use ``*'' symbol for search
+instead.
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{graphs/image_growth.pdf}
+  \caption{Total number of public repositories in Docker Hub
+	   from May 30 to September 20, 2017. Y axis starts
+	   at 630,000 repositories.
+	   \vcomment{X axis label should be ``Date''.}
+	   \vcomment{Y axis label x100,000 ``is badly aligned''.}
+	   \vcomment{Y axis label x100,000 ``is badly aligned''.}
+	  }
+  \label{fig_image_growth}
+\end{figure}
+
+\input{char_layers}
+\input{char_images}
