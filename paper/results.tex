@@ -1,20 +1,59 @@
+\section{Characterization}
+\label{sec:char}
 
-\section{Results}
+In this section we perform storage-oriented characterization of the Docker Hub
+dataset and draw our insights.
+%
+We start with metrics describing images (Section~\ref{sec:images}) and then
+proceed to layers (Section~\ref{sec:layers}).
 
-\subsection{Image}
+\subsection{Images}
+\label{sec:images}
 
-\subsubsection{Growth of images in Docker hub}
+\paragraph{Number of images in Docker Hub.}
 
-Figure~\ref{fig_image_growth} show the total number of images in Docker hub increases from May 30th to Sept. 20th 2017. As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub search engine, crawled the web page, and obtained the total number of non-official public repositories in Docker hub each day. By summing both official repository count and non-official repository count, we got the total number of repositories in Docker hub each day. As shown, the total number of repositories increased from 633,915 on May 30th to 687,292 on Jul. 11th with ~1,241 repositories created per day.
+Figure~\ref{fig_image_growth} shows the total number of repositories in Docker
+Hub from May 30 to September 20, 2017.
+%As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub
+%search engine, crawled the web page, and obtained the total number of
+%non-official public repositories in Docker hub each day. By summing both
+%official repository count and non-official repository count, we got the total
+%number of repositories in Docker hub each day.
+During this 110-day period the total number of repositories increased from
+633,915 to 687,292, resulting to 1,241 repositories created per day on average.
+%
+The graph is missing the points for the July 11 to July 26 because Docker Hub
+stopped indexing ``/'' symbol in the repository names (which we originally used to
+search for repositories).
+%
+We noticed this issues on July 26 and started to use ``*'' symbol for search
+instead.
+
+
 
 \begin{figure}
   \centering
-  % Requires \usepackage{graphicx}
   \includegraphics[width=0.5\textwidth]{graphs/image_growth.pdf}
-  \caption{Total number of repositories in Docker hub from May 30th to Sept. 20th}\label{fig_image_growth}
+  \caption{Total number of public repositories in Docker Hub
+	   from May 30 to September 20, 2017. Y axis starts
+	   at 630,000 repositories.
+	   \vcomment{X axis label should be ``Date''.}
+	   \vcomment{Y axis label x100,000 ``is badly aligned''.}
+	   \vcomment{Y axis label x100,000 ``is badly aligned''.}
+	  }
+  \label{fig_image_growth}
 \end{figure}
 
-A interesting observation is that Crawler can get a similar list of images if we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above method to obtain the total amount of images in Docker Hub. But after 7/11/2017, the Docker Hub removed the index of `/'. Thus, currently we search for `*' instead of `/' to obtain a list of non-official public images. As shown in figure~\ref{fig_image_growth}, the total number of repositories increased from 708,647 on Jul. 26 to 784,182 on Sept. 20, with ~1,325 new repositories created per day. Overall, the total number of repositories is increasing, although there are two troughs during the period of 08/06-08/07 and 08/13-08/15.
+
+%A interesting observation is that Crawler can get a similar list of images if
+%we replace `/' with `*'. Note that from 5/30/2017-7/11/2017, Crawler used above
+%method to obtain the total amount of images in Docker Hub. But after 7/11/2017,
+%the Docker Hub removed the index of `/'. Thus, currently we search for `*'
+%instead of `/' to obtain a list of non-official public images. As shown in
+%figure~\ref{fig_image_growth}, the total number of repositories increased from
+%708,647 on Jul. 26 to 784,182 on Sept. 20, with ~1,325 new repositories created
+%per day. Overall, the total number of repositories is increasing, although
+%there are two troughs during the period of 08/06-08/07 and 08/13-08/15.
 
 \subsubsection{Image popularity distribution}
 
@@ -141,7 +180,8 @@ Figure~\ref{fig-dir} shows the cumulative image frequency by directories. 90\% o
 
 Figure~\ref{fig-file} shows the cumulative image frequency by files. 90\% of images have less than 64,780 files. Half of images have less than 1,090 files. The maximum is 8,509,958 while the minimum is 1. The average is 21,413. 
 
-\subsection{Layer}
+\subsection{Layers}
+\label{sec:layers}
 
 \subsubsection{Layer size distribution}
 
