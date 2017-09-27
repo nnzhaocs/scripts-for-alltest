@@ -25,13 +25,13 @@ The skewness of two curves in figure~\ref{fig-pop} suggests that Docker hub is a
 
 \paragraph{Image size distribution}
 \label{sec:image-size}
-We measured three kinds of image size: archival size, compression size, and the sum of containing file size. Compression size is the sum of its containing \textit{gzip} compressed layer size (i.e., original layer size after downloaded); The archival size is the sum of its containing decompressed layer size (i.e., decompressed layer size without extracting and unpacking); The sum of containing file size is the sum of its containing file size after decompression with extracting and unpacking.
+We also measured three kinds of image size: archived image size (AIS), compressed image size (CIS), and the sum of containing file size (FIS). CIS is the sum of its containing \textit{gzip} compressed layer sizes (CLSs); AIS is the sum of its containing archived layer sizes (ALSs); FIS is the sum of its containing file sizes (FLSs).
 
-Figure~\ref{fig-image-size} shows the cumulative image frequency by two scales (GB and MB) for three kinds of image size.
-As shown in figure~\ref{fig_image_size_gb}, the red curve and blue curve are almost overlapped, which means that the distribution of archival size and the distribution of sum of file size are similar. 90\% of images have a less than 1.3GB uncompression size (i.e., archival size or the sum of containing file size), while 90\% of images have a less than 0.48 GB compression size. The largest uncompression image size is ~498 GB while the largest compression size is only 202 GB.
-Figure~\ref{fig_image_size_mb} shows the cumulative image frequency by MBs. 70\% of the images have a less than 190 MB compression size. And 70\% of the images have a less than 478 MB uncompression size (i.e., archival size or the sum of containing file size). Half of the images have a less than ~17 MB compression size. Half of the images have a less than 46 MB archival size and 94 MB sum of containing file size.
+Figure~\ref{fig-image-size} shows the cumulative image probability by three kinds of image size with different ranges.
+As shown in figure~\ref{fig_image_size_gb}, The CDF distribution of images for AIS and FIS are almost similar. 90\% of images have a less than 1.3GB decompressed size for either FIS or AIS, while 90\% of images can be compressed less than 0.48 GB. The largest AIS and FIS are ~498 GB while the largest CIS is only 202 GB.
+Figure~\ref{fig_image_size_mb} shows the cumulative image probability by image size in MBs. 70\% of the images can be compressed less than 190 MB. And 70\% of the images have a less than 478 MB uncompressed size (i.e., AIS or FIS). Half of the images can be compressed less than ~17 MB. Half of the images are less than 46 MB in AIS format and 94 MB in FIS formats respectively.
 
-Figure~\ref{fig-image-size} shows that the majority of the images in Docker hub have a smaller size. 90\% of images can be compressed with less than 500 MB and 70\% of images are less than 500 MB even without compression. 
+Figure~\ref{fig-image-size} shows that the majority of the images in Docker hub have a smaller size. 90\% of images can be compressed less than 500 MB and 70\% of images are less than 500 MB even without compression. 
 
 \begin{figure}[!t]
 	\centering
@@ -59,10 +59,10 @@ Figure~\ref{fig-image-size} shows that the majority of the images in Docker hub 
 	\label{fig-image-compression-ratio}
 \end{figure}
 
-As discussed in~\ref{sec:image-size}, three kinds of image size are measured: archival size, compression size, and the sum of containing file size. Thus, we calculated two kinds of compression ratio: the ratio of archival size to compression size and the ratio of Sum of file size to compression size. 
+As discussed in~\ref{sec:image-size}, three kinds of image size are measured: AIS, CIS, and FIS. Thus, we calculated two kinds of compression ratio: the ratio of AIS to CIS (AIS-to-CIS) and the ratio of FIS to CIS (FIS-to-CIS). 
 
-Figure~\ref{fig-image-compression-ratio} shows the cumulative image frequency by compression ratio. Overall, we can see that the ratio of archival size to compression size is greater than the ratio of the sum of file size to the compression size. 90\% of images have a archival-to-compression ratio less than ~4 while 90\% of images have a sum of file-to-compression ratio less than 35. Half of the images have a compression ratio (both archival-to-compression and sum of files-to-compression) around 3. The maximum compression ratio are 512,930 and 1028 for the ratio of sum to file size to compression size and the ratio of archival to compression size respectively.
-Figure~\ref{fig_image_compression_ratio_less} shows a histogram of image frequency by compression ratio. 134,000 images have a ratio of sum of file size to compression size of 3.5 and 90,000 images have a ratio of sum of archival size to compression size of 2.5, which are two peaks shown in the graph.
+Figure~\ref{fig-image-compression-ratio} shows the cumulative image probability by compression ratio. Overall, we can see that AIS-to-CIS is greater than FIS-to-CIS. 90\% of images have a AIS-to-CIS less than ~4 while 90\% of images have a FIS-to-CIS less than 35. Half of the images have a compression ratio (both AIS-to-CIS and FIS-to-CIS) around 3. The maximum compression ratio are 512,930 and 1028 in FIS-CIS and AIS-CIS formats respectively.
+Figure~\ref{fig_image_compression_ratio_less} shows a histogram of image probability by compression ratio. 134,000 images' FIS-to-CISs are 3.5 and 90,000 images'AIS-to-CISs are 2.5, which are two peaks shown in the graph.
 
 Figure~\ref{fig-image-compression-ratio} suggests that Docker images has a great potential for compression to save space.
 
@@ -80,7 +80,7 @@ Figure~\ref{fig-image-compression-ratio} suggests that Docker images has a great
 	\label{fig-layer-cnt}
 \end{figure}
 
-As discussed in~\ref{sec-image-layers}, images are consisted of a set of layers. Figure~\ref{fig-layer-cnt} shows the cumulative image frequency by layer count in images. 90\% of images have less than 18 layers. Half of images have less than 8 layers. 
+As discussed in~\ref{sec-image-layers}, images are consisted of a set of layers. Figure~\ref{fig-layer-cnt} shows the cumulative image probability by layer count in images. 90\% of images have less than 18 layers. Half of images have less than 8 layers. 
 
 Figure~\ref{fig_hist_layer_cnt} shows the histogram of images by layer count in images. About 51,300 images have 8 layers, which is the peak value in the figure. The maximum layer count is 121. The average is 10. 7,060 images have only 1 layer. 
 
@@ -100,7 +100,7 @@ Figure~\ref{fig_hist_layer_cnt} shows the histogram of images by layer count in 
 
 As discussed in~\ref{sec-image-layers}, layers are shared among images. Figure~\ref{fig_repeate_layer} shows the cumulative layer frequency by repeat count among images. Around 90\% of layers are only reference by a single image. 99\% of layers are shared among less than 25 images. 
 
-Figure~\ref{fig_hist_repeate_layer} shows the histogram of layers by repeat count among images. About 1,440,000 layers are referenced by only one single image, which is the peak value in the figure. The maximum repeat count is 33,428 while the median is 1. The average is 2.
+Figure~\ref{fig_hist_repeate_layer} shows the histogram of layers by repeat layer count among images. About 1,440,000 layers are referenced by only one single image, which is the peak value in the figure. The maximum repeat count is 33,428 while the median is 1. The average is 2.
 
 \paragraph{Directory and file count distribution}
 
@@ -120,6 +120,6 @@ Figure~\ref{fig_hist_repeate_layer} shows the histogram of layers by repeat coun
 	\end{minipage}
 \end{figure}
 
-Figure~\ref{fig-dir} shows the cumulative image frequency by directories. 90\% of images have less than 7,344 directories. Half of images have less than 296 directories. The maximum is 1,168,160 while the minimum is 1. The average is 2705. 
+Figure~\ref{fig-dir} shows the cumulative image probability by directories. 90\% of images have less than 7,344 directories. Half of images have less than 296 directories. The maximum is 1,168,160 while the minimum is 1. The average is 2,705. 
 
 Figure~\ref{fig-file} shows the cumulative image frequency by files. 90\% of images have less than 64,780 files. Half of images have less than 1,090 files. The maximum is 8,509,958 while the minimum is 1. The average is 21,413.
