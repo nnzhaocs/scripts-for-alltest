@@ -8,7 +8,7 @@
 
 
 Virtual Machine (VM) based server virtualization technologies (\eg, VMware~\cite{VMware},
-Xen~\cite{xen}, or KVM~\cite{KVM}) have been extensively used by major cloud
+Xen~\cite{xen}) have been extensively used by major cloud
 platforms such as Amazon EC2 as it provides strong isolation guarantees.
 %
 %which consists of a virtual machine monitor (VMM) on top of a host operating system.
@@ -20,7 +20,7 @@ platforms such as Amazon EC2 as it provides strong isolation guarantees.
 However, they also come with high overhead in terms of CPU, memory, and I/O as
 each VM requires its own operating system kernel and system calls have to go
 through a privileged hypervisor. This causes long VM startup times and slows down
-processing~\cite{Disco}~\cite{HypervisorsvsLightweight}.
+processing~\cite{Disco}.
 %
 %Nevertheless,
 %hypervisor-based virtualization has a high performance overhead because of execution
@@ -67,20 +67,21 @@ processing~\cite{Disco}~\cite{HypervisorsvsLightweight}.
 %\nancomment{addressed}
 
 
-Recent container-based virtualization (such as Linux Containers~(LXC)~\cite{LXC} or
-OpenVZ~\cite{OpenVZ}) has emerged as a lightweight virtualization alternative
-which promises near native performance.
+Recent container-based virtualization (such as Linux Containers~(LXC)~\cite{LXC}) has emerged 
+as a lightweight virtualization alternative.
+%which promises near native performance.
 %
 Compared to VMs, container virtualization works at the
 operating system level. %and does not emulate another operating system.
 %
-All containers are isolated from each other but still share the same operating
-system kernel. This significantly reduces overhead as less storage and memory is
-required and system calls go directly to the kernel~\cite{ContainInResearch}~\cite{ContainerVirtualization}. 
+%All containers are isolated from each other but still share the same operating
+%system kernel. 
+This significantly reduces overhead as less storage and memory is
+required and system calls go directly to the kernel~\cite{ContainerVirtualization}. 
 %
-Linux containers offer namespace isolation through
-\textit{namespaces}~\cite{namespaces}
-while managing resources via \textit{cgroups}~\cite{cgroups}.
+%Linux containers offer namespace isolation through
+%\textit{namespaces}~\cite{namespaces}
+%while managing resources via \textit{cgroups}~\cite{cgroups}.
 
 
 %\vcomment{Here, we briefly need to state what are added Docker functionalities and
@@ -228,8 +229,8 @@ distributing, and running specific applications.
 %right?}
 %\nancomment{addressed.}
 %
-Docker images package an application with all its runtime dependencies, \eg,
-binaries and shared libraries.
+%Docker images package an application with all its runtime dependencies, \eg,
+%binaries and shared libraries.
 %to maintain lightweight characteristics.
 Docker images are composed of a series of individual \emph{layers}.
 A layer contains a subset of the files in the image and 
@@ -244,14 +245,14 @@ container images depend on the same component.
 
 Image layers are read-only. However, when users start a
 container via ``docker run'', Docker creates a new writable layer on top of the
-underlying read-only layers. Any changes made to files in the image will be
+underlying read-only layers as shown in figure~\ref{fig-docker-architecture}. Any changes made to files in the image will be
 reflected inside the writable layer via a copy-on-write mechanism. This leaves layers
 unmodified throughout the lifetime of a container and enables the sharing of
 layers across containers.
-Docker supports multiple storage drivers, e.g., Aufs, OverlayFS, Btrfs,
-device-mapper, that efficiently combine read-only and writable layers
-in a single namespace~\cite{docker-driver-eval}.
-The writable layers are deleted when the container is deleted.
+%Docker supports multiple storage drivers, e.g., Aufs, OverlayFS, Btrfs,
+%device-mapper, that efficiently combine read-only and writable layers
+%in a single namespace~\cite{docker-driver-eval}.
+%The writable layers are deleted when the container is deleted.
  
 
 %Since each container has its own writable layer, and all changes are stored in this
@@ -599,36 +600,36 @@ are directly provided by Docker Inc. and partners are called
 
 
 
-Docker registry stores and exchanges layers as compressed tarballs and images
+Docker registry stores and exchanges layers as compressed archival files and images
 as JSON-based manifests.
 %
-Before Docker v1.10, every image and layer was assigned a randomly generated UUID
-as an identifier.
-%
-%\vcomment{how long was UUID?}
-%\nancomment{long or short.}
-%
-Starting from v1.10, the Docker registry implemented a content addressable method
-using an ID (also called \emph{digest}), based on a secure hash (SHA-256) of the
-image and layer data.
-%
-%\lrcomment{Is both image and layer data used to compute hash for
-%a layer?}.
-%
-This new method makes ID collisions highly unlikely and allows to verify data
-integrity after pulling or pushing an image.
-%
-%\vcomment{Hashes theoretically can still collide.}
-%
-%\vcomment{I think we need to say which hash is used}
-%\nancomment{addressed.}
-%
-%It also brings better sharing of layers by allowing many images to share their
-%layers even if they didn't come from the same build.
-%
-Addressing images by their content also enables faster checks for whether a
-layer is shared between two containers and whether it is already available
-in local storage.
+%Before Docker v1.10, every image and layer was assigned a randomly generated UUID
+%as an identifier.
+%%
+%%\vcomment{how long was UUID?}
+%%\nancomment{long or short.}
+%%
+%Starting from v1.10, the Docker registry implemented a content addressable method
+%using an ID (also called \emph{digest}), based on a secure hash (SHA-256) of the
+%image and layer data.
+%%
+%%\lrcomment{Is both image and layer data used to compute hash for
+%%a layer?}.
+%%
+%This new method makes ID collisions highly unlikely and allows to verify data
+%integrity after pulling or pushing an image.
+%%
+%%\vcomment{Hashes theoretically can still collide.}
+%%
+%%\vcomment{I think we need to say which hash is used}
+%%\nancomment{addressed.}
+%%
+%%It also brings better sharing of layers by allowing many images to share their
+%%layers even if they didn't come from the same build.
+%%
+%Addressing images by their content also enables faster checks for whether a
+%layer is shared between two containers and whether it is already available
+%in local storage.
 %Docker engine more easily detect
 %if something has already been downloaded during a pulling to avoid pulling
 %duplicate layers.
