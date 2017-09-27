@@ -277,11 +277,12 @@ The whole downloading process took around 30 days.
 Overall, we downloaded 51~TB of data in 355,319 image manifests with 1,792,609
 compressed layers.
 %
-A total of \gap images could not be downloaded due to two reasons.
+A total of 111,384 images could not be downloaded due to three reasons.
 %
-First, \gap of the images required authentication and
-second, \gap of the images did not have the \texttt{latest} tag.
-%
+First, 5\% of the images required authentication and
+second, 87\% of the images did not have the \texttt{latest} tag.
+Third, 8\% of the images contains layers that cannot be downloaded.
+% 0.05189255189	0.8666056166 0.0815018315
 %As we discussed in Section~\ref{sec:crawler}, we only downloaded the \texttt{latest}
 %version of an image to shorten the downloading process.
 Table~\ref{tab-dataset-summary} summarizes the properties of downloaded
@@ -348,7 +349,7 @@ dataset.
 		\hline
 		Num. of images analyzed & Num. of layers analyzed & Compressed dataset size              &  Uncompressed dataset size \\
 		\hline
-		xxx                     & xxx                     & 51TB                        & xxx  \\
+		344,056                     & 1,748,089                     & 51TB                        & xxx  \\
 		\hline
 	\end{tabular}
 \end{table*}

@@ -19,7 +19,7 @@ namespaces~\cite{man-namespaces}) and resources (e.g., via control
 groups~\cite{kernel-doc-cgroups}).  This enables containers to use
 less memory and storage, start much faster, and typically incur less
 execution overhead~\cite{felter2015updated, Disco,
-  HypervisorsvsLightweight}.  A driving force for fast container
+  HypervisorsvsLightweight}. A driving force for fast container
 adoption is the popular Docker~\cite{docker} container management
 framework that combines process containerization with efficient and
 effective runtime environment packaging called {\em images} that are composed of multiple {\em layers} capturing dependencies.  
@@ -61,7 +61,7 @@ Docker-specific properties, e.g., the number of layers per image and the amount 
 layer sharing.
 
 \lrcomment{Would need to tie this in with Section 3, otherwise, we should remove
-this paragraph again?}
+this paragraph again?\nancomment{we can remove this paragraph}}
 To download this large dataset, we overcome two
 challenges~(\S\ref{sec:methodology}): i)~we need an efficient way of identifying
 all stored images as Docker Hub does not provide an API for this;
@@ -70,17 +70,18 @@ duplicates and removing links to broken or private images.
 
 Our analysis reveals several interesting insights~(\S\ref{sec:char}). We found that image
 accesses are skewed towards a small number of popular images. 90\% of repositories
-are pulled less than $333\times$ \abc{wrt what?}, while the overall number of pulls we recorded is
-\gap, suggesting that image caching would provide great benefits.
+are pulled less than 300 times since they are created \abc{wrt what? \nancomment{total number of pull count}}, 
+while the largest number of pulls we recorded is
+over 600 Million pull count, suggesting that image caching would provide great benefits.
 The
 majority of images and layers are small in size under compression. 90\% of images
 can be compressed to less than 500~MB, while 90\% of the layers can be compressed
 to 63~MB. This results in a compression ratio of \gap and shows the potential efffectiveness of compression.
 \lrcomment{I thought layers are already compressed tarballs? How can we save space
-via compression?}\abc{ditto?}
-Also, layers experience a large overlap of files with \gap\% of all files
-appearing in more than \gap images. This reveals potential for deduplication at
-file granularity.
+via compression?}\abc{ditto?}\nancomment{we can remove "save space"}
+Also, layers experience a large overlap of files with 10\% of all files
+appearing in more than 1 images. This reveals potential for deduplication at
+file granularity \nancomment{docker already did this}.
 
 %   After discussing related work~(\S\ref{sec:related}),
 %   the paper concludes~(\S\ref{sec:conclusion}).
