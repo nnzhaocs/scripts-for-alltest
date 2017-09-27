@@ -383,6 +383,33 @@ the metadata information for each subdirectory.
 
 The layer profile contains metadata about the layer, its directories,
 and files: 
+
+\{
+layer digest; 
+Archived layer size (ALS); 
+Sum of containing file sizes (FLS); 
+Compressed layer size (CLS); 
+ALS-to-CLS (compression ratio);
+FSL-to-CLS (compression ratio);
+Directory count;
+File count;
+Layer directory depth;
+\}
+
+\{
+Directory name;
+Directory depth;
+File count;
+Directory size;
+\}
+
+\{
+File name;
+File digest;
+File type;
+File size;
+\}
+
 \begin{compactitemize}
 	\item XXX
 	\item XXX
@@ -421,6 +448,16 @@ and obtains the configuration information such as OS and architecture.
 Further, once individual layers are analyzed, the analyzer can build the whole image
 profile by including pointers to its layer profiles. In total, image profile includes
 the following information:
+\{
+Image name; 
+Archived Image size (AIS); 
+Sum of containing file sizes (FIS); 
+Compressed image size (CIS); 
+ALS-to-CLS (compression ratio);
+FSL-to-CLS (compression ratio);
+Directory count;
+File count;
+\}
 
 \begin{compactitemize}
 	\item XXX
