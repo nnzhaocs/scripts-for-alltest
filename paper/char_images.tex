@@ -1,7 +1,7 @@
 \subsection{Images}
 \label{sec:images}
 
-\subsubsection{Image popularity distribution}
+\paragraph{Image popularity distribution}
 
 Figure~\ref{fig-pop} shows the repository popularity distribution by May 31th. The x-axies show the pull count (i.e., total number of pulls) for repositories by May 31th with different ranges.
 Figure~\ref{fig_pull_cnt_total} shows the cumulative repository frequency by pull count. ~95\% of the repositories are pulled than 1000 totally. 90\% of the repositories only have a pull count less than 333. The greatest pull count is 654,088,410, which is official repository~\textit{nginx}. 
@@ -23,7 +23,7 @@ The skewness of two curves in figure~\ref{fig-pop} suggests that Docker hub is a
 	\label{fig-pop}
 \end{figure}
 
-\subsubsection{Image size distribution}
+\paragraph{Image size distribution}
 \label{sec:image-size}
 We measured three kinds of image size: archival size, compression size, and the sum of containing file size. Compression size is the sum of its containing \textit{gzip} compressed layer size (i.e., original layer size after downloaded); The archival size is the sum of its containing decompressed layer size (i.e., decompressed layer size without extracting and unpacking); The sum of containing file size is the sum of its containing file size after decompression with extracting and unpacking.
 
@@ -45,7 +45,7 @@ Figure~\ref{fig-image-size} shows that the majority of the images in Docker hub 
 	\label{fig-image-size}
 \end{figure}
 
-\subsubsection{Compression rate distribution}
+\paragraph{Compression rate distribution}
 
 \begin{figure}[!t]
 	\centering
@@ -66,7 +66,7 @@ Figure~\ref{fig_image_compression_ratio_less} shows a histogram of image frequen
 
 Figure~\ref{fig-image-compression-ratio} suggests that Docker images has a great potential for compression to save space.
 
-\subsubsection{Layer count distribution}
+\paragraph{Layer count distribution}
 
 \begin{figure}[!t]
 	\centering
@@ -96,13 +96,13 @@ Figure~\ref{fig_hist_layer_cnt} shows the histogram of images by layer count in 
 	\label{fig-repeat-layer-cnt}
 \end{figure}
 
-\subsubsection{Repeat layer count distribution}
+\paragraph{Repeat layer count distribution}
 
 As discussed in~\ref{sec-image-layers}, layers are shared among images. Figure~\ref{fig_repeate_layer} shows the cumulative layer frequency by repeat count among images. Around 90\% of layers are only reference by a single image. 99\% of layers are shared among less than 25 images. 
 
 Figure~\ref{fig_hist_repeate_layer} shows the histogram of layers by repeat count among images. About 1,440,000 layers are referenced by only one single image, which is the peak value in the figure. The maximum repeat count is 33,428 while the median is 1. The average is 2.
 
-\subsubsection{Directory count distribution}
+\paragraph{Directory and file count distribution}
 
 \begin{figure}
 	\centering
@@ -122,6 +122,4 @@ Figure~\ref{fig_hist_repeate_layer} shows the histogram of layers by repeat coun
 
 Figure~\ref{fig-dir} shows the cumulative image frequency by directories. 90\% of images have less than 7,344 directories. Half of images have less than 296 directories. The maximum is 1,168,160 while the minimum is 1. The average is 2705. 
 
-\subsubsection{File count distribution}
-
-Figure~\ref{fig-file} shows the cumulative image frequency by files. 90\% of images have less than 64,780 files. Half of images have less than 1,090 files. The maximum is 8,509,958 while the minimum is 1. The average is 21,413. 
+Figure~\ref{fig-file} shows the cumulative image frequency by files. 90\% of images have less than 64,780 files. Half of images have less than 1,090 files. The maximum is 8,509,958 while the minimum is 1. The average is 21,413.
