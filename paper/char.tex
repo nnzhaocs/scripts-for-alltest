@@ -1,33 +1,43 @@
 \section{Dataset Characterization}
 \label{sec:char}
 
-In this section we perform storage-oriented characterization of the Docker Hub
-dataset and draw our insights.
+In this section we carry out our analysis of the Docker Hub dataset based on
+the above presented metrics. While overall we are interested in its general structure,
+we also analyze specific properties that allow us to draw conclusions regarding the
+benefits of caching, compression, and deduplication.
+
+As shown in Figure~\ref{fig_image_growth}, the number of repositories increased
+linearly during our observation period from May 30th to September 20th
+2017\footnote{Note that the graph shows a gap of \gap days due to Docker Hub
+changing the way it indexes repositories}. The total number of repositories
+grew from 633,915 to 687,292, resulting in an average creation rate of 1,241
+repositories per day. This rapid growth shows that storage optimizations will
+be crucial for the registry in the future.
 %
-After presenting registry growth trends, we first characterize layers
-(\S~\ref{sec:layers}) and then proceed to images (\S~\ref{sec:images}).
+We will start by characterize layers (\S~\ref{sec:layers}) and then proceed to
+images (\S~\ref{sec:images}).
 %
-\paragraph{Docker Hub growth}
-%
-Figure~\ref{fig_image_growth} shows the linear
-growth in the number of repositories in Docker Hub from May 30 to September 20,
-2017.
-%
-%As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub
-%search engine, crawled the web page, and obtained the total number of
-%non-official public repositories in Docker hub each day. By summing both
-%official repository count and non-official repository count, we got the total
-%number of repositories in Docker hub each day.
-%
-During this 110-day period the total number of repositories increased by 53,337
-from 633,915 to 687,292, resulting to the average creation rate of 1,241
-repositories daily.
-%
-The graph is missing the points between July 11 and July 26 because Docker Hub
-stopped indexing ``/'' symbol in the repository names (which we originally used
-to search for all repositories).
-%
-We noticed this issues on July 26 and started to use ``*'' symbol instead.
+%\paragraph{Docker Hub growth}
+%%
+%Figure~\ref{fig_image_growth} shows the linear
+%growth in the number of repositories in Docker Hub from May 30 to September 20,
+%2017.
+%%
+%%As discussed in~\cite{XXX}, Crawler searched for `/' by using Docker hub
+%%search engine, crawled the web page, and obtained the total number of
+%%non-official public repositories in Docker hub each day. By summing both
+%%official repository count and non-official repository count, we got the total
+%%number of repositories in Docker hub each day.
+%%
+%During this 110-day period the total number of repositories increased by 53,337
+%from 633,915 to 687,292, resulting to the average creation rate of 1,241
+%repositories daily.
+%%
+%The graph is missing the points between July 11 and July 26 because Docker Hub
+%stopped indexing ``/'' symbol in the repository names (which we originally used
+%to search for all repositories).
+%%
+%We noticed this issues on July 26 and started to use ``*'' symbol instead.
 
 
 \begin{figure}
