@@ -32,6 +32,7 @@ significantly improve the \textit{pull} or \textit{push} performance.
 	\caption{Repository popularity distribution}
 	\label{fig-pop}
 \end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{Image size distribution}
 \label{sec:image-size}
@@ -43,31 +44,12 @@ Figure~\ref{fig_image_size_mb} shows the cumulative image probability by image s
 
 Figure~\ref{fig-image-size} shows that the majority of the images in Docker hub have a smaller size. 90\% of images can be compressed less than 500 MB and 70\% of images are less than 500 MB even without compression. 
 
-\begin{figure}[!t]
-	\centering
-	\subfigure[CDF of images by size (GB)]{\label{fig_image_size_gb}
-		\includegraphics[width=0.22\textwidth]{graphs/size.pdf}
-	}
-	\subfigure[CDF of images by size (MB)]{\label{fig_image_size_mb}
-		\includegraphics[width=0.23\textwidth]{graphs/size_mb.pdf}
-	}
-	\caption{Image size distribution}
-	\label{fig-image-size}
-\end{figure}
+\input{fig_image_size.tex}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{Compression rate distribution}
 
-\begin{figure}[!t]
-	\centering
-	\subfigure[CDF of images by compression ratio]{\label{fig_image_compression_ratio}
-		\includegraphics[width=0.23\textwidth]{graphs/compression_ratio_less.pdf}
-	}
-	\subfigure[Histogram of images by compression ratio]{\label{fig_image_compression_ratio_less}
-		\includegraphics[width=0.223\textwidth]{graphs/hist_compression_ratio.pdf}
-	}
-	\caption{Compression rate distribution}
-	\label{fig-image-compression-ratio}
-\end{figure}
+\input{fig_image_compression_ratio.tex}
 
 As discussed in~\ref{sec:image-size}, three kinds of image size are measured: AIS, CIS, and FIS. Thus, we calculated two kinds of compression ratio: the ratio of AIS to CIS (AIS-to-CIS) and the ratio of FIS to CIS (FIS-to-CIS). 
 
@@ -78,33 +60,13 @@ Figure~\ref{fig-image-compression-ratio} suggests that Docker images has a great
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{Layer count distribution}
 
-\begin{figure}[!t]
-	\centering
-	\subfigure[CDF of images by layer count]{\label{fig_layer_cnt_less}
-		\includegraphics[width=0.23\textwidth]{graphs/layer_cnt_less.pdf}
-	}
-	\subfigure[Histogram of images by Layer count in images]{\label{fig_hist_layer_cnt}
-		\includegraphics[width=0.213\textwidth]{graphs/hist_layer_cnt.pdf}
-	}
-	\caption{Compression rate distribution}
-	\label{fig-layer-cnt}
-\end{figure}
+\input{fig-layer-cnt.tex}
 
 As discussed in~\ref{sec-image-layers}, images are consisted of a set of layers. Figure~\ref{fig-layer-cnt} shows the cumulative image probability by layer count in images. 90\% of images have less than 18 layers. Half of images have less than 8 layers. 
 
 Figure~\ref{fig_hist_layer_cnt} shows the histogram of images by layer count in images. About 51,300 images have 8 layers, which is the peak value in the figure. The maximum layer count is 121. The average is 10. 7,060 images have only 1 layer. 
 
-\begin{figure}[!t]
-	\centering
-	\subfigure[CDF of layer by layer count]{\label{fig_repeate_layer}
-		\includegraphics[width=0.23\textwidth]{graphs/repeate_layer.pdf}
-	}
-	\subfigure[Histogram of images by layer count in images]{\label{fig_hist_repeate_layer}
-		\includegraphics[width=0.223\textwidth]{graphs/hist_repeate_layer.pdf}
-	}
-	\caption{Compression rate distribution}
-	\label{fig-repeat-layer-cnt}
-\end{figure}
+\input{fig-repeat-layer-cnt.tex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{Repeat layer count distribution}
 
@@ -114,21 +76,7 @@ Figure~\ref{fig_hist_repeate_layer} shows the histogram of layers by repeat laye
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{Directory and file count distribution}
 
-\begin{figure}
-	\centering
-	\begin{minipage}{0.27\textwidth}
-		\centering
-		\includegraphics[width=1\textwidth]{graphs/dir.pdf}
-		\caption{CDF of images by directories}
-		\label{fig-dir}
-	\end{minipage}%
-	\begin{minipage}{0.23\textwidth}
-		\centering
-		\includegraphics[width=1\textwidth]{graphs/file.pdf}
-		\caption{CDF of images by files}
-		\label{fig-file}
-	\end{minipage}
-\end{figure}
+\input{fig_dir_file_cnt.tex}
 
 Figure~\ref{fig-dir} shows the cumulative image probability by directories. 90\% of images have less than 7,344 directories. Half of images have less than 296 directories. The maximum is 1,168,160 while the minimum is 1. The average is 2,705. 
 
