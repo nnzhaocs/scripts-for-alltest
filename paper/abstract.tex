@@ -1,33 +1,44 @@
 \begin{abstract}
 
-Docker containers have become the de facto standard\nancomment{replace ``de facto standard"} for 
+Docker containers have become a prominent solution for 
 supporting modern enterprise applications due to the highly desirable features of 
 isolation, low overhead, and efficient packaging of the execution environment.
 %
-Containers are created from images that preserve software dependencies,
-environment configuration, and other parameters that affect the application's
-runtime.
+%Containers are created from images that preserve software dependencies,
+%environment configuration, and other parameters that affect the application's
+%runtime.
 %
-Docker allows sharing of such images between users via a Docker registry. 
+Containers are created from images which are shared between users via a Docker registry.
 %
-The amount of data Docker registries store is massive; for instance, Docker Hub---a popular public registry---
-stores at least a half million public images.
+%Docker allows sharing of such images between users via a Docker registry. 
+%
+The amount of data Docker registries store is massive; for instance, Docker Hub---a popular
+public registry---stores at least a half million public images.
 %
 %As the amount of images stored in public and private Docker registries
 %increases it becomes important to study images' characteristics.
 %
 %
-Investigating the storage-centric properties of containerized applications can reveal useful insights and findings that can enable new optimizations, higher performance, and identification of bottlenecks. 
-The massive Docker Hub  dataset of over 50~TB thus offers a unique opportunity for such an endeavor, which we undertake in this paper. We perform the first in-depth analysis of a large scale Docker registry.  
+Investigating the storage-centric properties of containerized applications can reveal useful
+insights that can enable new optimizations, higher performance, and identification
+of bottlenecks.
+
+The massive Docker Hub  dataset of over 50~TB thus offers a unique opportunity
+for such an endeavor.
+%
+In this paper, we perform the first in-depth analysis of a large scale Docker registry.  
 %
 %Our goal is to collect statistics from a large amount of Docker images and
 %perform a large-scale characterization of Docker images.
 %
-We characterize images using multiple metrics, e.g., image size distribution,
-file size and type distribution, the number of layers per image, the amount of
-redundant data between images and layers\nancomment{removed file metrics, need to change}.
+We download 51TB worth of Docker Hub images and characterize them using multiple metrics, \eg,
+image size distribution, file size, the number of layers per image, and the amount of
+redundant data between images and layers.
 %
-\abc{add an example or two of the key findings?\nancomment{added findings to the end of intro}}
+%\abc{add an example or two of the key findings?\nancomment{added findings to the end of intro}}
+For example, we find that small layers only have low compression ratios, suggesting
+that storing these layers uncompressed can help save computation while not
+sacrificing storage.
 %
 Our findings help to make conscious decisions when designing storage for
 containers and Docker in particular.
