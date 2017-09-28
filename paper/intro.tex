@@ -5,10 +5,9 @@
 \abc{reduced some of the material}
 
 
-Recently, \emph{containers} %~\cite{process-containers-linux} ~\cite{rosenblum2005virtual} 
-have
+Recently, \emph{containers}~\cite{process-containers-linux} have
 gained significant traction as an alternative to the extant virtual
-machines for virtualization both on
+machines~\cite{rosenblum2005virtual} for virtualization both on
 premises and in the cloud---polls suggest that 87\% of enterprises are
 at various stages of adopting containers, and they are expected to
 constitute a lucrative \$2.5 billion
@@ -16,10 +15,11 @@ market~\cite{container-grow-by2020} by 2020.
 
 In contrast to virtual machines, containers share the same kernel but
 are isolated in terms of visibility (e.g., via
-namespaces) and resources (e.g., via control
-groups)~\cite{slacker}.  This enables containers to use
+namespaces~\cite{man-namespaces}) and resources (e.g., via control
+groups~\cite{kernel-doc-cgroups}). This enables containers to use
 less memory and storage, start much faster, and typically incur less
-execution overhead~\cite{Disco}. A driving force for fast container
+execution overhead~\cite{felter2015updated, Disco,
+	HypervisorsvsLightweight}. A driving force for fast container
 adoption is the popular Docker~\cite{docker} container management
 framework that combines process containerization with efficient and
 effective runtime environment packaging called {\em images} that are composed of multiple {\em layers} capturing dependencies.  
@@ -47,7 +47,7 @@ registry service.
 %
 Existing work has focused on various aspects of
 containerization~\cite{slacker, dockervulnerabile, dockerfinder,
-analysisdockergithub}. However, the registry and its
+	analysisdockergithub, dockerssd}. However, the registry and its
 contents have yet to be studied in detail.
 
 In this paper, we perform the first, comprehensive, large-scale characterization

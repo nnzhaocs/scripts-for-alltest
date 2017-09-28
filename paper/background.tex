@@ -2,7 +2,7 @@
 \label{sec:background}
 
 
-Virtual Machine (VM) based server virtualization technologies (\eg, Xen~\cite{xen}) 
+Virtual Machine (VM) based server virtualization technologies (\eg, VMware~\cite{VMware}, Xen~\cite{xen}) 
 have been extensively used by major cloud
 platforms such as Amazon EC2 as it provides strong isolation guarantees.
 %
@@ -16,7 +16,7 @@ as a lightweight virtualization alternative.
 Compared to VMs, container virtualization works at the
 operating system level.
 This significantly reduces overhead as less storage and memory is
-required and system calls go directly to the kernel~\cite{slacker}. 
+required and system calls go directly to the kernel~\cite{ContainerVirtualization}. 
 
 \subsection{Docker}
 
@@ -52,6 +52,12 @@ underlying read-only layers as shown in figure~\ref{fig-docker-architecture}. An
 reflected inside the writable layer via a copy-on-write mechanism. This leaves layers
 unmodified throughout the lifetime of a container and enables the sharing of
 layers across containers.
+
+Docker supports multiple storage drivers, e.g., Aufs, OverlayFS, Btrfs,
+device-mapper, that efficiently combine read-only and writable layers
+in a single namespace~\cite{docker-driver-eval}.
+The writable layers are deleted when the container is deleted.
+
 Besides the layers, an image contains a \emph{manifest}.
 The manifest describes the various constituents of a Docker image, such as the
 target hardware platform and environment settings.
