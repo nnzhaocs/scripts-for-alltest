@@ -5,9 +5,10 @@
 \abc{reduced some of the material}
 
 
-Recently, \emph{containers}~\cite{process-containers-linux} have
+Recently, \emph{containers} %~\cite{process-containers-linux} ~\cite{rosenblum2005virtual} 
+have
 gained significant traction as an alternative to the extant virtual
-machines~\cite{rosenblum2005virtual} for virtualization both on
+machines for virtualization both on
 premises and in the cloud---polls suggest that 87\% of enterprises are
 at various stages of adopting containers, and they are expected to
 constitute a lucrative \$2.5 billion
@@ -15,8 +16,8 @@ market~\cite{container-grow-by2020} by 2020.
 
 In contrast to virtual machines, containers share the same kernel but
 are isolated in terms of visibility (e.g., via
-namespaces~\cite{man-namespaces}) and resources (e.g., via control
-groups~\cite{kernel-doc-cgroups}).  This enables containers to use
+namespaces) and resources (e.g., via control
+groups)~\cite{slacker}.  This enables containers to use
 less memory and storage, start much faster, and typically incur less
 execution overhead~\cite{Disco}. A driving force for fast container
 adoption is the popular Docker~\cite{docker} container management
@@ -35,7 +36,7 @@ number of images in Docker Hub over a period from June to September 2017.
 
 While the massive image dataset presents challenges to the registry storage
 infrastructure, storage for containers has remained a largely unexplored
-area~\cite{login-container-storage-options}.
+area.
 %
 We believe one of the prime reasons is the limited understanding of what data
 is stored inside containers.
@@ -46,7 +47,7 @@ registry service.
 %
 Existing work has focused on various aspects of
 containerization~\cite{slacker, dockervulnerabile, dockerfinder,
-analysisdockergithub, dockerssd}. However, the registry and its
+analysisdockergithub}. However, the registry and its
 contents have yet to be studied in detail.
 
 In this paper, we perform the first, comprehensive, large-scale characterization
@@ -67,7 +68,8 @@ all stored images as Docker Hub does not provide an API for this;
  and ii)~we need to ensure the dataset is clean by handling
 duplicates and removing links to broken or private images.
 
-Our analysis reveals several interesting insights~(\S\ref{sec:char}). We found that image
+Our analysis reveals several interesting insights~(\S\ref{sec:char}). 
+We found that image
 accesses are skewed towards a small number of popular images. 90\% of repositories
 are pulled less than 300 times since they are created \abc{wrt what? \nancomment{total number of pull count}}, 
 while the largest number of pulls we recorded is
@@ -75,12 +77,14 @@ over 600 Million pull count, suggesting that image caching would provide great b
 The
 majority of images and layers are small in size under compression. 90\% of images
 can be compressed to less than 500~MB, while 90\% of the layers can be compressed
-to 63~MB. This results in a compression ratio of \gap and shows the potential efffectiveness of compression.
+to 63~MB. 
+This results in a compression ratio of \gap and shows the potential efffectiveness of compression\nancomment{add compression ratio}.
 \lrcomment{I thought layers are already compressed tarballs? How can we save space
 via compression?}\abc{ditto?}\nancomment{we can remove "save space"}
 Also, layers experience a large overlap of files with 10\% of all files
-appearing in more than 1 images. This reveals potential for deduplication at
-file granularity \nancomment{docker already did this}.
+appearing in more than 1 images. 
+This reveals potential for deduplication at
+file granularity \nancomment{docker already did this. we can remove this sentence}.
 
 %   After discussing related work~(\S\ref{sec:related}),
 %   the paper concludes~(\S\ref{sec:conclusion}).
