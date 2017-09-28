@@ -1,70 +1,16 @@
-@article{rosenblum2005virtual,
-	  title={Virtual machine monitors: Current technology and future trends},
-	    author={Rosenblum, Mendel and Garfinkel, Tal},
-	      journal={Computer},
-	        volume={38},
-		  number={5},
-		    pages={39--47},
-		      year={2005},
-		        publisher={IEEE}
-}
-
-@MISC{container-grow-by2020,
-	  TITLE =	{{Application Containers Will Be a \$2.7Bn Market by 2020}},
-	    AUTHOR =	"{451 Research}",
-	      NOTE =	"\url{https://451research.com/images/Marketing/press_releases/Application-container-market-will-reach-2-7bn-in-2020_final_graphic.pdf}",
-}
-
-
-@MISC{kernel-doc-cgroups,
-	  TITLE =	{{Control Group v2}},
-	    NOTE =	"\url{https://www.kernel.org/doc/Documentation/cgroup-v2.txt}",
-}
-
-@MISC{man-namespaces,
-	  TITLE =	"NAMESPACES(7) $\leftarrow$ Linux Programmer's Manual",
-	    NOTE =	"\url{http://man7.org/linux/man-pages/man7/namespaces.7.html}",
-}
-
-@ARTICLE{login-container-storage-options,
-	  TITLE =	{{Storage Options for Software Containers}},
-	    AUTHOR =	"Mark Lamourine",
-	      JOURNAL =	";login: The USENIX Magazine",
-	        VOLUME =	40,
-		  NUMBER =	1,
-		    YEAR =	2015
-}
-
-@INPROCEEDINGS{docker-driver-eval,
-	 TITLE =        "In search of the ideal storage configuration for {Docker} containers",
-	  AUTHOR =       "Vasily Tarasov and Lukas Rupprecht and Dimitris Skourtis and Amit Warke and Dean Hildebrand and Mohamed Mohamed and Nagapramod Mandagere and Wenji Li and Raju Rangaswami and Ming Zhao",
-	   BOOKTITLE =    "Workshop on Autonomic Management of Large Scale Container-based System (AMLCS)",
-	    NOTE =         "Co-allocated with IEEE International Conference on Cloud and Autonomic Computing (ICCAC)",
-	     YEAR =         2017,                                                                                 
-}
-
 @MISC{docker,
 	  TITLE =	"Docker",
 	    NOTE =	"\url{https://www.docker.com/}",
-}
-
-@INPROCEEDINGS{process-containers-linux,
-	  TITLE =	{{Adding Generic Process Containers to the {Linux} Kernel}},
-	    AUTHOR =	"Paul Menage",
-	      BOOKTITLE =	"Linux Symposium",
-	        YEAR =	"2007",
 }
 
 @MISC{docker-hub,
 	  TITLE =	"{Docker Hub}",
 	    NOTE =	"\url{https://hub.docker.com/}",
 }
-
-@inproceedings{felter2015updated,
-	title={{An Updated Performance Comparison of Virtual Machines and Linux Containers}},
-	author={Felter, Wes and Ferreira, Alexandre and Rajamony, Ram and Rubio, Juan},
-	booktitle={IEEE ISPASS},
-	year={2015}
+@MISC{container-grow-by2020,
+	TITLE =	{{Application Containers Will Be a \$2.7Bn Market by 2020}},
+	AUTHOR =	"{451 Research}",
+	NOTE =	"\url{https://451research.com/images/Marketing/press_releases/Application-container-market-will-reach-2-7bn-in-2020_final_graphic.pdf}",
 }
 %background
 @inproceedings{xen,
@@ -84,27 +30,6 @@
 	address = {New York, NY, USA},
 	keywords = {hypervisors, paravirtualization, virtual machine monitors},
 } 
-
-@inproceedings{VMware,
-	author = {Sugerman, Jeremy and Venkitachalam, Ganesh and Lim, Beng-Hong},
-	title = {Virtualizing I/O Devices on VMware Workstation's Hosted Virtual Machine Monitor},
-	booktitle = {Proceedings of the General Track: 2001 USENIX Annual Technical Conference},
-	year = {2001},
-	isbn = {1-880446-09-X},
-	pages = {1--14},
-	numpages = {14},
-	url = {http://dl.acm.org/citation.cfm?id=647055.715774},
-	acmid = {715774},
-	publisher = {USENIX Association},
-	address = {Berkeley, CA, USA},
-} 
-
-@INPROCEEDINGS{KVM,
-	author = {Avi Kivity and Yaniv Kamay and Dor Laor and Uri Lublin and Anthony Liguori},
-	title = {KVM: the Linux Virtual Machine Monitor},
-	booktitle = {In Proceedings of the 2007 Ottawa Linux Symposium (OLS’-07},
-	year = {2007}
-}
 
 @article{Disco,
 	author = {Bugnion, Edouard and Devine, Scott and Govil, Kinshuk and Rosenblum, Mendel},
@@ -131,69 +56,6 @@
 	NOTE =	"\url{http://linuxcontainers.org}",
 }
 
-@MISC{OpenVZ,
-	TITLE =	"{OpenVZ Linux Containers Wiki}",
-	NOTE =	"\url{http://openvz.org/}",
-}
-
-@inproceedings{ContainInResearch,
-	author = {Julian, Spencer and Shuey, Michael and Cook, Seth},
-	title = {Containers in Research: Initial Experiences with Lightweight Infrastructure},
-	booktitle = {Proceedings of the XSEDE16 Conference on Diversity, Big Data, and Science at Scale},
-	series = {XSEDE16},
-	year = {2016},
-	isbn = {978-1-4503-4755-6},
-	location = {Miami, USA},
-	pages = {25:1--25:6},
-	articleno = {25},
-	numpages = {6},
-	url = {http://doi.acm.org/10.1145/2949550.2949562},
-	doi = {10.1145/2949550.2949562},
-	acmid = {2949562},
-	publisher = {ACM},
-	address = {New York, NY, USA},
-	keywords = {Docker, LXC, cgroups, container},
-} 
-
-@INPROCEEDINGS{HypervisorsvsLightweight, 
-	author={R. Morabito and J. Kjällman and M. Komu}, 
-	booktitle={2015 IEEE International Conference on Cloud Engineering}, 
-	title={Hypervisors vs. Lightweight Virtualization: A Performance Comparison}, 
-	year={2015}, 
-	pages={386-393}, 
-	keywords={operating systems (computers);virtual machines;virtualisation;Albeit containers;anomalies;benchmarks tools;hypervisors;lightweight virtualization technologies;memory;network;operating systems;processing;storage;strengths;virtual machines;weaknesses;Benchmark testing;Containers;Linux;Operating systems;Virtual machine monitors;Virtualization;Performance; Benchmarking; Virtualization; Hypervisor; Container},
-	doi={10.1109/IC2E.2015.74}, 
-	month={March},
-}
-
-@inproceedings{ContainerVirtualization,
-	author = {Soltesz, Stephen and P\"{o}tzl, Herbert and Fiuczynski, Marc E. and Bavier, Andy and Peterson, Larry},
-	title = {Container-based Operating System Virtualization: A Scalable, High-performance Alternative to Hypervisors},
-	booktitle = {Proceedings of the 2Nd ACM SIGOPS/EuroSys European Conference on Computer Systems 2007},
-	series = {EuroSys '07},
-	year = {2007},
-	isbn = {978-1-59593-636-3},
-	location = {Lisbon, Portugal},
-	pages = {275--287},
-	numpages = {13},
-	url = {http://doi.acm.org/10.1145/1272996.1273025},
-	doi = {10.1145/1272996.1273025},
-	acmid = {1273025},
-	publisher = {ACM},
-	address = {New York, NY, USA},
-	keywords = {Linux-VServer, Xen, alternative, container, hypervisor, operating, system, virtualization},
-} 
-
-@MISC{namespaces,
-	TITLE =	"{namespaces: namespaces - overview of Linux namespaces}",
-	NOTE =	"\url{http://man7.org/linux/man-pages/man7/namespaces.7.html}",
-}
-
-@MISC{cgroups,
-	TITLE =	"{cgroups - Linux control groups}",
-	NOTE =	"\url{http://man7.org/linux/man-pages/man7/cgroups.7.html}",
-}
-
 @inproceedings {slacker,
 	author = {Tyler Harter and Brandon Salmon and Rose Liu and Andrea C. Arpaci-Dusseau and Remzi H. Arpaci-Dusseau},
 	title = {Slacker: Fast Distribution with Lazy Docker Containers},
@@ -206,30 +68,7 @@
 	publisher = {{USENIX} Association},
 }
 
-@MISC{dockerregistryclient,
-	TITLE =	"{Docker Registry Client}",
-	NOTE =	"\url{https://github.com/heroku/docker-registry-client}",
-}
-
 %relatedwork
-
-@inproceedings{largefscontent,
-	author = {Douceur, John R. and Bolosky, William J.},
-	title = {A Large-scale Study of File-system Contents},
-	booktitle = {Proceedings of the 1999 ACM SIGMETRICS International Conference on Measurement and Modeling of Computer Systems},
-	series = {SIGMETRICS '99},
-	year = {1999},
-	isbn = {1-58113-083-X},
-	location = {Atlanta, Georgia, USA},
-	pages = {59--70},
-	numpages = {12},
-	url = {http://doi.acm.org/10.1145/301453.301480},
-	doi = {10.1145/301453.301480},
-	acmid = {301480},
-	publisher = {ACM},
-	address = {New York, NY, USA},
-	keywords = {analytical modeling, directory hierarchy, file-system contents, static data snapshot, workload characterization},
-} 
 
 @INPROCEEDINGS{dockerfinder, 
 	author={A. Brogi and D. Neri and J. Soldani}, 
@@ -240,17 +79,6 @@
 	keywords={image retrieval;Docker containers;Docker image multiattribute search;Docker registries;DockerFinder;microservice-based prototype;multiattribute image descriptions;Computer architecture;Containers;Crawlers;Feature extraction;Graphical user interfaces;Prototypes;Software;Docker;image search;microservices}, 
 	doi={10.1109/IC2E.2017.41}, 
 	month={April},	
-}
-
-@INPROCEEDINGS{dockerssd, 
-	author={J. Bhimani and J. Yang and Z. Yang and N. Mi and Q. Xu and M. Awasthi and R. Pandurangan and V. Balakrishnan}, 
-	booktitle={2016 IEEE 35th International Performance Computing and Communications Conference (IPCCC)}, 
-	title={Understanding performance of I/O intensive containerized applications for NVMe SSDs}, 
-	year={2016}, 
-	pages={1-8}, 
-	keywords={cloud computing;random-access storage;storage management;I/O intensive containerized applications;NVMe SSD;application level fairness;back-end storage;cloud-based IT world;data centers;design guidelines;docker containers;enterprise servers;lightweight container platform;multitenancy docker environment;resource management;Central Processing Unit;Containers;Databases;Hardware;Resource management;Throughput;Virtual machining;Cassandra;Database;Docker containers;FIO;Flash-Memory;MySQL;NVMe;SSDs}, 
-	doi={10.1109/PCCC.2016.7820650}, 
-	month={Dec},
 }
 
 @inproceedings{dockervulnerabile,
@@ -289,38 +117,3 @@
 	keywords = {GitHub, docker, empirical software engineering},
 } 
 
-@article{distributedatainfs,
-	title = "The implications of distributed data in a commercial environment on the design of hierarchical storage management",
-	journal = "Performance Evaluation",
-	volume = "20",
-	number = "1",
-	pages = "3 - 25",
-	year = "1994",
-	note = "Performance '93",
-	issn = "0166-5316",
-	doi = "https://doi.org/10.1016/0166-5316(94)90003-5",
-	url = "http://www.sciencedirect.com/science/article/pii/0166531694900035",
-	author = "Tracy F. Sienknecht and Richard J. Friedrich and Joseph J. Martinka and Peter M. Friedenbach",
-	keywords = "File system",
-	keywords = "Workload characterization",
-	keywords = "Hierarchical storage"
-}
-
-@article{fiveyearfsmetadata,
-	author = {Agrawal, Nitin and Bolosky, William J. and Douceur, John R. and Lorch, Jacob R.},
-	title = {A Five-year Study of File-system Metadata},
-	journal = {Trans. Storage},
-	issue_date = {October 2007},
-	volume = {3},
-	number = {3},
-	month = oct,
-	year = {2007},
-	issn = {1553-3077},
-	articleno = {9},
-	url = {http://doi.acm.org/10.1145/1288783.1288788},
-	doi = {10.1145/1288783.1288788},
-	acmid = {1288788},
-	publisher = {ACM},
-	address = {New York, NY, USA},
-	keywords = {File systems, generative model, longitudinal study},
-} 
