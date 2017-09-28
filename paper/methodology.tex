@@ -139,7 +139,7 @@ Each profile contains different metrics for the whole image and
 its individual layers, respectively.
 Profiles are stored in JSON format.
 
-\paragraph{Layer profile.}
+\paragraph{Layer profile}
 
 Layers are downloaded as compressed tar archive files.
 %
@@ -147,56 +147,70 @@ To produce the layer profile, the analyzer first decompresses and extracts each
 layer tarball to a layer directory.
 %
 Then, it recursively traverses each subdirectory and obtains
-the metadata information for each subdirectory. Note that we excluded the compressed layer archival files that are bigger than 2 GB during layer analysis process, around 1,268 totally because~\nancomment{EXCLUDE 2GB}.
-
-The layer profile contains metadata about the layer, its directories,
-and files: 
-\nancomment{could remove archival size}
-Layer metadata: \{
+the metadata information for each subdirectory. Note that we excluded the compressed layer
+archives that are bigger than 2 GB from the analysis because \lrcomment{put reason here}.
+These comprise only a small subset of 1,268 layers.
+%
+A complete layer profile consists of:
+%\nancomment{could remove archival size}
+\begin{compactenumerate}
+\item Layer metadata: \{
 layer digest; 
-Archived layer size (ALS); 
-Sum of containing file sizes (FLS); 
-Compressed layer size (CLS); 
-ALS-to-CLS (compression ratio);
-FSL-to-CLS (compression ratio);
-Directory count;
-File count;
-Layer directory depth;
+archived layer size (ALS); 
+sum of containing file sizes (FLS); 
+compressed layer size (CLS); 
+directory count;
+file count;
+layer directory depth \lrcomment{How is this different from directory depth below?};
 \}
 
-Directory metadata: \{
-Directory name;
-Directory depth;
-File count;
-Directory size;
+\item Compression ratios: \{
+ALS-to-CLS;
+FSL-to-CLS;
 \}
 
-File metadata\{
-File name;
-File digest;
-File type;
-File size;
+\item Directory metadata: \{
+directory name;
+directory depth;
+file count;
+directory size;
 \}
-\vcomment{Instead of the table, let's us the itemized list above for now, \nancomment{already add table 1. and we dont need to list metrics here since we present them in results}}
+
+\item File metadata\{
+file name;
+file digest;
+file type;
+file size;
+\}
+\end{compactenumerate}
+%\vcomment{Instead of the table, let's us the itemized list above for now,
+%\nancomment{already add table 1. and we dont need to list metrics here since we present
+%them in results}}
 
 
-\paragraph{Image profile.}
+\paragraph{Image profile}
 
 To create the image profile, the analyzer parses the manifest
-and obtains the configuration information such as OS and architecture.
+and obtains the configuration information such as OS and target architecture.
 Further, once individual layers are analyzed, the analyzer can build the whole image
-profile by including pointers to its layer profiles. In total, image profile includes
-the following information:
-\{
-Image name; 
-Archived Image size (AIS); 
-Sum of containing file sizes (FIS); 
-Compressed image size (CIS); 
-ALS-to-CLS (compression ratio);
-FSL-to-CLS (compression ratio);
+profile by including pointers to its layer profiles. A complete image consists of:
+\begin{compactenumerate}
+
+\item Image metadata: \{
+image name; 
+archived image size (AIS); 
+sum of containing file sizes (FIS); 
+compressed image size (CIS); 
 Directory count;
 File count;
 \}
+
+\item Compression ratios \lrcomment{double check these two are correct}: \{
+AIS-to-CIS;
+FIS-to-CIS;
+\}
+
+\end{compactenumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                            %
