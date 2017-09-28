@@ -1,4 +1,4 @@
-\section{Characterization}
+\section{Dataset Characterization}
 \label{sec:char}
 
 In this section we perform storage-oriented characterization of the Docker Hub
@@ -7,7 +7,9 @@ dataset and draw our insights.
 After presenting registry growth trends, we first characterize layers
 (\S~\ref{sec:layers}) and then proceed to images (\S~\ref{sec:images}).
 %
-\paragraph{Docker Hub growth.} Figure~\ref{fig_image_growth} shows the linear
+\paragraph{Docker Hub growth}
+%
+Figure~\ref{fig_image_growth} shows the linear
 growth in the number of repositories in Docker Hub from May 30 to September 20,
 2017.
 %
@@ -18,8 +20,8 @@ growth in the number of repositories in Docker Hub from May 30 to September 20,
 %number of repositories in Docker hub each day.
 %
 During this 110-day period the total number of repositories increased by 53,337
-from 633,915 to 687,292, resulting to the average
-creation rate of 1,241 repositories daily.
+from 633,915 to 687,292, resulting to the average creation rate of 1,241
+repositories daily.
 %
 The graph is missing the points between July 11 and July 26 because Docker Hub
 stopped indexing ``/'' symbol in the repository names (which we originally used

@@ -2,31 +2,13 @@
 \label{sec:layers}
 
 In this section we charaterize layer sizes; file and directory counts in
-layers; layer compression ratios; and layer depths in images.
-
-\begin{figure}[!t]
-	\centering
-	\subfigure[CDF of layer sizes]{\label{fig_layer_size_cdf}
-		\includegraphics[width=0.23\textwidth]{graphs/layer_size_mb.pdf}
-	}
-	\subfigure[Histogram of layer sizes]{\label{fig_hist_layer_size}
-		\includegraphics[width=0.223\textwidth]{graphs/hist_layer_size.pdf}
-	}
-	\caption{Layer size distribution
-	\vcomment{Let's use CLS, ALS, and FLS abreviations}.
-	\vcomment{CLS size should go first}.
-	\vcomment{We need to use different types of lines (solid, dotted, etc.)
-		or markers (round, triangular)}.
-	\vcomment{In figure B it is not clear to which bar group corresponds
-		  to which layer size. I suggest to try to rotate the graph
-		  by 90 grads to fit all layer size labels.}
-	}
-	\label{fig-layer-size}
-\end{figure}
+layers; layer compression ratios; and directory depths in the layers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\paragraph{Layer size distribution.}
+\input{fig-char-layer-sizes}
+
+\paragraph{Layer sizes}
 %
 We characterize layer sizes using three different metrics:
 %
@@ -35,15 +17,15 @@ transferred to a client;
 %
 2)~Archived Layer Size (ALS)---layer in decompressed but archived format;
 %
-and 3)~the sum of containing file sizes (FLS).
+and 3)~Files in Layer Size (FLS)---the sum of containing file sizes.
 %
 Figure~\ref{fig_layer_size_cdf} shows the CDF of the three metrics.
 
 The ALS and FLS curves are, expectedly, close to each other (within 5\% for
 any given layer size) while compressed layers are typically smaller.
 %j
-90\% of the layers are smaller than 177~MB and 63~MB in uncompressed and
-compressed formats, respectively.
+90\% of the layers are smaller than 177~MB in uncompressed 
+format and smaller than 63~MB in compressed format.
 %
 Half of the layers are smaller than 4~MB no matter in which format.
 %
@@ -66,44 +48,29 @@ in compressed, archived, and unpacked formats, respectively.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{figure}[!t]
-	\centering
-	\subfigure[CDF of compression ratio]{\label{fig_cdf_compression_ratio}
-		\includegraphics[width=0.23\textwidth]{graphs/cdf_compression_ratio.pdf}
-	}
-	\subfigure[Histogram of comp. ratios]{\label{fig_his_compression_ratio}
-		\includegraphics[width=0.223\textwidth]{graphs/his_compression_ratio.pdf}
-	}
-	\caption{Layer compression ratio distribution}
-	\label{fig-compression-ratio}
-\end{figure}
+\input{fig-char-layer-compression}
 
-\paragraph{Layer compression ratio distribution.}
-
+\paragraph{Layer compression ratios}
+%
 We calculated two compression ratios: ALS-to-CLS and FLS-to-CLS.
 Figure~\ref{fig_cdf_compression_ratio} shows the CDF of the compression ratios.
 %
-ALS-to-CLS ratio greater than the FSL-to-CLS ratio.
+The ALS-to-CLS ratio is generally greater than the FLS-to-CLS ratio
+because small files in layers get larger when combined in a tar archive.
 %
-90\% of images have a archival-to-compression ratio less than ~4 while 90\% of
-images have a sum of file-to-compression ratio less than 30.
+90\% of layers have a  ALS-to-FLS ratio less than 4 while 90\% of
+layers have FLS-to-CLS ratio less than 30.
 %
-Half of the images have a compression ratio (both archival-to-compression and
-sum of files-to-compression) around 3.
+Half of the layers have a compression ratio (both ALS-to-CLS and
+FLS-to-CLS) around 3.
 %
-The maximum compression ratio are 512,930 and 1026 for the ratio of sum to file
-size to compression size and the ratio of archival to compression size
-respectively.
+The maximum FLS-to-CLS is 512,930 and maximum ALS-to-CLS is 1026.
 %
-Figure~\ref{fig_his_compression_ratio} shows a histogram of layer by
+Figure~\ref{fig_his_compression_ratio} shows a histogram of layers by
 compression ratio.
 %
-587,000 images have a ratio of sum of file size to compression size of 3 and
-331,000 images have a ratio of archival size to compression size of 3, which
-are two peaks shown in the graph.
-
-Figure~\ref{fig-compression-ratio} suggests that layers have a great potential
-for compression to save space.
+Two peaks in the graph correspond to 587,000 layers that have the FLS-to-CLS ratio of 3
+and 331,000 layers that have the ALS-to-CLS ratio of 3.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -126,7 +93,7 @@ for compression to save space.
 \end{figure}
 %
 
-\paragraph{File and directory count distributions.}
+\paragraph{File and directory counts}
 
 Figure~\ref{fig_file_cnt} and Figure~\ref{fig_dir_cnt} show the CDFs of file
 and directory counts for layers.
@@ -142,30 +109,30 @@ The average is 2,200.
 The maximum number of directories in a layer is 111,940, the minimum is 1, and
 the average is 273.
 %
-90\% of the layers have less than 826 directories and half of the layer store
+90\% of the layers have less than 826 directories and half of the layers store
 less than 11 directories.
 %
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\paragraph{Layer depth distribution}
+\paragraph{Directory depths}
 
-After extracting and unpacking gzip compressed layer archival files, we
-calculated the layer directory depth (i.e., the maximum directory depth).
+%After extracting and unpacking gzip compressed layer archival files,
+We also calculated the maximum directory depth for every layer.
 %
 Figure~\ref{fig_layer_depth} shows the cumulative layer probability by layer
 directory depth.
 %
-Around 90\% of layers' directory depth is less than 10. 50\% of layers'
-directory depth is less than 4. 
-
-Figure~\ref{fig_hist_layer_depth} shows the histogram of layers by layer
-directory depth.
+Around 90\% of layers' maximum directory depth is less than 10
+and 50\% of layers'  maximum directory depth is less than 4. 
+%
+Figure~\ref{fig_hist_layer_depth} shows the histogram of layers by
+maximum layer directory depth.
 %
 About 313,000 layers' layer directory depth is 3, which is the peak value in
 the figure.
 %
-The maximum repeat count is 444 while the median is 4. The average is ~5.
+%The maximum repeat count is 444 while the median is 4. The average is ~5.
 
 \begin{figure}[!t]
 	\centering
