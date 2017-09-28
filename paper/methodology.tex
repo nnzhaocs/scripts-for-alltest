@@ -14,7 +14,6 @@ on the crawler results; 3) unpack and analyze images and layers.
 
 \subsection{Crawler}
 \label{sec:crawler}
-
 %
 To download a particular image, %or set of images (i.e., a repository)
 the name of the repository name which the image belongs to should be provided.
@@ -68,13 +67,12 @@ For example, \texttt{docker pull ubuntu} command pulls the
 %
 In this work we only download images with the \texttt{:latest} tag to
 make the analysis more feasible.  We believe that the latest
-images versions represent most up-to-date state of  Docker images
+images versions represent most up-to-date state of Docker images
 %
 and plan to analyze images with other tags in the future.
 Instead of using Docker CLI to download images,
-
 we wrote our own downloader that calls Docker registry API directly.
-We used Docker registry client~\vcomment{insert the name, \nancomment{it is called Docker registry client}} library~\cite{dockerregistryclient} to simultaneously
+We used Docker registry client~\vcomment{insert the name, \nancomment{addressed}} library~\cite{dockerregistryclient} to simultaneously
 download \emph{original} manifests and image layers. \lrcomment{What does
 	`original' mean here? \nancomment{without any modification}}
 
@@ -84,18 +82,17 @@ because the latter one performs
 operations other than downloading the
 image.
 For example, it automatically extracts each layer's tar archive file
-and creates corresponding read-only snapshot with  configured Docker storage driver.
-
+and creates corresponding read-only snapshot with configured Docker storage driver.
 This
 not only takes considerable amount of time but also leads
 to overly high storage space utilization.
-
+%
 Furthermore, the local storage format of Docker client makes it difficult
 to analyze the contents of each layer separately.
 
 Our downloader can download multiple images simultaneously and fetch
 the individual layers of an image in parallel.
-
+%
 The process consists of two steps.
 %
 First, fetching the manifest by sending a \texttt{GET} request to
@@ -120,9 +117,9 @@ compressed layers.
 %
 A total of 111,384 images could not be downloaded due to three reasons.
 %
-First, 5\% of the images required authentication and
-second, 87\% of the images did not have the \texttt{latest} tag.
-Third, 8\% of the images contains layers that cannot be downloaded.
+First, 5\% of these images required authentication and
+second, 87\% of these images did not have the \texttt{latest} tag.
+Third, 8\% of these images contains layers that cannot be downloaded.
 % 0.05189255189	0.8666056166 0.0815018315
 %As we discussed in Section~\ref{sec:crawler}, we only downloaded the \texttt{latest}
 %version of an image to shorten the downloading process.
@@ -165,12 +162,12 @@ To produce the layer profile, the analyzer first decompresses and extracts each
 layer tarball to a layer directory.
 %
 Then, it recursively traverses each subdirectory and obtains
-the metadata information for each subdirectory.
+the metadata information for each subdirectory. Note that we excluded the compressed layer archival files that are bigger than 2 GB during layer analysis process, around 1,268 totally because~\nancomment{EXCLUDE 2GB}.
 
 The layer profile contains metadata about the layer, its directories,
 and files: 
 
-\{
+Layer metadata: \{
 layer digest; 
 Archived layer size (ALS); 
 Sum of containing file sizes (FLS); 
@@ -182,14 +179,14 @@ File count;
 Layer directory depth;
 \}
 
-\{
+Directory metadata: \{
 Directory name;
 Directory depth;
 File count;
 Directory size;
 \}
 
-\{
+File metadata\{
 File name;
 File digest;
 File type;
