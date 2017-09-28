@@ -1,15 +1,23 @@
 \subsection{Images}
 \label{sec:images}
 
-\paragraph{Image popularity distribution}
+\paragraph{Image popularity}
+%
+Figure~\ref{fig-pop} shows the repository popularity distribution on May 31st.
+The x-axies show the pull count (i.e., total number of pulls) for repositories
+by May 31th with different ranges.  Figure~\ref{fig_pull_cnt_total} shows the
+cumulative repository frequency by pull count. ~95\% of the repositories are
+pulled than 1000 totally. 90\% of the repositories only have a pull count less
+than 333. The greatest pull count is 654,088,410, which is official
+repository~\textit{nginx}.  Figure~\ref{fig_pull_cnt_count} shows the
+repository frequency by pull count. 31,200 of repositories are not at all.
+34,100 repositories are pulled only ~4 times and 27,600 repositories are pulled
+~37 times, which are the two peaks shown in the figure.  Overall, repository
+frequency decreases with the pull count.
 
-Figure~\ref{fig-pop} shows the repository popularity distribution by May 31th. The x-axies show the pull count (i.e., total number of pulls) for repositories by May 31th with different ranges.
-Figure~\ref{fig_pull_cnt_total} shows the cumulative repository frequency by pull count. ~95\% of the repositories are pulled than 1000 totally. 90\% of the repositories only have a pull count less than 333. The greatest pull count is 654,088,410, which is official repository~\textit{nginx}. 
-Figure~\ref{fig_pull_cnt_count} shows the repository frequency by pull count. 31,200 of repositories are not at all.  
-34,100 repositories are pulled only ~4 times and 27,600 repositories are pulled ~37 times, which are the two peaks shown in the figure.
-Overall, repository frequency decreases with the pull count.
-
-The skewness of two curves in figure~\ref{fig-pop} suggests that Docker hub is a good fit for caching few popular repositories or images, which can significantly improve the \textit{pull} or \textit{push} performance.      
+The skewness of two curves in figure~\ref{fig-pop} suggests that Docker hub is
+a good fit for caching few popular repositories or images, which can
+significantly improve the \textit{pull} or \textit{push} performance.      
 
 \begin{figure}[!t]
 	\centering
