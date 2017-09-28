@@ -1,5 +1,13 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We downloaded xxx images and xxx layers totaling 51 TB of data, through xxx layers and xxx images cannot be analyzed.
-We studied the    
+We downloaded 346,243 images and 1,763,354 layers totaling 51 TB of data, through 8.8\% layers and 9.2\% images cannot be analyzed due to extracting errors. 
+The dataset contains 117 million files.
+
+We studied different statistic distribution by characterizing layers and images. For example, we found that majority of layer size and directory size are fairly small. We also found that Docker Hub is a fit for caching because only a small subset of images are popular.
+
+Our interesting observation is that there are a number of layers' compression ratio are quite low. Given that compression is computationally expensive and often slow down the \textit{pull} process, it can be beneficial to store small layers uncompressed in the registry to reduce pull latencies. 
+
+We analyzed the file count and directory count distribution for both layers and images. We find that majority of images and layers has a moderate number of directories and files, with less images and layers have extremely large or small number of directories and files.
+
+We also analyzed the layer count distribution for images. Majority of images has a moderate number of layers. And very less layers are shared among different images.   
