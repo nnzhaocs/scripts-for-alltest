@@ -77,7 +77,7 @@ that around 600,000 layers have a compression ratio of between 2 and 3 while mor
 %and 331,000 layers that have the ALS-to-CLS ratio of 3.
 
 Our size analysis reveals an interesting trade-off. Compression is computationally
-expensive and is one of the major sources of latency when pulling an image from Docker Hub.
+expensive and is one of the major sources of latency when pulling an image from Docker Hub~\cite{slacker}.
 As the majority of layers is small and has low compression ratios, it can
 be beneficial to store small layers uncompressed in the registry to reduce pull latencies.
 
