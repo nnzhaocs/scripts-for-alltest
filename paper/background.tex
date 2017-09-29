@@ -11,9 +11,9 @@
 %through a privileged hypervisor. This causes long VM startup times and slows down
 %processing~\cite{Disco}.
 
-Recent container-based virtualization (such as Linux Containers~(LXC)~\cite{LXC}) has emerged 
+Container-based virtualization (such as Linux Containers~(LXC)~\cite{LXC}) has emerged 
 as a lightweight virtualization alternative.
-Compared to Virtual Machine based server virtualization technologies (\eg,
+Compared to Virtual Machine based server virtualization technologies (\eg
 VMware~\cite{VMware} or Xen~\cite{xen}), container virtualization works at the
 operating system level. Containers share the same kernel which improves startup
 times and significantly reduces the storage and memory overhead ~\cite{ContainerVirtualization}.
@@ -43,8 +43,8 @@ At the center of Docker is the concept of container images for packaging,
 distributing, and running applications.
 Docker images consist of a series of individual \emph{layers}.
 A layer contains a subset of the files in the image and 
-usually represents a specific component/dependency of the image, \eg, a shared library.
-This modular design allows layers to be shared between two containers if both
+usually represents a specific component/dependency of the image, \eg a shared library.
+This modular design allows layers to be shared between two images if both
 images depend on the same component.
 
 Image layers are read-only. When users start a
@@ -54,13 +54,13 @@ to files in the image will be reflected inside the writable layer via a copy-on-
 This leaves layers unmodified throughout the lifetime of a container and enables layer
 sharing.
 %
-Docker supports multiple storage drivers, \eg, Aufs and Btrfs, which
+Docker supports multiple storage drivers, \eg Aufs and Btrfs, which
 efficiently combine read-only and writable layers
 in a single namespace~\cite{docker-driver-eval}.
 The writable layers are deleted when the container is deleted.
 
-Besides the layers, each image contains a \emph{manifest}.
-The manifest describes the various constituents of a Docker image, such as the
+Image is represented by a \emph{manifest}
+which describes the various constituents of a Docker image, such as the
 target hardware platform and environment settings.
 %
 Moreover, the manifest contains a list of layer digests for all layers required by the image.
@@ -73,13 +73,13 @@ The Docker registry is a platform for storing and sharing container
 images. It stores images in \emph{repositories}, each containing
 different versions of the same image.
 %
+Image layers are stored as compressed archival files and image
+manifests as JSON-based files.
+%
 Docker Hub is one of the most popular public registries,
 supporting both public and private repositories,
 via which users can upload, search, and download images~\cite{docker-hub}.
-It stores and exchanges layers as compressed archival files and images
-as JSON-based manifests.
-
-The user repositories are namespaced by user name, i.e.,
+In Docker Hub, the user repositories are namespaced by user name, i.e.,
 ``$\langle username\rangle/\langle repository name \rangle$",
 while the official repositories, which
 are directly provided by Docker Inc. and partners are called
