@@ -34,7 +34,7 @@ Interestingly, about half of the layers are smaller than 4~MB, independent
 of the format. That means that the registry stores a large number of
 small layers which cannot benefit from compression.
 %
-\nancomment{I removed the following lines because we analyzed all layers.}
+%\nancomment{I removed the following lines because we analyzed all layers.}
 %As we described earlier in \S~\ref{sec:methodology}, we only
 %analyzed layers smaller than 2~GB in compressed format. This
 %resulted in the largest analyzed uncompressed layer being
@@ -70,8 +70,8 @@ compression ratio is 2.6. The largest compression ratio is 1026.
 %The maximum FLS-to-CLS is 512,930 and maximum ALS-to-CLS is 1026.
 %
 Looking at the histogram (see Figure~\ref{fig_his_compression_ratio}), we see
-that around 600,000 layers have a compression ratio of between 1.5 and 2.5\nancomment{it is between 2 and 3} while more than
-300,000 between 0.5 and 1.5\nancomment{it is between 1 and 2}.
+that around 600,000 layers have a compression ratio of between 2 and 3 while more than
+300,000 between 1 and 2.
 %
 %Two peaks in the graph correspond to 587,000 layers that have the FLS-to-CLS ratio of 3
 %and 331,000 layers that have the ALS-to-CLS ratio of 3.
@@ -112,8 +112,10 @@ The results show that 90\% of layers contain less than 7,410 files while half
 of the layers have less than 30 files.
 %
 We also found that 27\% of the layers only have a single file while 7\% even showed
-no files at all. We currently do not know the exact reason for the empty layers but
-plan to investigate their corresponding images in the future\nancomment{The layers are not empty since it could have directories}. On the other hand,
+no files at all. We currently do not know the exact reason for the layers without files
+but plan to investigate their corresponding images in the future.
+%\nancomment{The layers are not empty since it could have directories}.
+On the other hand,
 the largest layer contains 826,196 files which was part of a Debian image.
 %
 %The average is 2,200.
