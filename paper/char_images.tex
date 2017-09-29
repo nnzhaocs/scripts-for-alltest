@@ -24,10 +24,10 @@ terms of the pull count of individual images.
 %by May 31th with different ranges.  
 The CDF in Figure~\ref{fig_pull_cnt_total} reveals a large degree of skew in image
 pulls. In the median, images are only pulled 40 times while in the 90\% percentile we
-see a pull count of 333. On the other hand, the largest pull count is more than 650 million
+see a pull count of 333. On the other hand, the largest pull count is more than 650M 
 which is for the official \textit{nginx} repository. This is followed by
-Google's \textit{cadvisor} (434 million pulls), \textit{redis} (264 million pulls),
-\textit{ubuntu} (28 million pulls) and GliderLabs' \textit{registrator} (212 million pulls).
+Google's \textit{cadvisor} (434M pulls), \textit{redis} (264M pulls),
+\textit{ubuntu} (28M pulls) and GliderLabs' \textit{registrator} (212M pulls).
 
 
 Looking at the pull frequencies for repositories (see Figure~\ref{fig_pull_cnt_count})
@@ -58,10 +58,10 @@ Similarly to layers, we also measure compressed image size
 (CIS), \ie the sum of the sizes of the compressed image layers, and the sum of the
 sizes of files contained in the image (FIS). Figure~\ref{fig_image_size_gb}
 and~\ref{fig_image_size_mb} show the image size distributions at a coarse GB resolution
-and a finer resolution only covering images less than 1.5 GB.
+and a finer resolution only covering images smaller than 1.5 GB.
 
 90\% of the images have an uncompressed size less than 1.3 GB while compressed images
-are less than 0.48 GB. In the median, this decreases to 94MB and 17 MB respectively.
+are less than 0.48 GB. In the median, this decreases to 94MB and 17 MB, respectively.
 The largest uncompressed image is 498 GB which is a Ubuntu-based image.
 Figure~\ref{fig-image-size} shows that the majority of uncompressed images in Docker Hub are
 small which aligns with the Docker philosophy to package software and distribute
