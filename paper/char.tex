@@ -5,15 +5,19 @@ In this section we carry out our analysis of the Docker Hub dataset by character
 layers (\S~\ref{sec:layers}) and images (\S~\ref{sec:images}) based on
 the above presented metrics. While overall we are interested in its general structure,
 we also analyze specific properties that allow us to draw conclusions regarding the
-caching, compression, and provisioning.
+caching, compression, and resource provisioning.
 
 As shown in Figure~\ref{fig_image_growth}, the number of repositories increased
-linearly during our observation period from May 30th to September 20th
+linearly during our observation period from May 30th to September 20th,
 2017. Note that the graph shows a gap of 15 days due to Docker Hub changing the way it
 indexes repositories. The total number of repositories
 grew from 633,915 to 687,292, resulting in an average creation rate of 1,241
-repositories per day. This rapid growth suggests that storage optimizations will
-be crucial for registries in the future.
+repositories per day.
+This rapid growth of repositories suggests that storage optimizations will
+be crucial for registries in the neear future.
+Notice also,
+that each repository contains multiple tagged images and, therefore, we 
+significantly underestimatet the size of Docker Hub's content.
 
 %
 %\paragraph{Docker Hub growth}

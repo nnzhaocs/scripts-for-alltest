@@ -41,7 +41,7 @@ small layers which cannot benefit from compression.
 %of \gap~GB large.
 %
 %\vcomment{need to adjust Methodology to reflect this.}
-
+%
 To analyze the frequencies, we zoom into the 0--128~MB range
 (see Figure~\ref{fig_hist_layer_size}).
 %
@@ -60,7 +60,7 @@ the FLS-to-CLS compression ratios (see Figure~\ref{fig_cdf_compression_ratio}).
 %The ALS-to-CLS ratio is generally greater than the FLS-to-CLS ratio
 %because small files in layers get larger when combined in a tar archive.
 %
-90\% of layers have a  CLS-to-FLS ratio less than 4 and the median
+90\% of layers have a  FLS-to-CLS ratio less than 4 and the median
 compression ratio is 2.6. The largest compression ratio is 1026.
 %
 %Half of the layers have a compression ratio (both ALS-to-CLS and
@@ -112,11 +112,13 @@ The results show that 90\% of layers contain less than 7,410 files while half
 of the layers have less than 30 files.
 %
 We also found that 27\% of the layers only have a single file while 7\% even showed
-no files at all. We currently do not know the exact reason for the layers without files
-but plan to investigate their corresponding images in the future.
+no files at all. We currently do not know the exact reason for the layers without files,
+but one theory is that these layers use Docker volumes to store
+all requred files (including executables).
+% plan to investigate their corresponding images in the future.
 %\nancomment{The layers are not empty since it could have directories}.
 On the other hand,
-the largest layer contains 826,196 files which was part of a Debian image.
+the largest layer contains 826,196 files and was part of a Debian image.
 %
 %The average is 2,200.
 %
@@ -129,13 +131,13 @@ the \textit{conjurinc/developer-quiz} image.
 
 %After extracting and unpacking gzip compressed layer archival files,
 Besides the count, we also calculate the maximum directory depth for each layer
-(see Figure~\ref{fig_layer_depth}).
+(Figure~\ref{fig_layer_depth}).
 %
 Around 90\% of all layers have a directory depth less than 10
 while for 50\% of the layers, the directory depth is less than 4. 
 %
 The most frequent directory depth is 3 with 313,000 layers showing
-this depth value (see Figure~\ref{fig_hist_layer_depth}.
+this depth value (Figure~\ref{fig_hist_layer_depth}).
 %
 %About 313,000 layers' layer directory depth is 3, which is the peak value in
 %the figure.
@@ -144,7 +146,7 @@ this depth value (see Figure~\ref{fig_hist_layer_depth}.
 
 This analysis shows that the majority of layers consists only of a small number
 of files and does not contain deeply nested directory hierarchies. Hence, except
-a few outliers, layers do not require a large amount of metadata from the storage
+a few outliers, unpacked layers do not require a large amount of metadata from the storage
 system.
 
 \begin{figure}[!t]
