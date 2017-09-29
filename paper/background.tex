@@ -15,15 +15,14 @@ Recent container-based virtualization (such as Linux Containers~(LXC)~\cite{LXC}
 as a lightweight virtualization alternative.
 Compared to Virtual Machine based server virtualization technologies (\eg,
 VMware~\cite{VMware} or Xen~\cite{xen}), container virtualization works at the
-operating system level. Containers share the same kernel which significantly reduces
-overhead as less storage and memory is required and improves startup
-times~\cite{ContainerVirtualization}. 
+operating system level. Containers share the same kernel which improves startup
+times and significantly reduces the storage and memory overhead ~\cite{ContainerVirtualization}.
 
 \subsection{Docker}
 
-Docker~\cite{docker} is a new popular container-based virtualization technology that extends LXC
-with higher level APIs and additional functionality. It automates the deployment of
-applications inside Linux containers, and provides the capability to package an
+Docker~\cite{docker} is a new, popular container-based virtualization technology that
+extends LXC with higher level APIs and additional functionality. It automates the deployment
+of applications inside Linux containers, and provides the capability to package an
 application with its runtime dependencies into a container~\cite{slacker}.
 \input{fig-docker-architecture.tex}
 
@@ -32,10 +31,10 @@ several components.
 %
 Users interact with Docker via the Docker \emph{client}, which sends commands
 to the Docker \emph{daemon}. The daemon is responsible for \emph{running} containers
-from existing images. Additionally, the daemon supports \emph{building} new images and
-\emph{pushing} them to a Docker \emph{registry}. In case a user wants to launch a
-container from an image that is not available locally, the daemon will \emph{pull}
-the required image from the registry.
+from locally available images. Additionally, the daemon supports \emph{building} new
+images and \emph{pushing} them to a Docker \emph{registry}. In case a user wants to
+launch a container from an image that is not available locally, the daemon will
+\emph{pull} the required image from the registry.
 
 \subsection{Docker images and layers}
 \label{sec-image-layers}
@@ -50,17 +49,17 @@ images depend on the same component.
 
 Image layers are read-only. When users start a
 container via {\tt docker run}, Docker creates a new writable layer on top of the
-underlying read-only layers as shown in figure~\ref{fig-docker-architecture}. Any changes made
+underlying read-only layers as shown in Figure~\ref{fig-docker-architecture}. Any changes made
 to files in the image will be reflected inside the writable layer via a copy-on-write mechanism.
 This leaves layers unmodified throughout the lifetime of a container and enables layer
 sharing.
 %
-Docker supports multiple storage drivers, \eg, Aufs or Btrfs, which
+Docker supports multiple storage drivers, \eg, Aufs and Btrfs, which
 efficiently combine read-only and writable layers
 in a single namespace~\cite{docker-driver-eval}.
 The writable layers are deleted when the container is deleted.
 
-Besides the layers, an image contains a \emph{manifest}.
+Besides the layers, each image contains a \emph{manifest}.
 The manifest describes the various constituents of a Docker image, such as the
 target hardware platform and environment settings.
 %
