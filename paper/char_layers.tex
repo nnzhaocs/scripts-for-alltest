@@ -2,8 +2,8 @@
 \label{sec:layers}
 
 %\nancomment{could remove archival size from all sections}
-We start by analyzing layers in terms of size and compressibility, and file and directory
-counts and directory depths.
+We start by analyzing layers in terms of size and compressibility, file and directory
+counts, and directory depths.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -18,7 +18,7 @@ transferred to a client;
 %
 %2)~Archived Layer Size (ALS)---layer in decompressed but archived format;
 %
-and 2)~Files in Layer Size (FLS)---the sum of the size of the uncompressed files contained
+and 2)~Files in Layer Size (FLS)---the sum of the sizes of the uncompressed files contained
 in the layer.
 %
 Figure~\ref{fig_layer_size_cdf} shows the CDF of the two metrics.
@@ -42,11 +42,11 @@ small layers which cannot benefit from compression.
 %
 %\vcomment{need to adjust Methodology to reflect this.}
 
-To analyze the actual numbers, we zoom into the 0--128~MB range
+To analyze the frequencies, we zoom into the 0--128~MB range
 (see Figure~\ref{fig_hist_layer_size}).
 %
 More than 1 million and 800,000 layers are smaller than 5~MB
-in compressed and uncompressed format, respectively. After that,
+in compressed and uncompressed format, respectively. Beyond that,
 the frequency drops rapidly and we only see around 100,000 layers
 between 5~MB and 15~MB.
 
@@ -128,11 +128,11 @@ the \textit{conjurinc/developer-quiz} image.
 %\paragraph{Directory depths}
 
 %After extracting and unpacking gzip compressed layer archival files,
-Besides the count, we also calculate the maximum directory depth for every layer
+Besides the count, we also calculate the maximum directory depth for each layer
 (see Figure~\ref{fig_layer_depth}).
 %
 Around 90\% of all layers have a directory depth less than 10
-while for 50\%  of the layers, the directory depth is less than 4. 
+while for 50\% of the layers, the directory depth is less than 4. 
 %
 The most frequent directory depth is 3 with 313,000 layers showing
 this depth value (see Figure~\ref{fig_hist_layer_depth}.
