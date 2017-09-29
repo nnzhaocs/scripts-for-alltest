@@ -21,12 +21,16 @@ To download a particular image, %or set of images (i.e., a repository)
 the name of the repository name which the image belongs to needs to be provided.
 The crawler is responsible for generating a list of repositories for the downloader.
 
-Public repositories in Docker Hub are divided into official
+Public repositories 
+in Docker Hub
+(i.e., the repositories
+that anyone can pull from)
+re divided into official
 repositories---served by the Docker Hub partners---and non-official
 repositories---provided by regular users and third-party organizations.
 %
 The number official repositories is less than 200, while, the majority
-of repositories in Docker Hub are non-official (about 400 thousand).
+of repositories in Docker Hub are non-official (over 400 thousand).
 Listing non-official repositories requires web crawling because
 Docker Hub does not provide an API to retrieve all repository names.
 %Therefore, we implemented a Crawler to crawl Docker Hub and list all non-official
@@ -45,7 +49,8 @@ We ran the crawler on May 30th, 2017 and it delivered a list of 634,412 reposito
 %However, the obtained list contained duplicate entries because 
 %the crawling process is not atomic and some repositories have ``/'' in their description.
 %
-After removing duplicate entries, the final repository list consists of 457,627
+After removing duplicate entries (introduced by Docker Hub indexing logic),
+the final repository list consists of 457,627
 distinct repositories. 
 % TODO: Could we mention something about this number difference? Readers will immediately wonder.
 
@@ -70,6 +75,7 @@ make the analysis more feasible. We believe that the latest
 image versions represent the most up-to-date state of Docker images.
 %
 %and plan to analyze images with other tags in the future.
+
 Instead of using the Docker client to download images,
 we implement our own downloader, which calls the Docker registry API
 directly~\cite{dockerregistryclient} to download manifests
@@ -77,7 +83,7 @@ and image layers in parallel.
 %We use Docker registry client library~\cite{dockerregistryclient} to simultaneously
 %download manifests and image layers.
 %\lrcomment{What does `original' mean here? \nancomment{without any modification}}
-
+%
 Our downloader runs significantly faster than a \texttt{docker pull}-based downloader
 because the latter one performs operations besides downloading the image.
 For example, it automatically extracts each layer's tar archive file
@@ -121,7 +127,7 @@ A total of 111,384 images could not be downloaded due to three reasons:
 %
 1)~5\% of these images required authentication;
 2)~87\% of these images did not have a \texttt{latest} tag; and
-3)~8\% of these images contain layers that cannot be downloaded.
+3)~8\% of these images contained layers that cannot be downloaded.
 % 0.05189255189	0.8666056166 0.0815018315
 %As we discussed in Section~\ref{sec:crawler}, we only downloaded the \texttt{latest}
 %version of an image to shorten the downloading process.
@@ -176,14 +182,14 @@ max. directory depth
 FSL-to-CLS;
 \}
 
-\item Directory metadata: \{
+\item Directory metadata (for every directory in the layer): \{
 directory name;
 directory depth;
 file count;
 directory size;
 \}
 
-\item File metadata\{
+\item File metadata (for every file in the layer): \{
 file name;
 file digest;
 file type;
@@ -218,6 +224,10 @@ FIS-to-CIS;
 \}
 
 \end{compactenumerate}
+
+We released both the software that we designed
+to download the images and all profiles we generated
+publicly at \small{\url{https://elided.for.review}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                            %
