@@ -6,14 +6,16 @@
 %	overcame these challenges. \nancomment{challenges include: 1. obtaining a list of all the repositories in docker hub; 2. effectively downloading all the images. 3. indept analysis}}
 
 Our methodology consists of three steps~(see Figure~\ref{fig-downloader-analyzer}):
-1)~crawl Docker Hub to list all repositories;
-2)~download the latest image (and referenced layers) from each repository based
-on the crawler results; 3) unpack and analyze images and layers.
+i)~crawl Docker Hub to list all repositories;
+ii)~download the latest image (and referenced layers) from each repository based
+on the crawler results; iii) unpack and analyze images and layers.
 
 \input{fig-downloader-analyzer.tex}
 
 \subsection{Crawler}
 \label{sec:crawler}
+
+% TODO: The following paragraph seems out of place (move to next subsection?).
 
 To download a particular image, %or set of images (i.e., a repository)
 the name of the repository name which the image belongs to needs to be provided.
@@ -36,8 +38,8 @@ repositories.
 As the name of non-official repositories is comprised
 of the user name and the repository name separated by a ``/'', %as detailed in \ref{sec:docker-registry},
 we can search for ``/'' and obtain a list of all non-official repositories.
-The Crawler downloads all pages from the search result.
-and parses the web content to build a list of all non-official repositories.
+The Crawler downloads all pages from the search results and parses the web content
+to build a list of all non-official repositories.
 We ran the crawler on May 30th, 2017 and it delivered a list of 634,412 repositories.
 %
 %However, the obtained list contained duplicate entries because 
@@ -45,6 +47,7 @@ We ran the crawler on May 30th, 2017 and it delivered a list of 634,412 reposito
 %
 After removing duplicate entries, the final repository list consists of 457,627
 distinct repositories. 
+% TODO: Could we mention something about this number difference? Readers will immediately wonder.
 
 \subsection{Downloader}
 \label{sec:downloader}
@@ -62,15 +65,15 @@ Docker will pull the \texttt{:latest} tag by default.
 %For example, \texttt{docker pull ubuntu} command pulls the
 %\texttt{ubuntu:latest} image.
 %
-In this work we focus on only downloading images with the \texttt{:latest} tag to
+In this work we focus only on downloading images with the \texttt{:latest} tag to
 make the analysis more feasible. We believe that the latest
 image versions represent the most up-to-date state of Docker images.
 %
 %and plan to analyze images with other tags in the future.
 Instead of using the Docker client to download images,
 we implement our own downloader, which calls the Docker registry API
-directly~\cite{dockerregistryclient} and can downloaded manifests
-and image layers in parallel
+directly~\cite{dockerregistryclient} to download manifests
+and image layers in parallel.
 %We use Docker registry client library~\cite{dockerregistryclient} to simultaneously
 %download manifests and image layers.
 %\lrcomment{What does `original' mean here? \nancomment{without any modification}}
@@ -78,13 +81,16 @@ and image layers in parallel
 Our downloader runs significantly faster than a \texttt{docker pull}-based downloader
 because the latter one performs operations besides downloading the image.
 For example, it automatically extracts each layer's tar archive file
-and creates corresponding read-only snapshot with cthe onfigured Docker storage driver.
+and creates the corresponding read-only snapshot using the configured
+Docker storage driver.
 This not only takes considerable amount of time but also leads
 to overly high storage space utilization.
 %
 Furthermore, the local storage format of Docker client makes it difficult
 to analyze the contents of each layer separately.
+% TODO: Why is it difficult? (we're making a claim)
 %
+% TODO: The following sentence is mostly repetition of start of paragraph.
 Our downloader can download multiple images simultaneously and fetch
 the individual layers of an image in parallel. Layers are transferred as gzip
 compressed tar archives.
@@ -115,7 +121,7 @@ A total of 111,384 images could not be downloaded due to three reasons:
 %
 1)~5\% of these images required authentication;
 2)~87\% of these images did not have a \texttt{latest} tag; and
-3)~8\% of these images contains layers that cannot be downloaded.
+3)~8\% of these images contain layers that cannot be downloaded.
 % 0.05189255189	0.8666056166 0.0815018315
 %As we discussed in Section~\ref{sec:crawler}, we only downloaded the \texttt{latest}
 %version of an image to shorten the downloading process.
@@ -127,10 +133,10 @@ dataset.
 \subsection{Analyzer}
 \label{sec:analyzer}
 
-The analyzer extracts downloaded layers
-and analyzes them along with image manifests.
+The analyzer extracts the downloaded layers
+and analyzes them along with the image manifests.
 For each image, it creates an image profile and individual layer profiles,
-which contain different metrics for the whole image and
+which contain metrics for the whole image and
 its individual layers, respectively.
 %Profiles are stored in JSON format.
 
@@ -142,8 +148,8 @@ To produce the layer profile, the analyzer first decompresses and extracts each
 layer tarball to a layer directory.
 %
 Then, it recursively traverses each subdirectory and obtains
-its metadata information. Note 8.8\% of the layers reported errors during
-extract so we could not analyze them.
+its metadata information. Note that 8.8\% of the layers reported errors during
+extraction and could not be analyzed.
 %that we analyzed 91.2\% of 
 %the layers we downloaded. The rest 8.8\% of layers have errors during extracting.
 %\lrcomment{put reason here}\nancomment{addressed}
@@ -157,7 +163,7 @@ A layer profile consists of:
 \item Layer metadata: \{
 layer digest; 
 %archived layer size (ALS); 
-sum of containing file sizes (FLS); 
+sum of contained file sizes (FLS); 
 compressed layer size (CLS); 
 directory count;
 file count;
