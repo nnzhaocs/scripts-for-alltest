@@ -48,9 +48,9 @@ storage infrastructure and ensure scalability of and fast accesses to the
 registry service.
 %
 Existing work has focused on various aspects of
-containerization~\cite{slacker, dockervulnerabile, dockerfinder,
-	analysisdockergithub, dockerssd}. However, the registry and its
-contents have yet to be studied in detail.
+containerization~\cite{dockerssd, dockerfinder, analysisdockergithub,
+slacker, dockervulnerabile}.
+However, the registry and its contents have yet to be studied in detail.
 
 In this paper, we perform the first, comprehensive, large-scale characterization
 of the images and layers stored in the Docker Hub
@@ -73,9 +73,9 @@ duplicates and removing links to broken or private images.
 
 Our analysis reveals several interesting insights~(\S\ref{sec:char}). 
 We find that image
-accesses are skewed towards a small number of popular images. 90\% of repositories
-are pulled less than 300 times from the point of their creation, 
-while the largest number of pulls we record for an image is
+accesses are skewed towards a small number of popular images. Specifically,
+90\% of repositories are pulled less than 300 times from the point of their
+creation, while the largest number of pulls we record for an image is
 over 600 million. This suggests that image caching is a viable improvement
 for the registry.
 
