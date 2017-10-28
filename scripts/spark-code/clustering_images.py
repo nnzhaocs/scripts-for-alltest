@@ -25,7 +25,7 @@ image_cluster_file_abs = "image_clusters.pkl"
 #output_file_abs = "description_only.txt"
 #output_fd = open(output_file_abs, "w")
 
-num_clusters = 15
+num_clusters = 3
 
 stopwords = nltk.corpus.stopwords.words('english')
 stemmer = SnowballStemmer("english")
@@ -33,8 +33,9 @@ stemmer = SnowballStemmer("english")
 #image_description_arr = image_arr[:,1]
 #image_names=image_arr[:,0]
 
-def load_description(image_name_file_abs, image_arr):
+def load_description(image_name_file_abs):
     logging.debug("read from file:%s", image_name_file_abs)
+    image_arr = np.empty((0, 2))
     with open(image_name_file_abs) as fd:
         for line in fd:
             #print line.split("\t")
@@ -45,7 +46,9 @@ def load_description(image_name_file_abs, image_arr):
             image_arr = np.append(image_arr, ([image_name, image_description],), axis=0)
             #output_fd.write(image_description+"\t"+image_name+"\n")
     logging.debug("finished reading file:%s", image_name_file_abs)
-#print image_arr
+    logging.debug("image_arr: %s", image_arr)
+    return image_arr
+
 
 def tokenize_and_stem(text):
     logging.debug("first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token")
@@ -73,13 +76,14 @@ def tokenize_only(text):
     return filtered_tokens
 
 
-def print_cluster(clusters, vocab_frame, image_description_arr, terms):
+def print_cluster(km, image_arr, clusters, vocab_frame, image_description_arr, terms):
     logging.debug("loading from the pickle:%s", image_cluster_file_abs)
     km = joblib.load(image_cluster_file_abs)
 
-    clusters = km.labels_tolist()
+    clusters = km.labels_.tolist()
 
-    image_names = image_arr[:, 0]
+    image_names = image_arr[:, 1]
+    logging.debug("image_names: %s", image_names)
     images = {'name': image_names, 'description': image_description_arr, 'cluster': clusters}
 
     frame = pd.DataFrame(images, index=[clusters], columns=['name', 'cluster', 'description'])
@@ -90,12 +94,13 @@ def print_cluster(clusters, vocab_frame, image_description_arr, terms):
 
     print()
 
-    order_centriods = km.cluster_centers.argsort()[:, ::-1]
+    order_centriods = km.cluster_centers_.argsort()[:, ::-1]
 
     for i in range(num_clusters):
         print("Cluster %d words:" % i, end='')
-        for ind in order_centriods[i, :6]:
-            print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
+        for ind in order_centriods[i, :3]:
+            #print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
+	    print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
         print()
         print()
 
@@ -116,9 +121,9 @@ def k_means_clustering(image_arr):
         """
 
     logging.debug("clustering starting: ......")
-
-    image_description_arr = image_arr[:, 1]
-
+    logging.debug("image_arr: %s", image_arr)
+    image_description_arr = image_arr[:, 0]
+    logging.debug("image_description_arr: %s", image_description_arr)
     totalvocab_stemmed = []
     totalvocab_tokenized = []
 
@@ -130,9 +135,10 @@ def k_means_clustering(image_arr):
 
         allwords_tokenized = tokenize_only(i)
         totalvocab_tokenized.extend(allwords_tokenized)
-
+    logging.debug("totalvocab_stemmed: %s", totalvocab_stemmed)
+    logging.debug("totalvocab_tokenized: %s", totalvocab_tokenized)
     vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index=totalvocab_stemmed)
-    print('there are ', str(vocab_frame.shape[0]), ' items in vocab_frame')
+    logging.debug('there are %s items in vocab_frame', str(vocab_frame.shape[0]))
     vocab_frame.drop_duplicates()
 
     tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
@@ -159,12 +165,12 @@ def k_means_clustering(image_arr):
 
     logging.debug("time to converge a global optimum as k-means is susceptible to reaching local optima.: elapsed_time=%.4f\n", elapsed_time)
 
-    clusters = km.labels_tolist()
+    clusters = km.labels_.tolist()
 
     logging.debug("saving image_cluster_file_abs: %s", image_cluster_file_abs)
     joblib.dump(km, image_cluster_file_abs)
 
-    print_cluster(clusters, vocab_frame, image_description_arr, terms)
+    print_cluster(km, image_arr, clusters, vocab_frame, image_description_arr, terms)
 
 
 def main():
@@ -173,9 +179,9 @@ def main():
 
     logging.debug("======================> clustering starting: <======================")
 
-    image_arr = np.empty((0, 2))
-    load_description(image_name_file_abs, image_arr)
-
+    #image_arr = np.empty((0, 2))
+    image_arr = load_description(image_name_file_abs)
+    logging.debug("image_arr: %s", image_arr)
     k_means_clustering(image_arr)
 
 
