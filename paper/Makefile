@@ -34,6 +34,6 @@ paper.pdf: paper.tex
 
 clean:
 	latexmk -CA
-	rm paper.bbl paper.blg
-	rm paper.ps paper.pdf paper.log paper.out paper.aux paper.dvi paper.tex.flc
-	rm *.kill kill*
+	rm -f paper.bbl paper.blg
+	rm -f paper.ps paper.pdf paper.log paper.out paper.aux paper.dvi paper.tex.flc
+	rm -f *.kill kill*

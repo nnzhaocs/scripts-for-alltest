@@ -1,4 +1,31 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-XXX
+In this paper, we carried out the first comprehensive analysis of the container images
+stored in Docker Hub.
+%
+We presented a methodology to exhaustively crawl and efficiently download Docker Hub
+images. Using this approach, we downloaded a total of 346,243 images and 1,763,354 layers
+resulting in 51 TB of data and
+%through 8.8\% layers and 9.2\% images cannot be analyzed due to extracting errors. 
+117 million files.
+%
+Based on this dataset, we carried out a detailed study of a variety of storage
+metrics on both layers and images. Metrics included layer and image sizes, compressibility,
+and popularity. Our findings reveal that there is room for optimizing how images
+are stored and used. For example, we observed that compression may not always be beneficial for small
+layers as it can affect pull latencies. Additionally, layers are rarely shared between
+images which increases storage utilization. We plan to investigate such improvements
+in the future.
+
+%Our interesting observation is that there are a number of layers' compression ratio are quite
+%low. Given that compression is computationally expensive and often slow down the \textit{pull}
+%process, it can be beneficial to store small layers uncompressed in the registry to reduce pull
+%latencies. 
+%
+%We analyzed the file count and directory count distribution for both layers and images. We 
+%find that majority of images and layers has a moderate number of directories and files, with 
+%less images and layers have extremely large or small number of directories and files.
+%
+%We also analyzed the layer count distribution for images. Majority of images has a moderate 
+%number of layers. And very less layers are shared among different images.   

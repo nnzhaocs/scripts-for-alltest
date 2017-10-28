@@ -21,30 +21,61 @@
 
 % This version uses the latex2e styles, not the very ancient 2.09 stuff.
 
-\documentclass[letterpaper,twocolumn,10pt]{article}
-\usepackage{usenix,epsfig,endnotes}
+\documentclass[10pt]{usetex-v1-tight}
 \usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{enumitem}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{subfigure}
+\usepackage{url}
+\usepackage{xspace}
+\usepackage[hyperfootnotes=false,breaklinks]{hyperref}
+\hypersetup{
+	colorlinks,
+	citecolor=red,
+	linkcolor=blue,
+	urlcolor=blue
+}
+
+\newlength{\gapspace}
+\newcommand{\gap}[1][0cm]{\setlength{\gapspace}{#1}\vspace{.5\gapspace}\textbf{\color{red}[...]}\vspace{.5\gapspace}\xspace}
+
 %\newcommand{\nancomment}[2][blue]{\textcolor{#1}{\textit{#2}}}
 \newcommand{\nancomment}[1]{\noindent\textcolor{blue}{\bf $\blacksquare$ Nannan: #1}}
 \newcommand{\vcomment}[1]{\noindent\textcolor{orange}{\bf $\blacksquare$ Vasily: #1}}
+\newcommand{\lrcomment}[1]{\noindent\textcolor{olive}{\bf $\blacksquare$ Lukas: #1}}
+
+\newcommand{\abc}[1]{\noindent\textcolor{red}{\bf $\blacksquare$ AB: #1}}
+\newcommand{\ie}{i.e.\ }
+\newcommand{\eg}{e.g.,\ }
+\newcommand{\etal}{et al.~}
+\newcommand{\vs}{vs.\ }
+\newcommand{\cf}{cf.~}
+
+ % lukas: a more compact itemize/enumerate environment to save space and better looks
+\newenvironment{compactitemize}{%
+\begin{itemize}[leftmargin=1em, itemsep=0em, parsep=0em, topsep=.1em, partopsep=.1em]}
+{\end{itemize}}
+\newenvironment{compactenumerate}{%
+\begin{enumerate}[leftmargin=1em, itemsep=0em, parsep=0em, topsep=.1em,partopsep=.1em]}
+{\end{enumerate}}
+
 \begin{document}
 
 %don't want date printed
-\date{}
+%\date{}
 
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
-\title{\Large \bf Large-Scale Analysis of Docker Registry Dataset }
+\title{Large-Scale Analysis of the Docker Hub Dataset}
 
 %for single author (just remove % characters)
 \author{
-{\rm Your N.\ Here}\\
-Your Institution
-\and
-{\rm Second Name}\\
-Second Institution
+%{\rm Your N.\ Here}\\
+%Your Institution
+%\and
+%{\rm Second Name}\\
+%Second Institution
 % copy the following lines to add more authors
 % \and
 % {\rm Name}\\
@@ -57,12 +88,11 @@ Second Institution
 % Comment it out when you first submit the paper for review.
 \thispagestyle{empty}
 
-%\subsection*{Abstract}
-\input{abstract.tex}
-\input{intro.tex}
-\input{background.tex}
-\input{methodology.tex}
-\input{results.tex}
+\input{abstract}
+\input{intro}
+\input{background}
+\input{methodology}
+\input{char}
 \input{relatedwork}
 \input{conclusion}
 

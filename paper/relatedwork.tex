@@ -1,5 +1,49 @@
 \section{Related work}
 \label{sec:related}
 
-\nancomment{do we need a relatedwork?}\\
-\vcomment{Absolutely!}
+%\nancomment{do we need a relatedwork?}\\
+%\vcomment{Absolutely!}
+%\textbf{Analysis on Docker}:
+
+Due to its increasing popularity, Docker has recently received increased
+attention from the research community.
+%
+Slacker~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics.
+The authors used the results from their study to derive a benchmark to evaluate
+the push, pull, and run performance of Docker graph drivers based on the studied
+images. Compared to Slacker, our analysis focuses on the entire Docker Hub dataset.
+%
+Cito \etal~\cite{analysisdockergithub} conducted an empirical study for characterizing
+the Docker ecosystem with a focus on prevalent quality issues, and the evolution of Docker 
+files based on a data set of 70,000 Docker files. However, their study did not focus
+on actual image data.
+%
+Shu \etal~~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
+images based on a dataset of 356,218 images and found there is a strong need for more
+automated and systematic methods of applying security updates to Docker images. While
+the amount of images is similar compared to our study, Shu \etal focused on a subset
+of 100,000 repositories and different image tags in these repositories.
+
+Dockerfinder~\cite{dockerfinder} is a microservice-based prototype that allows searching
+for images based on  multiple attributes, e.g., image name, image size, or supported software 
+distributions. It also crawls images from remote Docker registry but the authors do
+not provide a detailed description of their crawling mechanism.
+%
+Bhimani~\cite{dockerssd} \etal characterized the performance of persistent storage options
+for I/O intensive containerized applications with NVMe SSDs. Unlike our study, their analysis
+is focused on the execution of containers rather than on their storage at the registry side.
+
+%\textbf{Analysis on file systems}:
+%File system contents have been widely studied in different operating system environments.
+%Douceur and Bolosky collected and analyzed over ten-thousand Windows file
+%systems~\cite{largefscontent}. They found that the size of file and directory are fairly
+%consistent across file systems, but file lifetimes and file-name extensions vary based on
+%the job function of the users. 
+%Agrawal, Bolosky, Douceur, and Lorch collected and analyzed a five-year file-system metadata
+%over 60,000 Windows file systems, and presented the temporal trends relating to file size,
+%file type, and directory size~\cite{fiveyearfsmetadata}.
+%Sienknecht, Friedrich, Martinka, Friedenbach collected file system data from UNIX systems
+%based on a dataset of 46 systems, 267 file systems, 151,000 directories and 2,300,000 files
+%and found small files dominate in count~\cite{distributedatainfs}.
+%%Traeger, Zadok, Joukov, and Wright surveyed 415 file system and storage benchmarks from
+%106 recent papers~\cite{xxx}.  
