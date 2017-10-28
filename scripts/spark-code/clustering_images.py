@@ -132,10 +132,12 @@ def k_means_clustering(image_arr):
         totalvocab_tokenized.extend(allwords_tokenized)
 
     vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index=totalvocab_stemmed)
+    print('there are ', str(vocab_frame.shape[0]), ' items in vocab_frame')
     vocab_frame.drop_duplicates()
 
-    tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000, min_df=0.2, stopwords='english',
-                                      used_idf=True, tokenizer=tokenize_and_stem, ngram_range=(1,3))
+    tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
+                                 min_df=0.2, stop_words='english',
+                                 use_idf=True, tokenizer=tokenize_and_stem, ngram_range=(1,3))
     stat_time = time.time()
     tfidf_matrix = tfidf_vectorizer.fit_transform(image_description_arr)
     elapsed_time = time.time() - stat_time
