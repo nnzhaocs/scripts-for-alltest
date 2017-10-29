@@ -58,24 +58,24 @@ def load_description(image_name_file_abs):
 
 
 def tokenize_and_stem(text):
-    logging.debug("first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token")
+    # logging.debug("first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token")
     tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_takens = []
-    logging.debug("filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)")
+    # logging.debug("filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)")
     for token in tokens:
         if re.search('[a-zA-Z]', token):
             filtered_takens.append(token)
 
     stems = [stemmer.stem(t) for t in filtered_takens]
-    logging.debug("finished!")
+    # logging.debug("finished!")
     return stems
 
 
 def tokenize_only(text):
-    logging.debug("first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token")
+    # logging.debug("first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token")
     tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
-    logging.debug("filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)")
+    # logging.debug("filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)")
     for token in tokens:
         if re.search('[a-zA-Z]', token):
             filtered_tokens.append(token)
@@ -161,8 +161,8 @@ def k_means_clustering(image_arr):
 
     terms = tfidf_vectorizer.get_feature_names()
 
-    dist = 1 - cosine_similarity(tfidf_matrix)
-    logging.debug("possible to evaluate the similarity of any two or more description: dist=%.4f\n", dist)
+    # dist = 1 - cosine_similarity(tfidf_matrix)
+    # logging.debug("possible to evaluate the similarity of any two or more description: dist=%.4f\n", dist)
 
     km = KMeans(n_clusters = num_clusters)
 
