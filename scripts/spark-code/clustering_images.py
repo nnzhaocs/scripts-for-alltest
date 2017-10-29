@@ -25,7 +25,7 @@ image_cluster_file_abs = "image_clusters.pkl"
 #output_file_abs = "description_only.txt"
 #output_fd = open(output_file_abs, "w")
 
-num_clusters = 15
+num_clusters = 1500
 
 stopwords = nltk.corpus.stopwords.words('english')
 stemmer = SnowballStemmer("english")
@@ -95,7 +95,10 @@ def print_cluster(km, image_arr, clusters, vocab_frame, image_description_arr, t
 
     frame = pd.DataFrame(images, index=[clusters], columns=['name', 'cluster', 'description'])
 
-    frame['cluster'].value_counts()
+    print (frame['cluster'].value_counts())
+
+    grouped = frame['rank'].groupby(frame['cluster'])
+    print(grouped.mean())
 
     print("Top terms per cluster:")
 
@@ -148,8 +151,10 @@ def k_means_clustering(image_arr):
     logging.debug('there are %s items in vocab_frame', str(vocab_frame.shape[0]))
     vocab_frame.drop_duplicates()
 
-    tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
-                                       min_df=0.2, stop_words='english',
+"""max_df min_df removing terms that appear too frequently/infrequently"""
+
+    tfidf_vectorizer = TfidfVectorizer(max_features=2000000,
+                                       min_df=1, stop_words='english',
                                        use_idf=True, tokenizer=tokenize_and_stem, ngram_range=(1, 3))
     stat_time = time.time()
     tfidf_matrix = tfidf_vectorizer.fit_transform(image_description_arr)
