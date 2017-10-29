@@ -20,12 +20,12 @@ import logging
     format: image_name \t description
     """
 
-image_name_file_abs = "all_english_unique_image_description.txt"
+image_name_file_abs = "all_english_unique_image_description.uniq"
 image_cluster_file_abs = "image_clusters.pkl"
 #output_file_abs = "description_only.txt"
 #output_fd = open(output_file_abs, "w")
 
-num_clusters = 3
+num_clusters = 15
 
 stopwords = nltk.corpus.stopwords.words('english')
 stemmer = SnowballStemmer("english")
@@ -33,18 +33,25 @@ stemmer = SnowballStemmer("english")
 #image_description_arr = image_arr[:,1]
 #image_names=image_arr[:,0]
 
+# def load_description(image_name_file_abs):
+#     logging.debug("read from file:%s", image_name_file_abs)
+#     image_arr = np.empty((0, 2))
+#     with open(image_name_file_abs) as fd:
+#         for line in fd:
+#             #print line.split("\t")
+#             image_description = line.split("\t")[0]
+#             if image_description == " ":
+#                 continue
+#             image_name = line.split("\t")[1].replace("\n","")
+#             image_arr = np.append(image_arr, ([image_name, image_description],), axis=0)
+#             #output_fd.write(image_description+"\t"+image_name+"\n")
+#     logging.debug("finished reading file:%s", image_name_file_abs)
+#     logging.debug("image_arr: %s", image_arr)
+#     return image_arr
+
 def load_description(image_name_file_abs):
     logging.debug("read from file:%s", image_name_file_abs)
-    image_arr = np.empty((0, 2))
-    with open(image_name_file_abs) as fd:
-        for line in fd:
-            #print line.split("\t")
-            image_description = line.split("\t")[0]
-            if image_description == " ":
-                continue
-            image_name = line.split("\t")[1].replace("\n","")
-            image_arr = np.append(image_arr, ([image_name, image_description],), axis=0)
-            #output_fd.write(image_description+"\t"+image_name+"\n")
+    image_arr = np.loadtxt(image_name_file_abs, delimiter='\t', dtype='S512')
     logging.debug("finished reading file:%s", image_name_file_abs)
     logging.debug("image_arr: %s", image_arr)
     return image_arr
@@ -150,7 +157,7 @@ def k_means_clustering(image_arr):
 
     logging.debug("fit the vectorizer to description: elapsed_time=%.4f\n", elapsed_time)
 
-    logging.debug("tfidf_matrix.shape:%d", tfidf_matrix.shape)
+    print("tfidf_matrix.shape:", tfidf_matrix.shape)
 
     terms = tfidf_vectorizer.get_feature_names()
 
