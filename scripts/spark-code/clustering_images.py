@@ -25,7 +25,7 @@ image_cluster_file_abs = "image_clusters.pkl"
 #output_file_abs = "description_only.txt"
 #output_fd = open(output_file_abs, "w")
 
-num_clusters = 1500
+num_clusters = 500
 
 stopwords = nltk.corpus.stopwords.words('english')
 stemmer = SnowballStemmer("english")
@@ -97,8 +97,8 @@ def print_cluster(km, image_arr, clusters, vocab_frame, image_description_arr, t
 
     print (frame['cluster'].value_counts())
 
-    grouped = frame['rank'].groupby(frame['cluster'])
-    print(grouped.mean())
+    # grouped = frame['rank'].groupby(frame['cluster'])
+    # print(grouped.mean())
 
     print("Top terms per cluster:")
 
