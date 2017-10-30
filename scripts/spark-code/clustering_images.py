@@ -151,9 +151,9 @@ def k_means_clustering(image_arr):
     logging.debug('there are %s items in vocab_frame', str(vocab_frame.shape[0]))
     vocab_frame.drop_duplicates()
 
-"""max_df min_df removing terms that appear too frequently/infrequently"""
+    """max_df min_df removing terms that appear too frequently/infrequently"""
 
-    tfidf_vectorizer = TfidfVectorizer(max_features=2000000,
+    tfidf_vectorizer = TfidfVectorizer(max_df=0.5, max_features=2000000,
                                        min_df=1, stop_words='english',
                                        use_idf=True, tokenizer=tokenize_and_stem, ngram_range=(1, 3))
     stat_time = time.time()
