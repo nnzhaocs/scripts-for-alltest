@@ -25,7 +25,7 @@ image_cluster_file_abs = "image_clusters.pkl"
 #output_file_abs = "description_only.txt"
 #output_fd = open(output_file_abs, "w")
 
-num_clusters = 500
+num_clusters = 100
 
 stopwords = nltk.corpus.stopwords.words('english')
 stemmer = SnowballStemmer("english")
@@ -93,7 +93,7 @@ def print_cluster(km, image_arr, clusters, vocab_frame, image_description_arr, t
     logging.debug("image_names: %s", image_names)
     images = {'name': image_names, 'description': image_description_arr, 'cluster': clusters}
 
-    frame = pd.DataFrame(images, index=[clusters], columns=['name', 'cluster', 'description'])
+    frame = pd.DataFrame(images, index=[clusters], columns=['name', 'cluster'])
 
     print (frame['cluster'].value_counts())
 
@@ -108,13 +108,21 @@ def print_cluster(km, image_arr, clusters, vocab_frame, image_description_arr, t
 
     for i in range(num_clusters):
         print("Cluster %d words:" % i, end='')
-        for ind in order_centriods[i, :3]:
-            #print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
-	    print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
+        for ind in order_centriods[i, :6]:
+            print(' T:%s' % terms[ind], end=',')
+            print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'),
+                  end=',')
+	    #print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
         print()
         print()
 
         print("Cluster %d names:" % i, end='')
+        try:
+            a = frame.ix[i]['name'].values.tolist()
+        except:
+            print(' %s,' % frame.ix[i]['name'], end='')
+            continue
+
         for name in frame.ix[i]['name'].values.tolist():
             print(' %s,' % name, end='')
 
@@ -149,7 +157,9 @@ def k_means_clustering(image_arr):
     logging.debug("totalvocab_tokenized: %s", totalvocab_tokenized)
     vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index=totalvocab_stemmed)
     logging.debug('there are %s items in vocab_frame', str(vocab_frame.shape[0]))
+
     vocab_frame.drop_duplicates()
+    print(vocab_frame.head())
 
     """max_df min_df removing terms that appear too frequently/infrequently"""
 
