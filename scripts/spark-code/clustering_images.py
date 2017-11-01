@@ -25,7 +25,8 @@ image_cluster_file_abs = "image_clusters.pkl"
 #output_file_abs = "description_only.txt"
 #output_fd = open(output_file_abs, "w")
 
-num_clusters = 100
+num_clusters = 150
+num_top_words = 20 #which are the top n (I chose n=6) words that are nearest to the cluster centroid.
 
 stopwords = nltk.corpus.stopwords.words('english')
 stemmer = SnowballStemmer("english")
@@ -108,7 +109,7 @@ def print_cluster(km, image_arr, clusters, vocab_frame, image_description_arr, t
 
     for i in range(num_clusters):
         print("Cluster %d words:" % i, end='')
-        for ind in order_centriods[i, :6]:
+        for ind in order_centriods[i, :num_top_words]:
             print(' T:%s' % terms[ind], end=',')
             print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'),
                   end=',')
@@ -120,8 +121,15 @@ def print_cluster(km, image_arr, clusters, vocab_frame, image_description_arr, t
         try:
             a = frame.ix[i]['name'].values.tolist()
         except:
+            if(isinstance(frame.ix[i]['name'], list)):
+                print(' Cnt: %d', len(frame.ix[i]['name']))
+
             print(' %s,' % frame.ix[i]['name'], end='')
             continue
+
+        print(' Cnt: %d', len(frame.ix[i]['name'].values.tolist()))
+        print()
+        print()
 
         for name in frame.ix[i]['name'].values.tolist():
             print(' %s,' % name, end='')
