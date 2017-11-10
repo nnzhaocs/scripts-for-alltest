@@ -21,4 +21,5 @@ ssh-copy-id -i $HOME/.ssh/id_rsa.pub nannan@amaranth5
 ssh-copy-id -i $HOME/.ssh/id_rsa.pub nannan@amaranth6
 
 ### cat cluster_machines.lst >> /etc/hosts
+### cat hadoop_env.lst >> ~/.bashrc
 ### source ~/.bashrc
