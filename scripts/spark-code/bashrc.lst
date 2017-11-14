@@ -3,8 +3,8 @@
 
 # Set Hadoop-related environment variables
 export HADOOP_HOME=/usr/local/hadoop
-export HADOOP_PREFIX=/usr/local/hadoop
-export HADOOP_CONF_DIR=/home/nannan/hadoop
+#export HADOOP_PREFIX=/usr/local/hadoop
+export HADOOP_CONF_DIR=/home/nannan/hadoop/conf
 
 # Set JAVA_HOME (we will also configure JAVA_HOME directly for Hadoop later on)
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/
