@@ -14,6 +14,7 @@ HDFS_DIR = 'hdfs://hulk0:8020/'
 LAYER_JSONS_DIR1 = os.path.join(HDFS_DIR, 'nannan_2tb_hdd/layer_db_json')
 LAYER_JSONS_DIR2 = os.path.join(HDFS_DIR, '2tb_hdd_3/layer_db_json')
 TEMP_DIR = os.path.join(HDFS_DIR, 'temp')
+LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 #tmp_filename = 'sha256-d33e7d48b1b4d2902966200e28f31f642d329bf59c8410c8559dd2c059bf28fa-1501273930.87.json'
 #tmp_filename = 'sha256-0000086583dd63d03a9e36820a3e8c8b85ac99d3ff19336c92ee793107e208eb-1500673662.87.json'
 
@@ -63,9 +64,11 @@ def jsonToDF(json):
 
 #def selectMetrics(col):
 """		
-dir = TEMP_DIR
+#dir = TEMP_DIR
+tmpfilename = os.path.join(LOCAL_DIR, 'tmp_files.txt')
+jsonfilename = os.path.join(LOCAL_DIR, 'all_files.txt')
 
-absfilenames = spark.read.text("tmp_files.txt").collect()
+absfilenames = spark.read.text(jsonfilename).collect()
 print(absfilenames)
 dataframes = map(lambda r: spark.read.json(r[0]).select("layer_id"), absfilenames)
 metricsData = reduce(lambda df1, df2: df1.unionAll(df2), dataframes)
