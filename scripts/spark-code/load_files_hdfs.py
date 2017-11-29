@@ -67,8 +67,9 @@ dir = TEMP_DIR
 
 absfilenames = spark.read.text("tmp_files.txt").collect()
 print(absfilenames)
-dataframes = map(lambda r: spark.read.json(r[0]), absfilenames)
-all_lines_df = reduce(lambda df1)
+dataframes = map(lambda r: spark.read.json(r[0]).select("layer_id"), absfilenames)
+all_lines_df = reduce(lambda df1, df2: df1.unionAll(df2), dataframes)
+
 #dir_filelist = sc.wholeTextFiles(dir)#.collect()#.values()
 #print(dir_filelist)
 #metric_database = dir_filelist.flatMap(lambda x: spark.read.json(x[1]))
