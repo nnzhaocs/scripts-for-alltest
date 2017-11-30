@@ -124,6 +124,18 @@ and you can ignore it.
 
 `make`
 
+5. Possible errors.
+
+"cannot find 'context' in any of .."
+
+solution: update go version to 1.7+ or download library from nnzhaocs repo: 
+
+`go get -v github.com/nnzhaocs/docker-registry-client`
+
+and modify downloader.go: 
+
+`replace heroku with nnzhaocs`
+
 ### Downloader run example
 
 *1. Check if the downloader works by downloading  library/redis repo*
