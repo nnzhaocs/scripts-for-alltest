@@ -71,7 +71,7 @@ jsonfilename = os.path.join(LOCAL_DIR, 'all_files.txt')
 absfilenames = spark.read.text(jsonfilename).collect()
 print(absfilenames)
 dataframes = map(lambda r: spark.read.json(r[0]).select("layer_id"), absfilenames)
-metricsData = reduce(lambda df1, df2: df1.unionAll(df2), dataframes)
+metricsData = dataframes.take(5)#reduce(lambda df1, df2: df1.unionAll(df2), dataframes).take(5)
 
 metricsData.show()
 
