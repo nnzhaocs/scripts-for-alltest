@@ -2,45 +2,74 @@
 # -*- coding: utf-8 -*-
 import os, json
 from pyspark import SparkContext, SparkConf
-from IPython.display import clear_output, Image, display
 from pyspark.sql import SparkSession
-from pyspark.sql import Row
-#from pyspark.sql import SQLContext as sqlContext
 from pyspark.sql.types import *
-from pyspark.sql import functions as F
-import collections
 
-#spark.read.json(“/path/to/myDir”)
+
 HDFS_DIR = 'hdfs://hulk0:8020/'
 LAYER_JSONS_DIR1 = os.path.join(HDFS_DIR, 'nannan_2tb_hdd/layer_db_json')
 LAYER_JSONS_DIR2 = os.path.join(HDFS_DIR, '2tb_hdd_3/layer_db_json')
 TEMP_DIR = os.path.join(HDFS_DIR, 'temp')
 LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 VAR_DIR = os.path.join(HDFS_DIR, 'var')
-#tmp_filename = 'sha256-d33e7d48b1b4d2902966200e28f31f642d329bf59c8410c8559dd2c059bf28fa-1501273930.87.json'
-#tmp_filename = 'sha256-0000086583dd63d03a9e36820a3e8c8b85ac99d3ff19336c92ee793107e208eb-1500673662.87.json'
 
-jsonfilename1 = os.path.join(VAR_DIR, 'layer_db_json_1.parquet')
-jsonfilename2 = os.path.join(VAR_DIR, 'layer_db_json_2.parquet')
+list_elem_num = 100000
+
+output_absfilename = os.path.join(VAR_DIR, 'layer_db_json_files.parquet')
+all_json_absfilename = os.path.join(LOCAL_DIR, 'all_json_absfilename.lst')
 
 master = "spark://hulk0:7077"
 
-conf =  SparkConf().setAppName('jsonsanalysis').setMaster(master)
-sc = SparkContext(conf = conf)
 
-#master = "spark://hulk0:7077"
-spark = SparkSession.builder.appName("jsonsanalysis").config("spark.some.config.option", "some-value").master(master).getOrCreate()
-"""overwritten"""
-DIR = LAYER_JSONS_DIR1
-spark.read.json(DIR).write.save(jsonfilename1, format="parquet")
-DIR = LAYER_JSONS_DIR2
-spark.read.json(DIR).write.save(jsonfilename2, format="parquet")
+def split_list(datalist):
 
-#df = spark.read.json("/var/layer_id_1.csv")
-#layer_id = df.select("layer_id")
-#layer_id.show()
-#layer_id.createOrReplaceTempView("layer_id_tables")
-#layer_id.cache()
-#spark.table("layer_id_tables").write.saveAsTable('/var/layer_table')
-#layer_id.write.csv("/var/layer_id.csv")
+    sublists = [datalist[x:x+100] for x in range(0, len(datalist), 100)]
 
+    print(sublists)
+    return sublists
+
+
+def join_all_json_files(spark):
+    DIR = LAYER_JSONS_DIR1
+    spark.read.json(DIR).write.save(output_absfilename, format="parquet", mode='append')
+    DIR = LAYER_JSONS_DIR2
+    spark.read.json(DIR).write.save(output_absfilename, format="parquet", mode='append')
+
+
+def join_json_files(absfilename_list, spark):
+
+    print(absfilename_list)
+    sublists = split_list(absfilename_list)
+
+    for sublist in sublists:
+        join_subset_json_files(sublist, spark)
+
+
+def join_subset_json_files(sublist, spark):
+
+    spark.read.json(sublist).write.save(output_absfilename, format="parquet", mode='append')
+
+
+def init_spark_cluster():
+
+    conf = SparkConf().setAppName('jsonsanalysis').setMaster(master)
+    sc = SparkContext(conf=conf)
+    spark = SparkSession.builder.appName("jsonsanalysis").config("spark.some.config.option", "some-value").master(
+        master).getOrCreate()
+
+    return sc, spark
+
+
+def main():
+
+    sc, spark = init_spark_cluster()
+    # join_all_json_files(spark)
+    absfilename_list = spark.read.text(all_json_absfilename).collect()
+    print absfilename_list
+    join_json_files(absfilename_list, spark)
+
+
+if __name__ == '__main__':
+    print 'start!'
+    main()
+    print 'finished!'
