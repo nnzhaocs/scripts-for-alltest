@@ -13,7 +13,9 @@ TEMP_DIR = os.path.join(HDFS_DIR, 'temp')
 LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 VAR_DIR = os.path.join(HDFS_DIR, 'var')
 
-list_elem_num = 100000
+list_elem_num = 10000
+
+tempfilename = 'temp_json.lst'
 
 output_absfilename = os.path.join(VAR_DIR, 'layer_db_json_files.parquet')
 all_json_absfilename = os.path.join(LOCAL_DIR, 'all_json_absfilename.lst')
@@ -23,9 +25,9 @@ master = "spark://hulk0:7077"
 
 def split_list(datalist):
 
-    sublists = [datalist[x:x+100] for x in range(0, len(datalist), 100)]
+    sublists = [datalist[x:x+list_elem_num] for x in range(0, len(datalist), list_elem_num)]
 
-    print(sublists)
+    #print(sublists)
     return sublists
 
 
@@ -38,11 +40,12 @@ def join_all_json_files(spark):
 
 def join_json_files(absfilename_list, spark):
 
-    print(absfilename_list)
+    #print(absfilename_list)
     sublists = split_list(absfilename_list)
 
     for sublist in sublists:
         join_subset_json_files(sublist, spark)
+        print("===========================>finished one sublist!!!!!!!!!")
 
 
 def join_subset_json_files(sublist, spark):
@@ -51,11 +54,27 @@ def join_subset_json_files(sublist, spark):
 
 
 def init_spark_cluster():
-
+    """
     conf = SparkConf().setAppName('jsonsanalysis').setMaster(master)
     sc = SparkContext(conf=conf)
     spark = SparkSession.builder.appName("jsonsanalysis").config("spark.some.config.option", "some-value").master(
         master).getOrCreate()
+    """
+    conf =  SparkConf()\
+        .setAppName('jsonsanalysis')\
+        .setMaster(master)\
+        .set("spark.executor.cores", 5)\
+        .set("spark.driver.memory", "10g")\
+        .set("spark.executor.memory", "40g")\
+        #.set("spark.sql.hive.filesourcePartitionFileCacheSize", "30g")
+    sc = SparkContext(conf = conf)
+
+    spark = SparkSession \
+        .builder \
+        .appName("jsonsanalysis")\
+        .master(master)\
+        .config(conf = conf)\
+        .getOrCreate()
 
     return sc, spark
 
@@ -65,8 +84,9 @@ def main():
     sc, spark = init_spark_cluster()
     # join_all_json_files(spark)
     absfilename_list = spark.read.text(all_json_absfilename).collect()
-    print absfilename_list
-    join_json_files(absfilename_list, spark)
+    absfilenames = [str(i.value) for i in absfilename_list]
+    #print absfilename_list
+    join_json_files(absfilenames, spark)
 
 
 if __name__ == '__main__':
