@@ -1,12 +1,14 @@
 
 # -*- coding: utf-8 -*-
-import os, json, logging
+import os, json
+#, logging
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 
 HDFS_DIR = 'hdfs://hulk0:8020/'
-MANIFESTS_DIR = os.path.join(HDFS_DIR, "2tb_hdd/manifests")
+MANIFESTS_DIR = os.path.join(HDFS_DIR, "/2tb_hdd/manifests")
+MANIFESTS_DIR1 = os.path.join(HDFS_DIR, "/var/tmpmanifestdir/")
 VAR_DIR = os.path.join(HDFS_DIR, 'var')
 
 output_absfilename = os.path.join(VAR_DIR, 'manifests.parquet')
@@ -20,6 +22,7 @@ EXECUTOR_CORES = 5
 EXECUTOR_MEMORY = "40g"
 DRIVER_MEMORY = "10g"
 
+master = "spark://hulk0:7077"
 
 def manifest_schemalist(manifest):
     blobs_digest = []
@@ -46,7 +49,8 @@ def manifest_schema2(manifest, r_type):
                     blobs_digest.append(i['digest'])
             return blobs_digest
     else:
-        print "################## which one to load? config or layers ##################"
+	    return []
+        #print "################## which one to load? config or layers ##################"
 
 
 def manifest_schema1(manifest):
@@ -68,7 +72,7 @@ def parse_manifest(pair):
     config_digest = []
     version = ""
 
-    logging.debug("===================> process manifest_filename: %s" % manifest_absfilename)
+    print("===================> process manifest_filename: %s" % manifest_absfilename)
     manifest_filename = os.path.basename(manifest_absfilename)
 
     if 'schemaVersion' in manifest_json_data and manifest_json_data['schemaVersion'] == 2:
@@ -96,7 +100,8 @@ def parse_manifest(pair):
 
 def parse_and_store_manifest(input_dirname, output_absfilename, sc, spark):
 
-    json_data_rdd = sc.wholeTextFiles(input_dirname).flatMap(parse_manifest)
+    json_data_rdd = sc.wholeTextFiles(input_dirname).coalesce(4000).map(parse_manifest)
+    #spark.read.json(json_data_rdd, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
     json_data_rdd.toDF().write.save(output_absfilename, format="parquet", mode='append')
 
 
@@ -127,8 +132,8 @@ def init_spark_cluster():
 
 
 def main():
-    fmt = "%(funcName)s():%(lineno)i: %(message)s %(levelname)s"
-    logging.basicConfig(level=logging.DEBUG, format=fmt)
+    #fmt = "%(funcName)s():%(lineno)i: %(message)s %(levelname)s"
+    #logging.basicConfig(level=logging.DEBUG, format=fmt)
 
     sc, spark = init_spark_cluster()
 
