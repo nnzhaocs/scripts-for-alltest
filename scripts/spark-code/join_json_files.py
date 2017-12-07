@@ -14,11 +14,12 @@ LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 VAR_DIR = os.path.join(HDFS_DIR, 'var')
 
 list_elem_num = 10000
+#PARTITION_NUM = 1000
 
 tempfilename = 'temp_json.lst'
 
-output_absfilename = os.path.join(VAR_DIR, 'layer_db_json_files.parquet')
-all_json_absfilename = os.path.join(LOCAL_DIR, 'all_json_absfilename.lst')
+output_absfilename = os.path.join(VAR_DIR, '2tb_hdd_json.parquet')#'nannan_2tb_json.parquet')#'layer_db_json_files.parquet')
+all_json_absfilename = os.path.join(LOCAL_DIR, '2tb_hdd_json.lst')#'nannan_2tb_json.lst')#'all_json_absfilename.lst')
 
 master = "spark://hulk0:7077"
 
@@ -50,7 +51,7 @@ def join_json_files(absfilename_list, spark):
 
 def join_subset_json_files(sublist, spark):
 
-    spark.read.json(sublist).write.save(output_absfilename, format="parquet", mode='append')
+    spark.read.json(sublist).coalesce(40000).write.save(output_absfilename, format="parquet", mode='append')
 
 
 def init_spark_cluster():
