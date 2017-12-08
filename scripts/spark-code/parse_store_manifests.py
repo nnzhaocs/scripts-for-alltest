@@ -1,15 +1,18 @@
 
 # -*- coding: utf-8 -*-
-import os, json
-#, logging
+import os
+#, json, logging
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
+from pyspark.sql.functions import *
+
 
 HDFS_DIR = 'hdfs://hulk0:8020/'
 MANIFESTS_DIR = os.path.join(HDFS_DIR, "/2tb_hdd/manifests")
 MANIFESTS_DIR1 = os.path.join(HDFS_DIR, "/var/tmpmanifestdir/")
 VAR_DIR = os.path.join(HDFS_DIR, 'var')
+LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 
 output_absfilename = os.path.join(VAR_DIR, 'manifests.parquet')
 
@@ -22,7 +25,20 @@ EXECUTOR_CORES = 5
 EXECUTOR_MEMORY = "40g"
 DRIVER_MEMORY = "10g"
 
+list_elem_num = 10000
+
 master = "spark://hulk0:7077"
+
+all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
+
+
+def split_list(datalist):
+
+    sublists = [datalist[x:x+list_elem_num] for x in range(0, len(datalist), list_elem_num)]
+
+    #print(sublists)
+    return sublists
+
 
 def manifest_schemalist(manifest):
     blobs_digest = []
@@ -63,46 +79,55 @@ def manifest_schema1(manifest):
     return list(set(blobs_digest)) # blobs_digest
 
 
-def parse_manifest(pair):
+# def parse_manifest(manifest_json_data):
+#
+#     # manifest_absfilename, file_content = pair
+#     # manifest_json_data = json.loads(file_content)
+#
+#     blobs_digest = []
+#     config_digest = []
+#     version = ""
+#
+#     print("===================> process manifest_filename: %s" % manifest_absfilename)
+#     manifest_filename = os.path.basename(manifest_json_data)
+#
+#     if 'schemaVersion' in manifest_json_data and manifest_json_data['schemaVersion'] == 2:
+#         if 'mediaType' in manifest_json_data and 'list' in manifest_json_data['mediaType']:
+#             blobs_digest = manifest_schemalist(manifest_json_data)
+#             version = 'schema2.list'
+#         else:
+#             config_digest = manifest_schema2(manifest_json_data, 'config')
+#             blobs_digest = manifest_schema2(manifest_json_data, 'layers')
+#             version = 'schema2'
+#             # print('config_digest:%s; blobs_digests: %s; version: %s'% (config_digest, blobs_digest, version))
+#     elif 'schemaVersion' in manifest_json_data and manifest_json_data['schemaVersion'] == 1:
+#         blobs_digest = manifest_schema1(manifest_json_data)
+#         version = 'schema1'
+#
+#     image_manifest = {
+#         'version': version,
+#         'manifest': manifest_filename,
+#         'config': config_digest,
+#         'layers': blobs_digest
+#     }
+#
+#     return image_manifest
 
-    manifest_absfilename, file_content = pair
-    manifest_json_data = json.loads(file_content)
 
-    blobs_digest = []
-    config_digest = []
-    version = ""
+def parse_and_store_manifest(absfilename_list, output_absfilename, sc, spark):
 
-    print("===================> process manifest_filename: %s" % manifest_absfilename)
-    manifest_filename = os.path.basename(manifest_absfilename)
+    sublists = split_list(absfilename_list)
 
-    if 'schemaVersion' in manifest_json_data and manifest_json_data['schemaVersion'] == 2:
-        if 'mediaType' in manifest_json_data and 'list' in manifest_json_data['mediaType']:
-            blobs_digest = manifest_schemalist(manifest_json_data)
-            version = 'schema2.list'
-        else:
-            config_digest = manifest_schema2(manifest_json_data, 'config')
-            blobs_digest = manifest_schema2(manifest_json_data, 'layers')
-            version = 'schema2'
-            # print('config_digest:%s; blobs_digests: %s; version: %s'% (config_digest, blobs_digest, version))
-    elif 'schemaVersion' in manifest_json_data and manifest_json_data['schemaVersion'] == 1:
-        blobs_digest = manifest_schema1(manifest_json_data)
-        version = 'schema1'
+    for sublist in sublists:
+        #filename_df = spark.read.json(sublist).select(sourceFile(input_file_name()))#.write.save(output_absfilename, format="parquet", mode='append')
+        #spark.read.json(sublist).select('schemaVersion'!=2).write.save(output_absfilename, format="parquet", mode='append')
+        spark.read.json(sublist, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
 
-    image_manifest = {
-        'version': version,
-        'manifest': manifest_filename,
-        'config': config_digest,
-        'layers': blobs_digest
-    }
+        #spark.read.json("tmp.json").select().show()
 
-    return image_manifest
-
-
-def parse_and_store_manifest(input_dirname, output_absfilename, sc, spark):
-
-    json_data_rdd = sc.wholeTextFiles(input_dirname).coalesce(4000).map(parse_manifest)
-    #spark.read.json(json_data_rdd, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
-    json_data_rdd.toDF().write.save(output_absfilename, format="parquet", mode='append')
+        # json_data_rdd = sc.wholeTextFiles(input_dirname).coalesce(4000).map(parse_manifest)
+        #spark.read.json(json_data_rdd, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
+        #json_data_rdd.toDF().write.save(output_absfilename, format="parquet", mode='append')
 
 
 def init_spark_cluster():
@@ -137,7 +162,10 @@ def main():
 
     sc, spark = init_spark_cluster()
 
-    parse_and_store_manifest(MANIFESTS_DIR, output_absfilename, sc, spark)
+    absfilename_list = spark.read.text(all_json_absfilename).collect()
+    absfilenames = [str(i.value) for i in absfilename_list]
+
+    parse_and_store_manifest(absfilenames, output_absfilename, sc, spark)
 
 
 if __name__ == '__main__':
