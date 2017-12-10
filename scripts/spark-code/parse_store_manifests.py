@@ -25,7 +25,7 @@ EXECUTOR_CORES = 5
 EXECUTOR_MEMORY = "40g"
 DRIVER_MEMORY = "10g"
 
-list_elem_num = 10000
+list_elem_num = 500
 
 master = "spark://hulk0:7077"
 
@@ -143,6 +143,7 @@ def init_spark_cluster():
         .set("spark.executor.cores", EXECUTOR_CORES)\
         .set("spark.driver.memory", DRIVER_MEMORY)\
         .set("spark.executor.memory", EXECUTOR_MEMORY)\
+	.set("spark.sql.parquet.mergeSchema", True)
         #.set("spark.sql.hive.filesourcePartitionFileCacheSize", "30g")
     sc = SparkContext(conf = conf)
 
