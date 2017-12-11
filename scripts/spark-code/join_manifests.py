@@ -17,7 +17,7 @@ VAR_DIR = os.path.join(HDFS_DIR, 'var')
 LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 
 output_absfilename = os.path.join(VAR_DIR, 'manifests_with_filename.parquet')
-
+output_absfilename_tmp = os.path.join(VAR_DIR, 'tmp_manifest.parquet')
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
     .set("spark.executor.memory", "40g") \ 
@@ -27,18 +27,18 @@ EXECUTOR_CORES = 5
 EXECUTOR_MEMORY = "40g"
 DRIVER_MEMORY = "10g"
 
-list_elem_num = 500
+list_elem_num = 1000
 
 master = "spark://hulk0:7077"
 
 all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
-
+all_json_absfilename_tmp = os.path.join(VAR_DIR, 'tmp_manifest.lst')
 
 def split_list(datalist):
 
     sublists = [datalist[x:x+list_elem_num] for x in range(0, len(datalist), list_elem_num)]
 
-    #print(sublists)
+    print(sublists)
     return sublists
 
 
@@ -47,6 +47,8 @@ def join_manifests(absfilename_list, output_absfilename, sc, spark):
     sublists = split_list(absfilename_list)
 
     for sublist in sublists:
+	#if not sublist:
+	#    continue
         #filename_df = spark.read.json(sublist).select(sourceFile(input_file_name()))#.write.save(output_absfilename, format="parquet", mode='append')
         #spark.read.json(sublist).select('schemaVersion'!=2).write.save(output_absfilename, format="parquet", mode='append')
         spark.read.json(sublist, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
