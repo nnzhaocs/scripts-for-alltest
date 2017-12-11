@@ -67,14 +67,32 @@ def parse_and_store_manifest(absfilename_list, output_absfilename, sc, spark):
     extract_filename = udf(lambda s: os.path.basename(s))
 
     for sublist in sublists:
+        blomSum = True
+        digest = True
         df = spark.read.json(sublist, multiLine=True)
     # df =
     # spark.read.json(input_dirname, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
     # configs = df.select('config.digest')
     # configs.show()
     # configs.select('')
-        info = df.select('schemaVersion', 'fsLayers.blobSum', 'layers.digest', input_file_name())#.show()
-        out_df = info.select(extract_filename("input_file_name()").alias("filename"), 'schemaVersion', 'blobSum', 'digest')
+        try:
+            df.select('fsLayers.blobSum')
+        except:
+            blomSum = False
+            info = df.select('schemaVersion', 'layers.digest', input_file_name())
+            out_df = info.select(extract_filename("input_file_name()").alias("filename"), 'schemaVersion', 'digest')
+
+        try:
+            df.select('layers.digest')
+        except:
+            digest = False
+            info = df.select('schemaVersion', 'fsLayers.blobSum', input_file_name())  # .show()
+            out_df = info.select(extract_filename("input_file_name()").alias("filename"), 'schemaVersion', 'blobSum')
+
+        if blomSum and digest:
+            info = df.select('schemaVersion', 'fsLayers.blobSum', 'layers.digest', input_file_name())#.show()
+            out_df = info.select(extract_filename("input_file_name()").alias("filename"), 'schemaVersion', 'blobSum', 'digest')
+
         out_df.write.save(output_absfilename, format="parquet", mode='append')
         # info.select("filename", input_file_name().split('/')[-1])
         # info.input_file_name().show()
