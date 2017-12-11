@@ -1,18 +1,18 @@
 
 # -*- coding: utf-8 -*-
-import os
-#, json, logging
+import os, json
+#, logging
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
-from pyspark.sql.functions import *
+from pyspark.sql.functions import input_file_name
+from pyspark.sql.functions import udf
 
 
 HDFS_DIR = 'hdfs://hulk0:8020/'
 MANIFESTS_DIR = os.path.join(HDFS_DIR, "/2tb_hdd/manifests")
 MANIFESTS_DIR1 = os.path.join(HDFS_DIR, "/var/tmpmanifestdir/")
 VAR_DIR = os.path.join(HDFS_DIR, 'var')
-LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 
 output_absfilename = os.path.join(VAR_DIR, 'manifests.parquet')
 
@@ -21,16 +21,13 @@ output_absfilename = os.path.join(VAR_DIR, 'manifests.parquet')
     .set("spark.executor.memory", "40g") \ 
 """
 
+list_elem_num = 500
+
 EXECUTOR_CORES = 5
 EXECUTOR_MEMORY = "40g"
 DRIVER_MEMORY = "10g"
 
-list_elem_num = 500
-
 master = "spark://hulk0:7077"
-
-all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
-
 
 def split_list(datalist):
 
@@ -39,57 +36,56 @@ def split_list(datalist):
     #print(sublists)
     return sublists
 
-
-def manifest_schemalist(manifest):
-    blobs_digest = []
-    if 'manifests' in manifest and isinstance(manifest['manifests'], list) and len(manifest['manifests']) > 0:
-        for i in manifest['manifests']:
-            if 'digest' in i:
-                #print i['digest']
-                blobs_digest.append(i['digest'])
-    return blobs_digest
-
-
-def manifest_schema2(manifest, r_type):
-    blobs_digest = []
-    if r_type == 'config':
-        if 'config' in manifest and 'digest' in manifest['config']:
-            config_digest = manifest['config']['digest']
-            blobs_digest.append(config_digest)
-            return blobs_digest
-    elif r_type == 'layers':
-        if 'layers' in manifest and isinstance(manifest['layers'], list) and len(manifest['layers']) > 0:
-            for i in manifest['layers']:
-                if 'digest' in i:
-                    #print i['digest']
-                    blobs_digest.append(i['digest'])
-            return blobs_digest
-    else:
-	    return []
-        #print "################## which one to load? config or layers ##################"
-
-
-def manifest_schema1(manifest):
-    blobs_digest = []
-    if 'fsLayers' in manifest and isinstance(manifest['fsLayers'], list) and len(manifest['fsLayers']) > 0:
-        for i in manifest['fsLayers']:
-            if 'blobSum' in i:
-                #print i['blobSum']
-                blobs_digest.append(i['blobSum'])
-    return list(set(blobs_digest)) # blobs_digest
-
-
-# def parse_manifest(manifest_json_data):
+# def manifest_schemalist(manifest):
+#     blobs_digest = []
+#     if 'manifests' in manifest and isinstance(manifest['manifests'], list) and len(manifest['manifests']) > 0:
+#         for i in manifest['manifests']:
+#             if 'digest' in i:
+#                 #print i['digest']
+#                 blobs_digest.append(i['digest'])
+#     return blobs_digest
 #
-#     # manifest_absfilename, file_content = pair
-#     # manifest_json_data = json.loads(file_content)
+#
+# def manifest_schema2(manifest, r_type):
+#     blobs_digest = []
+#     if r_type == 'config':
+#         if 'config' in manifest and 'digest' in manifest['config']:
+#             config_digest = manifest['config']['digest']
+#             blobs_digest.append(config_digest)
+#             return blobs_digest
+#     elif r_type == 'layers':
+#         if 'layers' in manifest and isinstance(manifest['layers'], list) and len(manifest['layers']) > 0:
+#             for i in manifest['layers']:
+#                 if 'digest' in i:
+#                     #print i['digest']
+#                     blobs_digest.append(i['digest'])
+#             return blobs_digest
+#     else:
+# 	    return []
+#         #print "################## which one to load? config or layers ##################"
+#
+#
+# def manifest_schema1(manifest):
+#     blobs_digest = []
+#     if 'fsLayers' in manifest and isinstance(manifest['fsLayers'], list) and len(manifest['fsLayers']) > 0:
+#         for i in manifest['fsLayers']:
+#             if 'blobSum' in i:
+#                 #print i['blobSum']
+#                 blobs_digest.append(i['blobSum'])
+#     return list(set(blobs_digest)) # blobs_digest
+
+
+# def parse_manifest(pair):
+#
+#     manifest_absfilename, file_content = pair
+#     manifest_json_data = json.loads(file_content)
 #
 #     blobs_digest = []
 #     config_digest = []
 #     version = ""
 #
 #     print("===================> process manifest_filename: %s" % manifest_absfilename)
-#     manifest_filename = os.path.basename(manifest_json_data)
+#     manifest_filename = os.path.basename(manifest_absfilename)
 #
 #     if 'schemaVersion' in manifest_json_data and manifest_json_data['schemaVersion'] == 2:
 #         if 'mediaType' in manifest_json_data and 'list' in manifest_json_data['mediaType']:
@@ -114,20 +110,39 @@ def manifest_schema1(manifest):
 #     return image_manifest
 
 
-def parse_and_store_manifest(absfilename_list, output_absfilename, sc, spark):
+def join_manifests(input_dirname, output_absfilename, sc, spark):
 
-    sublists = split_list(absfilename_list)
+    spark.read.json(input_dirname, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
 
-    for sublist in sublists:
-        #filename_df = spark.read.json(sublist).select(sourceFile(input_file_name()))#.write.save(output_absfilename, format="parquet", mode='append')
-        #spark.read.json(sublist).select('schemaVersion'!=2).write.save(output_absfilename, format="parquet", mode='append')
-        spark.read.json(sublist, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
 
-        #spark.read.json("tmp.json").select().show()
+def parse_and_store_manifest(input_dirname, output_absfilename, sc, spark):
 
-        # json_data_rdd = sc.wholeTextFiles(input_dirname).coalesce(4000).map(parse_manifest)
-        #spark.read.json(json_data_rdd, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
-        #json_data_rdd.toDF().write.save(output_absfilename, format="parquet", mode='append')
+    #json_data_rdd = sc.wholeTextFiles(input_dirname).map(parse_manifest)
+    #join_json_data_rdd = json_data_rdd.join()
+    df = spark.read.json(json_data_rdd, multiLine=True)#.write.save(output_absfilename, format="parquet", mode='append')
+    #df = 
+    #spark.read.json(input_dirname, multiLine=True).write.save(output_absfilename, format="parquet", mode='append')
+    #configs = df.select('config.digest')
+    #configs.show()
+    #configs.select('')
+    #info = df.select('schemaVersion', 'fsLayers.blobSum', 'layers.digest', input_file_name())#.show()
+    #extract_filename = udf(lambda s: os.path.basename(s))
+    #out_df = info.select(extract_filename("input_file_name()").alias("filename"), 'schemaVersion', 'blobSum', 'digest')
+    
+    #info.select("filename", input_file_name().split('/')[-1])
+    #info.input_file_name().show()
+    #info.withColumn('filename', os.path.basename(info.input_file_name()))
+    #df.toDF()
+    #df = json_data_rdd.toDF()
+    #out_df.printSchema()
+    #out_df.show()
+    #info.withColumn('filename', os.path.basename(info.input_file_name()))
+    #df = 
+    #df.write.save(output_absfilename, format="parquet", mode='append')
+    #df = spark.read.json(input_dirname)
+    #df.printSchema()
+    #df.select(df.schemaVersion !=2).show()#.
+    #out_df.write.save(output_absfilename, format="parquet", mode='append')
 
 
 def init_spark_cluster():
@@ -144,6 +159,8 @@ def init_spark_cluster():
         .set("spark.driver.memory", DRIVER_MEMORY)\
         .set("spark.executor.memory", EXECUTOR_MEMORY)\
 	.set("spark.sql.parquet.mergeSchema", True)
+	#.set("spark.speculation","false")
+	#.set("spark.sql.parquet.mergeSchema", True)
         #.set("spark.sql.hive.filesourcePartitionFileCacheSize", "30g")
     sc = SparkContext(conf = conf)
 
@@ -163,10 +180,7 @@ def main():
 
     sc, spark = init_spark_cluster()
 
-    absfilename_list = spark.read.text(all_json_absfilename).collect()
-    absfilenames = [str(i.value) for i in absfilename_list]
-
-    parse_and_store_manifest(absfilenames, output_absfilename, sc, spark)
+    parse_and_store_manifest(MANIFESTS_DIR, output_absfilename, sc, spark)
 
 
 if __name__ == '__main__':
