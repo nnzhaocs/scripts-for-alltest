@@ -5,7 +5,7 @@ import os
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
-from pyspark.sql.functions import *
+from pyspark.sql.functions import col
 
 
 HDFS_DIR = 'hdfs://hulk0:8020/'
@@ -68,9 +68,15 @@ def extract_columns(spark, sc):
     layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
     layer_id_col = layer_db_df.select("layer_id")
 
-    """"""
+    """manifest_layerids_col - layer_id_col = layer_id that has not been analyzed"""
+    non_analyzed_layer = manifest_layerids_col.except(layer_id_col)
 
+    """compare each manifest_layerids_col with layer_id that has not been analyzed"""
 
+    manifest_df.where(col("layer_id").isin(non_analyzed_layer)).show()
+
+    # manifest_layerids = manifest_layerids_col.collect()
+    # manifest_layerids_lst = [str(i.value) for i in manifest_layerids]
     # spark.read.load(layer_db_absfilename1, layer_db_absfilename2, layer_db_absfilename3)
     # layer_db_
     # df.printSchema()
