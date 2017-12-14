@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 #, json, logging
+from itertools import chain
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
@@ -19,7 +20,7 @@ LAYER_DB_JSON_DIR  = os.path.join(HDFS_DIR, "layer_db_jsons/*")
 
 
 pull_cnt_absfilename = os.path.join(LOCAL_DIR, "pull_cnt_with_filename.csv") #"_c3"
-manifest_absfilename = os.path.join(LOCAL_DIR, "manifests_with_filename.parquet")
+manifest_absfilename = os.path.join(MANIFESTS_DIR, "manifests_with_filename_with_layer_id_not_null.parquet")
 
 layer_db_absfilename1 = os.path.join(LAYER_DB_JSON_DIR, "1g_big_json.parquet")
 layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR, "2tb_hdd_json.parquet")
@@ -55,25 +56,43 @@ all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
 /layer_db_jsons/nannan_2tb_json.parquet
 """
 
+def compare_manifest_layers():
+    
+
 
 def extract_columns(spark, sc):
     manifest_df = spark.read.load(manifest_absfilename)
-    manifest_imagename_col = manifest_df.select("filename")
+    #manifest_imagename_col = manifest_df.filter(manifest_df.layer_id.isNotNull()).select(manifest_df.filename)
     manifest_layerids_col = manifest_df.select("layer_id")
-
+    #manifest_df.filter(manifest_df.layer_id.isNull()).show()
+    manifest_layerids_col.show()
+    rdd = manifest_layerids_col.rdd.flatMap(lambda x: chain(*x))
+    manifest_all_layerids_df = spark.createDataFrame(rdd, StringType())
+    manifest_all_layerids_df.show()
+    unique_layerids = manifest_all_layerids_df.dropDuplicates()
+    
     pull_df = spark.read.format("csv").load(pull_cnt_absfilename)
     pull_imagename_col = pull_df.select("_c3")
     pull_image_real_name_col = pull_df.select("_c2")
 
     layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
     layer_id_col = layer_db_df.select("layer_id")
+    print(layer_id_col.count())
 
+    #unique_layer_db_layerids = layer_id_col.dropDuplicates()
+    layer_id_col.show()
+    #unique_layer_db_layerids.show()
     """manifest_layerids_col - layer_id_col = layer_id that has not been analyzed"""
-    non_analyzed_layer = manifest_layerids_col.except(layer_id_col)
+    non_analyzed_layer = unique_layerids.subtract(layer_id_col)
+    non_analyzed_layer.show()
+    print(non_analyzed_layer.count())
 
     """compare each manifest_layerids_col with layer_id that has not been analyzed"""
 
-    manifest_df.where(col("layer_id").isin(non_analyzed_layer)).show()
+    #non_analyzed_manifest = manifest_df.where(col("layer_id").isin(non_analyzed_layer))
+    
+    non_analyzed_manifest.show()
+    print(non_analyzed_manifest.count())
 
     # manifest_layerids = manifest_layerids_col.collect()
     # manifest_layerids_lst = [str(i.value) for i in manifest_layerids]
@@ -113,11 +132,12 @@ def init_spark_cluster():
 def main():
 
     sc, spark = init_spark_cluster()
+    extract_columns(spark, sc)
     # join_all_json_files(spark)
-    absfilename_list = spark.read.text(all_json_absfilename).collect()
-    absfilenames = [str(i.value) for i in absfilename_list]
+    #absfilename_list = spark.read.text(all_json_absfilename).collect()
+    #absfilenames = [str(i.value) for i in absfilename_list]
     #print absfilename_list
-    join_json_files(absfilenames, spark)
+    #join_json_files(absfilenames, spark)
 
 
 if __name__ == '__main__':
