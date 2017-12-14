@@ -48,9 +48,13 @@ all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
 
 def calculate_redundant_files_in_layers(spark, sc):
     layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
-    sha256 = layer_db_df.select(layer_db_df.dirs.files.sha256)
+    files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
+        "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
+    sha256 = files.select(files.sha256)
+
     sha256.show()
     print(sha256.count())
+
 
 def init_spark_cluster():
     """
