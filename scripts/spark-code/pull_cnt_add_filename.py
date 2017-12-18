@@ -24,7 +24,7 @@ layer_db_absfilename1 = os.path.join(MANIFESTS_DIR, "1g_big_json.parquet")
 layer_db_absfilename2 = os.path.join(MANIFESTS_DIR, "2tb_hdd_json.parquet")
 layer_db_absfilename3 = os.path.join(MANIFESTS_DIR, "nannan_2tb_json.parquet")
 
-output_absfilename = os.path.join(VAR_DIR, 'pull_cnt_with_filename.parquet')
+output_absfilename = os.path.join(VAR_DIR, 'pull_cnt_with_filename.csv')
 
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
@@ -57,9 +57,10 @@ def pull_cnt_add_filename(spark, sc):
     df = spark.read.format("csv").load(pull_cnt_absfilename)
     # df.withColumnRenamed('_c2', 'filename')
     convert_imagenames = udf(lambda s: s.replace("/", "-") + '-' + 'latest')
-    out_df = df.select('_c0', '_c1', '_c2', convert_imagenames("_c2").alias("filename"))
-
-    out_df.write.save(output_absfilename, format="parquet", mode='append')
+    out_df = df.select('_c0', '_c1', '_c2')
+    new_df = out_df.withColumn('_c3', convert_imagenames(df._c2))
+    new_df.show()
+    new_df.write.csv(output_absfilename)
 
     # df.printSchema()
     # layer_id = df.select("digest")

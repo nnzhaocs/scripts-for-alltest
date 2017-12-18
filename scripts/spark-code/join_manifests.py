@@ -34,12 +34,29 @@ master = "spark://hulk0:7077"
 all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
 all_json_absfilename_tmp = os.path.join(VAR_DIR, 'tmp_manifest.lst')
 
+input_absfilename = os.path.join('/manifests', 'manifests_with_filename.parquet')
+output_absfilename = os.path.join(VAR_DIR, 'manifests_with_filename_with_layer_id_not_null.parquet')
+
 def split_list(datalist):
 
     sublists = [datalist[x:x+list_elem_num] for x in range(0, len(datalist), list_elem_num)]
 
     print(sublists)
     return sublists
+
+
+def get_layer_ids(absfilename, output_absfilename, sc, spark):
+    
+    df = spark.read.load(absfilename)
+    data = df.withColumn('layer_id', coalesce(df.blobSum, df.digest))
+    data.show()
+    #print(data.filter(data.layer_id.isNull()).count())
+    not_null_df = data.filter(data.layer_id.isNotNull())
+    #df.show()
+    #print(df.select('filename').collect())
+    #blobSum = df.filter(df.blobSum.isNotNull()).select('blobSum')
+    #digest = df.filter(df.digest.isNotNull()).select('digest')
+    not_null_df.write.save(output_absfilename, format="parquet", mode='append') 
 
 
 def join_manifests(absfilename_list, output_absfilename, sc, spark):
@@ -144,10 +161,11 @@ def main():
 
     sc, spark = init_spark_cluster()
 
-    absfilename_list = spark.read.text(all_json_absfilename).collect()
-    absfilenames = [str(i.value) for i in absfilename_list]
+    #absfilename_list = spark.read.text(all_json_absfilename).collect()
+    #absfilenames = [str(i.value) for i in absfilename_list]
 
-    parse_and_store_manifest(absfilenames, output_absfilename, sc, spark)
+    #parse_and_store_manifest(absfilenames, output_absfilename, sc, spark)
+    get_layer_ids(input_absfilename, output_absfilename, sc, spark)
 
 
 if __name__ == '__main__':
