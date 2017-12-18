@@ -6,7 +6,7 @@ from itertools import chain
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, udf
 
 
 HDFS_DIR = 'hdfs://hulk0:8020/'
@@ -56,8 +56,16 @@ all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
 /layer_db_jsons/nannan_2tb_json.parquet
 """
 
-def compare_manifest_layers():
-    
+non_analyzed_layer_ids_lst = []
+
+def compare_manifest_layers(lst):
+    find_layer = False
+    for layer_id in lst:
+        if layer_id in non_analyzed_layer_ids_lst:
+            return True
+
+    if not find_layer:
+        return False
 
 
 def extract_columns(spark, sc):
@@ -81,18 +89,31 @@ def extract_columns(spark, sc):
 
     #unique_layer_db_layerids = layer_id_col.dropDuplicates()
     layer_id_col.show()
+
     #unique_layer_db_layerids.show()
     """manifest_layerids_col - layer_id_col = layer_id that has not been analyzed"""
     non_analyzed_layer = unique_layerids.subtract(layer_id_col)
     non_analyzed_layer.show()
     print(non_analyzed_layer.count())
 
+    non_analyzed_layer_ids = non_analyzed_layer.collect()
+    layer_ids_lst = [str(i.value) for i in non_analyzed_layer_ids]
+
+    for layer_id in layer_ids_lst:
+        non_analyzed_layer_ids_lst.append(layer_id)
+
     """compare each manifest_layerids_col with layer_id that has not been analyzed"""
 
     #non_analyzed_manifest = manifest_df.where(col("layer_id").isin(non_analyzed_layer))
-    
-    non_analyzed_manifest.show()
-    print(non_analyzed_manifest.count())
+    testimage = udf(compare_manifest_layers, BooleanType())
+    # out_df = df.select('_c0', '_c1', '_c2')
+    new_df = manifest_df.withColumn('layer_id_analyzed_or_not', testimage("layer_id"))
+    new_df_1 = new_df.withColumn('blobSum_analyzed_or_not', testimage("blobSum"))
+
+    new_df_1.show()
+    print(new_df_1.count())
+
+    new_df_1.write.save(output_absfilename)
 
     # manifest_layerids = manifest_layerids_col.collect()
     # manifest_layerids_lst = [str(i.value) for i in manifest_layerids]
