@@ -16,7 +16,7 @@ VAR_DIR = os.path.join(HDFS_DIR, 'var')
 LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 
 MANIFESTS_DIR = os.path.join(HDFS_DIR, "manifests")
-LAYER_DB_JSON_DIR  = os.path.join(HDFS_DIR, "layer_db_jsons/*")
+LAYER_DB_JSON_DIR  = os.path.join(HDFS_DIR, "layer_db_jsons/")
 
 
 pull_cnt_absfilename = os.path.join(LOCAL_DIR, "pull_cnt_with_filename.csv") #"_c3"
@@ -27,7 +27,7 @@ layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR, "2tb_hdd_json.parquet")
 layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet")
 
 
-output_absfilename = os.path.join(VAR_DIR, 'layer_file_mapping.parquet')
+output_absfilename = os.path.join(VAR_DIR, 'layer_file_mapping_filename2.parquet')
 
 
 """.set("spark.executor.cores", 5) \
@@ -68,22 +68,32 @@ def extract_dir_file_digests(dirs):
             for f in dir['files']:
                 if f['sha256']:
                     file_lst.append(f['sha256'])
+    return file_lst
 
 
 def extract_file_digests(spark, sc):
 
-    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    layer_db_df = spark.read.parquet(layer_db_absfilename2)#LAYER_DB_JSON_DIR)
 
-    layer_id_col = layer_db_df.select('layer_id')
+    #layer_id_col = layer_db_df.select('layer_id')
+    
+    #df = layer_db_df.select('layer_id', F.explode('dirs').alias('dirs')).select('layer_id', F.explode('dirs.files').alias('files')).select('layer_id', 'files.sha256')#.groupby('layer_id').agg(F.collect_list('files.sha256'))
+    #new_df_1.show()
+    #new_df_1.printSchema()
+    #new_df_2 = new_df_1.select("layer_id", "files.sha256")
+    #new_df_3 = new_df_2.groupby('layer_id').agg(F.size(F.collect_set('sha256')).alias('uniq_file_cnt'))
+    #new_df_3.show()
+    extractfiles = udf(extract_dir_file_digests, ArrayType(StringType()))
 
-    extractfiles = udf(extract_dir_file_digests, StringType())
+    new_df = layer_db_df.select('layer_id', extractfiles(layer_db_df.dirs).alias('sha256s'))
+    #new_df = df.select('layer_id', 'file_digests')
+    #df = layer_db_df.selectExpr('layer_id', "explode(dirs) As structdirs").selectExpr('layer_id', "explode(structdirs.files) As structdirs_files").selectExpr('layer_id', "structdirs_files.sha256")
+    #new_df = layer_db_df.groupby('layer_id').agg(F.explode(layer_db_df.dirs).alias('dirs')).groupby('layer_id').agg(F.explode('dirs.files').alias('files')).groupby('layer_id').agg('files.sha256')
+    #new_df = df.filter(df.sha256.isNotNull())
+    #new_df.show()
+    #print(new_df_2.count())
 
-    new_df = layer_id_col.withColumn('file_digests', extractfiles(layer_db_df.dirs))
-
-    new_df.show()
-    print(new_df.count())
-
-    new_df.write.save(output_absfilename)
+    new_df.coalesce(4000).write.save(output_absfilename, mode='append')
 
 
 def init_spark_cluster():
