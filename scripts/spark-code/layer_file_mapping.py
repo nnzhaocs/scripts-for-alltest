@@ -10,6 +10,11 @@ from pyspark.sql import functions as F
 
 
 HDFS_DIR = 'hdfs://hulk0:8020/'
+
+LAYER_JSONS_DIR1 = os.path.join(HDFS_DIR, 'nannan_2tb_hdd/layer_db_json')
+LAYER_JSONS_DIR2 = os.path.join(HDFS_DIR, '2tb_hdd_3/layer_db_json')
+TEMP_DIR = os.path.join(HDFS_DIR, 'temp')
+
 MANIFESTS_DIR2 = os.path.join(HDFS_DIR, "/2tb_hdd/manifests")
 MANIFESTS_DIR1 = os.path.join(HDFS_DIR, "/var/tmpmanifestdir/")
 VAR_DIR = os.path.join(HDFS_DIR, 'var')
@@ -28,8 +33,8 @@ layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet
 
 output_unique_cnt_not_empty_filename = os.path.join(LOCAL_DIR, 'output_unique_cnt_not_empty.parquet')
 output_uniq_files_cnts_bigger_1_not_empty = os.path.join(LOCAL_DIR, 'output_uniq_files_cnts_bigger_1_not_empty.parquet')
-output_absfilename = os.path.join(VAR_DIR, 'layer_file_mapping_filename2.parquet')
-
+output_absfilename1 = os.path.join(VAR_DIR, 'layer_file_mapping_nannan_2tb_hdd.parquet')
+output_absfilename2 = os.path.join(VAR_DIR, 'layer_file_mapping_2tb_hdd.parquet')
 
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
@@ -45,7 +50,8 @@ list_elem_num = 10000
 
 master = "spark://hulk0:7077"
 
-all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
+# all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
+all_json_absfilename = os.path.join(LOCAL_DIR, '2tb_hdd_json.lst')#'nannan_2tb_json.lst')#'all_json_absfilename.lst')
 
 """
 230.2 M  /manifests/manifests_with_filename.parquet
@@ -58,7 +64,7 @@ all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
 """
 
 #non_analyzed_layer_ids_lst = []
-duplicate_files = []
+# duplicate_files = []
 #output_uniq_files_cnts_bigger_1_not_empty
 
 def extract_dir_file_digests(dirs):
@@ -77,9 +83,9 @@ def extract_dir_file_digests(dirs):
     return list(set(file_lst)) 
 
 
-def extract_file_digests(spark, sc):
+def extract_file_digests(absfilename_list, spark):
 
-    layer_db_df = spark.read.parquet(layer_db_absfilename2)#LAYER_DB_JSON_DIR)
+    # layer_db_df = spark.read.parquet(layer_db_absfilename2)#LAYER_DB_JSON_DIR)
     """
     file_df_lst = spark.read.parquet(output_uniq_files_cnts_bigger_1_not_empty)
     file_shas = file_df_lst.select('sha256').collect()
@@ -95,9 +101,20 @@ def extract_file_digests(spark, sc):
     #new_df_2 = new_df_1.select("layer_id", "files.sha256")
     #new_df_3 = new_df_2.groupby('layer_id').agg(F.size(F.collect_set('sha256')).alias('uniq_file_cnt'))
     #new_df_3.show()"""
-    extractfiles = udf(extract_dir_file_digests, ArrayType(StringType()))#FloatType())
 
-    new_df = layer_db_df.select('layer_id', extractfiles(layer_db_df.dirs).alias('sha256s'))
+    extractfiles = udf(extract_dir_file_digests, ArrayType(StringType()))  # FloatType())
+
+    sublists = split_list(absfilename_list)
+
+    for sublist in sublists:
+        # join_subset_json_files(sublist, spark)
+        # rawData = sc.wholeTextFiles(LAYER_JSONS_DIR1).map(lambda x: json.loads(x[1])).flatMap(parse_layer_json)
+        layer_db_df = spark.read.json(sublist)
+        new_df = layer_db_df.select('layer_id', extractfiles(layer_db_df.dirs).alias('sha256s'))
+        new_df.coalesce(40000).write.save(output_absfilename, mode='append')
+
+        print("===========================>finished one sublist!!!!!!!!!")
+
     #new_df = df.select('layer_id', 'file_digests')
     #df = layer_db_df.selectExpr('layer_id', "explode(dirs) As structdirs").selectExpr('layer_id', "explode(structdirs.files) As structdirs_files").selectExpr('layer_id', "structdirs_files.sha256")
     #new_df = layer_db_df.groupby('layer_id').agg(F.explode(layer_db_df.dirs).alias('dirs')).groupby('layer_id').agg(F.explode('dirs.files').alias('files')).groupby('layer_id').agg('files.sha256')
@@ -105,7 +122,29 @@ def extract_file_digests(spark, sc):
     #new_df.show()
     #print(new_df_2.count())
 
-    new_df.coalesce(40000).write.save(output_absfilename, mode='append')
+
+def split_list(datalist):
+
+    sublists = [datalist[x:x+list_elem_num] for x in range(0, len(datalist), list_elem_num)]
+
+    #print(sublists)
+    return sublists
+
+
+# def join_all_json_files(spark):
+#     DIR = LAYER_JSONS_DIR1
+#     spark.read.json(DIR).write.save(output_absfilename, format="parquet", mode='append')
+#     DIR = LAYER_JSONS_DIR2
+#     spark.read.json(DIR).write.save(output_absfilename, format="parquet", mode='append')
+
+
+# def join_json_files(absfilename_list, spark):
+
+    #print(absfilename_list)
+
+# def join_subset_json_files(sublist, spark):
+#
+#     spark.read.json(sublist).coalesce(40000).write.save(output_absfilename, format="parquet", mode='append')
 
 
 def init_spark_cluster():
@@ -139,7 +178,10 @@ def init_spark_cluster():
 
 def main():
     sc, spark = init_spark_cluster()
-    extract_file_digests(spark, sc)
+    absfilename_list = spark.read.text(all_json_absfilename).collect()
+    absfilenames = [str(i.value) for i in absfilename_list]
+
+    extract_file_digests(absfilenames, spark)
     # join_all_json_files(spark)
     # absfilename_list = spark.read.text(all_json_absfilename).collect()
     # absfilenames = [str(i.value) for i in absfilename_list]
