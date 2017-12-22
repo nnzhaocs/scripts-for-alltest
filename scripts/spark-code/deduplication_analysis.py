@@ -37,6 +37,9 @@ cnt_bigger_1_uniq = os.path.join(LOCAL_DIR, 'cnt_bigger_1_uniq.parquet')
 cnt_bigger_1_fileinfo = os.path.join(LOCAL_DIR, 'cnt_bigger_1_fileinfo.parquet')
 output_size_cnt_total_sum = os.path.join(LOCAL_DIR, 'output_size_cnt_total_sum.parquet')
 
+output_unique_cnt_not_empty_filename = os.path.join(LOCAL_DIR, 'output_unique_cnt_not_empty.parquet')
+output_uniq_files_cnts_bigger_1_not_empty = os.path.join(LOCAL_DIR, 'output_uniq_files_cnts_bigger_1_not_empty.parquet')
+
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
     .set("spark.executor.memory", "40g") \ 
@@ -136,11 +139,11 @@ def save_cnt_bigger_1_files(spark, sc):
     
 
 def save_unique_files_cnt_bigger_1(spark, sc):
-    cnt = spark.read.parquet(output_unique_cnt_filename)
+    cnt = spark.read.parquet(output_unique_cnt_not_empty_filename)
     cnt_bigger_1 = cnt.where("count > 1")
     cnt_bigger_1.show()
     print(cnt_bigger_1.count())
-    cnt_bigger_1.write.save(output_uniq_files_cnts_bigger_1)
+    cnt_bigger_1.write.save(output_uniq_files_cnts_bigger_1_not_empty)
 
 
 def save_unqiue_files_cnts(spark, sc):
@@ -148,13 +151,14 @@ def save_unqiue_files_cnts(spark, sc):
     files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
         "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     regular_files = files.filter(files.sha256.isNotNull())
+    df = regular_files.filter(regular_files.type != "empty")
     #print(regular_files.count())
     #uniq_files_sha256 = spark.read.parquet(output_unique_filename)
     #uniq_rows = regular_files.filter(regular_files.sha256.isin(uniq_files_sha256.sha256))
     
     #uniq_rows.groupby(uniq_rows.sha256).agg(F.collect_list(uniq_rows.file_info.stat_size)
-    cnt = regular_files.groupby(regular_files.sha256).count().distinct()#agg(F.collect_list(regular_files.file_info.stat_size))
-    cnt.write.save(output_unique_cnt_filename)
+    cnt = df.groupby(df.sha256).count().distinct()#agg(F.collect_list(regular_files.file_info.stat_size))
+    cnt.write.save(output_unique_cnt_not_empty_filename)
 
 
 def save_unique_files(spark, sc):
@@ -206,14 +210,16 @@ def init_spark_cluster():
 def main():
 
     sc, spark = init_spark_cluster()
+    #save_unqiue_files_cnts(spark, sc)
+    save_unique_files_cnt_bigger_1(spark, sc)
     #save_cnt_bigger_1_files(spark, sc)
     #save_sha256_sizes(spark, sc)
     #cumulative_sum_cal(spark, sc)
     #find_file(spark, sc) 
-    find_file_in_layer(spark, sc)
+    #find_file_in_layer(spark, sc)
     #save_cnt_bigger_1_fileinfo(spark, sc)
     #calculate_redundant_files_in_layers(spark, sc)
-    # join_all_json_files(spark)
+    #join_all_json_files(spark)
     #absfilename_list = spark.read.text(all_json_absfilename).collect()
     #absfilenames = [str(i.value) for i in absfilename_list]
     #print absfilename_list

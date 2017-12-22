@@ -26,7 +26,8 @@ layer_db_absfilename1 = os.path.join(LAYER_DB_JSON_DIR, "1g_big_json.parquet")
 layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR, "2tb_hdd_json.parquet")
 layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet")
 
-
+output_unique_cnt_not_empty_filename = os.path.join(LOCAL_DIR, 'output_unique_cnt_not_empty.parquet')
+output_uniq_files_cnts_bigger_1_not_empty = os.path.join(LOCAL_DIR, 'output_uniq_files_cnts_bigger_1_not_empty.parquet')
 output_absfilename = os.path.join(VAR_DIR, 'layer_file_mapping_filename2.parquet')
 
 
@@ -56,8 +57,9 @@ all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
 /layer_db_jsons/nannan_2tb_json.parquet
 """
 
-non_analyzed_layer_ids_lst = []
-
+#non_analyzed_layer_ids_lst = []
+duplicate_files = []
+#output_uniq_files_cnts_bigger_1_not_empty
 
 def extract_dir_file_digests(dirs):
 
@@ -68,12 +70,22 @@ def extract_dir_file_digests(dirs):
             for f in dir['files']:
                 if f['sha256']:
                     file_lst.append(f['sha256'])
-    return file_lst
+
+    """file_cnt = len(set(file_lst))
+    intersect_cnt = len(set(file_lst)&set(duplicate_files))
+    return file_cnt*(0.1)/intersect_cnt#"""
+    return list(set(file_lst)) 
 
 
 def extract_file_digests(spark, sc):
 
     layer_db_df = spark.read.parquet(layer_db_absfilename2)#LAYER_DB_JSON_DIR)
+    """
+    file_df_lst = spark.read.parquet(output_uniq_files_cnts_bigger_1_not_empty)
+    file_shas = file_df_lst.select('sha256').collect()
+    file_lst = [str(i.value) for i in file_shas]
+    for sha in file_lst:
+	duplicate_files.append(sha)
 
     #layer_id_col = layer_db_df.select('layer_id')
     
@@ -82,8 +94,8 @@ def extract_file_digests(spark, sc):
     #new_df_1.printSchema()
     #new_df_2 = new_df_1.select("layer_id", "files.sha256")
     #new_df_3 = new_df_2.groupby('layer_id').agg(F.size(F.collect_set('sha256')).alias('uniq_file_cnt'))
-    #new_df_3.show()
-    extractfiles = udf(extract_dir_file_digests, ArrayType(StringType()))
+    #new_df_3.show()"""
+    extractfiles = udf(extract_dir_file_digests, ArrayType(StringType()))#FloatType())
 
     new_df = layer_db_df.select('layer_id', extractfiles(layer_db_df.dirs).alias('sha256s'))
     #new_df = df.select('layer_id', 'file_digests')
@@ -93,7 +105,7 @@ def extract_file_digests(spark, sc):
     #new_df.show()
     #print(new_df_2.count())
 
-    new_df.coalesce(4000).write.save(output_absfilename, mode='append')
+    new_df.coalesce(40000).write.save(output_absfilename, mode='append')
 
 
 def init_spark_cluster():
@@ -107,9 +119,11 @@ def init_spark_cluster():
         .setAppName('jsonsanalysis') \
         .setMaster(master) \
         .set("spark.executor.cores", 5) \
-        .set("spark.driver.memory", "10g") \
+        .set("spark.driver.memory", "15g") \
         .set("spark.executor.memory", "40g") \
-        .set("spark.driver.maxResultSize", "2g")
+        .set("spark.driver.maxResultSize", "10g")\
+	.set("spark.network.timeout", "6000")
+	#.set("spark.executor.heartbeatInterval", "10000000")\
     # .set("spark.sql.hive.filesourcePartitionFileCacheSize", "30g")
     sc = SparkContext(conf=conf)
 
