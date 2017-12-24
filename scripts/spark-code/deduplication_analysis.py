@@ -18,6 +18,7 @@ LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 
 MANIFESTS_DIR = os.path.join(HDFS_DIR, "manifests")
 LAYER_DB_JSON_DIR  = os.path.join(HDFS_DIR, "layer_db_jsons/*")
+LAYER_FILE_MAPPING_DIR = os.path.join(HDFS_DIR, "layer_file_mapping")
 
 
 pull_cnt_absfilename = os.path.join(LOCAL_DIR, "pull_cnt_with_filename.csv") #"_c3"
@@ -26,7 +27,6 @@ manifest_absfilename = os.path.join(MANIFESTS_DIR, "manifests_with_filename_with
 layer_db_absfilename1 = os.path.join(LAYER_DB_JSON_DIR, "1g_big_json.parquet")
 layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR, "2tb_hdd_json.parquet")
 layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet")
-
 
 #output_absfilename = os.path.join(VAR_DIR, 'manifests.parquet')
 output_unique_filename = os.path.join(LOCAL_DIR, 'unique_file_ids.parquet')
@@ -37,32 +37,52 @@ cnt_bigger_1_uniq = os.path.join(LOCAL_DIR, 'cnt_bigger_1_uniq.parquet')
 cnt_bigger_1_fileinfo = os.path.join(LOCAL_DIR, 'cnt_bigger_1_fileinfo.parquet')
 output_size_cnt_total_sum = os.path.join(LOCAL_DIR, 'output_size_cnt_total_sum.parquet')
 
-output_unique_cnt_not_empty_filename = os.path.join(LOCAL_DIR, 'output_unique_cnt_not_empty.parquet')
-output_uniq_files_cnts_bigger_1_not_empty = os.path.join(LOCAL_DIR, 'output_uniq_files_cnts_bigger_1_not_empty.parquet')
+# output_unique_cnt_not_empty_filename = os.path.join(LOCAL_DIR, 'output_unique_cnt_not_empty.parquet')
+# output_uniq_files_cnts_bigger_1_not_empty = os.path.join(LOCAL_DIR, 'output_uniq_files_cnts_bigger_1_not_empty.parquet')
 
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
     .set("spark.executor.memory", "40g") \ 
 """
 
-
 EXECUTOR_CORES = 5
 EXECUTOR_MEMORY = "40g"
 DRIVER_MEMORY = "10g"
 
-list_elem_num = 10000
+# list_elem_num = 10000
 
 master = "spark://hulk0:7077"
 
-all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
+# all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
 
+def main():
+
+    sc, spark = init_spark_cluster()
+    #save_unqiue_files_cnts(spark, sc)
+    calculate_redundant_files_in_layers(spark, sc)
+    #save_cnt_bigger_1_files(spark, sc)
+    #save_sha256_sizes(spark, sc)
+    #cumulative_sum_cal(spark, sc)
+    #find_file(spark, sc)
+    #find_file_in_layer(spark, sc)
+    #save_cnt_bigger_1_fileinfo(spark, sc)
+    #calculate_redundant_files_in_layers(spark, sc)
+    #join_all_json_files(spark)
+    #absfilename_list = spark.read.text(all_json_absfilename).collect()
+    #absfilenames = [str(i.value) for i in absfilename_list]
+    #print absfilename_list
+    #join_json_files(absfilenames, spark)
+
+# def get_layer_shared_file_proportion(spark, sc):
+#     output_unique_filename
 
 
 def calculate_redundant_files_in_layers(spark, sc):
-    df_f = spark.read.parquet(output_uniq_cnts_sizes)
+    df_f = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
     #df = df_f.select('sha256', F.sum(collec'file_size').alias('total_sum'), F.size('file_size').alias('cnt'), F.avg('file_size').alias('avg'))
-    df.show()
-    df.write.save(output_size_cnt_total_sum)
+    df_f.printSchema()
+    df_f.show()
+    # df_f.write.save(output_size_cnt_total_sum)
 
 
 def find_file(spark, sc):
@@ -81,7 +101,6 @@ def find_file_in_layer(spark, sc):
     print(layer_info)
     #regular_files = files.filter(files.sha256.isNotNull())
     
-
 
 def save_cnt_bigger_1_fileinfo(spark, sc):
     #df_f = spark.read.parquet()
@@ -139,11 +158,11 @@ def save_cnt_bigger_1_files(spark, sc):
     
 
 def save_unique_files_cnt_bigger_1(spark, sc):
-    cnt = spark.read.parquet(output_unique_cnt_not_empty_filename)
+    cnt = spark.read.parquet(output_unique_cnt_filename)
     cnt_bigger_1 = cnt.where("count > 1")
     cnt_bigger_1.show()
     print(cnt_bigger_1.count())
-    cnt_bigger_1.write.save(output_uniq_files_cnts_bigger_1_not_empty)
+    cnt_bigger_1.write.save(output_uniq_files_cnts_bigger_1)
 
 
 def save_unqiue_files_cnts(spark, sc):
@@ -151,14 +170,14 @@ def save_unqiue_files_cnts(spark, sc):
     files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
         "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     regular_files = files.filter(files.sha256.isNotNull())
-    df = regular_files.filter(regular_files.type != "empty")
+    # df = regular_files.filter(regular_files.type != "empty")
     #print(regular_files.count())
     #uniq_files_sha256 = spark.read.parquet(output_unique_filename)
     #uniq_rows = regular_files.filter(regular_files.sha256.isin(uniq_files_sha256.sha256))
     
     #uniq_rows.groupby(uniq_rows.sha256).agg(F.collect_list(uniq_rows.file_info.stat_size)
-    cnt = df.groupby(df.sha256).count().distinct()#agg(F.collect_list(regular_files.file_info.stat_size))
-    cnt.write.save(output_unique_cnt_not_empty_filename)
+    cnt = regular_files.groupby(regular_files.sha256).count().distinct()#agg(F.collect_list(regular_files.file_info.stat_size))
+    cnt.write.save(output_unique_cnt_filename)
 
 
 def save_unique_files(spark, sc):
@@ -181,12 +200,7 @@ def save_unique_files(spark, sc):
 
 
 def init_spark_cluster():
-    """
-    conf = SparkConf().setAppName('jsonsanalysis').setMaster(master)
-    sc = SparkContext(conf=conf)
-    spark = SparkSession.builder.appName("jsonsanalysis").config("spark.some.config.option", "some-value").master(
-        master).getOrCreate()
-    """
+
     conf =  SparkConf()\
         .setAppName('jsonsanalysis')\
         .setMaster(master)\
@@ -205,25 +219,6 @@ def init_spark_cluster():
         .getOrCreate()
 
     return sc, spark
-
-
-def main():
-
-    sc, spark = init_spark_cluster()
-    #save_unqiue_files_cnts(spark, sc)
-    save_unique_files_cnt_bigger_1(spark, sc)
-    #save_cnt_bigger_1_files(spark, sc)
-    #save_sha256_sizes(spark, sc)
-    #cumulative_sum_cal(spark, sc)
-    #find_file(spark, sc) 
-    #find_file_in_layer(spark, sc)
-    #save_cnt_bigger_1_fileinfo(spark, sc)
-    #calculate_redundant_files_in_layers(spark, sc)
-    #join_all_json_files(spark)
-    #absfilename_list = spark.read.text(all_json_absfilename).collect()
-    #absfilenames = [str(i.value) for i in absfilename_list]
-    #print absfilename_list
-    #join_json_files(absfilenames, spark)
 
 
 if __name__ == '__main__':
