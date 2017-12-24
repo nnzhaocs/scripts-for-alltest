@@ -28,7 +28,7 @@ layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR, "2tb_hdd_json.parquet")
 layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet")
 
 
-output_absfilename = os.path.join(VAR_DIR, 'manifests.parquet')
+#output_absfilename = os.path.join(VAR_DIR, 'manifests.parquet')
 output_unique_filename = os.path.join(LOCAL_DIR, 'unique_file_ids.parquet')
 output_unique_cnt_filename = os.path.join(LOCAL_DIR, 'unique_file_cnts.parquet') 
 output_uniq_files_cnts_bigger_1 = os.path.join(LOCAL_DIR, 'output_uniq_files_cnts_bigger_1.parquet')
