@@ -63,10 +63,6 @@ all_json_absfilename = os.path.join(VAR_DIR, '1gb_json.lst')#'1gb_layer_json.lst
 /layer_db_jsons/nannan_2tb_json.parquet
 """
 
-#non_analyzed_layer_ids_lst = []
-# duplicate_files = []
-#output_uniq_files_cnts_bigger_1_not_empty
-
 def extract_dir_file_digests(dirs):
 
     file_lst = []
@@ -94,30 +90,12 @@ def extract_dir_file_digests(dirs):
 
 def extract_file_digests(absfilename_list, spark):
 
-    # layer_db_df = spark.read.parquet(layer_db_absfilename2)#LAYER_DB_JSON_DIR)
-    """
-    file_df_lst = spark.read.parquet(output_uniq_files_cnts_bigger_1_not_empty)
-    file_shas = file_df_lst.select('sha256').collect()
-    file_lst = [str(i.value) for i in file_shas]
-    for sha in file_lst:
-	duplicate_files.append(sha)
-
-    #layer_id_col = layer_db_df.select('layer_id')
-    
-    #df = layer_db_df.select('layer_id', F.explode('dirs').alias('dirs')).select('layer_id', F.explode('dirs.files').alias('files')).select('layer_id', 'files.sha256')#.groupby('layer_id').agg(F.collect_list('files.sha256'))
-    #new_df_1.show()
-    #new_df_1.printSchema()
-    #new_df_2 = new_df_1.select("layer_id", "files.sha256")
-    #new_df_3 = new_df_2.groupby('layer_id').agg(F.size(F.collect_set('sha256')).alias('uniq_file_cnt'))
-    #new_df_3.show()"""
-
     extractfiles = udf(extract_dir_file_digests, ArrayType(StructType([StructField('filename', StringType(), True), StructField('digest', StringType(), True)])))
 
     sublists = split_list(absfilename_list)
 
     for sublist in sublists:
-        # join_subset_json_files(sublist, spark)
-        # rawData = sc.wholeTextFiles(LAYER_JSONS_DIR1).map(lambda x: json.loads(x[1])).flatMap(parse_layer_json)
+        """=======================================> modify here"""
         layer_db_df = spark.read.json('/var/1gb_json.json', multiLine=True)#sublist)
 	layer_db_df.printSchema()
         new_df = layer_db_df.select('layer_id', extractfiles(layer_db_df.dirs).alias('files'))
@@ -125,45 +103,15 @@ def extract_file_digests(absfilename_list, spark):
 	break
         print("===========================>finished one sublist!!!!!!!!!")
 
-    #new_df = df.select('layer_id', 'file_digests')
-    #df = layer_db_df.selectExpr('layer_id', "explode(dirs) As structdirs").selectExpr('layer_id', "explode(structdirs.files) As structdirs_files").selectExpr('layer_id', "structdirs_files.sha256")
-    #new_df = layer_db_df.groupby('layer_id').agg(F.explode(layer_db_df.dirs).alias('dirs')).groupby('layer_id').agg(F.explode('dirs.files').alias('files')).groupby('layer_id').agg('files.sha256')
-    #new_df = df.filter(df.sha256.isNotNull())
-    #new_df.show()
-    #print(new_df_2.count())
-
 
 def split_list(datalist):
 
     sublists = [datalist[x:x+list_elem_num] for x in range(0, len(datalist), list_elem_num)]
-
-    #print(sublists)
     return sublists
 
 
-# def join_all_json_files(spark):
-#     DIR = LAYER_JSONS_DIR1
-#     spark.read.json(DIR).write.save(output_absfilename, format="parquet", mode='append')
-#     DIR = LAYER_JSONS_DIR2
-#     spark.read.json(DIR).write.save(output_absfilename, format="parquet", mode='append')
-
-
-# def join_json_files(absfilename_list, spark):
-
-    #print(absfilename_list)
-
-# def join_subset_json_files(sublist, spark):
-#
-#     spark.read.json(sublist).coalesce(40000).write.save(output_absfilename, format="parquet", mode='append')
-
-
 def init_spark_cluster():
-    """
-    conf = SparkConf().setAppName('jsonsanalysis').setMaster(master)
-    sc = SparkContext(conf=conf)
-    spark = SparkSession.builder.appName("jsonsanalysis").config("spark.some.config.option", "some-value").master(
-        master).getOrCreate()
-    """
+
     conf = SparkConf() \
         .setAppName('jsonsanalysis') \
         .setMaster(master) \
@@ -192,11 +140,6 @@ def main():
     absfilenames = [str(i.value) for i in absfilename_list]
 
     extract_file_digests(absfilenames, spark)
-    # join_all_json_files(spark)
-    # absfilename_list = spark.read.text(all_json_absfilename).collect()
-    # absfilenames = [str(i.value) for i in absfilename_list]
-    # print absfilename_list
-    # join_json_files(absfilenames, spark)
 
 
 if __name__ == '__main__':
