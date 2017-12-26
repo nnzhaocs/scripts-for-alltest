@@ -31,16 +31,21 @@ In this paper, we perform the first in-depth analysis of a large scale Docker re
 %Our goal is to collect statistics from a large amount of Docker images and
 %perform a large-scale characterization of Docker images.
 %
-We download 51TB worth of Docker Hub images and characterize them using multiple metrics, \eg
-image size distribution, layer size, the number of layers per image, and the amount of
-layers shared among images.
+We download 51TB worth of Docker Hub images and found only ~3\% (5TB) of its containing files are unique files while others are redundant copies, which means that current layer-level content addressable storage cannot efficiently reduce duplicates and a file-level content addressable storage mode is suggested. Furthermore, we applied chunk-level deduplication method on the 5TB unique files and reduced the storage consumption to 1TB. Moreover, we presents a comprehensive deduplication analysis followed by different useful suggestions that docker registry designers need to know for eliminating duplicates. Last but not least, we collected a large range of statistics from our Docker image dataset that can help to make conscious decisions when designing storage for
+containers and Docker registry in particular. 
+%perform a large-scale characterization of Docker images.  
+
+
+%characterize them using multiple metrics, \eg
+%image size distribution, layer size, the number of layers per image, and the amount of
+%layers shared among images.
 %
 %\abc{add an example or two of the key findings?\nancomment{added findings to the end of intro}}
-For example, we find that small layers only have low compression ratios, suggesting
-that storing these layers uncompressed can help save computation while not
-sacrificing storage.
+%For example, we find that small layers only have low compression ratios, suggesting
+%that storing these layers uncompressed can help save computation while not
+%sacrificing storage.
 %
-Our findings help to make conscious decisions when designing storage for
-containers and Docker in particular.
+%Our findings help to make conscious decisions when designing storage for
+%containers and Docker in particular.
  
 \end{abstract}
