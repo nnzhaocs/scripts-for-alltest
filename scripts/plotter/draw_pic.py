@@ -6,10 +6,15 @@ from graph_related_libraries import *
 # from regular_libraries import *
 # from config import *
 from utilities_funcs import *
+#import scikits.statsmodels as sm
+#import statsmodels.api as sm
+from statsmodels.distributions.empirical_distribution import ECDF
+import itertools
+
 
 def fig_size(size):
     if size == 'min':
-	fig = plt.figure(figsize=(12, 8), dpi=80)
+	fig = plt.figure(figsize=(11, 4), dpi=80)
     if size == 'small':
 	fig = plt.figure(figsize=(20, 6), dpi=80)
     if size == 'median':
@@ -31,13 +36,18 @@ def bar_label_text(ax, x, y, xlim):
 
 """ only plot the cdf """
 def plot_cdf_normal(fig, data1, xlabel, xlim, ticks, y_type):
-    data = np.array(data1)
-    print("plot: min = %d" % data.min())
-    print("plot: max = %d" % data.max())
-    print("plot: median = %d" % np.median(data))
+    #data = np.array(data1)
+    data = data1#list(itertools.chain(*data1.tolist()))
+    #print("plot: min = %d" % data1.min())
+    #print("plot: max = %d" % data1.max())
+    #print("plot: median = %d" % np.median(data1))
 
     ax = fig.add_subplot(111)
-
+    #print(data)
+    #ecdf = ECDF(data)
+    #x = np.linspace(min(data), max(data))
+    #y = ecdf(x)
+    #plt.plot(ecdf.x, ecdf.y)
     bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
     print "cdf and pdf calculating: bins = %d" % len(bins)
     counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
@@ -46,22 +56,24 @@ def plot_cdf_normal(fig, data1, xlabel, xlim, ticks, y_type):
 
     print "start plotting!"
 
-    cd = ax.plot(base_cdf[1:], [x*100 for x in cdf], 'b-', linewidth=1, label='Cumulative Distribution')
+    cd = plt.semilogx(base_cdf[1:], cdf, 'b-', linewidth=1)
 
     print "start labeling!"
 
-    ax.set_xlim(xmin=1, xmax=xlim)
-    ax.set_ylim(0, 1*100)
+    ax.set_xlim(1, xlim)
+    ax.set_ylim(0, 1)
 
-    ax.set_xlabel(xlabel, fontsize=24)
-    ax.set_ylabel('Cumulative % of '+y_type, fontsize=24) #24,>14
-    ax.get_yaxis().set_tick_params(labelsize = 24)
-    ax.get_xaxis().set_tick_params(labelsize = 24)
-
+    ax.set_xlabel(xlabel, fontsize=18)
+    ax.set_ylabel(y_type, fontsize=18) #24,>14
+    ax.get_yaxis().set_tick_params(labelsize = 18)
+    ax.get_xaxis().set_tick_params(labelsize = 18)
+    #plt.gca().set_yscale('log')
     plt.grid()
+    plt.tight_layout()
     name = '%s.png' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "")
     fig.savefig(name)
-
+    eps = '%s.eps' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "")
+    fig.savefig(eps)
 
 """plot two lines: pdf and cdf"""
 def plot_cdf(fig, data1, xlabel, xlim, ticks, y_type):
