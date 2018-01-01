@@ -8,8 +8,8 @@ from graph_related_libraries import *
 from utilities_funcs import *
 #import scikits.statsmodels as sm
 #import statsmodels.api as sm
-from statsmodels.distributions.empirical_distribution import ECDF
-import itertools
+#from statsmodels.distributions.empirical_distribution import ECDF
+#import itertools
 
 
 def fig_size(size):
