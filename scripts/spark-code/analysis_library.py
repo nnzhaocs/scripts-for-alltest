@@ -18,6 +18,7 @@ LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 TABLE_DIR = os.path.join(HDFS_DIR, 'table')
 
 REDUNDANT_FILE_ANALYSIS_DIR = os.path.join(HDFS_DIR, 'redundant_file_analysis')
+REDUNDANT_LAYER_ANALYSIS_DIR = os.path.join(HDFS_DIR, 'redundant_layer_analysis')
 
 MANIFESTS_DIR = os.path.join(HDFS_DIR, "manifests")
 LAYER_DB_JSON_DIR  = os.path.join(HDFS_DIR, "layer_db_jsons/*")
@@ -30,6 +31,10 @@ manifest_absfilename = os.path.join(MANIFESTS_DIR, "manifests_with_filename_with
 layer_db_absfilename1 = os.path.join(LAYER_DB_JSON_DIR, "1g_big_json.parquet")
 layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR, "2tb_hdd_json.parquet")
 layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet")
+
+layer_file_mapping1 = os.path.join(VAR_DIR, 'layer_file_mapping_nannan_2tb_hdd.parquet')
+layer_file_mapping2 = os.path.join(VAR_DIR, 'layer_file_mapping_2tb_hdd.parquet')
+layer_file_mapping3 = os.path.join(VAR_DIR, 'layer_file_mapping_1gb_layer.parquet')
 
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
