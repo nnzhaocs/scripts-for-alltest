@@ -2,13 +2,16 @@
 import sys
 sys.path.append('../plotter/')
 from draw_pic import *
-#from analysis_library import *
+from analysis_library import *
 import pandas as pd
 
-#unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
+unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
 #unique_draw_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_cnt.csv')
 
 RESULTS_DIR = '/home/nannan/4tb_results'
+
+capacity_data = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'capacity_data.csv')
+
 #unique_draw_cnt_data = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_cnt_data.csv')
 #unique_draw_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_size.csv')
 #draw_sum_file_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_sum_file_size.csv')
@@ -16,23 +19,23 @@ RESULTS_DIR = '/home/nannan/4tb_results'
 #draw_avg_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_avg_size_by_cnt')
 #draw_sum_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_sum_size_by_cnt')
 
-unique_draw_cnt_data = os.path.join(RESULTS_DIR, 'unique_draw_cnt_data.csv')
-unique_draw_size_data = os.path.join(RESULTS_DIR, 'unique_draw_size_data.csv')
-draw_sum_file_size_data = os.path.join(RESULTS_DIR, 'draw_sum_file_size_data.csv')
-#avg_size_by_cnt = os.path.join(RESULTS_DIR, 'avg_size_by_cnt.parquet')
-draw_avg_size_by_cnt = os.path.join(RESULTS_DIR, 'draw_avg_size_by_cnt.csv')
-draw_sum_size_by_cnt = os.path.join(RESULTS_DIR, 'draw_sum_size_by_cnt.csv')
+#unique_draw_cnt_data = os.path.join(RESULTS_DIR, 'unique_draw_cnt_data.csv')
+#unique_draw_size_data = os.path.join(RESULTS_DIR, 'unique_draw_size_data.csv')
+#draw_sum_file_size_data = os.path.join(RESULTS_DIR, 'draw_sum_file_size_data.csv')
+#draw_avg_size_by_cnt = os.path.join(RESULTS_DIR, 'draw_avg_size_by_cnt.csv')
+#draw_sum_size_by_cnt = os.path.join(RESULTS_DIR, 'draw_sum_size_by_cnt.csv')
 
 
 def main():
-    #sc, spark = init_spark_cluster()
+    sc, spark = init_spark_cluster()
     #save_file_repeat_cnt(spark, sc)
     #save_file_size(spark, sc)
     #save_sum_file_size(spark, sc)
     #save_avg_size_by_repeat_cnt(spark, sc)
     #draw_file_repeat_cnt()
-    draw_file_size()
-    draw_sum_file_size()
+    #draw_file_size()
+    #draw_sum_file_size()
+    calculate_capacity(spark, sc)
 
 
 def calculate_capacity(spark, sc):
@@ -47,24 +50,26 @@ def calculate_capacity(spark, sc):
     df_2 = df_2.select(F.sum('avg').alias('sum_size_2_remove_redundancy'))
     df_2.show()
 
-    new_df = df_2.withColumn("sum_size_1", df_1) 
+    new_df = df_2.unionAll(df_1)
 
     df_2 = df.filter(df.cnt > 1)
     df_2.show()
     df_2 = df_2.select(F.sum('total_sum').alias('sum_size_2_redundancy'))
     df_2.show()
 
-    new_df = new_df.withColumn('sum_size_1', df_2)
+    new_df = new_df.unionAll(df_2)
 
-    df = df.select(F.sum('avg').alias('sum_files_remove_redundancy'))
-    df.show()
+    df_1 = df.select(F.sum('avg').alias('sum_files_remove_redundancy'))
+    df_1.show()
 
-    new_df = new_df.withColumn('sum_files_remove_redundancy', df)
+    new_df = new_df.unionAll(df_1)
 
     df = df.select(F.sum('total_sum').alias('sum_files_redundancy'))
     df.show()
 
-    new_df = new_df.withColumn('sum_files_redundancy', df)
+    new_df = new_df.unionAll(df) 
+    new_df.show()
+    new_df.write.csv(capacity_data)
 
 
 def save_file_size(spark, sc):
