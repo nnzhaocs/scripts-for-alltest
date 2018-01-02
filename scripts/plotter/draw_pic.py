@@ -70,9 +70,9 @@ def plot_cdf_normal(fig, data1, xlabel, xlim, ticks, y_type):
     #plt.gca().set_yscale('log')
     plt.grid()
     plt.tight_layout()
-    name = '%s.png' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "")
+    name = '%s.png' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "").replace("(", "").replace(")", "")
     fig.savefig(name)
-    eps = '%s.eps' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "")
+    eps = '%s.eps' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "").replace("(", "").replace(")", "")
     fig.savefig(eps)
 
 """plot two lines: pdf and cdf"""

@@ -152,7 +152,7 @@ def draw_sum_file_size():
     data = df.as_matrix()
     print(data)
     ylabel = 'Cumulative file probability'
-    xlabel = 'Total size of redudant files with same content(KB)'
+    xlabel = 'Total size of redudant files with same content(MB)'
     # data = [x * 1.0 / 1024 / 1024 for x in data1]
     xlim = data.max()
     ticks = 25
