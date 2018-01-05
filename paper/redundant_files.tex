@@ -1,0 +1,78 @@
+
+\section{What are the redundant files?}
+\label{sec:redundant_files}
+
+\subsection{Redundant file storage overhead analysis}
+
+\paragraph{Cumulative distribution and probability distribution of file repeat count}
+
+Almost 90\% of files have equal or less than 10 redundant copies. Most files have small repeat count.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/File_repeat_count.eps}
+	\caption{CDF of file repeat count.
+	}
+	\label{fig_file_repeat_count}
+\end{figure}
+
+\paragraph{Cumulative distribution and probability distribution of file size in terms of unique file size, redundant file size, overall file size}
+
+91\% files'sizes are equal or less than 100KB. Most files are smaller files.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/File_size-KB.eps}
+	\caption{CDF of unique file size (KB).
+	}
+	\label{fig_file_size}
+\end{figure}
+
+\paragraph{Average file size by repeat count}
+
+There is no relation between file repeat count and average file size.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/avg_size_by_cnt.eps}
+	\caption{Average file size with same repeat count.
+	}
+	\label{fig_avg_size_by_cnt}
+\end{figure}
+
+\paragraph{Redundant ratio by file size for the files with the same content in terms of file count and storage capacity}
+Total size of redundant files with same content(TRS)
+
+97\% of the TRSs are equal or less than 100MB.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/Total_size_of_redudant_files_with_same_content-KB.eps}
+	\caption{CDF of total file size with same file content (MB).
+	}
+	\label{fig_total_redundant_same_digest}
+\end{figure}
+
+\paragraph{Redundant ratio by repeat count for the files with the same repeat count in terms of file count and storage capacity}
+
+However, with the increase of file repeat count, the sum of file size with same repeat count becomes smaller.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/sum_size_by_cnt.eps}
+	\caption{Sum of file size with same repeat count.
+	}
+	\label{fig_sum_by_cnt}
+\end{figure}
+
+
+\subsection{File type distribution.}
+
+
+%\paragraph{File functionality distribution.}
+
+
+%\paragraph{File age distribution.}
+
+
+%\subsection{Suggest 1: File-Level Content Addressable Storage Model}
