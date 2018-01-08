@@ -38,15 +38,20 @@
 
 \subsection{Redundant ratio for layers}
 
-\subsubsection{Overview of redundant ratio for layers in terms of per-layer redundant ratio and across-layer redundant ratio}
+\subsubsection{Overview of redundant ratio for layers in terms of intra-layer redundant ratio and inter-layer redundant ratio}
 
-\paragraph{Per-layer redundant ratio} Per-layer redundant ratio is shown in Table~\ref{tbl:per_ratio_layers}.
+\begin{eqnarray}
+r_{dedup\_pys.} = \frac{S_{uncompress.} - S_{uniqs}}{S_{compress.}} \\
+r_{dedup\_logic.} = \frac{S_{uncompress.} - S_{uniqs}}{S_{uncompress.}}
+\end{eqnarray}
+
+\paragraph{Intra-layer redundant ratio} Intra-layer redundant ratio is shown in Table~\ref{tbl:per_ratio_layers}.
 
 \begin{table} 
 	\centering 
 	\scriptsize  
 	%\begin{minipage}{.5\linewidth}
-	\caption{Per-layer redundant ratio for layers in terms of file count and capacity} \label{tbl:per_ratio_layers} 
+	\caption{Intra-layer redundant ratio for layers in terms of file count and capacity} \label{tbl:per_ratio_layers} 
 	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
 		\hline 
 		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
@@ -71,13 +76,13 @@
 	\end{tabular} 
 \end{table}
 
-\paragraph{Across-layer redundant ratio} Across-layer redundant ratio is shown in Table~\ref{tbl:across_ratio_layers}
+\paragraph{Inter-layer redundant ratio} Across-layer redundant ratio is shown in Table~\ref{tbl:across_ratio_layers}
 
 \begin{table} 
 	\centering 
 	\scriptsize  
 	%\begin{minipage}{.5\linewidth}
-	\caption{Across-layer redundant ratio for layers in terms of file count and capacity} \label{tbl:across_ratio_layers} 
+	\caption{Inter-layer redundant ratio for layers in terms of file count and capacity} \label{tbl:across_ratio_layers} 
 	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
 		\hline 
 		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
@@ -101,28 +106,28 @@
 	\end{tabular} 
 \end{table}
 
-\subsubsection{Per-layer redundant overhead}
+\subsubsection{Intra-layer redundant overhead}
 
-\paragraph{Cumulative distribution and probability distribution of per-layer redundant ratio in terms of file count and storage capacity}
+\paragraph{Cumulative distribution and probability distribution of intra-layer redundant ratio in terms of file count and storage capacity}
 
 \begin{figure}
 	\centering
 	%\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
-	\subfigure[CDF of per-layer redundant ratio in terms of file count]{\label{fig:per_layer_ratio_fcnt_cdf}
+	\subfigure[CDF of intra-layer redundant ratio in terms of file count]{\label{fig:per_layer_ratio_fcnt_cdf}
 		\includegraphics [width=0.5\textwidth]{graphs/per_layer_ratio_fcnt_cdf.eps}
 	}
-	\subfigure[PDF of per-layer redundant ratio in terms of file count]{\label{fig:per_layer_ratio_fcnt_pdf}
+	\subfigure[PDF of intra-layer redundant ratio in terms of file count]{\label{fig:per_layer_ratio_fcnt_pdf}
 		\includegraphics [width=0.5\textwidth]{graphs/per_layer_ratio_fcnt_pdf.eps}
 	}
 	\caption{Wear variance}
 	\label{fig:eval-stdev-erasure-cnt}
 \end{figure}
 
-\paragraph{Per-layer redundant ratio by layer size in terms of file count and storage capacity}
+\paragraph{Intra-layer redundant ratio by layer size in terms of file count and storage capacity}
 
-\subsubsection{Across-layer redundant overhead}
+\subsubsection{Inter-layer redundant overhead}
 
-\paragraph{Cumulative distribution and probability distribution of across-layer redundant ratio in terms of file count and storage capacity}
+\paragraph{Cumulative distribution and probability distribution of inter-layer redundant ratio in terms of file count and storage capacity}
 
 \begin{figure}
 	\centering
@@ -137,7 +142,7 @@
 	\label{fig:eval-stdev-erasure-cnt}
 \end{figure}
 
-\paragraph{Across-layer redundant ratio by layer size in terms of file count and storage capacity}
+\paragraph{Inter-layer redundant ratio by layer size in terms of file count and storage capacity}
 
 \subsection{Redundant ratio for images}
 
