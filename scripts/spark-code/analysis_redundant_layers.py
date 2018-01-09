@@ -10,8 +10,9 @@ unique_file_layer_mapping = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'unique_f
 def main():
 
     sc, spark = init_spark_cluster()
-    save_unique_file_layer_mapping(spark, sc)
-    save_layer_file_cnt(spark, sc)
+    #save_unique_file_layer_mapping(spark, sc)
+    #save_layer_file_cnt(spark, sc)
+    find_file_digest_in_layer(spark, sc)
 
 
 # def save_unique_file_size_infos(spark, sc):
@@ -49,16 +50,22 @@ def main():
 #     cnt.write.save(unique_file_cnts)
 
 
+
+
 def save_layer_file_cnt(spark, sc):
     df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
     new_df = df.groupby('layer_id').agg(F.size(F.collect_list('digest')))
-    new_df.save.csv(layer_file_cnt)
+    new_df.write.csv(layer_file_cnt)
 
 
 def get_items(lst):
     if not len(lst):
         return None
     return lst[0]
+
+def find_file_digest_in_layer(spark, sc):
+    df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
+    df.filter(df.filename == '/usr/portage/x11-libs/xcb-util-cursor/Manifest').show()
 
 
 """save uniqe file digests"""
@@ -69,7 +76,7 @@ def save_unique_file_layer_mapping(spark, sc):
     # func = F.udf(get_items, StringType())
     # new_df = df.groupby('digest').agg(func(F.collect_list('filename')).alias('filename'), func(F.collect_list('layer_id')).alias('layer_id'))
     new_df = new_df.select('layer_id','filename')
-    new_df.save.csv(unique_file_layer_mapping)
+    new_df.write.csv(unique_file_layer_mapping)
 
 
 
