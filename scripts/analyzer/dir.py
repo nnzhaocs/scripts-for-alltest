@@ -5,9 +5,9 @@ from config import *
 from file import *
 
 """
-TODO:
-1. get compression
-2. check
+Note:
+1. only skip 'Unexpected EOF in archive' when extracting tarballs
+2. 
 
 """
 
@@ -71,6 +71,7 @@ def clear_dir(layer_dir):
     return True
 
 
+#<<<<<<< HEAD
 # def remove_file(layer_file):
 #     """ delete the dir """
 #     # layer_dir = os.path.join(extracting_dir, layer_id)
@@ -97,6 +98,13 @@ def remove_file(absfilename):
     # layer_dir = os.path.join(extracting_dir, layer_id)
     if not os.path.isfile(absfilename):
         logging.error('###################%s is not valid###################', absfilename)
+#=======
+# def remove_file(absfilename):
+#     """ delete the dir """
+#     # layer_dir = os.path.join(extracting_dir, layer_id)
+#     if not os.path.isdir(absfilename):
+#         logging.error('###################%s is not valid###################', layer_dir)
+#>>>>>>> b0ced3070cf5eca90c0af3481b6599321b8d68f1
         return False
 
     #start = time.time()
@@ -112,7 +120,10 @@ def remove_file(absfilename):
     #elapsed = time.time() - start
     #logging.info('clear dirs, consumed time ==> %f s', elapsed)
     return True
-#def choose_extracting_dir():
+# <<<<<<< HEAD
+# #def choose_extracting_dir():
+# =======
+# >>>>>>> b0ced3070cf5eca90c0af3481b6599321b8d68f1
 
 
 def extract_tarball(layer_dir_filename, layer_dir):
@@ -188,7 +199,7 @@ def mk_dir(layer_dir):
 
 
 def cp_file(layer_file, cp_layer_tarball_name):
-    start = time.time()
+    #start = time.time()
     cmd = 'cp %s  %s' % (layer_file, cp_layer_tarball_name)
     logging.debug('The shell command: %s', cmd)
     try:
@@ -197,15 +208,75 @@ def cp_file(layer_file, cp_layer_tarball_name):
         logging.debug('###################%s: %s###################',
                       layer_file, e.output)
 	return False
-    elapsed = time.time() - start
-    logging.info('copy compressed tarball, ==> %f s', elapsed)
+    #elapsed = time.time() - start
+    #logging.info('copy compressed tarball, ==> %f s', elapsed)
     return True
+
+
+def start_extract_gzip_file(cp_layer_tarball_name, layer_file, layer_filename, layer_dir):
+    logging.debug('STAT Extracting gzip file ==========> %s' % layer_file)
+    abs_zip_file_name = os.path.join(extracting_dir, layer_filename + '-uncompressed-archival.tar')
+    if not decompress_tarball_gunzip(cp_layer_tarball_name, abs_zip_file_name):
+        clear_dir(layer_dir)
+        return False
+
+    if not remove_file(cp_layer_tarball_name):
+        clear_dir(layer_dir)
+        return False
+
+    if os.path.isfile(abs_zip_file_name):
+        uncompressed_archival_size = os.lstat(abs_zip_file_name).st_size
+        logging.debug("uncompressed_archival_size %d B, name: %s", uncompressed_archival_size, layer_file)
+    else:
+        logging.debug("uncompressed_archival_wrong!!! name: %s", layer_filename)
+        clear_dir(layer_dir)
+        return False
+
+    if not extract_tarball(abs_zip_file_name, layer_dir):
+        clear_dir(layer_dir)
+        return False
+
+    if not remove_file(abs_zip_file_name):
+        clear_dir(layer_dir)
+        return False
+
+    if not os.path.isdir(layer_dir):
+        logging.warn('layer dir %s is invalid', layer_dir)
+        clear_dir(layer_dir)
+        return False
+    return True
+
+
+def start_extract_tar_file(cp_layer_tarball_name, layer_file, layer_filename, layer_dir):
+    logging.debug('STAT Extracting tar file ==========> %s' % layer_file)
+    if os.path.isfile(cp_layer_tarball_name):
+        uncompressed_archival_size = os.lstat(cp_layer_tarball_name).st_size
+        logging.debug("uncompressed_archival_size %d B, name: %s", uncompressed_archival_size, layer_file)
+    else:
+        logging.debug("uncompressed_archival_wrong!!! name: %s", layer_file)
+        clear_dir(layer_dir)
+        return False
+
+    if not extract_tarball(cp_layer_tarball_name, layer_dir):
+        clear_dir(layer_dir)
+        return False
+
+    if not remove_file(cp_layer_tarball_name):
+        clear_dir(layer_dir)
+        return False
+
+    if not os.path.isdir(layer_dir):
+        logging.warn('layer dir %s is invalid', layer_dir)
+        clear_dir(layer_dir)
+        return False
+    return True
+
 
 def load_dirs(layer_filename, filetype):
     sub_dirs = []
 
     """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
-    extracting to extracting_dir/<layer_id>
+    extracting to extracting_dir/<layer_id> == layer_dir
     load all the subdirs in this layer-id dir
     Then clean the layer-id dir """
     uncompressed_archival_size = -1
@@ -236,11 +307,9 @@ def load_dirs(layer_filename, filetype):
         return sub_dirs, -1
 
     if filetype == 'gzip':
-        logging.debug('STAT Extracting gzip file ==========> %s' % layer_file)
-        abs_zip_file_name = os.path.join(extracting_dir, layer_filename + '-uncompressed-archival.tar')
-        if not decompress_tarball_gunzip(cp_layer_tarball_name, abs_zip_file_name):
-            clear_dir(layer_dir)
+        if not start_extract_gzip_file(cp_layer_tarball_name, layer_file, layer_filename, layer_dir):
             return sub_dirs, -1
+# <<<<<<< HEAD
 
         if not remove_file(cp_layer_tarball_name):
             clear_dir(layer_dir)
@@ -252,12 +321,17 @@ def load_dirs(layer_filename, filetype):
         else:
             logging.debug("uncompressed_archival_wrong!!! name: %s", layer_filename)
             clear_dir(layer_dir)
-            return sub_dirs, -1
+# =======
+#     elif filetype == 'tar':
+#         if not start_extract_tar_file(cp_layer_tarball_name, layer_file, layer_filename, layer_dir):
+# >>>>>>> b0ced3070cf5eca90c0af3481b6599321b8d68f1
+#             return sub_dirs, -1
 
-        if not extract_tarball(abs_zip_file_name, layer_dir):
-            clear_dir(layer_dir)
-            return sub_dirs, -1
+    #layer_dir_level = layer_dir.count(os.sep)
+    #logging.debug("(%s, %s)", layer_dir, layer_dir_level)
+    #return sub_dirs, -1
 
+# <<<<<<< HEAD
         if not remove_file(abs_zip_file_name):
             clear_dir(layer_dir)
             return False
@@ -275,11 +349,34 @@ def load_dirs(layer_filename, filetype):
             logging.debug("uncompressed_archival_wrong!!! name: %s", layer_file)
             clear_dir(layer_dir)
             return sub_dirs, -1
+# # =======
+#     for path, subdirs, files in os.walk(layer_dir):
+#         for f in files:
+#             try:
+#                 filename = os.path.isfile(os.path.join(path, f))
+#             except:
+#                 exc_type, exc_value, exc_traceback = sys.exc_info()
+#                 traceback.print_exception(exc_type, exc_value, exc_traceback,
+#                                           limit=2, file=sys.stdout)
+#                 continue
+#
+#             if os.path.isfile(os.path.join(path, f)):
+#                 s_dir_file = load_file(os.path.join(path, f))
+#                 if s_dir_file:
+#                     s_dir_files.append(s_dir_file)
+#
+#         sub_dir = {
+#             'subdir': None,
+#             'dir_depth': 0,
+#             'file_cnt': len(s_dir_files),
+#             'files': s_dir_files,  # full path of f = dir/files
+#             'dir_size': sum_dir_size(s_dir_files)
+#         }
+#         sub_dirs.append(sub_dir)
+# >>>>>>> b0ced3070cf5eca90c0af3481b6599321b8d68f1
 
-        if not extract_tarball(cp_layer_tarball_name, layer_dir):
-            clear_dir(layer_dir)
-            return sub_dirs, -1
 
+# <<<<<<< HEAD
         if not remove_file(cp_layer_tarball_name):
             clear_dir(layer_dir)
             return sub_dirs, -1
@@ -288,10 +385,9 @@ def load_dirs(layer_filename, filetype):
             logging.warn('layer dir %s is invalid', layer_dir)
             clear_dir(layer_dir)
             return sub_dirs, -1
+# =======
+# >>>>>>> b0ced3070cf5eca90c0af3481b6599321b8d68f1
 
-    layer_dir_level = layer_dir.count(os.sep)
-    logging.debug("(%s, %s)", layer_dir, layer_dir_level)
-    #return sub_dirs, -1
     try:
         for path, subdirs, files in os.walk(layer_dir):
 	    #print subdirs
