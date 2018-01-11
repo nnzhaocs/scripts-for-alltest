@@ -3,8 +3,12 @@ from config import *
 from dir import *
 
 
-"""
-note:
+"""TODO:
+    # 1. check duplicated.
+    # 2. mount tmpfs
+    # 3. already has json file no need to extracting again
+    1. need to add more remetrics 
+    2. remove layer db json timestamp
 """
 
 analyzed_layer_list = []
@@ -30,14 +34,14 @@ def create_layer_db():
    #         continue
    #     process_layer(i)
    #     break
-    P.map(process_layer, layer_job_list)
+    json_datas = P.map(process_layer, layer_job_list)
     print "after map"
 
     logging.info('done! all the layer job processes are finished')
 
 
 def queue_layers(analyzed_layer_filename, layer_list_filename):
-    """queue the lines(layer tarball filename) in layer_list_filename, ele = sha256-digest with timestamp"""
+    """queue the layer id in layer_list_filename, layer id = sha256-digest with timestamp"""
     num = 0
     with open(layer_list_filename) as f:
         content = json.load(f)
@@ -48,7 +52,7 @@ def queue_layers(analyzed_layer_filename, layer_list_filename):
             #    break
             layer_job_list.append(key)
 
-    """queue the layer_id in analyzed_layer_filename, ele = sha256:digest !!! without timestamp"""
+    """queue the layer id in analyzed_layer_filename, layer id = sha256:digest !!! without timestamp"""
     num = 0
     with open(analyzed_layer_filename) as f:
         for line in f:
@@ -107,7 +111,7 @@ def process_layer(layer_filename):
         return
 
     if not os.path.isfile(os.path.join(dest_dir[0]['layer_dir'], layer_filename)):
-        logging.info('os.path.isfile: file %s is not a valid file', layer_filename)
+        logging.info('file %s is not valid', layer_filename)
         return False
 
     start = time.time()
@@ -119,7 +123,7 @@ def process_layer(layer_filename):
         sub_dirs, compressed_size_with_method_gzip = load_dirs(layer_filename, filetype)
         elapsed = time.time() - start
         logging.info('process directory: decompression plus sha digest calculation, consumed time ==> %f ; %d', elapsed,
-                     compressed_size_with_method_gzip)
+                     archival_size)
     elif filetype == 'gzip':
         print "This is a gzip file"
         compressed_size_with_method_gzip = os.lstat(os.path.join(dest_dir[0]['layer_dir'], layer_filename)).st_size
