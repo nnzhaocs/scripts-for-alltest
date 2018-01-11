@@ -71,15 +71,36 @@ def clear_dir(layer_dir):
     return True
 
 
-def remove_file(layer_file):
+# def remove_file(layer_file):
+#     """ delete the dir """
+#     # layer_dir = os.path.join(extracting_dir, layer_id)
+#     if not os.path.isdir(layer_dir):
+#         logging.error('###################%s is not valid###################', layer_dir)
+#         return False
+#
+#     start = time.time()
+#     cmd4 = 'rm -rf %s' % (layer_dir+'*')
+#     logging.debug('The shell command: %s', cmd4)
+#     try:
+#         subprocess.check_output(cmd4, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
+#     except subprocess.CalledProcessError as e:
+#         logging.error('###################%s: exit code: %s; %s###################',
+#                       dir, e.returncode, e.output)
+#         return False
+#
+#     elapsed = time.time() - start
+#     logging.info('clear dirs, consumed time ==> %f s', elapsed)
+#     return True
+
+def remove_file(absfilename):
     """ delete the dir """
     # layer_dir = os.path.join(extracting_dir, layer_id)
-    if not os.path.isdir(layer_dir):
-        logging.error('###################%s is not valid###################', layer_dir)
+    if not os.path.isfile(absfilename):
+        logging.error('###################%s is not valid###################', absfilename)
         return False
 
-    start = time.time()
-    cmd4 = 'rm -rf %s' % (layer_dir+'*')
+    #start = time.time()
+    cmd4 = 'rm -rf %s' % absfilename
     logging.debug('The shell command: %s', cmd4)
     try:
         subprocess.check_output(cmd4, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
@@ -88,12 +109,10 @@ def remove_file(layer_file):
                       dir, e.returncode, e.output)
         return False
 
-    elapsed = time.time() - start
-    logging.info('clear dirs, consumed time ==> %f s', elapsed)
+    #elapsed = time.time() - start
+    #logging.info('clear dirs, consumed time ==> %f s', elapsed)
     return True
-
-
-def choose_extracting_dir():
+#def choose_extracting_dir():
 
 
 def extract_tarball(layer_dir_filename, layer_dir):
@@ -223,6 +242,10 @@ def load_dirs(layer_filename, filetype):
             clear_dir(layer_dir)
             return sub_dirs, -1
 
+        if not remove_file(cp_layer_tarball_name):
+            clear_dir(layer_dir)
+            return sub_dirs, -1
+
         if os.path.isfile(abs_zip_file_name):
             uncompressed_archival_size = os.lstat(abs_zip_file_name).st_size
             logging.debug("uncompressed_archival_size %d B, name: %s", uncompressed_archival_size, layer_file)
@@ -234,6 +257,10 @@ def load_dirs(layer_filename, filetype):
         if not extract_tarball(abs_zip_file_name, layer_dir):
             clear_dir(layer_dir)
             return sub_dirs, -1
+
+        if not remove_file(abs_zip_file_name):
+            clear_dir(layer_dir)
+            return False
 
         if not os.path.isdir(layer_dir):
             logging.warn('layer dir %s is invalid', layer_dir)
@@ -253,6 +280,10 @@ def load_dirs(layer_filename, filetype):
             clear_dir(layer_dir)
             return sub_dirs, -1
 
+        if not remove_file(cp_layer_tarball_name):
+            clear_dir(layer_dir)
+            return sub_dirs, -1
+
         if not os.path.isdir(layer_dir):
             logging.warn('layer dir %s is invalid', layer_dir)
             clear_dir(layer_dir)
@@ -264,47 +295,49 @@ def load_dirs(layer_filename, filetype):
     try:
         for path, subdirs, files in os.walk(layer_dir):
 	    #print subdirs
-            if not len(subdirs):
+            #if not len(subdirs):
                 #logging.warn("################### subdirs is None ###################")
                 #clear_dir(layer_dir)
-                if not len(files):
-                    sub_dir = {
-                        'subdir': None,
-                        'dir_depth': 0,
-                        'file_cnt': 0,
-                        'files': None,  # full path of f = dir/files
-                        'dir_size': 0
-                    }
-                    sub_dirs.append(sub_dir)
-                    continue
-                else:
-                    sub_dir = {}
-                    # for f in os.listdir(path):
-                    #     dir_level = s_dir.count(os.sep) - layer_dir_level
-                    s_dir_files = []
-                    for f in os.listdir(path):
-                        try:
-                            filename = os.path.isfile(os.path.join(path, f))
-                        except:
-                            exc_type, exc_value, exc_traceback = sys.exc_info()
-                            traceback.print_exception(exc_type, exc_value, exc_traceback,
-                                                      limit=2, file=sys.stdout)
-                            continue
+            if not len(files): # empty layer dir
+                sub_dir = {
+                    'subdir': None,
+                    'dir_depth': 0,
+                    'file_cnt': 0,
+                    'files': None,  # full path of f = dir/files
+                    'dir_size': 0
+                }
+                sub_dirs.append(sub_dir)
+                continue
+            else:  # not empty
+                sub_dir = {}
+                # for f in os.listdir(path):
+                #     dir_level = s_dir.count(os.sep) - layer_dir_level
+                s_dir_files = []
+                for f in os.listdir(path): # extract root dir files
+                    try:
+                        filename = os.path.isfile(os.path.join(path, f))
+                    except:
+                        exc_type, exc_value, exc_traceback = sys.exc_info()
+                        traceback.print_exception(exc_type, exc_value, exc_traceback,
+                                                  limit=2, file=sys.stdout)
+                        continue
 
-                        if os.path.isfile(os.path.join(path, f)):
-                            s_dir_file = load_file(os.path.join(path, f))
-                            if s_dir_file:
-                                s_dir_files.append(s_dir_file)
+                    if os.path.isfile(os.path.join(path, f)):
+                        s_dir_file = load_file(os.path.join(path, f))
+                        if s_dir_file:
+                            s_dir_files.append(s_dir_file)
 
-                    sub_dir = {
-                        'subdir': None,
-                        'dir_depth': 0,
-                        'file_cnt': len(s_dir_files),
-                        'files': s_dir_files,  # full path of f = dir/files
-                        'dir_size': sum_dir_size(s_dir_files)
-                    }
-                    sub_dirs.append(sub_dir)
-                    continue
+                sub_dir = {
+                    'subdir': None,
+                    'dir_depth': 0,
+                    'file_cnt': len(s_dir_files),
+                    'files': s_dir_files,  # full path of f = dir/files
+                    'dir_size': sum_dir_size(s_dir_files)
+                }
+                sub_dirs.append(sub_dir)
+
+            if not len(subdirs):
+                continue
 
 	    sub_dir = {}
             for dirname in subdirs:
