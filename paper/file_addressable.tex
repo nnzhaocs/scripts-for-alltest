@@ -1,4 +1,4 @@
-\section{Discussions of file-level content addressable storage models}
+\section{Rethinking storage model for Docker registry}
 \label{sec:file_adressable}
 
 %\subsection{}
@@ -6,7 +6,7 @@
 Docker registry can save a lot of space if using file-level content addressable storage. 
 Benefit: saving money, reducing storage management overhead.
 
-\subsection{Layer recompression model}
+\subsection{Two file-level content addressable storage models}
 
 \begin{figure}
 	\centering
@@ -21,7 +21,7 @@ Benefit: saving money, reducing storage management overhead.
 	\label{fig:eval-stdev-erasure-cnt}
 \end{figure}
 
-\subsubsection{Performance overhead discussion}
+\subsection{Hints for performance improvement and storage saving}
 
 \begin{table} 
 	\centering 
@@ -69,7 +69,9 @@ Benefit: saving money, reducing storage management overhead.
 	\end{tabular} 
 \end{table} 
 
-\paragraph{Recompression or Archiving?} 
+\subsubsection{Compression or Archiving?} 
+
+\paragraph{CDF and PDF of latencies} 
 
 Compression time during pulling. 
 
@@ -84,7 +86,9 @@ So how about we use archiving instead of compression if the network speed is hig
 
 \paragraph{Network transfer speed is high!}
 
-\paragraph{Image popularity skewness} 
+\subsubsection{File-level content addressable storage for cold layers}
+
+\paragraph{Image \&. layer popularity skewness} 
 
 \begin{figure}[!t]
 	\centering
@@ -111,11 +115,11 @@ So how about we use archiving instead of compression if the network speed is hig
 		\hline
 		Compressed layer size &   &   &   &  \\
 		\hline
-		Decompression ratio &   &   &    &  \\
-		\hline
 		Uncompressed layer size &   &   &    &  \\
 		\hline
 		Archival size &  &  & & \\
+		\hline
+		Compression ratio &   &   &    &  \\
 		\hline
 		Layer pull cnt. &  &  & & \\
 		\hline
@@ -132,6 +136,8 @@ So how about we use archiving instead of compression if the network speed is hig
 		\hline
 		Archival image size & &  &  & \\
 		\hline
+		Compression ratio &   &   &    &  \\
+		\hline
 		Image pull cnt.  &  &  & & \\
 		\hline
 		Layer cnt. per image  &  &  & & \\
@@ -145,26 +151,22 @@ So how about we use archiving instead of compression if the network speed is hig
 	\end{tabular} 
 \end{table} 
 
-\subsubsection{Suggestions/trade-offs between dedup ratio and recompression overhead}
+\subsubsection{Constructing shared layers for redundant directories/files}
+
+\paragraph{Smaller number of layers are shared among different images}
+\input{fig-repeat-layer-cnt.tex}
+
+\paragraph{Smaller pull latency than recompression model} the registry can prepare the reconstructed layers before users issue a pull request. But this model requires users to rebuild two layers.
+
+\subsubsection{Summary of Suggestions/trade-offs between dedup ratio and recompression overhead}
 
 \paragraph{1. using archiving instead of compression}
 \paragraph{2. using file-level dedup for cold images/layers}
 \paragraph{3. using file-level dedup economically}
 When to trigger file-level dedup?
-
-
-\subsection{Layer reconstruction model}
-
-\paragraph{Smaller number of layers are shared among different images}
-\input{fig-repeat-layer-cnt.tex}
-
-\subsubsection{Reconstruction overhead}
-
-\paragraph{Smaller than recompression model} the registry can prepare the reconstructed layers before users issue a pull request. But this model requires users to rebuild two layers.
-
-\subsubsection{Trade-offs between dedup ratio and reconstruction overhead}
-
-
+\paragraph{4. constructing shared layers for redundant dirs/files, for example,}
+%\subsection{Layer reconstruction model}
+%\subsubsection{Reconstruction overhead}
+%\subsubsection{Trade-offs between dedup ratio and reconstruction overhead}
 %\paragraph{Dedup ratio VS. Rebuild overhead}
-
 %\subsection{Evaluation results}
