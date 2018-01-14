@@ -1,7 +1,7 @@
 \section{File-level redundant ratio}
 \label{sec:dedup}
 
-\subsection{Overview of redundant file overhead in terms of file repeat count and redundant storage overhead}
+\subsection{Overview of redundant file overhead}
 
 \begin{figure}
 	\centering
@@ -38,11 +38,11 @@
 
 \subsection{Redundant ratio for layers}
 
-\subsubsection{Overview of redundant ratio for layers in terms of intra-layer redundant ratio and inter-layer redundant ratio}
+\subsubsection{Overview of redundant ratio for layers}
 
 \begin{eqnarray}
-r_{dedup\_pys.} = \frac{S_{uncompress.} - S_{uniqs}}{S_{compress.}} \\
-r_{dedup\_logic.} = \frac{S_{uncompress.} - S_{uniqs}}{S_{uncompress.}}
+r_{intra\_dedup.} = \frac{S_{uncompress.} - S_{dropdup.}}{S_{uncompress.}} \\
+r_{inter\_dedup.} = \frac{S_{uncompress.} - S_{shares}}{S_{uncompress.}}
 \end{eqnarray}
 
 \paragraph{Intra-layer redundant ratio} Intra-layer redundant ratio is shown in Table~\ref{tbl:per_ratio_layers}.
@@ -58,15 +58,15 @@ r_{dedup\_logic.} = \frac{S_{uncompress.} - S_{uniqs}}{S_{uncompress.}}
 		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
 		& File count & Capacity \\
 		\hline
-		Avg. & 49.78\% & -\\
+		Avg. & 49.78\% & 40.09\%\\
 		\hline
 		Median & - & - \\
 		\hline
-		Max. & 100\% & -\\
+		Max. & 99.99\% & 99.99\%\\
 		\hline
-		Min.  & 0.00\%  & -\\
+		Min.  & 0.00\%  & 0.00\%\\
 		\hline
-		Stdev.  &  2.14\% & -\\
+		Stdev.  &  2.14\% & 17.18\%\\
 		\hline
 		Layer dataset after Red.-dedup (Uncompressed) & -  & -\\
 		\hline 
@@ -89,15 +89,15 @@ r_{dedup\_logic.} = \frac{S_{uncompress.} - S_{uniqs}}{S_{uncompress.}}
 		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
 		& File count & Capacity \\
 		\hline
-		Avg. & 98.75\% & -\\
+		Avg. & 98.75\% & 97.33\%\\
 		\hline
 		Median & - & - \\
 		\hline
-		Max. & 1 & -\\
+		Max. & 1 & 1\\
 		\hline
-		Min.  & 0.87\%  & -\\
+		Min.  & 0.87\%  & $<$ 0.00\%\\
 		\hline
-		Stdev.  &  4.70\% & -\\
+		Stdev.  &  4.70\% & 10.49\\
 		\hline
 		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
 		\hline 
@@ -113,36 +113,126 @@ r_{dedup\_logic.} = \frac{S_{uncompress.} - S_{uniqs}}{S_{uncompress.}}
 \begin{figure}
 	\centering
 	%\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
-	\subfigure[CDF of intra-layer redundant ratio in terms of file count]{\label{fig:per_layer_ratio_fcnt_cdf}
-		\includegraphics [width=0.5\textwidth]{graphs/per_layer_ratio_fcnt_cdf.eps}
+	\subfigure[CDF of intra/inter-layer redundant ratio in terms of file count/capacity]{\label{fig:per_layer_ratio_fcnt_cdf}
+		\includegraphics [width=0.5\textwidth]{graphs/dedup_cdf}
 	}
-	\subfigure[PDF of intra-layer redundant ratio in terms of file count]{\label{fig:per_layer_ratio_fcnt_pdf}
-		\includegraphics [width=0.5\textwidth]{graphs/per_layer_ratio_fcnt_pdf.eps}
+	\subfigure[Histogram of intra/inter-layer redundant ratio in terms of file count/capacity]{\label{fig:per_layer_ratio_fcnt_pdf}
+		\includegraphics [width=0.5\textwidth]{graphs/dedup_hist}
 	}
-	\caption{Wear variance}
+	\caption{Redundant ratio}
 	\label{fig:eval-stdev-erasure-cnt}
 \end{figure}
 
 \paragraph{Intra-layer redundant ratio by layer size in terms of file count and storage capacity}
 
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{graphs/inter-dedup-by-size.eps}
+%	\caption{Intra-layer redundant ratio by layer size.
+%	}
+%	\label{fig_redundant_overhead}
+%\end{figure}
+
 \subsubsection{Inter-layer redundant overhead}
 
 \paragraph{Cumulative distribution and probability distribution of inter-layer redundant ratio in terms of file count and storage capacity}
 
-\begin{figure}
-	\centering
-	%\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
-	\subfigure[CDF of across-layer redundant ratio in terms of file count]{\label{fig:across_layer_ratio_fcnt_cdf}
-		\includegraphics [width=0.5\textwidth]{graphs/across_layer_ratio_fcnt_cdf.eps}
-	}
-	\subfigure[PDF of across-layer redundant ratio in terms of file count]{\label{fig:across_layer_ratio_fcnt_pdf}
-		\includegraphics [width=0.5\textwidth]{graphs/across_layer_ratio_fcnt_pdf.eps}
-	}
-	\caption{Wear variance}
-	\label{fig:eval-stdev-erasure-cnt}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	%\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
+%	\subfigure[CDF of across-layer redundant ratio in terms of file count]{\label{fig:across_layer_ratio_fcnt_cdf}
+%		\includegraphics [width=0.5\textwidth]{graphs/across_layer_ratio_fcnt_cdf.eps}
+%	}
+%	\subfigure[PDF of across-layer redundant ratio in terms of file count]{\label{fig:across_layer_ratio_fcnt_pdf}
+%		\includegraphics [width=0.5\textwidth]{graphs/across_layer_ratio_fcnt_pdf.eps}
+%	}
+%	\caption{Wear variance}
+%	\label{fig:eval-stdev-erasure-cnt}
+%\end{figure}
 
 \paragraph{Inter-layer redundant ratio by layer size in terms of file count and storage capacity}
 
 \subsection{Redundant ratio for images}
+
+
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Inter-layer redundant ratio for images in terms of file count and capacity} \label{tbl:across_ratio_layers} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		& File count & Capacity \\
+		\hline
+		Avg. & 98.75\% & 97.33\%\\
+		\hline
+		Median & - & - \\
+		\hline
+		Max. & 1 & 1\\
+		\hline
+		Min.  & 0.87\%  & $<$ 0.00\%\\
+		\hline
+		Stdev.  &  4.70\% & 10.49\\
+		\hline
+		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
+		\hline 
+		Total layer dataset (Uncompressed) &  -	& -\\
+		\hline
+	\end{tabular} 
+\end{table}
+
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Intra-layer redundant ratio for images in terms of file count and capacity} \label{tbl:across_ratio_layers} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		& File count & Capacity \\
+		\hline
+		Avg. & 98.75\% & 97.33\%\\
+		\hline
+		Median & - & - \\
+		\hline
+		Max. & 1 & 1\\
+		\hline
+		Min.  & 0.87\%  & $<$ 0.00\%\\
+		\hline
+		Stdev.  &  4.70\% & 10.49\\
+		\hline
+		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
+		\hline 
+		Total layer dataset (Uncompressed) &  -	& -\\
+		\hline
+	\end{tabular} 
+\end{table}
+
+
+\subsection{Image type distribution.}
+
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Summary of image types} \label{tbl:redundant_ratio} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		Image types & num. & avg. redundant ratio  \\
+		\hline
+		  &   &        \\
+		\hline
+		  &   &         \\
+		\hline
+		   &   &       \\
+		   \hline
+		other     &   &       \\
+		\hline
+	\end{tabular} 
+\end{table} 
 
