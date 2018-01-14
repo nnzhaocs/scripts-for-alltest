@@ -38,7 +38,7 @@ layer_file_mapping1 = os.path.join(VAR_DIR, 'layer_file_mapping_nannan_2tb_hdd.p
 layer_file_mapping2 = os.path.join(VAR_DIR, 'layer_file_mapping_2tb_hdd.parquet')
 layer_file_mapping3 = os.path.join(VAR_DIR, 'layer_file_mapping_1gb_layer.parquet')
 
-unique_file_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_info.parquet')
+unique_file_basic_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_basic_info.parquet')
 unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
 layer_basic_info = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_basic_info.parquet')
 

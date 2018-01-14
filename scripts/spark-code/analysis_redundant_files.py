@@ -31,7 +31,7 @@ def save_unique_file_info(spark, sc):
     cnt_size = spark.read.parquet(unique_size_cnt_total_sum)
     new_df = df.join(cnt_size, 'sha256', 'inner')
     new_df.show()
-    new_df.write.save(unique_file_info)
+    new_df.write.save(unique_file_basic_info)
 
 
 def save_unique_file_size_infos(spark, sc):
