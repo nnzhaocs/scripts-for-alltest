@@ -6,15 +6,30 @@ unique_file_digest = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_dige
 unique_file_cnts = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_cnts.parquet')
 unique_cnt_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_cnt_size.parquet')
 unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
-
+unique_file_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_info.parquet')
 
 def main():
 
     sc, spark = init_spark_cluster()
-    save_unique_file_digests(spark, sc)
-    save_unique_files_cnts(spark, sc)
-    save_unique_files_size(spark, sc)
-    save_unique_file_size_infos(spark, sc)
+    #save_unique_file_digests(spark, sc)
+    #save_unique_files_cnts(spark, sc)
+    #save_unique_files_size(spark, sc)
+    #save_unique_file_size_infos(spark, sc)
+    save_unique_file_info(spark, sc)
+
+
+"""save uniqe file digests"""
+def save_unique_file_info(spark, sc):
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
+        "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
+    regular_files = files.filter(files.sha256.isNotNull())
+    #uniq_files = regular_files.select(regular_files.sha256).dropDuplicates()
+    df = regular_files.groupby('sha256').agg(F.collect_set('filename').alias('file_name'), F.collect_set('type').alias('type'), F.collect_set('file_info.st_ctime').alias('st_ctime'))
+    cnt_size = spark.read.parquet(unique_size_cnt_total_sum)
+    new_df = df.join(cnt_size, 'sha256', 'outer')
+    new_df.show()
+    new_df.write.save(unique_file_info)
 
 
 def save_unique_file_size_infos(spark, sc):
@@ -28,16 +43,16 @@ def save_unique_file_size_infos(spark, sc):
 
 
 def save_unique_files_size(spark, sc):
-    cnt_unique = spark.read.parquet(unique_file_cnts)
+    #cnt_unique = spark.read.parquet(unique_file_cnts)
 
     layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
     files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
         "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     regular_files = files.filter(files.sha256.isNotNull())
 
-    unique_df = regular_files.join(cnt_unique, ['sha256'], 'leftsemi')
-    unique_df.show()
-    cnt_size = unique_df.select(unique_df.sha256, unique_df.file_info.stat_size)
+    #unique_df = regular_files.join(cnt_unique, ['sha256'], 'leftsemi')
+    #unique_df.show()
+    cnt_size = regular_files.select(regular_files.sha256, regular_files.file_info.stat_size)
     cnt_size.write.save(unique_cnt_size)
 
 

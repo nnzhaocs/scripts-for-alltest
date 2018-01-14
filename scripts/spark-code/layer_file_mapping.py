@@ -51,7 +51,7 @@ list_elem_num = 10000
 master = "spark://hulk0:7077"
 
 # all_json_absfilename = os.path.join(LOCAL_DIR, 'manifest.lst')
-all_json_absfilename = os.path.join(VAR_DIR, '1gb_json.lst')#'1gb_layer_json.lst')#'nannan_2tb_json.lst')#'2tb_hdd_json.lst')#'nannan_2tb_json.lst')#'all_json_absfilename.lst')
+all_json_absfilename = os.path.join(LOCAL_DIR, '2tb_hdd_json.lst')#'nannan_2tb_json.lst')#'all_json_absfilename.lst')
 
 """
 230.2 M  /manifests/manifests_with_filename.parquet
@@ -63,7 +63,7 @@ all_json_absfilename = os.path.join(VAR_DIR, '1gb_json.lst')#'1gb_layer_json.lst
 /layer_db_jsons/nannan_2tb_json.parquet
 """
 
-def extract_dir_file_digests(dirs):
+def extract_dir_file_digests(layer_id, dirs):
 
     file_lst = []
 
@@ -77,6 +77,7 @@ def extract_dir_file_digests(dirs):
                 if f['sha256']:
                     #f_info = {}
 		    f_info = {
+			'layer_id':layer_id,
 			'filename': os.path.join(dirname, filename),
 			'digest': f['sha256']
 		    }
@@ -90,17 +91,26 @@ def extract_dir_file_digests(dirs):
 
 def extract_file_digests(absfilename_list, spark):
 
-    extractfiles = udf(extract_dir_file_digests, ArrayType(StructType([StructField('filename', StringType(), True), StructField('digest', StringType(), True)])))
+    extractfiles = udf(extract_dir_file_digests, ArrayType(StructType([StructField('layer_id', StringType(), True),StructField('filename', StringType(), True), StructField('digest', StringType(), True)])))
 
     sublists = split_list(absfilename_list)
 
     for sublist in sublists:
         """=======================================> modify here"""
-        layer_db_df = spark.read.json('/var/1gb_json.json', multiLine=True)#sublist)
+        layer_db_df = spark.read.json(sublist)
+	#layer_db_df = spark.read.json('/var/1gb_json.json', multiLine=True)#sublist)
 	layer_db_df.printSchema()
-        new_df = layer_db_df.select('layer_id', extractfiles(layer_db_df.dirs).alias('files'))
-        new_df.coalesce(400).write.save(output_absfilename3, mode='append')
-	break
+
+        df = layer_db_df.select(extractfiles(layer_db_df.layer_id, layer_db_df.dirs).alias('files'))
+        df_f = df.select(F.explode('files').alias('fs'))
+
+        new_df = df_f.withColumn('layer_id', col('fs.layer_id'))
+        new_df = new_df.withColumn('filename', col('fs.filename'))
+	new_df = new_df.withColumn('digest', col('fs.digest'))
+
+	new_df = new_df.select('layer_id', 'filename', 'digest')
+        new_df.coalesce(400).write.save(output_absfilename2, mode='append')
+	#break
         print("===========================>finished one sublist!!!!!!!!!")
 
 

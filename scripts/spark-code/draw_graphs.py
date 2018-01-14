@@ -12,18 +12,25 @@ RESULTS_DIR = '/home/nannan/4tb_results'
 
 capacity_data = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'capacity_data.csv')
 
-#unique_draw_cnt_data = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_cnt_data.csv')
-#unique_draw_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_size.csv')
-#draw_sum_file_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_sum_file_size.csv')
-#avg_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'avg_size_by_cnt.parquet')
-#draw_avg_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_avg_size_by_cnt')
-#draw_sum_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_sum_size_by_cnt')
+unique_draw_cnt_data = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_cnt_data.csv')
+unique_draw_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_size.csv')
+draw_sum_file_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_sum_file_size.csv')
+avg_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'avg_size_by_cnt.parquet')
+draw_avg_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_avg_size_by_cnt')
+draw_sum_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_sum_size_by_cnt')
+unique_file_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_info.parquet')
+fileinfo_by_repeat_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'fileinfo_by_repeat_cnt.csv')
+fileinfo_by_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'fileinfo_by_total_sum.csv')
+file_ageinfo = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'file_ageinfo.csv')
+age_diffinfo = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'age_diffinfo.csv')
 
 #unique_draw_cnt_data = os.path.join(RESULTS_DIR, 'unique_draw_cnt_data.csv')
 #unique_draw_size_data = os.path.join(RESULTS_DIR, 'unique_draw_size_data.csv')
 #draw_sum_file_size_data = os.path.join(RESULTS_DIR, 'draw_sum_file_size_data.csv')
 #draw_avg_size_by_cnt = os.path.join(RESULTS_DIR, 'draw_avg_size_by_cnt.csv')
 #draw_sum_size_by_cnt = os.path.join(RESULTS_DIR, 'draw_sum_size_by_cnt.csv')
+
+cur_time = 1514873764.870036
 
 
 def main():
@@ -32,10 +39,50 @@ def main():
     #save_file_size(spark, sc)
     #save_sum_file_size(spark, sc)
     #save_avg_size_by_repeat_cnt(spark, sc)
+    #save_fileinfo_by_repeat_cnt(spark, sc)
+    save_file_age(spark, sc)
     #draw_file_repeat_cnt()
     #draw_file_size()
     #draw_sum_file_size()
-    calculate_capacity(spark, sc)
+    #calculate_capacity(spark, sc)
+
+
+def get_items(lst):
+    if not len(lst):
+	return None
+    return lst[0]
+
+
+def get_difference(lst):
+    return (max(lst)-min(lst))
+
+
+def get_mean(lst):
+    return sum(lst)/len(lst)
+
+
+def save_file_age(spark, sc):
+    df_f = spark.read.parquet(unique_file_info)
+    func = F.udf(get_mean, FloatType())
+
+    df = df_f.select('cnt', ((cur_time - func('st_ctime'))/60/60/24).alias('st_ctime'), 'total_sum', 'avg') #days
+    df.write.csv(file_ageinfo)
+
+    func = F.udf(get_difference, IntegerType())
+    new_df = df_f.select('cnt', ((cur_time - func('st_ctime'))/60/60/24).alias('st_ctime'), 'total_sum', 'avg') #days
+    new_df.write.csv(age_diffinfo)
+
+def save_fileinfo_by_repeat_cnt(spark, sc):
+    df_f = spark.read.parquet(unique_file_info)
+    func = F.udf(get_items, StringType())
+    df = df_f.select('cnt', func('file_name').alias('file_name'), func('type').alias('type'), 'avg', 'total_sum')
+    sort_df = df.sort(df.cnt.desc())
+    sort_df.show()
+    sort_df.write.csv(fileinfo_by_repeat_cnt)
+    
+    new_df = df.sort(df.total_sum.desc())
+    new_df.show()
+    new_df.write.csv(fileinfo_by_total_sum)
 
 
 def calculate_capacity(spark, sc):
