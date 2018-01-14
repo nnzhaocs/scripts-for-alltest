@@ -34,27 +34,37 @@ Benefit: saving money, reducing storage management overhead.
 		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
 		Operations/latency (S) & max & min & median & avg.\\
 		\hline
-		 Decompression (RAM) &   &   &    &  \\
+		 gunzip decompression (RAM) &   &   &    &  \\
  		\hline
- 		Decompression (SSD) &   &   &    &  \\
+ 		tar extraction (RAM) &   &   &    &  \\
 		\hline
 		Digest calculation (RAM) &  &  & & \\
 		\hline
+		tar archiving (RAM)  &  &  & &\\
+		\hline
+		gzip compression (RAM) & &  &  & \\
+		\hline
+		Total time (RAM) (with compression) & & & & \\
+		\hline
+		Total time (RAM) (without compression) & & & & \\
+		\hline
+ 		\hline
+ 		gunzip decompression (SSD) &   &   &    &  \\
+ 		\hline
+ 		tar extraction (SSD) &   &   &    &  \\
+		\hline
 		Digest calculation (SSD) &  &  & & \\
 		\hline
-		Archiving (RAM)  &  &  & &\\
+		tar archiving (SSD) &  &  & & \\
 		\hline
-		Archiving (SSD) &  &  & & \\
+		gzip compression (SSD) & &  &  & \\
+		\hline		 
+		Total time (SSD) (with compression) & & & & \\
 		\hline
-		Compression (RAM) & &  &  & \\
+		Total time (SSD) (without compression) & & & & \\
 		\hline
-		Compression (SSD) & &  &  & \\
 		\hline
 		Network transfer & & & & \\
-		\hline 
-		Total time (with archiving) & & & & \\
-		\hline
-		Total time (with compression) & & & & \\
 		\hline 	
 	\end{tabular} 
 \end{table} 

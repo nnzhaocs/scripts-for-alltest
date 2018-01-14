@@ -122,16 +122,16 @@ def process_layer(layer_filename):
         logging.debug("archival_size %d B, name: %s", archival_size, layer_filename)
         sub_dirs, compressed_size_with_method_gzip = load_dirs(layer_filename, filetype)
         elapsed = time.time() - start
-        logging.info('process directory: decompression plus sha digest calculation, consumed time ==> %f ; %d', elapsed,
-                     archival_size)
+        logging.info('process layer_id:%s : total time, consumed time ==> %f s; compress size: %d',
+                     layer_filename, elapsed, compressed_size_with_method_gzip)
     elif filetype == 'gzip':
         print "This is a gzip file"
         compressed_size_with_method_gzip = os.lstat(os.path.join(dest_dir[0]['layer_dir'], layer_filename)).st_size
         logging.debug("compressed_size_with_method_gzip %d B, name: %s", compressed_size_with_method_gzip, layer_filename)
         sub_dirs, archival_size = load_dirs(layer_filename, filetype)
         elapsed = time.time() - start
-        logging.info('process directory: decompression plus sha digest calculation, consumed time ==> %f ; %d', elapsed,
-                     compressed_size_with_method_gzip)
+        logging.info('process layer_id:%s : total time, consumed time ==> %f s; compress size: %d',
+                     layer_filename, elapsed, compressed_size_with_method_gzip)
     else:
         logging.info('################### The layer tarball type is neither tar or gzip! layer file name %s ###################', layer_filename)
         return

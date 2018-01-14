@@ -87,3 +87,37 @@ def load_config():
 
     dest_dir.append(dir)
     logging.info('dest dir is: %s', dest_dir)
+
+
+# def compress_tarball_tar(abs_gzip_file_name, layer_dir):
+#     start = time.time()
+#     # abs_zip_file_name = os.path.join(extracting_dir, layer_id + '-uncompressed-archival.tar')
+#
+#     cmd = 'tar -czf %s %s' % (abs_gzip_file_name, layer_dir)
+#     logging.debug('The shell command: %s', cmd)
+#     try:
+#         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
+#     except subprocess.CalledProcessError as e:
+#         logging.error('###################%s: exit code: %s; %s###################',
+#                       abs_gzip_file_name, e.returncode, e.output)
+#         return False
+#
+#     elapsed = time.time() - start
+#     logging.info('tar gzip directory, consumed time ==> %f s', elapsed)
+#     return True
+
+# def decompress_tarball_tar(cp_layer_tarball_name, layer_dir):
+#     start = time.time()
+#     cmd = 'tar -pzxf %s -C %s' % (cp_layer_tarball_name, layer_dir)
+#     logging.debug('The shell command: %s', cmd)
+#     try:
+#         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
+#     except subprocess.CalledProcessError as e:
+#         logging.debug('###################%s: exit code: %s; %s###################',
+#                       cp_layer_tarball_name, e.returncode, e.output)
+#         return False
+#
+#     elapsed = time.time() - start
+#     logging.info('process layer_id:%s : tar decompress and extract tarball, consumed time ==> %f s', elapsed)
+#     logging.debug('FINISHED! to ==========> %s', layer_dir)
+#     return True

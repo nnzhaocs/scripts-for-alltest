@@ -5,8 +5,7 @@ from analysis_library import *
 unique_file_digest = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_digest.parquet')
 unique_file_cnts = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_cnts.parquet')
 unique_cnt_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_cnt_size.parquet')
-unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
-unique_file_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_info.parquet')
+
 
 def main():
 
@@ -25,9 +24,12 @@ def save_unique_file_info(spark, sc):
         "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     regular_files = files.filter(files.sha256.isNotNull())
     #uniq_files = regular_files.select(regular_files.sha256).dropDuplicates()
-    df = regular_files.groupby('sha256').agg(F.collect_set('filename').alias('file_name'), F.collect_set('type').alias('type'), F.collect_set('file_info.st_ctime').alias('st_ctime'))
+    df = regular_files.groupby('sha256').agg(F.collect_set('filename').alias('file_name'),
+                F.collect_set('type').alias('type'), F.collect_set('extension').alias('extension'),
+                F.collect_set('file_info.st_ctime').alias('st_ctime'))
+
     cnt_size = spark.read.parquet(unique_size_cnt_total_sum)
-    new_df = df.join(cnt_size, 'sha256', 'outer')
+    new_df = df.join(cnt_size, 'sha256', 'inner')
     new_df.show()
     new_df.write.save(unique_file_info)
 
