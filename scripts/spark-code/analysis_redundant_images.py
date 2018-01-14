@@ -45,6 +45,27 @@ def save_image_info(spark, sc):
     new_df.write.parquet(image_info)
 
 
+def save_image_basic_info(spark, sc):
+    df = spark.read.parquet(image_info).select('image_realname', 'layer_id')
+    image_layer = df.select('image_realname', F.explode('layer_id'))
+    image_layer = image_layer.dropDuplicates(['image_realname', 'layer_id'])
+
+    layer_basic_info_df = spark.read.parquet(layer_basic_info)
+    layerinfo_df = layer_basic_info_df.select('layer_id', 'archival_size',
+                             'compressed_size', 'uncompressed_size',
+                                 'file_cnt', 'dir_cnt')
+
+    image_basic_info = image_layer.join(layerinfo_df, ['layer_id'], 'inner')
+
+    image_basic_info = image_basic_info.groupby('image_realname').agg(F.sum('archival_size').alias('archival_size'),
+                                                F.sum('compressed_size').alias('compressed_size'),
+                                                F.sum('uncompressed_size').alias('uncompressed_size'),
+                                                F.sum('file_cnt').alias('file_cnt'),
+                                                F.sum('dir_cnt').alias('dir_cnt'))
+
+    layerinfo_df.save.parquet(image_basic_info)
+
+
 def save_image_layer_mapping(spark, sc):
     df = spark.read.parquet(image_info).select('image_realname', 'layer_id')
     image_layer = df.select('image_realname', F.explode('layer_id'))

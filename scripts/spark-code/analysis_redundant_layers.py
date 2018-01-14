@@ -4,12 +4,13 @@ from analysis_library import *
 
 layer_file_cnt = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_file_cnt.parquet')
 unique_file_layer_mapping = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'unique_file_layer_mapping.parquet')
-unique_cnt_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_cnt_size.parquet')
-layer_size_file_infos = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_size_file_infos.parquet')
+# unique_cnt_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_cnt_size.parquet')
+# layer_size_file_infos = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_size_file_infos.parquet')
 # unique_file_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_info.parquet')
-layer_file_dropduplicas = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_file_dropduplicas.parquet')
-layer_capacity_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_capacity_dup_ratio.parquet')
+# layer_file_dropduplicas = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_file_dropduplicas.parquet')
+# layer_capacity_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_capacity_dup_ratio.parquet')
 layer_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_dup_ratio.parquet')
+
 
 def main():
 
@@ -19,6 +20,16 @@ def main():
     #find_file_digest_in_layer(spark, sc)
     save_layer_capacity_redundant_info(spark, sc)
     #save_layer_uniq_shared_size(spark, sc)
+
+
+def save_layer_info(spark, sc):
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    layerinfo_df = layer_db_df.select('layer_id', layer_db_df.size.archival_size.alias('archival_size'),
+                             layer_db_df.size.compressed_size_with_method_gzip.alias('compressed_size'),
+                             layer_db_df.size.uncompressed_sum_of_files.alias('uncompressed_size'),
+                                 'file_cnt', 'layer_depth', F.size('dirs').alias('dir_cnt'))
+
+    layerinfo_df.save.parquet(layer_basic_info)
 
 
 def save_layer_capacity_redundant_info(spark, sc):

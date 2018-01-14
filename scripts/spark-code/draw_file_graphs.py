@@ -78,7 +78,7 @@ def save_file_type_by_repeat_cnt(spark, sc):
     # df = df_f.select('cnt', func('file_name').alias('file_name'), func('type').alias('type'), 'avg', 'total_sum')
 
     func = udf(lambda s: s.split(" ")[0])
-    file_info_df = file_info.select('cnt', func('type').alias('type'), 'extension', 'total_sum', 'sha256', 'avg')
+    file_info_df = file_info.select('file_name', 'cnt', func('type').alias('type'), 'extension', 'total_sum', 'sha256', 'avg')
 
     sort_cnt = file_info_df.sort(file_info_df.cnt.desc())
     sort_cnt.show()
@@ -88,11 +88,13 @@ def save_file_type_by_repeat_cnt(spark, sc):
     sort_cap.show()
     sort_cap.write.csv(draw_type_by_total_sum)
 
-    type = file_info_df.groupby('type').agg(F.sum('cnt').alias('cnt'), F.sum('avg').alias('size_dropdup'),
+    type = file_info_df.groupby('type').agg(F.sum('cnt').alias('total_cnt'), F.sum('avg').alias('size_dropdup'),
                                             F.sum('total_sum').alias('sum_size'),
-                                            F.collect_set('extension'))
+                                            F.collect_set('extension'),
+                                            F.size(F.collect_list('cnt')).alias('uniq_cnt'))
     type = type.withColumn('avg_size', F.col('sum_size')*1.0/F.col('cnt'))
     type = type.withColumn('dup_ratio_cap', F.col('size_dropdup')*1.0/F.sum('sum_size'))
+    type = type.withColumn('dup_ratio_cnt', F.col('uniq_cnt') * 1.0 / F.sum('total_cnt'))
 
     sort_type_cnt = type.sort(type.cnt.desc())
     sort_type_cnt.show()
@@ -105,6 +107,10 @@ def save_file_type_by_repeat_cnt(spark, sc):
     sort_type_dup_r = type.sort(type.dup_ratio_cap.desc())
     sort_type_dup_r.show()
     sort_type_dup_r.write.csv(draw_type_by_dup_ratio_cap)
+
+    sort_type_dup_r = type.sort(type.dup_ratio_cnt.desc())
+    sort_type_dup_r.show()
+    sort_type_dup_r.write.csv(draw_type_by_dup_ratio_cnt)
 
 
 def calculate_capacity(spark, sc):

@@ -1,12 +1,72 @@
-
-\section{why there are so many redundant files?}
+\section{Why there are so many redundant files?}
 \label{sec:redundant_layers}
+
+\subsection{Redundant ratio for directories}
 
 \begin{table} 
 	\centering 
 	\scriptsize  
 	%\begin{minipage}{.5\linewidth}
-	\caption{Summary of comm. dir.} \label{tbl:redundant_ratio} 
+	\caption{Inter-dir redundant ratio for dirs in terms of file count and capacity} \label{tbl:intra_dup_ratio_dirs} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		& File count & Capacity \\
+		\hline
+		Avg. & 98.75\% & 97.33\%\\
+		\hline
+		Median & - & - \\
+		\hline
+		Max. & 1 & 1\\
+		\hline
+		Min.  & 0.87\%  & $<$ 0.00\%\\
+		\hline
+		Stdev.  &  4.70\% & 10.49\\
+		\hline
+		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
+		\hline 
+		Total layer dataset (Uncompressed) &  -	& -\\
+		\hline
+	\end{tabular} 
+\end{table}
+
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Intra-dir redundant ratio for dirs in terms of file count and capacity} \label{tbl:inter_dup_ratio_dirs} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		& File count & Capacity \\
+		\hline
+		Avg. & 98.75\% & 97.33\%\\
+		\hline
+		Median & - & - \\
+		\hline
+		Max. & 1 & 1\\
+		\hline
+		Min.  & 0.87\%  & $<$ 0.00\%\\
+		\hline
+		Stdev.  &  4.70\% & 10.49\\
+		\hline
+		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
+		\hline 
+		Total layer dataset (Uncompressed) &  -	& -\\
+		\hline
+	\end{tabular} 
+\end{table}
+
+\subsection{Redundant directory characterization}
+
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Top redundant dirs'characterization} 
+	\label{tbl:top_dup_dirs} 
 	\begin{tabular}{|l|l|l|l|}%p{0.14\textwidth} 
 		\hline 
 		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
@@ -18,14 +78,6 @@
 		&   &   &      \\
 		\hline
 		&   &   &      \\
-		%		\hline
-		%		File types &  &  & & \\
-		%		\hline
-		%		Layer pull cnt. &  &  & & \\
-		%		\hline
-		%		File cnt. per layer &  &  & & \\
-		%		\hline
-		%		Dir. cnt. per layer &  &  & & \\
 		\hline
 		&  &  &  \\
 		\hline
@@ -35,22 +87,34 @@
 		\hline
 		&  &  & \\
 		\hline
-		%		Layer cnt. per image  &  &  & & \\
-		%		\hline
-		%		Shared layer cnt. per image  &  &  & & \\
-		%		\hline
-		%		File cnt. per layer &  &  & & \\
-		%		\hline
-		%		Dir. cnt. per layer &  &  & & \\
-		%		\hline	
 	\end{tabular} 
 \end{table} 
 
-\subsection{Redundant files with same filename and relative path}
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	%\begin{minipage}{.5\linewidth}
+%	\caption{Summary of image types} \label{tbl:redundant_ratio} 
+%	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		Image types & num. & avg. redundant ratio  \\
+%		\hline
+%		  &   &        \\
+%		\hline
+%		  &   &         \\
+%		\hline
+%		   &   &       \\
+%		   \hline
+%		other     &   &       \\
+%		\hline
+%	\end{tabular} 
+%\end{table}
 
-\subsection{Common directories that contains redundant files}
-
-\subsection{Redundant directories}
-
-\subsection{Redundant tar files}
+%\subsection{Redundant files with same filename and relative path}
+%
+%\subsection{Common directories that contains redundant files}
+%
+%\subsection{Redundant tar files}
 

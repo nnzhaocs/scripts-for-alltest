@@ -4,7 +4,7 @@ from analysis_library import *
 
 layer_dir_file_mapping = os.path.join(REDUNDANT_DIR_ANALYSIS_DIR, 'layer_dir_file_mapping.parquet')
 dir_dup_ratio = os.path.join(REDUNDANT_DIR_ANALYSIS_DIR, 'dir_dup_ratio.parquet')
-
+dirs_basic_info = os.path.join(REDUNDANT_DIR_ANALYSIS_DIR, 'dirs_basic_info.parquet')
 
 def main():
 
@@ -22,6 +22,14 @@ def save_layer_dir_file_mapping(spark, sc):
 
     df.show(20, False)
     df.save.parquet(layer_dir_file_mapping)
+
+
+def save_dir_info(spark, sc):
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    dirs = layer_db_df.selectExpr("explode(dirs) As structdirs")
+
+    dirsinfo = dirs.select('dir_depth', 'dir_size', 'file_cnt', 'subdir')
+    dirsinfo.save.parquet(dirs_basic_info)
 
 
 def save_dir_dup_ratio_capacity(spark, sc):

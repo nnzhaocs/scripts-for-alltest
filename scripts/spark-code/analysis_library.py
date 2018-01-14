@@ -40,6 +40,7 @@ layer_file_mapping3 = os.path.join(VAR_DIR, 'layer_file_mapping_1gb_layer.parque
 
 unique_file_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_info.parquet')
 unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
+layer_basic_info = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_basic_info.parquet')
 
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
