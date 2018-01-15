@@ -84,9 +84,9 @@ def extract_columns(spark, sc):
     #manifest_all_layerids_df.show()
     unique_layerids = manifest_all_layerids_df.dropDuplicates()
     
-    pull_df = spark.read.format("csv").load(pull_cnt_absfilename)
-    pull_imagename_col = pull_df.select("_c3")
-    pull_image_real_name_col = pull_df.select("_c2")
+    # pull_df = spark.read.format("csv").load(pull_cnt_absfilename)
+    # pull_imagename_col = pull_df.select("_c3")
+    # pull_image_real_name_col = pull_df.select("_c2")
 
     layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
     layer_id_col = layer_db_df.select("layer_id")

@@ -18,18 +18,29 @@ LOCAL_DIR = os.path.join(HDFS_DIR, 'local')
 TABLE_DIR = os.path.join(HDFS_DIR, 'table')
 
 REDUNDANT_FILE_ANALYSIS_DIR = os.path.join(HDFS_DIR, 'redundant_file_analysis')
+REDUNDANT_LAYER_ANALYSIS_DIR = os.path.join(HDFS_DIR, 'redundant_layer_analysis')
+REDUNDANT_IMAGE_ANALYSIS_DIR = os.path.join(HDFS_DIR, 'redundant_image_analysis')
+REDUNDANT_DIR_ANALYSIS_DIR = os.path.join(HDFS_DIR, 'redundant_dir_analysis')
 
 MANIFESTS_DIR = os.path.join(HDFS_DIR, "manifests")
 LAYER_DB_JSON_DIR  = os.path.join(HDFS_DIR, "layer_db_jsons/*")
 LAYER_FILE_MAPPING_DIR = os.path.join(HDFS_DIR, "layer_file_mapping/*")
 
 
-pull_cnt_absfilename = os.path.join(LOCAL_DIR, "pull_cnt_with_filename.csv") #"_c3"
-manifest_absfilename = os.path.join(MANIFESTS_DIR, "manifests_with_filename_with_layer_id_not_null.parquet")
+# pull_cnt_absfilename = os.path.join(LOCAL_DIR, "pull_cnt_with_filename.csv") #"_c3"
+# manifest_absfilename = os.path.join(MANIFESTS_DIR, "manifests_with_filename_with_layer_id_not_null.parquet")
 
 layer_db_absfilename1 = os.path.join(LAYER_DB_JSON_DIR, "1g_big_json.parquet")
 layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR, "2tb_hdd_json.parquet")
 layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet")
+
+layer_file_mapping1 = os.path.join(VAR_DIR, 'layer_file_mapping_nannan_2tb_hdd.parquet')
+layer_file_mapping2 = os.path.join(VAR_DIR, 'layer_file_mapping_2tb_hdd.parquet')
+layer_file_mapping3 = os.path.join(VAR_DIR, 'layer_file_mapping_1gb_layer.parquet')
+
+unique_file_basic_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_basic_info.parquet')
+unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
+layer_basic_info = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_basic_info.parquet')
 
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \

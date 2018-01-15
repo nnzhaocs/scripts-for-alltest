@@ -1,68 +1,205 @@
-\section{Deduplication Analysis}
+\section{File-level redundant ratio}
 \label{sec:dedup}
 
-\subsection{File level deduplication ratio}
-
-\subsubsection{Redundant file overhead in terms of file repeat count and redundant storage overhead}
-
-\paragraph{File repeat count distribution.}
+\subsection{Overview of redundant file overhead}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/File_repeat_count.eps}
-	\caption{CDF of file repeat count.
+	\includegraphics[width=0.5\textwidth]{graphs/capacity_data_ratio.eps}
+	\caption{Redundant storage overhead.
 	}
-	\label{fig_file_repeat_count}
+	\label{fig:overview_redundant_overhead}
 \end{figure}
 
-\paragraph{Unique file size distribution.}
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Redundant ratio in terms of file count and capacity} \label{tbl:redundant_ratio} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		       & File count & Capacity \\
+		\hline
+		Repeat cnt = 1 & 0.58\% & 10.87\%\\
+		\hline
+		Repeat cnt $>$ 1 after dedup & 2.59\% & 3.44\%\\
+		\hline
+		Repeat cnt $>$ 1 before dedup  & 99.42\%  & 89.13\%\\
+		\hline
+		Unique dataset (Uncompressed) & 3.17\% (167,251,437)  &  14.31\% (23.92 TB) \\
+		\hline 
+		Total dataset (Uncompressed) & 5,278,465,130 & 167.20 TB \\
+		\hline 	
+		%\hline 
+	\end{tabular} 
+\end{table} 
+
+\subsection{Redundant ratio for layers}
+
+\subsubsection{Overview of redundant ratio for layers}
+
+\begin{eqnarray}
+r_{intra\_dedup.} = \frac{S_{uncompress.} - S_{dropdup.}}{S_{uncompress.}} \\
+r_{inter\_dedup.} = \frac{S_{uncompress.} - S_{shares}}{S_{uncompress.}}
+\end{eqnarray}
+
+\paragraph{Intra-layer redundant ratio} Intra-layer redundant ratio is shown in Table~\ref{tbl:intra_dup_ratio_layers}.
+
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Intra-layer redundant ratio for layers in terms of file count and capacity} \label{tbl:intra_dup_ratio_layers} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		& File count & Capacity \\
+		\hline
+		Avg. & 49.78\% & 40.09\%\\
+		\hline
+		Median & - & - \\
+		\hline
+		Max. & 99.99\% & 99.99\%\\
+		\hline
+		Min.  & 0.00\%  & 0.00\%\\
+		\hline
+		Stdev.  &  2.14\% & 17.18\%\\
+		\hline
+		Layer dataset after intra.-dedup (Uncompressed) & -  & -\\
+		\hline 
+		Total layer dataset (Uncompressed) &  -	& -\\
+		\hline 
+		%\hline 
+	\end{tabular} 
+\end{table}
+
+\paragraph{Inter-layer redundant ratio} Inter-layer redundant ratio is shown in Table~\ref{tbl:inter_dup_ratio_layers}
+
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Inter-layer redundant ratio for layers in terms of file count and capacity} \label{tbl:inter_dup_ratio_layers} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		& File count & Capacity \\
+		\hline
+		Avg. & 98.75\% & 97.33\%\\
+		\hline
+		Median & - & - \\
+		\hline
+		Max. & 1 & 1\\
+		\hline
+		Min.  & 0.87\%  & $<$ 0.00\%\\
+		\hline
+		Stdev.  &  4.70\% & 10.49\\
+		\hline
+		Layer dataset after inter.-dedup (Uncompressed) & -  & -\\
+		\hline 
+		Total layer dataset (Uncompressed) &  -	& -\\
+		\hline
+	\end{tabular} 
+\end{table}
+
+\subsubsection{Redundant ratio distribution}
+
+\paragraph{Cumulative distribution for intra-layer redundant ratio and inter-layer redundant ratio in terms of file count and storage capacity}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/File_size-KB.eps}
-	\caption{CDF of unique file size.
+	%\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
+	\subfigure[CDF of intra/inter-layer redundant ratio in terms of file count/capacity]{\label{fig:dedup_cdf}
+		\includegraphics [width=0.5\textwidth]{graphs/dedup_cdf}
 	}
-	\label{fig_file_size}
+	\subfigure[Histogram of intra/inter-layer redundant ratio in terms of file count/capacity]{\label{fig:dedup_hist}
+		\includegraphics [width=0.5\textwidth]{graphs/dedup_hist}
+	}
+	\caption{Redundant ratio}
+	\label{fig:dedup_cdf_and_hist_layer}
 \end{figure}
 
-\paragraph{Redundant file storage overhead.}
+%\paragraph{Intra-layer redundant ratio by layer size in terms of file count and storage capacity}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/Total_size_of_redudant_files_with_same_content-KB.eps}
-	\caption{CDF of total file size with same file content.
-	}
-	\label{fig_redundant_size}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{graphs/inter-dedup-by-size.eps}
+%	\caption{Intra-layer redundant ratio by layer size.
+%	}
+%	\label{fig_redundant_overhead}
+%\end{figure}
 
-\paragraph{Average file size by repeat count.}
+%\subsubsection{Inter-layer redundant overhead}
 
+\paragraph{Histogram of intra-layer redundant ratio and inter-layer redundant ratio in terms of file count and storage capacity}
 
-\paragraph{Total file size by repeat count.}
+%\paragraph{Inter-layer redundant ratio by layer size in terms of file count and storage capacity}
 
+\subsection{Redundant ratio for images}
 
-\subsubsection{What are the redundant files?}
+\subsubsection{Overview of redundant ratio for images}
 
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Inter-layer redundant ratio for images in terms of file count and capacity} \label{tbl:intra_dup_ratio_images} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		& File count & Capacity \\
+		\hline
+		Avg. & 98.75\% & 97.33\%\\
+		\hline
+		Median & - & - \\
+		\hline
+		Max. & 1 & 1\\
+		\hline
+		Min.  & 0.87\%  & $<$ 0.00\%\\
+		\hline
+		Stdev.  &  4.70\% & 10.49\\
+		\hline
+		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
+		\hline 
+		Total layer dataset (Uncompressed) &  -	& -\\
+		\hline
+	\end{tabular} 
+\end{table}
 
-\subsection{Suggest 1: File-Level Content Addressable Storage Model}
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Intra-layer redundant ratio for images in terms of file count and capacity} \label{tbl:inter_dup_ratio_images} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+		\hline 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+		& File count & Capacity \\
+		\hline
+		Avg. & 98.75\% & 97.33\%\\
+		\hline
+		Median & - & - \\
+		\hline
+		Max. & 1 & 1\\
+		\hline
+		Min.  & 0.87\%  & $<$ 0.00\%\\
+		\hline
+		Stdev.  &  4.70\% & 10.49\\
+		\hline
+		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
+		\hline 
+		Total layer dataset (Uncompressed) &  -	& -\\
+		\hline
+	\end{tabular} 
+\end{table}
 
+\subsubsection{Redundant ratio distribution}
+\paragraph{Cumulative distribution for intra-image redundant ratio and inter-image redundant ratio in terms of file count and storage capacity}
+\paragraph{Histogram of intra-image redundant ratio and inter-image redundant ratio in terms of file count and storage capacity}
 
-\subsection{Redundant files in layers}
-
-
-\subsubsection{Redundant storage overhead for individual layers}
-
-
-\subsubsection{Redundant storage overhead across layers}
-
-
-\subsubsection{Why do layers have so many redundant files?}
-
-
-\subsection{Redundant files in images}
-
-%\subsubsection{Redundant file characterization}
-
-\subsection{Chunking Deduplication}
-
-\subsubsection{Chunking Deduplication ratio}
