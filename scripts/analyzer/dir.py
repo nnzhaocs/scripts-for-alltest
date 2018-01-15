@@ -191,6 +191,15 @@ def load_dirs(layer_filename, filetype):
             clear_dir(layer_dir)
             return sub_dirs, -1
 
+        if not extract_tarball(abs_zip_file_name, layer_dir):
+            clear_dir(layer_dir)
+            return sub_dirs, -1
+
+        if not os.path.isdir(layer_dir):
+            logging.warn('layer dir %s is invalid', layer_dir)
+            clear_dir(layer_dir)
+            return sub_dirs, -1
+
         if not remove_file(cp_layer_tarball_name):
             clear_dir(layer_dir)
             return sub_dirs, -1
@@ -205,20 +214,21 @@ def load_dirs(layer_filename, filetype):
             clear_dir(layer_dir)
             return sub_dirs, -1
 
-        if not extract_tarball(abs_zip_file_name, layer_dir):
+        # if not remove_file(abs_zip_file_name):
+        #     clear_dir(layer_dir)
+        #     return sub_dirs, -1
+
+    elif filetype == 'tar':
+        logging.debug('STAT Extracting tar file ==========> %s' % layer_file)
+
+        if not extract_tarball(cp_layer_tarball_name, layer_dir):
             clear_dir(layer_dir)
             return sub_dirs, -1
-
-        if not remove_file(abs_zip_file_name):
-            clear_dir(layer_dir)
-            return False
 
         if not os.path.isdir(layer_dir):
             logging.warn('layer dir %s is invalid', layer_dir)
             clear_dir(layer_dir)
             return sub_dirs, -1
-    elif filetype == 'tar':
-        logging.debug('STAT Extracting tar file ==========> %s' % layer_file)
 
         """compress tar and remove it"""
         abs_gzip_file_name = cp_layer_tarball_name + '.gz'
@@ -238,18 +248,9 @@ def load_dirs(layer_filename, filetype):
             clear_dir(layer_dir)
             return sub_dirs, -1
 
-        if not extract_tarball(cp_layer_tarball_name, layer_dir):
-            clear_dir(layer_dir)
-            return sub_dirs, -1
-
-        if not remove_file(cp_layer_tarball_name):
-            clear_dir(layer_dir)
-            return sub_dirs, -1
-
-        if not os.path.isdir(layer_dir):
-            logging.warn('layer dir %s is invalid', layer_dir)
-            clear_dir(layer_dir)
-            return sub_dirs, -1
+        # if not remove_file(cp_layer_tarball_name):
+        #     clear_dir(layer_dir)
+        #     return sub_dirs, -1
 
     layer_dir_level = layer_dir.count(os.sep)
     logging.debug("(%s, %s)", layer_dir, layer_dir_level)
