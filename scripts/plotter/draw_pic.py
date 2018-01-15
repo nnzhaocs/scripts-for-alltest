@@ -34,6 +34,51 @@ def bar_label_text(ax, x, y, xlim):
             ax.text(a, b + 0.05, '%.1f' % b)
 
 
+def plot_line(fig, data1, xlabel, xlim, ticks, y_type):
+    #data = np.array(data1)
+    data = data1#list(itertools.chain(*data1.tolist()))
+    #print("plot: min = %d" % data1.min())
+    #print("plot: max = %d" % data1.max())
+    #print("plot: median = %d" % np.median(data1))
+
+    ax = fig.add_subplot(111)
+
+    #T = range(data.shape[0])
+    #print(T)
+    #print(data)
+    #ecdf = ECDF(data)
+    #x = np.linspace(min(data), max(data))
+    #y = ecdf(x)
+    #plt.plot(ecdf.x, ecdf.y)
+    #bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
+    #print "cdf and pdf calculating: bins = %d" % len(bins)
+    #counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
+
+    #cdf = np.cumsum(counts_cdf)
+
+    print "start plotting!"
+
+    #d1 = plt.semilogx(data[:,1], data[:,2], 'bo', linewidth=1, label='Intra-layer dedup ratio')
+    d2 = plt.semilogx(data[:,1], data[:,3], 'ro', linewidth=1, label='Inter-layer dedup ratio')
+
+    print "start labeling!"
+
+    #ax.set_xlim(1, xlim)
+    ax.set_ylim(0, 1)
+
+    ax.set_xlabel(xlabel, fontsize=18)
+    ax.set_ylabel(y_type, fontsize=18) #24,>14
+    ax.get_yaxis().set_tick_params(labelsize = 18)
+    ax.get_xaxis().set_tick_params(labelsize = 18)
+    #plt.gca().set_yscale('log')
+    plt.grid()
+    plt.tight_layout()
+    name = '%s.png' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "").replace("(", "").replace(")", "")
+    fig.savefig(name)
+    eps = '%s.eps' % xlabel.replace(" ", "_").replace("/", "divided_by").replace(":", "").replace("(", "").replace(")", "")
+    fig.savefig(eps)
+
+
 """ only plot the cdf """
 def plot_cdf_normal(fig, data1, xlabel, xlim, ticks, y_type):
     #data = np.array(data1)
