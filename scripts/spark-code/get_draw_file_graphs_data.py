@@ -36,7 +36,7 @@ def save_file_type_by_repeat_cnt(spark, sc):
 
     file_info_df = file_info.select(func0('file_name'), 'cnt', func('type').alias('type'), func0('extension').alias('extension'),
                 'total_sum', 'sha256', 'avg')
-    
+
     sort_cnt = file_info_df.sort(file_info_df.cnt.desc())
     sort_cnt.show()
     sort_cnt.write.csv(draw_type_by_repeat_cnt)
