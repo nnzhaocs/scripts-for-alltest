@@ -34,7 +34,7 @@ def create_layer_db():
    #         continue
    #     process_layer(i)
    #     break
-    json_datas = P.map(process_layer, layer_job_list)
+    P.map(process_layer, layer_job_list)
     print "after map"
 
     logging.info('done! all the layer job processes are finished')
