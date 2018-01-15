@@ -19,7 +19,7 @@ def main():
 
 """save uniqe file digests"""
 def save_unique_file_info(spark, sc):
-    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates(['layer_id'])
     files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
         "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     regular_files = files.filter(files.sha256.isNotNull())
@@ -46,7 +46,7 @@ def save_unique_file_size_infos(spark, sc):
 def save_unique_files_size(spark, sc):
     #cnt_unique = spark.read.parquet(unique_file_cnts)
 
-    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates(['layer_id'])
     files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
         "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     regular_files = files.filter(files.sha256.isNotNull())
@@ -59,7 +59,7 @@ def save_unique_files_size(spark, sc):
 
 """save uniq file cnts"""
 def save_unique_files_cnts(spark, sc):
-    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates(['layer_id'])
     files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
         "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     regular_files = files.filter(files.sha256.isNotNull())
@@ -70,7 +70,7 @@ def save_unique_files_cnts(spark, sc):
 
 """save uniqe file digests"""
 def save_unique_file_digests(spark, sc):
-    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates(['layer_id'])
     files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
         "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     regular_files = files.filter(files.sha256.isNotNull())

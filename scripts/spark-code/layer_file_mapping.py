@@ -7,6 +7,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql.functions import col, udf
 from pyspark.sql import functions as F
+from pyspark.sql.functions import input_file_name
 
 
 HDFS_DIR = 'hdfs://hulk0:8020/'
@@ -33,9 +34,9 @@ layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet
 
 output_unique_cnt_not_empty_filename = os.path.join(LOCAL_DIR, 'output_unique_cnt_not_empty.parquet')
 output_uniq_files_cnts_bigger_1_not_empty = os.path.join(LOCAL_DIR, 'output_uniq_files_cnts_bigger_1_not_empty.parquet')
-output_absfilename1 = os.path.join(VAR_DIR, 'layer_file_mapping_nannan_2tb_hdd.parquet')
-output_absfilename2 = os.path.join(VAR_DIR, 'layer_file_mapping_2tb_hdd.parquet')
-output_absfilename3 = os.path.join(VAR_DIR, 'layer_file_mapping_1gb_layer.parquet')
+output_absfilename1 = os.path.join(VAR_DIR, 'layer_file_mapping_nannan_2tb_hdd_uniq.parquet')
+output_absfilename2 = os.path.join(VAR_DIR, 'layer_file_mapping_2tb_hdd_uniq.parquet')
+output_absfilename3 = os.path.join(VAR_DIR, 'layer_file_mapping_1gb_layer_uniq.parquet')
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
     .set("spark.executor.memory", "40g") \ 
@@ -63,7 +64,7 @@ all_json_absfilename = os.path.join(LOCAL_DIR, '2tb_hdd_json.lst')#'nannan_2tb_j
 /layer_db_jsons/nannan_2tb_json.parquet
 """
 
-def extract_dir_file_digests(layer_id, dirs):
+def extract_dir_file_digests(layer_filename, layer_id, dirs):
 
     file_lst = []
 
@@ -77,6 +78,7 @@ def extract_dir_file_digests(layer_id, dirs):
                 if f['sha256']:
                     #f_info = {}
 		    f_info = {
+                'layer_filename': os.path.basename(layer_filename),
 			'layer_id':layer_id,
 			'filename': os.path.join(dirname, filename),
 			'digest': f['sha256']
@@ -91,7 +93,13 @@ def extract_dir_file_digests(layer_id, dirs):
 
 def extract_file_digests(absfilename_list, spark):
 
-    extractfiles = udf(extract_dir_file_digests, ArrayType(StructType([StructField('layer_id', StringType(), True),StructField('filename', StringType(), True), StructField('digest', StringType(), True)])))
+    extractfiles = udf(extract_dir_file_digests, ArrayType(StructType([
+                    StructField('layer_filename', StringType(), True),
+                    StructField('layer_id', StringType(), True),
+                    StructField('filename', StringType(), True),
+                    StructField('digest', StringType(), True)])))
+    # extract_filename = udf(lambda s: os.path.basename(s))
+    ##extract_filename("input_file_name()").alias("layer_filename"),
 
     sublists = split_list(absfilename_list)
 
@@ -101,14 +109,15 @@ def extract_file_digests(absfilename_list, spark):
 	#layer_db_df = spark.read.json('/var/1gb_json.json', multiLine=True)#sublist)
 	layer_db_df.printSchema()
 
-        df = layer_db_df.select(extractfiles(layer_db_df.layer_id, layer_db_df.dirs).alias('files'))
+        df = layer_db_df.select(extractfiles("input_file_name()", layer_db_df.layer_id, layer_db_df.dirs).alias('files'))
         df_f = df.select(F.explode('files').alias('fs'))
 
+        new_df = df_f.withColumn('layer_filename', col('fs.layer_filename'))
         new_df = df_f.withColumn('layer_id', col('fs.layer_id'))
         new_df = new_df.withColumn('filename', col('fs.filename'))
 	new_df = new_df.withColumn('digest', col('fs.digest'))
 
-	new_df = new_df.select('layer_id', 'filename', 'digest')
+	new_df = new_df.select('layer_filename', 'layer_id', 'filename', 'digest')
         new_df.coalesce(400).write.save(output_absfilename2, mode='append')
 	#break
         print("===========================>finished one sublist!!!!!!!!!")

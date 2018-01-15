@@ -5,22 +5,6 @@ from draw_pic import *
 from analysis_library import *
 # import pandas as pd
 
-# unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
-#unique_draw_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_cnt.csv')
-
-# RESULTS_DIR = '/home/nannan/4tb_results'
-
-# unique_draw_cnt_data = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_cnt_data.csv')
-# unique_draw_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_draw_size.csv')
-# draw_sum_file_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_sum_file_size.csv')
-# avg_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'avg_size_by_cnt.parquet')
-# draw_avg_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_avg_size_by_cnt')
-# draw_sum_size_by_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_sum_size_by_cnt')
-# unique_file_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_info.parquet')
-# fileinfo_by_repeat_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'fileinfo_by_repeat_cnt.csv')
-# fileinfo_by_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'fileinfo_by_total_sum.csv')
-# file_ageinfo = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'file_ageinfo.csv')
-# age_diffinfo = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'age_diffinfo.csv')
 
 draw_type_by_repeat_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_type_by_repeat_cnt.csv')
 draw_type_by_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_type_by_total_sum.csv')
@@ -33,13 +17,6 @@ draw_size_uniq = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_size_uniq.csv')
 draw_size_shared = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_size_shared.csv')
 draw_size_whole = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_size_whole.csv')
 draw_repeat_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_repeat_cnt.csv')
-#unique_draw_cnt_data = os.path.join(RESULTS_DIR, 'unique_draw_cnt_data.csv')
-#unique_draw_size_data = os.path.join(RESULTS_DIR, 'unique_draw_size_data.csv')
-#draw_sum_file_size_data = os.path.join(RESULTS_DIR, 'draw_sum_file_size_data.csv')
-#draw_avg_size_by_cnt = os.path.join(RESULTS_DIR, 'draw_avg_size_by_cnt.csv')
-#draw_sum_size_by_cnt = os.path.join(RESULTS_DIR, 'draw_sum_size_by_cnt.csv')
-
-# cur_time = 1514873764.870036
 
 
 def main():
@@ -52,11 +29,14 @@ def main():
 
 def save_file_type_by_repeat_cnt(spark, sc):
     """save by repeat cnt"""
-    file_info = spark.read.parquet(unique_file_basic_info)
+    file_info = spark.read.parquet(unique_file_basic_info).filter(F.size('type') > 0)
 
-    func = udf(lambda s: s[0].split(" ")[0])
-    file_info_df = file_info.select('file_name', 'cnt', func('type').alias('type'), 'extension', 'total_sum', 'sha256', 'avg')
+    func = F.udf(lambda s: s[0].split(" ")[0])
+    func0 = F.udf(lambda s: s[0] if len(s) else None)
 
+    file_info_df = file_info.select(func0('file_name'), 'cnt', func('type').alias('type'), func0('extension').alias('extension'),
+                'total_sum', 'sha256', 'avg')
+    
     sort_cnt = file_info_df.sort(file_info_df.cnt.desc())
     sort_cnt.show()
     sort_cnt.write.csv(draw_type_by_repeat_cnt)

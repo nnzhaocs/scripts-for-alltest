@@ -4,11 +4,6 @@ from analysis_library import *
 
 layer_file_cnt = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_file_cnt.parquet')
 unique_file_layer_mapping = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'unique_file_layer_mapping.parquet')
-# unique_cnt_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_cnt_size.parquet')
-# layer_size_file_infos = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_size_file_infos.parquet')
-# unique_file_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_info.parquet')
-# layer_file_dropduplicas = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_file_dropduplicas.parquet')
-# layer_capacity_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_capacity_dup_ratio.parquet')
 layer_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_dup_ratio.parquet')
 
 
@@ -18,12 +13,16 @@ def main():
     #save_unique_file_layer_mapping(spark, sc)
     #save_layer_file_cnt(spark, sc)
     #find_file_digest_in_layer(spark, sc)
-    save_layer_capacity_redundant_info(spark, sc)
+    save_layer_redundant_info(spark, sc)
     #save_layer_uniq_shared_size(spark, sc)
 
+    # layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates('layer_id')
+    # files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
+    #     "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
+    # regular_files = files.filter(files.sha256.isNotNull())
 
 def save_layer_info(spark, sc):
-    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR)
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates('layer_id')
     layerinfo_df = layer_db_df.select('layer_id', layer_db_df.size.archival_size.alias('archival_size'),
                              layer_db_df.size.compressed_size_with_method_gzip.alias('compressed_size'),
                              layer_db_df.size.uncompressed_sum_of_files.alias('uncompressed_size'),
@@ -31,15 +30,29 @@ def save_layer_info(spark, sc):
 
     layerinfo_df.save.parquet(layer_basic_info)
 
+# layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates('layer_id')
+# files = layer_db_df.selectExpr('layer_id', "explode(dirs) As structdirs").selectExpr(
+#     'layer_id', 'structdirs.subdir', "explode(structdirs.files) As structdirs_files").selectExpr(
+#     'layer_id', 'structdirs.subdir', "structdirs_files.sha256")
+# regular_files = files.filter(files.sha256.isNotNull())
 
-def save_layer_capacity_redundant_info(spark, sc):
+def save_layer_redundant_info(spark, sc):
 
-    df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
+    # df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
+
+    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates(['layer_id'])
+    files = layer_db_df.selectExpr('layer_id', "explode(dirs) As structdirs").selectExpr(
+        'layer_id', "explode(structdirs.files) As structdirs_files").selectExpr(
+        'layer_id', "structdirs_files.sha256")
+    regular_files = files.filter(files.sha256.isNotNull())
+
+    df = regular_files.select('layer_id', regular_files.sha256.alias('digest'))
+
     #df.show(20, False)
     fileinfo = spark.read.parquet(unique_size_cnt_total_sum)
     file_df = fileinfo.select(fileinfo.sha256.alias('digest'), 'avg', 'cnt')
     #file_df.show(20, False)
-    lf_info = df.join(file_df, ['digest'], 'outer')
+    lf_info = df.join(file_df, ['digest'], 'inner')
 
     lf_uniq = lf_info.dropDuplicates(['layer_id', 'digest'])
 
@@ -52,7 +65,7 @@ def save_layer_capacity_redundant_info(spark, sc):
                                                   'cnt_files')
                                               )
 
-    new_df = uniq_size.join(size_df, ['layer_id'], 'outer')
+    new_df = uniq_size.join(size_df, ['layer_id'], 'inner')
 
     shared_df = lf_info.filter('cnt > 1')
     shared_df_layer = shared_df.groupby('layer_id').agg(F.sum('avg').alias('sum_shared_files'),
@@ -60,7 +73,7 @@ def save_layer_capacity_redundant_info(spark, sc):
                                                             'cnt_shared_files')
                                                         )
 
-    newer_df = new_df.join(shared_df_layer, ['layer_id'], 'outer')
+    newer_df = new_df.join(shared_df_layer, ['layer_id'], 'inner')
 
     new = newer_df.withColumn('intra_layer_dup_ratio',
                               (F.col('sum_files') - F.col('sum_files_dropduplicates')) / F.col('sum_files'))

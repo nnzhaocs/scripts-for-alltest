@@ -16,10 +16,10 @@ draw_type_by_dup_ratio_cnt = os.path.join(RESULTS_DIR, 'draw_type_by_dup_ratio_c
 
 capacity_data = os.path.join(RESULTS_DIR, 'capacity_data.csv')
 
-draw_size_uniq = os.path.join(RESULTS_DIR, 'draw_size_uniq.csv')
-draw_size_shared = os.path.join(RESULTS_DIR, 'draw_size_shared.csv')
-draw_size_whole = os.path.join(RESULTS_DIR, 'draw_size_whole.csv')
-draw_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_repeat_cnt.csv')
+draw_size_uniq = os.path.join(RESULTS_DIR, 'draw_size_uniq_data.csv')
+draw_size_shared = os.path.join(RESULTS_DIR, 'draw_size_shared_data.csv')
+draw_size_whole = os.path.join(RESULTS_DIR, 'draw_size_whole_data.csv')
+draw_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_repeat_cnt_data.csv')
 
 
 def main():
