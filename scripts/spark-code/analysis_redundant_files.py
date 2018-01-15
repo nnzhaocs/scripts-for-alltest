@@ -25,8 +25,7 @@ def save_unique_file_info(spark, sc):
     regular_files = files.filter(files.sha256.isNotNull())
     #uniq_files = regular_files.select(regular_files.sha256).dropDuplicates()
     df = regular_files.groupby('sha256').agg(F.collect_set('filename').alias('file_name'),
-                F.collect_set('type').alias('type'), F.collect_set('extension').alias('extension'),
-                F.collect_set('file_info.st_ctime').alias('st_ctime'))
+                F.collect_set('type').alias('type'), F.collect_set('extension').alias('extension'))
 
     cnt_size = spark.read.parquet(unique_size_cnt_total_sum)
     new_df = df.join(cnt_size, 'sha256', 'inner')
