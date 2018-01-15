@@ -6,21 +6,21 @@ from regular_libraries import *
 
 """configurations for setup"""
 
-dest_dirname = "/home/nannan/2tb_hdd"
+dest_dirname = "/home/nannan/dockerimages/layers" #"/home/nannan/2tb_hdd"
 
 """configurations for multithreading"""
 
-num_worker_process = 20
+num_worker_process = 2
 
 """contains all the global variables"""
 
 dest_dir = []
 
-extracting_dir = "/home/nannan/120g_ssd_j/extracting_dir/"
-layer_db_json_dirname = "/home/nannan/120g_ssd_k/non-analyzed-jsons"
+extracting_dir = "/home/nannan/extracting_dir/"
+layer_db_json_dirname = "/home/nannan/dockerimages/layers/layer_db_json/"
 
-analyzed_absfilename = "/home/nannan/2tb_hdd/job_list_dir/analyzed_absfilename.out"
-layer_list_absfilename = "/home/nannan/2tb_hdd/job_list_dir/list_less_50m.out"#test_non_analyzed_layers.json"
+analyzed_absfilename = "/home/nannan/dockerimages/layers/job_list_dir/analyzed_absfilename.out"
+layer_list_absfilename = "/home/nannan/dockerimages/layers/job_list_dir/list_less_50m.out"#test_non_analyzed_layers.json"
 
 """Output directories which are no need to change"""
 

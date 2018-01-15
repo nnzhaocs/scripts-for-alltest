@@ -27,6 +27,7 @@ from functools import partial
 from collections import defaultdict
 # from itertools import groupby
 from statistics  import mean
+import statistics
 import subprocess
 # from collections import OrderedDict
 # from collections import defaultdict
