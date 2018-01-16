@@ -38,15 +38,15 @@ def save_layer_info(spark, sc):
 
 def save_layer_redundant_info(spark, sc):
 
-    # df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
+    df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
 
-    layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates(['layer_id'])
-    files = layer_db_df.selectExpr('layer_id', "explode(dirs) As structdirs").selectExpr(
-        'layer_id', "explode(structdirs.files) As structdirs_files").selectExpr(
-        'layer_id', "structdirs_files.sha256")
-    regular_files = files.filter(files.sha256.isNotNull())
+    # layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates(['layer_id'])
+    # files = layer_db_df.selectExpr('layer_id', "explode(dirs) As structdirs").selectExpr(
+    #     'layer_id', "explode(structdirs.files) As structdirs_files").selectExpr(
+    #     'layer_id', "structdirs_files.sha256")
+    # regular_files = files.filter(files.sha256.isNotNull())
 
-    df = regular_files.select('layer_id', regular_files.sha256.alias('digest'))
+    df = df.select('layer_id', 'digest')
 
     #df.show(20, False)
     fileinfo = spark.read.parquet(unique_size_cnt_total_sum)
