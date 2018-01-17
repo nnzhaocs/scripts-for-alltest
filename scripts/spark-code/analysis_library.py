@@ -24,15 +24,17 @@ REDUNDANT_DIR_ANALYSIS_DIR = os.path.join(HDFS_DIR, 'redundant_dir_analysis')
 
 MANIFESTS_DIR = os.path.join(HDFS_DIR, "manifests")
 LAYER_DB_JSON_DIR  = os.path.join(HDFS_DIR, "layer_db_jsons/*")
+LAYER_DB_JSON_DIR1  = os.path.join(HDFS_DIR, "layer_db_jsons/")
+
 LAYER_FILE_MAPPING_DIR = os.path.join(HDFS_DIR, "layer_file_mapping/*")
 
 
 # pull_cnt_absfilename = os.path.join(LOCAL_DIR, "pull_cnt_with_filename.csv") #"_c3"
 # manifest_absfilename = os.path.join(MANIFESTS_DIR, "manifests_with_filename_with_layer_id_not_null.parquet")
 
-layer_db_absfilename1 = os.path.join(LAYER_DB_JSON_DIR, "1g_big_json.parquet")
-layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR, "2tb_hdd_json.parquet")
-layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR, "nannan_2tb_json.parquet")
+layer_db_absfilename1 = os.path.join(LAYER_DB_JSON_DIR1, "1g_big_json.parquet")
+layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR1, "2tb_hdd_json.parquet")
+layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR1, "nannan_2tb_json.parquet")
 
 layer_file_mapping1 = os.path.join(VAR_DIR, 'layer_file_mapping_nannan_2tb_hdd.parquet')
 layer_file_mapping2 = os.path.join(VAR_DIR, 'layer_file_mapping_2tb_hdd.parquet')
@@ -40,7 +42,10 @@ layer_file_mapping3 = os.path.join(VAR_DIR, 'layer_file_mapping_1gb_layer.parque
 
 unique_file_basic_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_basic_info.parquet')
 unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')
-layer_basic_info = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_basic_info.parquet')
+layer_basic_info1 = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_basic_info.parquet1')
+layer_basic_info2 = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_basic_info.parquet2')
+layer_basic_info3 = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_basic_info.parquet3')
+image_basic_info = os.path.join(REDUNDANT_IMAGE_ANALYSIS_DIR, 'image_basic_info.parquet3')
 
 """.set("spark.executor.cores", 5) \
     .set("spark.driver.memory", "10g") \
@@ -64,10 +69,12 @@ def init_spark_cluster():
         .setAppName('jsonsanalysis')\
         .setMaster(master)\
         .set("spark.executor.cores", 5)\
+        .set("spark.executor.instances", 1)\
         .set("spark.driver.memory", "10g")\
         .set("spark.executor.memory", "40g")\
         .set("spark.driver.maxResultSize", "10g")\
-	    .set("spark.local.dir", "/home/nannan/spark/tmp")
+        .set('spark.dynamicAllocation.enabled', False)\
+	.set("spark.sql.shuffle.partitions", 800)
         #.set("spark.sql.hive.filesourcePartitionFileCacheSize", "30g")
     sc = SparkContext(conf = conf)
 

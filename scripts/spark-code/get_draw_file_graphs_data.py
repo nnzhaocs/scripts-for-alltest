@@ -21,10 +21,10 @@ draw_repeat_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_repeat_cnt.csv
 
 def main():
     sc, spark = init_spark_cluster()
-    save_file_type_by_repeat_cnt(spark, sc)
-    save_file_size(spark, sc)
-    save_file_repeat_cnt(spark, sc)
-    # calculate_capacity(spark, sc)
+    #save_file_type_by_repeat_cnt(spark, sc)
+    #save_file_size(spark, sc)
+    #save_file_repeat_cnt(spark, sc)
+    calculate_capacity(spark, sc)
 
 
 def save_file_type_by_repeat_cnt(spark, sc):
@@ -72,37 +72,54 @@ def save_file_type_by_repeat_cnt(spark, sc):
 
 def calculate_capacity(spark, sc):
     df = spark.read.parquet(unique_size_cnt_total_sum)
+    """
     df_1 = df.filter(df.cnt == 1)
-    df_1.show()
-    df_1 = df_1.select(F.sum('avg').alias('sum_size_1'))
-    df_1.show()
+    df_1_size = df_1.select(F.sum('avg').alias('sum_size_1'))
+    df_1_size.show()
+    print("==============> df_1:%d", df_1.count())
+    #df_1_size.show()
+    """
     
     df_2 = df.filter(df.cnt > 1)
-    df_2.show()
-    df_2 = df_2.select(F.sum('avg').alias('sum_size_2_remove_redundancy'))
-    df_2.show()
-
-    new_df = df_2.unionAll(df_1)
-
-    df_2 = df.filter(df.cnt > 1)
-    df_2.show()
-    df_2 = df_2.select(F.sum('total_sum').alias('sum_size_2_redundancy'))
-    df_2.show()
-
-    new_df = new_df.unionAll(df_2)
-
-    df_1 = df.select(F.sum('avg').alias('sum_files_remove_redundancy'))
-    df_1.show()
-
-    new_df = new_df.unionAll(df_1)
-
-    df = df.select(F.sum('total_sum').alias('sum_files_redundancy'))
-    df.show()
-
-    new_df = new_df.unionAll(df) 
-    new_df.show()
-    new_df.write.csv(capacity_data)
-
+    """#df_2_dedup.show()
+    df_2_dedup_size = df_2.select(F.sum('avg').alias('sum_size_2_remove_redundancy'))
+    df_2_dedup_size.show()
+    print("==============> df_2:%d", df_2.count())
+    """
+    #new_df = df_2.unionAll(df_1)
+    """
+    #df_2_total_size = df.filter(df.cnt > 1)
+    #df_2.show()
+    df_2_with_dup = df_2.select(F.sum('total_sum').alias('sum_size_2_redundancy'))
+    df_2_with_dup_cnt = df_2.select(F.sum('cnt').alias('total_cnt_2'))
+    df_2_with_dup.show()
+    df_2_with_dup_cnt.show()
+    """
+    #new_df = new_df.unionAll(df_2)
+    
+    df_2_dedup_size_total = df.select(F.sum('avg').alias('sum_files_remove_redundancy'))
+    df_2_dedup_size_total.show(20, False)
+    print("==============> dedup_cnt_total:%d", df.count())
+    #df_1.show()
+    #new_df = new_df.unionAll(df_1)
+    """
+    df_dup_size_total = df.select(F.sum('total_sum').alias('sum_files_redundancy'))
+    df_dup_size_total.show()
+    df_with_dup_cnt_total = df.select(F.sum('cnt').alias('total_cnt'))
+    df_with_dup_cnt_total.show()
+    """
+    #print("=============> ")
+    #df.show()
+    #df_dup_size_total.coalesce(1).write.csv(capacity_data, mode='append')
+    #df_2_dedup_size_total.coalesce(1).write.csv(capacity_data, mode='append')
+    #df_2_with_dup.coalesce(1).write.csv(capacity_data, mode='append')
+    #df_2_dedup_size.coalesce(1).write.csv(capacity_data, mode='append')
+    #df_1_size.coalesce(1).write.csv(capacity_data, mode='append')
+    #new_df = df_dup_size_total.unionAll(df_2_dedup_size_total, df_2_with_dup, df_2_dedup_size, df_1_size) 
+    #new_df.show(20, False)
+    #new_df.write.csv(capacity_data)
+    #print("==============> df_dup_size_total=%d, df_2_dedup_size_total=%d, df_2_with_dup=%d, df_2_dedup_size=%d, df_1_size=%d", df.count(), df_2_with_dup.count(), df_2_dedup_size.count(), df_1_size.count())
+    
 
 def save_file_size(spark, sc):
     size_df = spark.read.parquet(unique_size_cnt_total_sum)#.select((F.col('avg')/1024.0).alias('avg')) #kb

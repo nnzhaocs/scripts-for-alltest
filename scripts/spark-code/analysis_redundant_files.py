@@ -10,11 +10,11 @@ unique_cnt_size = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_cnt_size.par
 def main():
 
     sc, spark = init_spark_cluster()
-    #save_unique_file_digests(spark, sc)
+    save_unique_file_digests(spark, sc)
     #save_unique_files_cnts(spark, sc)
     #save_unique_files_size(spark, sc)
     #save_unique_file_size_infos(spark, sc)
-    save_unique_file_info(spark, sc)
+    #save_unique_file_info(spark, sc)
 
 
 """save uniqe file digests"""
@@ -80,7 +80,7 @@ def save_unique_file_digests(spark, sc):
 		.alias("ids")) \
 		.where(size("ids") > 1) """
     uniq_files.show()
-    uniq_files.write.save(unique_file_digest)
+    #uniq_files.write.save(unique_file_digest)
 
 
 if __name__ == '__main__':
