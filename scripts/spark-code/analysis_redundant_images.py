@@ -107,6 +107,7 @@ def save_image_layer_mapping(spark, sc):
 
 
 def save_image_dup_ratio_capacity(spark, sc):
+    """
     image_layer_df = spark.read.parquet(image_layer_mapping_shared_pull_cnt).select('image_realname', 'layer_id')
     layer_file_df = spark.read.parquet(LAYER_FILE_MAPPING_DIR).select('layer_id', 'digest')
     fileinfo = spark.read.parquet(unique_size_cnt_total_sum)
@@ -116,9 +117,14 @@ def save_image_dup_ratio_capacity(spark, sc):
 
     image_file_info = image_layer_df.join(lf_info, ['layer_id'], 'inner')
     image_file_info = image_file_info.select('image_realname','digest', 'avg', 'cnt')
+    image_file_info.write.save('/redundant_image_analysis/image_file_mapping.parquet')
+    """
     """get uniq files for image"""
+    
+    image_file_info = spark.read.parquet('/redundant_image_analysis/image_file_mapping.parquet')   
+ 
     image_file_uniq = image_file_info.dropDuplicates(['image_realname', 'digest'])
-
+  
     uniq_size = image_file_uniq.groupby('image_realname').agg(F.sum('avg').alias('sum_files_dropduplicates'),
                                                               F.size(F.collect_list('avg')).alias(
                                                                   'cnt_files_dropduplicates'))
@@ -149,7 +155,7 @@ def save_image_dup_ratio_capacity(spark, sc):
     #new.show(20, False)
 
     new.write.save(image_dup_ratio)
-
+    
 
 if __name__ == '__main__':
     print 'start!'
