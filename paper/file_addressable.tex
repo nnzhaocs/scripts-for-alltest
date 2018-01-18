@@ -27,22 +27,22 @@ Benefit: saving money, reducing storage management overhead.
 	\centering 
 	\scriptsize  
 	%\begin{minipage}{.5\linewidth}
-	\caption{Latency breakdown} \label{tbl:redundant_ratio} 
+	\caption{Latency breakdown} \label{tbl:latency_breakdown} 
 	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
 		\hline 
 		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
 		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
 		Operations/latency (S) & max & min & median & avg.\\
 		\hline
-		 gunzip decompression (RAM) &   &   &    &  \\
+		 gunzip decompression (RAM) & 257.16  & 0.04  & 0.15  & 0.39 \\
  		\hline
- 		tar extraction (RAM) &   &   &    &  \\
+ 		tar extraction (RAM) & 43.41  & 0.04  &  0.14  & 0.18 \\
 		\hline
-		Digest calculation (RAM) &  &  & & \\
+		Digest calculation (RAM) & 3455.01  & $<$0.00  & 0.05 & 10.65 \\
 		\hline
-		tar archiving (RAM)  &  &  & &\\
+		tar archiving (RAM)  & 53.44 & 0.04 & 0.14 & 0.19\\
 		\hline
-		gzip compression (RAM) & &  &  & \\
+		gzip compression (RAM) & 496.04 & 0.04 & 0.15 & 2.10 \\
 		\hline
 		Total time (RAM) (with compression) & & & & \\
 		\hline
@@ -71,7 +71,11 @@ Benefit: saving money, reducing storage management overhead.
 
 \subsubsection{Compression or Archiving?} 
 
-\paragraph{CDF and PDF of latencies} 
+\paragraph{Latency distribution for each operation}
+
+We calculated the latency for each operation for all layers as shown as Table~\ref{tbl:latency_breakdown}.
+To improve performance, layers that are less than 50M are stored and processed in RAM while the rest layers are stored and processed in SSDs. 87.3\% of layers are less than 50M.   
+  
 
 Compression time during pulling. 
 
