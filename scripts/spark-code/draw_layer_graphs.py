@@ -60,7 +60,7 @@ def draw_layer_shared_cnt():
     cd = plt.semilogx(base_cdf[1:], cdf, 'b-', linewidth=2)
 
     print "start labeling!"
-    # ax.set_xlim(2, data.max())
+    ax.set_xlim(2, data.max())
     ax.set_ylim(0, 1)
 
     ax.set_xlabel(xlabel, fontsize=18)
@@ -70,19 +70,23 @@ def draw_layer_shared_cnt():
 
     plt.grid()
     plt.tight_layout()
-    name = 'file_repeat_cnt_cdf.png'
+    name = 'layer_repeat_cnt_cdf.png'
     fig.savefig(name)
-    eps = 'file_repeat_cnt_cdf.eps'
+    eps = 'layer_repeat_cnt_cdf.eps'
     fig.savefig(eps)
     
 
     # ===================> plot pdf
 
-    ylabel = 'Layer frequency'
+    fig = fig_size('min')
+
+    ax = fig.add_subplot(111)
+
+    ylabel = 'Layer probability'
     xlabel = 'Reference cnt'
 
     bins = np.arange(data.min()-1, data.max()+1)
-    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
+    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=True)
 
     print "start plotting!"
 
@@ -96,7 +100,7 @@ def draw_layer_shared_cnt():
 
     print "start labeling!"
 
-    # ax.set_ylim(0, 1)
+    ax.set_ylim(0, counts_pdf.max())
     ax.set_xlim(2, data.max())
 
     ax.set_xlabel(xlabel, fontsize=18)
