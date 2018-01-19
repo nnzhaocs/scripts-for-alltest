@@ -8,6 +8,9 @@ manifest_analyze_or_not = os.path.join(MANIFESTS_DIR, 'manifests_analyzed_or_not
 image_info = os.path.join(REDUNDANT_IMAGE_ANALYSIS_DIR, 'image_info.parquet')
 image_layer_mapping_shared_pull_cnt = os.path.join(REDUNDANT_IMAGE_ANALYSIS_DIR, 'image_layer_mapping_shared_pull_cnt.parquet')
 image_dup_ratio = os.path.join(REDUNDANT_IMAGE_ANALYSIS_DIR, 'image_dup_ratio.parquet')
+shared_layer_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'shared_layer_dup_ratio')
+private_layer_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'private_layer_dup_ratio')
+
 
 def main():
 
@@ -104,6 +107,93 @@ def save_image_layer_mapping(spark, sc):
     #image_layer_mapping.show(20, False)
 
     image_layer_mapping.write.parquet(image_layer_mapping_shared_pull_cnt)
+
+
+def save_layers_shared_private_dup_ratio(spark, sc):
+    share_or_not = spark.read.parquet(image_layer_mapping_shared_pull_cnt).select('layer_id', 'shared_image_cnt')
+
+    df = spark.read.parquet(LAYER_FILE_MAPPING_DIR).select('layer_id', 'digest')
+
+    fileinfo = spark.read.parquet(unique_size_cnt_total_sum)
+    file_df = fileinfo.select(fileinfo.sha256.alias('digest'), 'avg', 'cnt')
+    lf_info = df.join(file_df, ['digest'], 'inner')
+
+    lf_shared_or_not = lf_info.join(share_or_not, ['layer_id'], 'inner')
+
+    # ==================> get shared layers dup ratio
+
+    shared_lf_info = lf_shared_or_not.filter('shared_image_cnt > 1')
+    lf_info = shared_lf_info
+
+    lf_uniq = lf_info.dropDuplicates(['layer_id', 'digest'])
+
+    uniq_size = lf_uniq.groupby('layer_id').agg(F.sum('avg').alias('sum_files_dropduplicates'),
+                                                F.size(F.collect_list('avg')).alias(
+                                                                  'cnt_files_dropduplicates'))
+
+    size_df = lf_info.groupby('layer_id').agg(F.sum('avg').alias('sum_files'),
+                                              F.size(F.collect_list('avg')).alias(
+                                                  'cnt_files')
+                                              )
+
+    new_df = uniq_size.join(size_df, ['layer_id'], 'inner')
+
+    shared_df = lf_info.filter('cnt > 1')
+    shared_df_layer = shared_df.groupby('layer_id').agg(F.sum('avg').alias('sum_shared_files'),
+                                                        F.size(F.collect_list('avg')).alias(
+                                                            'cnt_shared_files')
+                                                        )
+
+    newer_df = new_df.join(shared_df_layer, ['layer_id'], 'inner')
+
+    new = newer_df.withColumn('intra_layer_dup_ratio',
+                              (F.col('sum_files') - F.col('sum_files_dropduplicates')) / F.col('sum_files'))
+
+    new = new.withColumn('inter_layer_dup_ratio', (F.col('sum_shared_files') / F.col('sum_files')))
+
+    new = new.withColumn('intra_layer_dup_ratio_cnt',
+                         (F.col('cnt_files') - F.col('cnt_files_dropduplicates')) / F.col('cnt_files'))
+    new = new.withColumn('inter_layer_dup_ratio_cnt', (F.col('cnt_shared_files') / F.col('cnt_files')))
+
+    new.write.save(shared_layer_dup_ratio)
+
+    # ========================> get private layer dup ratio
+    """
+    private_lf_info = lf_shared_or_not.filter('shared_image_cnt == 1')
+    lf_info = private_lf_info
+
+    lf_uniq = lf_info.dropDuplicates(['layer_id', 'digest'])
+
+    uniq_size = lf_uniq.groupby('layer_id').agg(F.sum('avg').alias('sum_files_dropduplicates'),
+                                                F.size(F.collect_list('avg')).alias(
+                                                                  'cnt_files_dropduplicates'))
+
+    size_df = lf_info.groupby('layer_id').agg(F.sum('avg').alias('sum_files'),
+                                              F.size(F.collect_list('avg')).alias(
+                                                  'cnt_files')
+                                              )
+
+    new_df = uniq_size.join(size_df, ['layer_id'], 'inner')
+
+    shared_df = lf_info.filter('cnt > 1')
+    shared_df_layer = shared_df.groupby('layer_id').agg(F.sum('avg').alias('sum_shared_files'),
+                                                        F.size(F.collect_list('avg')).alias(
+                                                            'cnt_shared_files')
+                                                        )
+
+    newer_df = new_df.join(shared_df_layer, ['layer_id'], 'inner')
+
+    new = newer_df.withColumn('intra_layer_dup_ratio',
+                              (F.col('sum_files') - F.col('sum_files_dropduplicates')) / F.col('sum_files'))
+
+    new = new.withColumn('inter_layer_dup_ratio', (F.col('sum_shared_files') / F.col('sum_files')))
+
+    new = new.withColumn('intra_layer_dup_ratio_cnt',
+                         (F.col('cnt_files') - F.col('cnt_files_dropduplicates')) / F.col('cnt_files'))
+    new = new.withColumn('inter_layer_dup_ratio_cnt', (F.col('cnt_shared_files') / F.col('cnt_files')))
+
+    new.write.save(private_layer_dup_ratio)
+    """
 
 
 def save_image_dup_ratio_capacity(spark, sc):

@@ -24,7 +24,8 @@ def main():
     #save_file_type_by_repeat_cnt(spark, sc)
     #save_file_size(spark, sc)
     #save_file_repeat_cnt(spark, sc)
-    calculate_capacity(spark, sc)
+    #calculate_capacity(spark, sc)
+    save_file_type_by_repeat_cnt(spark, sc)
 
 
 def save_file_type_by_repeat_cnt(spark, sc):
