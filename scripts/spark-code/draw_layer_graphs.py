@@ -4,12 +4,13 @@ sys.path.append('../plotter/')
 from draw_pic import *
 # from analysis_library import *
 import pandas as pd
+import pandas
 
 RESULTS_DIR = '/home/nannan/4tb_results'
 
 
 
-draw_layer_shared_cnt = os.path.join(RESULTS_DIR, 'draw_layer_shared_cnt_data.csv')
+draw_layer_shared_cnt_data = os.path.join(RESULTS_DIR, 'draw_layer_shared_cnt_data.csv')
 
 # draw_type_by_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_type_by_repeat_cnt.csv')
 # draw_type_by_total_sum = os.path.join(RESULTS_DIR, 'draw_type_by_total_sum.csv')
@@ -31,7 +32,7 @@ def main():
 
 
 def draw_layer_shared_cnt():
-    df = pd.read_csv(draw_layer_shared_cnt)
+    df = pandas.read_csv(draw_layer_shared_cnt_data)
     print("after loading file!")
     data = df.as_matrix()
     print(data)

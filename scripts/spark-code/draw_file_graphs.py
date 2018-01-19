@@ -2,19 +2,20 @@ import sys
 
 sys.path.append('../plotter/')
 from draw_pic import *
-# from analysis_library import *
+#from analysis_library import *
 import pandas as pd
+import pandas
 
 RESULTS_DIR = '/home/nannan/4tb_results'
 
-draw_type_by_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_type_by_repeat_cnt.csv')
-draw_type_by_total_sum = os.path.join(RESULTS_DIR, 'draw_type_by_total_sum.csv')
-draw_type1_by_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_type1_by_repeat_cnt.csv')
-draw_type_by_size = os.path.join(RESULTS_DIR, 'draw_type_by_size.csv')
-draw_type_by_dup_ratio_cap = os.path.join(RESULTS_DIR, 'draw_type_by_dup_ratio_cap.csv')
-draw_type_by_dup_ratio_cnt = os.path.join(RESULTS_DIR, 'draw_type_by_dup_ratio_cnt.csv')
+#draw_type_by_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_type_by_repeat_cnt.csv')
+#draw_type_by_total_sum = os.path.join(RESULTS_DIR, 'draw_type_by_total_sum.csv')
+#draw_type1_by_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_type1_by_repeat_cnt.csv')
+#draw_type_by_size = os.path.join(RESULTS_DIR, 'draw_type_by_size.csv')
+#draw_type_by_dup_ratio_cap = os.path.join(RESULTS_DIR, 'draw_type_by_dup_ratio_cap.csv')
+#draw_type_by_dup_ratio_cnt = os.path.join(RESULTS_DIR, 'draw_type_by_dup_ratio_cnt.csv')
 
-capacity_data = os.path.join(RESULTS_DIR, 'capacity_data.csv')
+#capacity_data = os.path.join(RESULTS_DIR, 'capacity_data.csv')
 
 draw_size_uniq = os.path.join(RESULTS_DIR, 'draw_size_uniq_data.csv')
 draw_size_shared = os.path.join(RESULTS_DIR, 'draw_size_shared_data.csv')
@@ -23,7 +24,7 @@ draw_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_repeat_cnt_data.csv')
 
 
 def main():
-    draw_file_repeat_cnt()
+    #draw_file_repeat_cnt()
     draw_file_size()
 
 
@@ -33,9 +34,9 @@ def draw_file_size():
     size_whole = pd.read_csv(draw_size_whole)
 
     print("after loading file!")
-    data_size_uniq = size_uniq.as_matrix()
-    data_size_shared = size_shared.as_matrix()
-    data_size_whole = size_whole.as_matrix()
+    data_size_uniq = size_uniq.as_matrix()/1024.0
+    data_size_shared = size_shared.as_matrix()/1024.0
+    data_size_whole = size_whole.as_matrix()/1024.0
 
     ylabel = 'Cumulative file probability'
     xlabel = 'File size(B)'
@@ -112,7 +113,7 @@ def draw_file_size():
 
 
 def draw_file_repeat_cnt():
-    df = pd.read_csv(draw_repeat_cnt)
+    df = pandas.read_csv(draw_repeat_cnt)
     print("after loading file!")
     data = df.as_matrix()
     print(data)
@@ -120,9 +121,9 @@ def draw_file_repeat_cnt():
     xlabel = 'File repeat count'
 
     fig = fig_size('min')
-
+    
     ax = fig.add_subplot(111)
-
+    
     bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
 
     print "cdf and pdf calculating: bins = %d" % len(bins)
@@ -135,7 +136,7 @@ def draw_file_repeat_cnt():
     cd = plt.semilogx(base_cdf[1:], cdf, 'b-', linewidth=1)
 
     print "start labeling!"
-
+    ax.set_xlim(2, data.max())
     ax.set_ylim(0, 1)
 
     ax.set_xlabel(xlabel, fontsize=18)
@@ -149,21 +150,29 @@ def draw_file_repeat_cnt():
     fig.savefig(name)
     eps = 'file_repeat_cnt_cdf.eps'
     fig.savefig(eps)
-
+    
     """plot pdf"""
 
-    ylabel = 'File frequency'
-    xlabel = 'File size(B)'
+    ylabel = 'File probability'
+    xlabel = 'File repeat count'
 
-    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
+    bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
+    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=True)
 
     print "start plotting!"
 
     pd = plt.semilogx(base_pdf[1:], counts_pdf, 'b-', linewidth=1)
 
-    print "start labeling!"
+    #counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
 
-    ax.set_ylim(0, 1)
+    print "start plotting!"
+
+    #pd = plt.hist(data, normed=False, bins=20)
+
+    print "start labeling!"
+    
+    #ax.set_ylim(0, 1)
+    ax.set_xlim(2, data.max())
 
     ax.set_xlabel(xlabel, fontsize=18)
     ax.set_ylabel(ylabel, fontsize=18)  # 24,>14
