@@ -43,12 +43,12 @@ def draw_layer_shared_cnt():
 
     ax = fig.add_subplot(111)
 
-    bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
+    bins = np.arange(data.min()-1, data.max()+1)
 
     print "cdf and pdf calculating: bins = %d" % len(bins)
-    """
+    
     # =================> plot cdf
-    bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
+    #bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
 
     print "cdf and pdf calculating: bins = %d" % len(bins)
     counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
@@ -57,7 +57,7 @@ def draw_layer_shared_cnt():
 
     print "start plotting!"
 
-    cd = plt.semilogx(base_cdf[1:], cdf, 'b-', linewidth=1)
+    cd = plt.semilogx(base_cdf[1:], cdf, 'b-', linewidth=2)
 
     print "start labeling!"
     # ax.set_xlim(2, data.max())
@@ -74,15 +74,15 @@ def draw_layer_shared_cnt():
     fig.savefig(name)
     eps = 'file_repeat_cnt_cdf.eps'
     fig.savefig(eps)
-    """
+    
 
     # ===================> plot pdf
 
     ylabel = 'Layer frequency'
     xlabel = 'Reference cnt'
 
-    bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
-    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=True)
+    bins = np.arange(data.min()-1, data.max()+1)
+    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
 
     print "start plotting!"
 
@@ -97,7 +97,7 @@ def draw_layer_shared_cnt():
     print "start labeling!"
 
     # ax.set_ylim(0, 1)
-    # ax.set_xlim(2, data.max())
+    ax.set_xlim(2, data.max())
 
     ax.set_xlabel(xlabel, fontsize=18)
     ax.set_ylabel(ylabel, fontsize=18)  # 24,>14

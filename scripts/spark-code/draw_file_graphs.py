@@ -24,8 +24,8 @@ draw_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_repeat_cnt_data.csv')
 
 
 def main():
-    #draw_file_repeat_cnt()
-    draw_file_size()
+    draw_file_repeat_cnt()
+    #draw_file_size()
 
 
 def draw_file_size():
@@ -39,15 +39,15 @@ def draw_file_size():
     data_size_whole = size_whole.as_matrix()/1024.0
 
     ylabel = 'Cumulative file probability'
-    xlabel = 'File size(B)'
+    xlabel = 'File size(KB)'
 
     fig = fig_size('min')
 
     ax = fig.add_subplot(111)
 
-    bins_size_uniq = np.arange(np.ceil(data_size_uniq.min()), np.floor(data_size_uniq.max()))
-    bins_size_shared = np.arange(np.ceil(data_size_shared.min()), np.floor(data_size_shared.max()))
-    bins_size_whole = np.arange(np.ceil(data_size_whole.min()), np.floor(data_size_whole.max()))
+    bins_size_uniq = np.arange(data_size_uniq.min()-1, data_size_uniq.max()+1)
+    bins_size_shared = np.arange(data_size_shared.min()-1, data_size_shared.max()+1)
+    bins_size_whole = np.arange(data_size_whole.min()-1, data_size_whole.max()+1)
 
     print "cdf and pdf calculating: bins = %d, %d, %d" % (len(bins_size_uniq), len(bins_size_shared), len(bins_size_whole))
     counts_cdf_size_uniq, base_cdf_size_uniq = np.histogram(data_size_uniq, bins=bins_size_uniq, normed=True)
@@ -60,9 +60,9 @@ def draw_file_size():
 
     print "start plotting!"
 
-    cd = plt.semilogx(base_cdf_size_uniq[1:], cdf_size_uniq, 'b-', linewidth=1, label='Repeat cnt. = 1')
-    cd = plt.semilogx(base_cdf_size_shared[1:], cdf_size_shared, 'b-', linewidth=1, label='Repeat cnt. > 1')
-    cd = plt.semilogx(base_cdf_size_whole[1:], cdf_size_whole, 'b-', linewidth=1, label='Whole')
+    cd = plt.semilogx(base_cdf_size_uniq[1:], cdf_size_uniq, 'b-', linewidth=2, label='Repeat cnt. = 1')
+    cd = plt.semilogx(base_cdf_size_shared[1:], cdf_size_shared, 'r-', linewidth=2, label='Repeat cnt. > 1')
+    cd = plt.semilogx(base_cdf_size_whole[1:], cdf_size_whole, 'g-', linewidth=2, label='Whole')
 
     print "start labeling!"
 
@@ -83,7 +83,7 @@ def draw_file_size():
     """plot pdf"""
 
     ylabel = 'File frequency'
-    xlabel = 'File size(B)'
+    xlabel = 'File size(KB)'
 
     counts_pdf_size_uniq, base_pdf_size_uniq = np.histogram(data_size_uniq, bins=bins_size_uniq, normed=False)
     counts_pdf_size_shared, base_pdf_size_shared = np.histogram(data_size_shared, bins=bins_size_shared, normed=False)
@@ -91,13 +91,13 @@ def draw_file_size():
 
     print "start plotting!"
 
-    cd = plt.semilogx(base_pdf_size_uniq[1:], counts_pdf_size_uniq, 'b-', linewidth=1, label='Repeat cnt. = 1')
-    cd = plt.semilogx(base_pdf_size_shared[1:], counts_pdf_size_shared, 'r-', linewidth=1, label='Repeat cnt. > 1')
-    cd = plt.semilogx(base_pdf_size_whole[1:], counts_pdf_size_whole, 'g-', linewidth=1, label='Whole')
+    cd = plt.semilogx(base_pdf_size_uniq[1:], counts_pdf_size_uniq, 'b-', linewidth=2, label='Repeat cnt. = 1')
+    cd = plt.semilogx(base_pdf_size_shared[1:], counts_pdf_size_shared, 'r-', linewidth=2, label='Repeat cnt. > 1')
+    cd = plt.semilogx(base_pdf_size_whole[1:], counts_pdf_size_whole, 'g-', linewidth=2, label='Whole')
 
     print "start labeling!"
 
-    ax.set_ylim(0, 1)
+    #ax.set_ylim(0, 1)
 
     ax.set_xlabel(xlabel, fontsize=18)
     ax.set_ylabel(ylabel, fontsize=18)  # 24,>14
@@ -124,7 +124,7 @@ def draw_file_repeat_cnt():
     
     ax = fig.add_subplot(111)
     
-    bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
+    bins = np.arange(data.min()-1, data.max()+1)
 
     print "cdf and pdf calculating: bins = %d" % len(bins)
     counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
@@ -133,10 +133,10 @@ def draw_file_repeat_cnt():
 
     print "start plotting!"
 
-    cd = plt.semilogx(base_cdf[1:], cdf, 'b-', linewidth=1)
+    cd = plt.semilogx(base_cdf[1:], cdf, 'b-', linewidth=2)
 
     print "start labeling!"
-    ax.set_xlim(2, data.max())
+    ax.set_xlim(1, data.max())
     ax.set_ylim(0, 1)
 
     ax.set_xlabel(xlabel, fontsize=18)
@@ -152,16 +152,18 @@ def draw_file_repeat_cnt():
     fig.savefig(eps)
     
     """plot pdf"""
+    fig = fig_size('min')
+    ax = fig.add_subplot(111)
 
-    ylabel = 'File probability'
+    ylabel = 'File frequency'
     xlabel = 'File repeat count'
 
-    bins = np.arange(np.ceil(data.min()), np.floor(data.max()))
-    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=True)
+    bins = np.arange(data.min()-1, data.max()+1)
+    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
 
     print "start plotting!"
 
-    pd = plt.semilogx(base_pdf[1:], counts_pdf, 'b-', linewidth=1)
+    pd = plt.semilogx(base_pdf[1:], counts_pdf, 'b-', linewidth=2)
 
     #counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
 
@@ -171,8 +173,8 @@ def draw_file_repeat_cnt():
 
     print "start labeling!"
     
-    #ax.set_ylim(0, 1)
-    ax.set_xlim(2, data.max())
+    #ax.set_ylim(0, )
+    ax.set_xlim(1, data.max())
 
     ax.set_xlabel(xlabel, fontsize=18)
     ax.set_ylabel(ylabel, fontsize=18)  # 24,>14
