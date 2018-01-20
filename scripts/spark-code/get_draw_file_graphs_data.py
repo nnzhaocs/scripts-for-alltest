@@ -1,7 +1,7 @@
-
-import sys
-sys.path.append('../plotter/')
-from draw_pic import *
+# -*- coding: utf-8 -*-
+#import sys
+#sys.path.append('../plotter/')
+#from draw_pic import *
 from analysis_library import *
 # import pandas as pd
 
@@ -21,11 +21,14 @@ draw_repeat_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_repeat_cnt.csv
 
 def main():
     sc, spark = init_spark_cluster()
-    #save_file_type_by_repeat_cnt(spark, sc)
+    save_file_type_by_repeat_cnt(spark, sc)
     #save_file_size(spark, sc)
     #save_file_repeat_cnt(spark, sc)
     #calculate_capacity(spark, sc)
-    save_file_type_by_repeat_cnt(spark, sc)
+#<<<<<<< HEAD
+#=======
+#    save_file_type_by_repeat_cnt(spark, sc)
+#>>>>>>> 7ec534de6ede12c70e7da7ae06976c430aea05f4
 
 
 def save_file_type_by_repeat_cnt(spark, sc):
@@ -35,9 +38,11 @@ def save_file_type_by_repeat_cnt(spark, sc):
     func = F.udf(lambda s: s[0].split(" ")[0])
     func0 = F.udf(lambda s: s[0] if len(s) else None)
 
-    file_info_df = file_info.select(func0('file_name'), 'cnt', func('type').alias('type'), func0('extension').alias('extension'),
+    file_info_df = file_info.select(func0('file_name').alias('filename'), 'cnt', func('type').alias('type'), func0('extension').alias('extension'),
                 'total_sum', 'sha256', 'avg')
-
+    file_info_df = file_info_df.filter(file_info_df.type.isNotNull())
+    file_info_df.printSchema()
+    """
     sort_cnt = file_info_df.sort(file_info_df.cnt.desc())
     sort_cnt.show()
     sort_cnt.write.csv(draw_type_by_repeat_cnt)
@@ -45,31 +50,34 @@ def save_file_type_by_repeat_cnt(spark, sc):
     sort_cap = file_info_df.sort(file_info_df.total_sum.desc())
     sort_cap.show()
     sort_cap.write.csv(draw_type_by_total_sum)
-
-    type = file_info_df.groupby('type').agg(F.sum('cnt').alias('total_cnt'), F.sum('avg').alias('size_dropdup'),
+    """
+    
+    type1 = file_info_df.groupby('type').agg(F.sum('cnt').alias('total_cnt'), F.sum('avg').alias('size_dropdup'),
                                             F.sum('total_sum').alias('sum_size'),
-                                            F.collect_set('extension'),
+                                            func0(F.collect_set('extension')).alias('extension'),
                                             F.size(F.collect_list('cnt')).alias('uniq_cnt'))
-    type = type.withColumn('avg_size', F.col('sum_size')*1.0/F.col('cnt'))
-    type = type.withColumn('dup_ratio_cap', F.col('size_dropdup')*1.0/F.sum('sum_size'))
-    type = type.withColumn('dup_ratio_cnt', F.col('uniq_cnt') * 1.0 / F.sum('total_cnt'))
+    type1.printSchema()
+    
+    type1 = type1.withColumn('avg_size', F.col('sum_size')*1.0/F.col('total_cnt'))
+    type1 = type1.withColumn('dup_ratio_cap', (F.col('sum_size') - F.col('size_dropdup'))/F.col('sum_size')*1.0)
+    type1 = type1.withColumn('dup_ratio_cnt', (F.col('total_cnt') - F.col('uniq_cnt'))* 1.0 / F.col('total_cnt'))
 
-    sort_type_cnt = type.sort(type.cnt.desc())
-    sort_type_cnt.show()
+    sort_type_cnt = type1.sort(type1.total_cnt.desc())
+    #sort_type_cnt.show()
     sort_type_cnt.write.csv(draw_type1_by_repeat_cnt)
 
-    sort_type_size = type.sort(type.sum_size.desc())
-    sort_type_size.show()
+    sort_type_size = type1.sort(type1.sum_size.desc())
+    #sort_type_size.show()
     sort_type_size.write.csv(draw_type_by_size)
 
-    sort_type_dup_r = type.sort(type.dup_ratio_cap.desc())
-    sort_type_dup_r.show()
+    sort_type_dup_r = type1.sort(type1.dup_ratio_cap.desc())
+    #sort_type_dup_r.show()
     sort_type_dup_r.write.csv(draw_type_by_dup_ratio_cap)
 
-    sort_type_dup_r = type.sort(type.dup_ratio_cnt.desc())
-    sort_type_dup_r.show()
+    sort_type_dup_r = type1.sort(type1.dup_ratio_cnt.desc())
+    #sort_type_dup_r.show()
     sort_type_dup_r.write.csv(draw_type_by_dup_ratio_cnt)
-
+    
 
 def calculate_capacity(spark, sc):
     df = spark.read.parquet(unique_size_cnt_total_sum)

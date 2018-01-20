@@ -13,9 +13,9 @@ def main():
     #save_unique_file_layer_mapping(spark, sc)
     #save_layer_file_cnt(spark, sc)
     #find_file_digest_in_layer(spark, sc)
-    #save_layer_redundant_info(spark, sc)
+    save_layer_redundant_info(spark, sc)
     #save_layer_uniq_shared_size(spark, sc)
-    save_layer_info(spark, sc)
+    #save_layer_info(spark, sc)
     # layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates('layer_id')
     # files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
     #     "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
