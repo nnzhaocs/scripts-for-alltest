@@ -1,120 +1,35 @@
-\section{Why there are so many redundant files?}
+\section{Layer characterization}
 \label{sec:redundant_layers}
 
-\subsection{Redundant ratio for directories}
+\subsection{Layer reference count}
 
-\begin{table} 
-	\centering 
-	\scriptsize  
-	%\begin{minipage}{.5\linewidth}
-	\caption{Inter-dir redundant ratio for dirs in terms of file count and capacity} \label{tbl:intra_dup_ratio_dirs} 
-	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		& File count & Capacity \\
-		\hline
-		Avg. & 98.75\% & 97.33\%\\
-		\hline
-		Median & - & - \\
-		\hline
-		Max. & 1 & 1\\
-		\hline
-		Min.  & 0.87\%  & $<$ 0.00\%\\
-		\hline
-		Stdev.  &  4.70\% & 10.49\\
-		\hline
-		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
-		\hline 
-		Total layer dataset (Uncompressed) &  -	& -\\
-		\hline
-	\end{tabular} 
-\end{table}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/shared_cnt}
+	\caption{CDF of layer reference count.
+	}
+	\label{fig:reference-cnt}
+\end{figure}
 
-\begin{table} 
-	\centering 
-	\scriptsize  
-	%\begin{minipage}{.5\linewidth}
-	\caption{Intra-dir redundant ratio for dirs in terms of file count and capacity} \label{tbl:inter_dup_ratio_dirs} 
-	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		& File count & Capacity \\
-		\hline
-		Avg. & 98.75\% & 97.33\%\\
-		\hline
-		Median & - & - \\
-		\hline
-		Max. & 1 & 1\\
-		\hline
-		Min.  & 0.87\%  & $<$ 0.00\%\\
-		\hline
-		Stdev.  &  4.70\% & 10.49\\
-		\hline
-		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
-		\hline 
-		Total layer dataset (Uncompressed) &  -	& -\\
-		\hline
-	\end{tabular} 
-\end{table}
+\subsection{Layer size}
 
-\subsection{Redundant directory characterization}
 
-\begin{table} 
-	\centering 
-	\scriptsize  
-	%\begin{minipage}{.5\linewidth}
-	\caption{Top redundant dirs'characterization} 
-	\label{tbl:top_dup_dirs} 
-	\begin{tabular}{|l|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		Name & Num. & Redundant ratio & Avg. size \\
-		\hline
-		home &   &   &     \\
-		\hline
-		&   &   &      \\
-		\hline
-		&   &   &      \\
-		\hline
-		&  &  &  \\
-		\hline
-		& &  &   \\
-		\hline
-		& &  &   \\
-		\hline
-		&  &  & \\
-		\hline
-	\end{tabular} 
-\end{table} 
+\subsection{Compression ratio VS. intra-layer dedup ratio}
 
-%\begin{table} 
-%	\centering 
-%	\scriptsize  
-%	%\begin{minipage}{.5\linewidth}
-%	\caption{Summary of image types} \label{tbl:redundant_ratio} 
-%	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
-%		\hline 
-%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-%		Image types & num. & avg. redundant ratio  \\
-%		\hline
-%		  &   &        \\
-%		\hline
-%		  &   &         \\
-%		\hline
-%		   &   &       \\
-%		   \hline
-%		other     &   &       \\
-%		\hline
-%	\end{tabular} 
-%\end{table}
 
-%\subsection{Redundant files with same filename and relative path}
-%
-%\subsection{Common directories that contains redundant files}
-%
-%\subsection{Redundant tar files}
+\subsection{Directory count}
 
+\subsection{File count}
+
+\subsection{Layer depth}
+%\begin{figure}[!t]
+%	\centering
+%	\subfigure[CDF of layer pull count]{\label{fig_reference_cnt_cdf}
+%		\includegraphics[width=0.48\textwidth]{graphs/pull_cnt.eps}%
+%	}
+%	\subfigure[PDF of layer reference count]{\label{fig_reference_cnt_pdf}
+%		\includegraphics[width=0.48\textwidth]{graphs/shared_cnt}
+%	}
+%	\caption{Layer popularity distribution}
+%	\label{fig:reference-cnt}
+%\end{figure}
