@@ -111,8 +111,9 @@ def save_image_layer_mapping(spark, sc):
 
 
 def save_layers_shared_private_dup_ratio(spark, sc):
-    """
-    share_or_not = spark.read.parquet(image_layer_mapping_shared_pull_cnt).select('layer_id', 'shared_image_cnt')
+
+    share_or_not = spark.read.parquet(image_layer_mapping_shared_pull_cnt).select(
+        'layer_id', 'shared_image_cnt').dropDuplicates(['layer_id'])
 
     df = spark.read.parquet(LAYER_FILE_MAPPING_DIR).select('layer_id', 'digest')
 
@@ -122,19 +123,15 @@ def save_layers_shared_private_dup_ratio(spark, sc):
 
     lf_shared_or_not = lf_info.join(share_or_not, ['layer_id'], 'inner')
 
-    lf_shared_or_not.write.parquet('/redundant_layer_analysis/lf_shared_or_not.parquet')
-    """
+    # lf_shared_or_not.write.parquet('/redundant_layer_analysis/lf_shared_or_not.parquet')
     # ==================> get shared layers dup ratio
-    """
-    lf_shared_or_not = spark.read.parquet('/redundant_layer_analysis/lf_shared_or_not.parquet')
-
+    # lf_shared_or_not = spark.read.parquet('/redundant_layer_analysis/lf_shared_or_not.parquet')
     #shared_lf_info
-    #lf_info = 
-    lf_shared_or_not.filter('shared_image_cnt > 1').select('layer_id', 'digest', 'avg', 'cnt').write.save('/redundant_layer_analysis/lf_shared_cnt.parquet')
-    """
-    lf_info = spark.read.parquet('/redundant_layer_analysis/lf_shared_cnt.parquet')
-    print("===========> %d",lf_info.count())
-    """
+    lf_info = lf_shared_or_not.filter('shared_image_cnt > 1').select('layer_id', 'digest', 'avg', 'cnt')
+    # .write.save('/redundant_layer_analysis/lf_shared_cnt.parquet')
+    # lf_info = spark.read.parquet('/redundant_layer_analysis/lf_shared_cnt.parquet')
+    # print("===========> %d",lf_info.count())
+
     lf_uniq = lf_info.dropDuplicates(['layer_id', 'digest'])
     
 
@@ -167,19 +164,14 @@ def save_layers_shared_private_dup_ratio(spark, sc):
     new = new.withColumn('inter_layer_dup_ratio_cnt', (F.col('cnt_shared_files') / F.col('cnt_files')))
 
     new.write.save(shared_layer_dup_ratio)
-    """
     
     # ========================> get private layer dup ratio
-    """
-    lf_shared_or_not = spark.read.parquet('/redundant_layer_analysis/lf_shared_or_not.parquet')
 
-    #shared_lf_info
-    #lf_info = 
-    lf_shared_or_not.filter('shared_image_cnt == 1').select('layer_id', 'digest', 'avg', 'cnt').write.save('/redundant_layer_analysis/lf_private_cnt.parquet')
-    """
-    """
-    private_lf_info = lf_shared_or_not.filter('shared_image_cnt == 1')
-    lf_info = private_lf_info
+    # lf_shared_or_not = spark.read.parquet('/redundant_layer_analysis/lf_shared_or_not.parquet')
+    lf_info = lf_shared_or_not.filter('shared_image_cnt == 1').select('layer_id', 'digest', 'avg', 'cnt')
+    #.write.save('/redundant_layer_analysis/lf_private_cnt.parquet')
+    # private_lf_info = lf_shared_or_not.filter('shared_image_cnt == 1')
+    # lf_info = private_lf_info
 
     lf_uniq = lf_info.dropDuplicates(['layer_id', 'digest'])
 
@@ -212,7 +204,6 @@ def save_layers_shared_private_dup_ratio(spark, sc):
     new = new.withColumn('inter_layer_dup_ratio_cnt', (F.col('cnt_shared_files') / F.col('cnt_files')))
 
     new.write.save(private_layer_dup_ratio)
-    """
 
 
 def save_image_dup_ratio_capacity(spark, sc):
