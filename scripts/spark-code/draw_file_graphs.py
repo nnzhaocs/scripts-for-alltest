@@ -24,8 +24,8 @@ draw_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_repeat_cnt_data.csv')
 
 
 def main():
-    draw_file_repeat_cnt()
-    #draw_file_size()
+    #draw_file_repeat_cnt()
+    draw_file_size()
 
 
 def draw_file_size():
@@ -65,7 +65,7 @@ def draw_file_size():
     cd = plt.semilogx(base_cdf_size_whole[1:], cdf_size_whole, 'g-', linewidth=2, label='Whole')
 
     print "start labeling!"
-
+    ax.set_xlim(2, data_size_whole.max())
     ax.set_ylim(0, 1)
 
     ax.set_xlabel(xlabel, fontsize=18)
@@ -79,15 +79,15 @@ def draw_file_size():
     fig.savefig(name)
     eps = 'file_size_cdf.eps'
     fig.savefig(eps)
-
+    
     """plot pdf"""
-
-    ylabel = 'File frequency'
+    """
+    ylabel = 'File probability'
     xlabel = 'File size(KB)'
 
-    counts_pdf_size_uniq, base_pdf_size_uniq = np.histogram(data_size_uniq, bins=bins_size_uniq, normed=False)
-    counts_pdf_size_shared, base_pdf_size_shared = np.histogram(data_size_shared, bins=bins_size_shared, normed=False)
-    counts_pdf_size_whole, base_pdf_size_whole = np.histogram(data_size_whole, bins=bins_size_whole, normed=False)
+    counts_pdf_size_uniq, base_pdf_size_uniq = np.histogram(data_size_uniq, bins=bins_size_uniq, normed=True)
+    counts_pdf_size_shared, base_pdf_size_shared = np.histogram(data_size_shared, bins=bins_size_shared, normed=True)
+    counts_pdf_size_whole, base_pdf_size_whole = np.histogram(data_size_whole, bins=bins_size_whole, normed=True)
 
     print "start plotting!"
 
@@ -96,6 +96,8 @@ def draw_file_size():
     cd = plt.semilogx(base_pdf_size_whole[1:], counts_pdf_size_whole, 'g-', linewidth=2, label='Whole')
 
     print "start labeling!"
+    ax.set_xlim(2, data_size_whole.max())
+    ax.set_ylim(0, 1)
 
     #ax.set_ylim(0, 1)
 
@@ -110,7 +112,7 @@ def draw_file_size():
     fig.savefig(name)
     eps = 'file_size_pdf.eps'
     fig.savefig(eps)
-
+    """
 
 def draw_file_repeat_cnt():
     df = pandas.read_csv(draw_repeat_cnt)
