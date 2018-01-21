@@ -22,10 +22,90 @@ draw_size_shared = os.path.join(RESULTS_DIR, 'draw_size_shared_data.csv')
 draw_size_whole = os.path.join(RESULTS_DIR, 'draw_size_whole_data.csv')
 draw_repeat_cnt = os.path.join(RESULTS_DIR, 'draw_repeat_cnt_data.csv')
 
+tmp = os.path.join(RESULTS_DIR, 'draw_layer_shared_cnt_data.csv')
+
 
 def main():
-    draw_file_repeat_cnt()
-    #draw_file_size()
+    #draw_file_repeat_cnt()
+    draw_file_size()
+
+
+def draw_3_data_cdf(fig, data1, data2, data3, xlabel, ylabel_cdf):
+    ax = fig.add_subplot(111)
+
+    bins_size_data1 = np.arange(data1.min()-1, data1.max()+1)
+    bins_size_data2 = np.arange(data2.min()-1, data2.max()+1)
+    bins_size_data3 = np.arange(data3.min()-1, data3.max()+1)
+
+    print "cdf and pdf calculating: bins = %d, %d, %d" % (len(bins_size_data1), len(bins_size_data2), len(bins_size_data3))
+    counts_cdf_size_data1, base_cdf_size_data1 = np.histogram(data1, bins=bins_size_data1, normed=True)
+    counts_cdf_size_data2, base_cdf_size_data2 = np.histogram(data2, bins=bins_size_data2, normed=True)
+    counts_cdf_size_data3, base_cdf_size_data3 = np.histogram(data3, bins=bins_size_data3, normed=True)
+
+    cdf_size_data1 = np.cumsum(counts_cdf_size_data1)
+    cdf_size_data2 = np.cumsum(counts_cdf_size_data2)
+    cdf_size_data3 = np.cumsum(counts_cdf_size_data3)
+
+    print "start plotting!"
+
+    line_data1 = ax.semilogx(base_cdf_size_data1[1:], cdf_size_data1, 'b-', linewidth=2, label='Repeat cnt. = 1')
+    line_data2 = ax.semilogx(base_cdf_size_data2[1:], cdf_size_data2, 'r-', linewidth=2, label='Repeat cnt. > 1')
+    line_data3 = ax.semilogx(base_cdf_size_data3[1:], cdf_size_data3, 'g-', linewidth=2, label='Whole')
+
+    plt.legend(cd + pd, [l.get_label() for l in (line_data1 + line_data2 + line_data3)], loc='center right', prop={'size': 18})
+
+    print "start labeling!"
+    ax.set_xlim(2, counts_cdf_size_data3.max())
+    ax.set_ylim(0, 1)
+
+    ax.set_xlabel(xlabel, fontsize=18)
+    ax.set_ylabel(ylabel_cdf, fontsize=18)  # 24,>14
+    ax.get_yaxis().set_tick_params(labelsize=18)
+    ax.get_xaxis().set_tick_params(labelsize=18)
+
+    plt.grid()
+    plt.tight_layout()
+    name = '%s_cdf.png' % xlabel.replace(" ", "_")#.replace("/","divided_by").replace(":","")
+    fig.savefig(name)
+    name = '%s_cdf.eps' % xlabel.replace(" ", "_")
+    fig.savefig(name)
+
+
+def draw_3_data_pdf(fig, data1, data2, data3, xlabel, ylabel_pdf):
+    ax = fig.add_subplot(111)
+
+    bins_size_data1 = np.arange(data1.min()-1, data1.max()+1)
+    bins_size_data2 = np.arange(data2.min()-1, data2.max()+1)
+    bins_size_data3 = np.arange(data3.min()-1, data3.max()+1)
+
+    print "cdf and pdf calculating: bins = %d, %d, %d" % (len(bins_size_data1), len(bins_size_data2), len(bins_size_data3))
+    counts_cdf_size_data1, base_cdf_size_data1 = np.histogram(data1, bins=bins_size_data1, normed=True)
+    counts_cdf_size_data2, base_cdf_size_data2 = np.histogram(data2, bins=bins_size_data2, normed=True)
+    counts_cdf_size_data3, base_cdf_size_data3 = np.histogram(data3, bins=bins_size_data3, normed=True)
+
+    print "start plotting!"
+
+    line_data1 = ax.semilogx(base_cdf_size_data1[1:], counts_cdf_size_data1, 'b-', linewidth=2, label='Repeat cnt. = 1')
+    line_data2 = ax.semilogx(base_cdf_size_data2[1:], counts_cdf_size_data2, 'r-', linewidth=2, label='Repeat cnt. > 1')
+    line_data3 = ax.semilogx(base_cdf_size_data3[1:], counts_cdf_size_data3, 'g-', linewidth=2, label='Whole')
+
+    plt.legend(cd + pd, [l.get_label() for l in (line_data1 + line_data2 + line_data3)], loc='center right', prop={'size': 18})
+
+    print "start labeling!"
+    ax.set_xlim(2, counts_cdf_size_data3.max())
+    ax.set_ylim(0, 1)
+
+    ax.set_xlabel(xlabel, fontsize=18)
+    ax.set_ylabel(ylabel_pdf, fontsize=18)  # 24,>14
+    ax.get_yaxis().set_tick_params(labelsize=18)
+    ax.get_xaxis().set_tick_params(labelsize=18)
+
+    plt.grid()
+    plt.tight_layout()
+    name = '%s_pdf.png' % xlabel.replace(" ", "_")#.replace("/","divided_by").replace(":","")
+    fig.savefig(name)
+    name = '%s_pdf.eps' % xlabel.replace(" ", "_")
+    fig.savefig(name)
 
 
 def draw_file_size():
@@ -38,78 +118,64 @@ def draw_file_size():
     data_size_shared = size_shared.as_matrix()/1024.0
     data_size_whole = size_whole.as_matrix()/1024.0
 
-    ylabel = 'Cumulative file probability'
+    ylabel_cdf = 'Cumulative file probability'
     xlabel = 'File size(KB)'
 
     fig = fig_size('min')
 
-    ax = fig.add_subplot(111)
-
-    bins_size_uniq = np.arange(data_size_uniq.min()-1, data_size_uniq.max()+1)
-    bins_size_shared = np.arange(data_size_shared.min()-1, data_size_shared.max()+1)
-    bins_size_whole = np.arange(data_size_whole.min()-1, data_size_whole.max()+1)
-
-    print "cdf and pdf calculating: bins = %d, %d, %d" % (len(bins_size_uniq), len(bins_size_shared), len(bins_size_whole))
-    counts_cdf_size_uniq, base_cdf_size_uniq = np.histogram(data_size_uniq, bins=bins_size_uniq, normed=True)
-    counts_cdf_size_shared, base_cdf_size_shared = np.histogram(data_size_shared, bins=bins_size_shared, normed=True)
-    counts_cdf_size_whole, base_cdf_size_whole = np.histogram(data_size_whole, bins=bins_size_whole, normed=True)
-
-    cdf_size_uniq = np.cumsum(counts_cdf_size_uniq)
-    cdf_size_shared = np.cumsum(counts_cdf_size_shared)
-    cdf_size_whole = np.cumsum(counts_cdf_size_whole)
-
-    print "start plotting!"
-
-    cd = plt.semilogx(base_cdf_size_uniq[1:], cdf_size_uniq, 'b-', linewidth=2, label='Repeat cnt. = 1')
-    cd = plt.semilogx(base_cdf_size_shared[1:], cdf_size_shared, 'r-', linewidth=2, label='Repeat cnt. > 1')
-    cd = plt.semilogx(base_cdf_size_whole[1:], cdf_size_whole, 'g-', linewidth=2, label='Whole')
-
-    print "start labeling!"
-
-    ax.set_ylim(0, 1)
-
-    ax.set_xlabel(xlabel, fontsize=18)
-    ax.set_ylabel(ylabel, fontsize=18)  # 24,>14
-    ax.get_yaxis().set_tick_params(labelsize=18)
-    ax.get_xaxis().set_tick_params(labelsize=18)
-
-    plt.grid()
-    plt.tight_layout()
-    name = 'file_size_cdf.png'
-    fig.savefig(name)
-    eps = 'file_size_cdf.eps'
-    fig.savefig(eps)
-
+    draw_3_data_cdf(fig, data_size_uniq, data_size_shared, data_size_whole, xlabel, ylabel_cdf)
+    
     """plot pdf"""
 
-    ylabel = 'File frequency'
+    ylabel_pdf = 'File probability'
     xlabel = 'File size(KB)'
 
-    counts_pdf_size_uniq, base_pdf_size_uniq = np.histogram(data_size_uniq, bins=bins_size_uniq, normed=False)
-    counts_pdf_size_shared, base_pdf_size_shared = np.histogram(data_size_shared, bins=bins_size_shared, normed=False)
-    counts_pdf_size_whole, base_pdf_size_whole = np.histogram(data_size_whole, bins=bins_size_whole, normed=False)
+    draw_3_data_cdf(fig, data_size_uniq, data_size_shared, data_size_whole, xlabel, ylabel_pdf)
+
+
+"""plot two lines: pdf and cdf for a single data"""
+def draw_1_data_cdf_and_pdf_same_graph(fig, data1, xlabel, ylabel_cdf, ylabel_pdf):
+    data = data1
+    ax = fig.add_subplot(111)
+
+    print("plot: min = %d" % data.min())
+    print("plot: max = %d" % data.max())
+    print("plot: median = %d" % np.median(data))
+
+    bins = np.arange(data.min() - 1, data.max() + 1)
+    print "cdf and pdf calculating: bins = %d" % len(bins)
+
+    counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
+    cdf = np.cumsum(counts_cdf)
+
+    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=True)
 
     print "start plotting!"
 
-    cd = plt.semilogx(base_pdf_size_uniq[1:], counts_pdf_size_uniq, 'b-', linewidth=2, label='Repeat cnt. = 1')
-    cd = plt.semilogx(base_pdf_size_shared[1:], counts_pdf_size_shared, 'r-', linewidth=2, label='Repeat cnt. > 1')
-    cd = plt.semilogx(base_pdf_size_whole[1:], counts_pdf_size_whole, 'g-', linewidth=2, label='Whole')
+    cd = ax.semilogx(base_cdf[1:], cdf, 'b-', linewidth=2, label='Cumulative distribution')
+    ax2 = ax.twinx()
+    pd = ax2.semilogx(base_pdf[1:], counts_pdf, 'r-', linewidth=2, label='Probability distribution')
 
     print "start labeling!"
-
-    #ax.set_ylim(0, 1)
+    ax.set_xlim(2, data.max())
+    ax.set_ylim(0, 1)
+    ax2.set_ylim(0, 1)
 
     ax.set_xlabel(xlabel, fontsize=18)
-    ax.set_ylabel(ylabel, fontsize=18)  # 24,>14
-    ax.get_yaxis().set_tick_params(labelsize=18)
-    ax.get_xaxis().set_tick_params(labelsize=18)
+    ax.set_ylabel(ylabel_cdf, fontsize=18)
+    ax2.set_ylabel(ylabel_pdf, fontsize=18)
 
+    ax.get_xaxis().set_tick_params(labelsize=18)
+    ax.get_yaxis().set_tick_params(labelsize=18)
+    ax2.get_yaxis().set_tick_params(labelsize=18)
+
+    plt.legend(cd+pd, [l.get_label() for l in (cd+pd)], loc='center right', prop={'size':18})
     plt.grid()
     plt.tight_layout()
-    name = 'file_size_pdf.png'
+    name = '%s.png' % xlabel.replace(" ", "_")#.replace("/","divided_by").replace(":","")
     fig.savefig(name)
-    eps = 'file_size_pdf.eps'
-    fig.savefig(eps)
+    name = '%s.eps' % xlabel.replace(" ", "_")
+    fig.savefig(name)
 
 
 def draw_file_repeat_cnt():
@@ -117,78 +183,14 @@ def draw_file_repeat_cnt():
     print("after loading file!")
     data = df.as_matrix()
     print(data)
-    ylabel = 'Cumulative file probability'
+    ylabel_cdf = 'Cumulative file probability'
+    ylabel_pdf = 'File probability'
     xlabel = 'File repeat count'
 
     fig = fig_size('min')
-    
-    ax = fig.add_subplot(111)
-    
-    bins = np.arange(data.min()-1, data.max()+1)
 
-    print "cdf and pdf calculating: bins = %d" % len(bins)
-    counts_cdf, base_cdf = np.histogram(data, bins=bins, normed=True)
+    draw_1_data_cdf_and_pdf_same_graph(fig, data, xlabel, ylabel_cdf, ylabel_pdf)
 
-    cdf = np.cumsum(counts_cdf)
-
-    print "start plotting!"
-
-    cd = plt.semilogx(base_cdf[1:], cdf, 'b-', linewidth=2)
-
-    print "start labeling!"
-    ax.set_xlim(2, data.max())
-    ax.set_ylim(0, 1)
-
-    ax.set_xlabel(xlabel, fontsize=18)
-    ax.set_ylabel(ylabel, fontsize=18)  # 24,>14
-    ax.get_yaxis().set_tick_params(labelsize=18)
-    ax.get_xaxis().set_tick_params(labelsize=18)
-
-    plt.grid()
-    plt.tight_layout()
-    name = 'file_repeat_cnt_cdf.png'
-    fig.savefig(name)
-    eps = 'file_repeat_cnt_cdf.eps'
-    fig.savefig(eps)
-    
-    """plot pdf"""
-    
-    fig = fig_size('min')
-    ax = fig.add_subplot(111)
-
-    ylabel = 'File probability'
-    xlabel = 'File repeat count'
-
-    bins = np.arange(data.min()-1, data.max()+1)
-    counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=True)
-
-    print "start plotting!"
-
-    pd = plt.semilogx(base_pdf[1:], counts_pdf, 'b-', linewidth=2)
-
-    #counts_pdf, base_pdf = np.histogram(data, bins=bins, normed=False)
-
-    print "start plotting!"
-
-    #pd = plt.hist(data, normed=False, bins=20)
-
-    print "start labeling!"
-    
-    ax.set_ylim(0, counts_pdf.max())
-    ax.set_xlim(2, data.max())
-
-    ax.set_xlabel(xlabel, fontsize=18)
-    ax.set_ylabel(ylabel, fontsize=18)  # 24,>14
-    ax.get_yaxis().set_tick_params(labelsize=18)
-    ax.get_xaxis().set_tick_params(labelsize=18)
-
-    plt.grid()
-    plt.tight_layout()
-    name = 'file_repeat_cnt_pdf.png'
-    fig.savefig(name)
-    eps = 'file_repeat_cnt_pdf.eps'
-    fig.savefig(eps)
-    
 
 if __name__ == '__main__':
     print 'start!'

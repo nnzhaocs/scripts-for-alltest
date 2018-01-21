@@ -1,50 +1,23 @@
-\section{What are the redundant files?}
+\section{Redundant file characterization}
 \label{sec:redundant_files}
 
-\begin{table} 
-	\centering 
-	\scriptsize  
-	%\begin{minipage}{.5\linewidth}
-	\caption{Summary of file \& dir. characterization} \label{tbl:sum_file_dir_char} 
-	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		Metrics & max & min & median & avg.\\
-		\hline
-		File size &   &   &   &  \\
-		\hline
-		File size (repeat cnt. $>$ 1) &   &   &    &  \\
-		\hline
-		File size (repeat cnt. $=$ 1) &   &   &    &  \\
-		\hline
-		\hline
-		Dir. size &  &  & & \\
-		\hline
-		File cnt. per dir & &  &  & \\
-		\hline
-		Redundant ratio & &  &  & \\
-		\hline
-		Dir. depth  &  &  & & \\
-		\hline
-	\end{tabular} 
-\end{table} 
-
-\subsection{Redundant file storage overhead analysis}
-
-\paragraph{Cumulative distribution and probability distribution of file repeat count}
+\subsection{File repeat count}
 
 Almost 90\% of files have equal or less than 10 redundant copies. Most files have small repeat count.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/File_repeat_count.eps}
-	\caption{CDF of file repeat count.
+	\subfigure[CDF of file repeat cnt.]{\label{fig:dedup_cdf}
+		\includegraphics [width=0.5\textwidth]{graphs/file_repeat_cnt_cdf.eps}
 	}
+	\subfigure[PDF of file repeat cnt.]{\label{fig:dedup_hist}
+		\includegraphics [width=0.5\textwidth]{graphs/file_repeat_cnt_pdf.eps}
+	}
+	\caption{File repeat count distribution}
 	\label{fig:file_repeat_count}
 \end{figure}
 
-\paragraph{Cumulative distribution and probability distribution of file size in terms of unique file size, redundant file size, overall file size}
+\subsection{File size}
 
 91\% files'sizes are equal or less than 100KB. Most files are smaller files.
 
@@ -55,6 +28,193 @@ Almost 90\% of files have equal or less than 10 redundant copies. Most files hav
 	}
 	\label{fig:file_size}
 \end{figure}
+
+\subsection{File type}
+
+\paragraph{Top redundant file types}
+
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	\caption{Top 20 redundant files' characterization (sorted by repeat cnt.)}
+%	\label{tbl:top_dup_files_repeat_cnt} 
+%	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		Filename & repeat cnt. & type & extension & size \\
+%		\hline
+%		&   &   &   &  \\
+%		\hline
+%		&   &   &   &   \\
+%		\hline
+%		&   &   &  &    \\
+%		\hline
+%		&  &  &  & \\
+%		\hline
+%		& &  &   & \\
+%		\hline
+%		& &  &   & \\
+%		\hline
+%		&  &  & & \\
+%		\hline
+%	\end{tabular} 
+%\end{table}
+
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	\caption{Top 20 redundant files' characterization (sorted by capacity)} 
+%	\label{tbl:top_dup_files_cap} 
+%	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		Filename & repeat cnt. & type & extension & size \\
+%		\hline
+%		&   &   &   &  \\
+%		\hline
+%		&   &   &   &   \\
+%		\hline
+%		&   &   &  &    \\
+%		\hline
+%		&  &  &  & \\
+%		\hline
+%		& &  &   & \\
+%		\hline
+%		& &  &   & \\
+%		\hline
+%		&  &  & & \\
+%		\hline
+%	\end{tabular} 
+%\end{table}
+
+
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	\caption{Top redundant file types} 
+%	\label{tbl:top_dup_types} 
+%	\begin{tabular}{|l|l|l|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		Type & extension & Num. & size & red. ratio (cnt.)  & red. ratio (cap.)\\
+%		\hline
+%		&   &   &  & &   \\
+%		\hline
+%		&   &   &  & &    \\
+%		\hline
+%		&   &   &   & &   \\
+%		\hline
+%		&  &  &  & & \\
+%		\hline
+%		& &  &  & & \\
+%		\hline
+%		& &  & & &  \\
+%		\hline
+%		&  &  & & &  \\
+%		\hline
+%	\end{tabular} 
+%\end{table} 
+
+%\subsection{Redundant ratio for directories}
+%
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	%\begin{minipage}{.5\linewidth}
+%	\caption{Inter-dir redundant ratio for dirs in terms of file count and capacity} \label{tbl:intra_dup_ratio_dirs} 
+%	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		& File count & Capacity \\
+%		\hline
+%		Avg. & 98.75\% & 97.33\%\\
+%		\hline
+%		Median & - & - \\
+%		\hline
+%		Max. & 1 & 1\\
+%		\hline
+%		Min.  & 0.87\%  & $<$ 0.00\%\\
+%		\hline
+%		Stdev.  &  4.70\% & 10.49\\
+%		\hline
+%		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
+%		\hline 
+%		Total layer dataset (Uncompressed) &  -	& -\\
+%		\hline
+%	\end{tabular} 
+%\end{table}
+%
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	%\begin{minipage}{.5\linewidth}
+%	\caption{Intra-dir redundant ratio for dirs in terms of file count and capacity} \label{tbl:inter_dup_ratio_dirs} 
+%	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		& File count & Capacity \\
+%		\hline
+%		Avg. & 98.75\% & 97.33\%\\
+%		\hline
+%		Median & - & - \\
+%		\hline
+%		Max. & 1 & 1\\
+%		\hline
+%		Min.  & 0.87\%  & $<$ 0.00\%\\
+%		\hline
+%		Stdev.  &  4.70\% & 10.49\\
+%		\hline
+%		Layer dataset after share.-dedup (Uncompressed) & -  & -\\
+%		\hline 
+%		Total layer dataset (Uncompressed) &  -	& -\\
+%		\hline
+%	\end{tabular} 
+%\end{table}
+
+%\subsection{Redundant directory characterization}
+%
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	%\begin{minipage}{.5\linewidth}
+%	\caption{Top redundant dirs'characterization} 
+%	\label{tbl:top_dup_dirs} 
+%	\begin{tabular}{|l|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		Name & Num. & Redundant ratio & Avg. size \\
+%		\hline
+%		home &   &   &     \\
+%		\hline
+%		&   &   &      \\
+%		\hline
+%		&   &   &      \\
+%		\hline
+%		&  &  &  \\
+%		\hline
+%		& &  &   \\
+%		\hline
+%		& &  &   \\
+%		\hline
+%		&  &  & \\
+%		\hline
+%	\end{tabular} 
+%\end{table} 
+
+%=======================================
+%|             OLD VERSION              |
+%=======================================
+
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{graphs/}
+%	\caption{CDF of file repeat count.
+%	}
+%	\label{fig:file_repeat_count}
+%\end{figure}
+
+%\paragraph{Cumulative distribution and probability distribution of file size in terms of unique file size, redundant file size, overall file size}
+
 
 %\paragraph{Average file size by repeat count}
 %
@@ -93,85 +253,60 @@ Almost 90\% of files have equal or less than 10 redundant copies. Most files hav
 %	\label{fig_sum_by_cnt}
 %\end{figure}
 
-\subsection{Redundant file characterization}
+%
+%\paragraph{Cumulative distribution and probability distribution of file repeat count}
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	%\begin{minipage}{.5\linewidth}
+%	\caption{Summary of image types} \label{tbl:redundant_ratio} 
+%	\begin{tabular}{|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		Image types & num. & avg. redundant ratio  \\
+%		\hline
+%		  &   &        \\
+%		\hline
+%		  &   &         \\
+%		\hline
+%		   &   &       \\
+%		   \hline
+%		other     &   &       \\
+%		\hline
+%	\end{tabular} 
+%\end{table}
 
-
-\begin{table} 
-	\centering 
-	\scriptsize  
-	\caption{Top 20 redundant files' characterization (sorted by repeat cnt.)}
-	\label{tbl:top_dup_files_repeat_cnt} 
-	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		Filename & repeat cnt. & type & extension & size \\
-		\hline
-		&   &   &   &  \\
-		\hline
-		&   &   &   &   \\
-		\hline
-		&   &   &  &    \\
-		\hline
-		&  &  &  & \\
-		\hline
-		& &  &   & \\
-		\hline
-		& &  &   & \\
-		\hline
-		&  &  & & \\
-		\hline
-	\end{tabular} 
-\end{table}
-
-\begin{table} 
-	\centering 
-	\scriptsize  
-	\caption{Top 20 redundant files' characterization (sorted by capacity)} 
-	\label{tbl:top_dup_files_cap} 
-	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		Filename & repeat cnt. & type & extension & size \\
-		\hline
-		&   &   &   &  \\
-		\hline
-		&   &   &   &   \\
-		\hline
-		&   &   &  &    \\
-		\hline
-		&  &  &  & \\
-		\hline
-		& &  &   & \\
-		\hline
-		& &  &   & \\
-		\hline
-		&  &  & & \\
-		\hline
-	\end{tabular} 
-\end{table}
-
-
-\begin{table} 
-	\centering 
-	\scriptsize  
-	\caption{Top redundant file types} 
-	\label{tbl:top_dup_types} 
-	\begin{tabular}{|l|l|l|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		Type & extension & Num. & size & red. ratio (cnt.)  & red. ratio (cap.)\\
-		\hline
-		  &   &   &  & &   \\
-		\hline
-		  &   &   &  & &    \\
-		\hline
-		  &   &   &   & &   \\
-		\hline
-		 &  &  &  & & \\
-		\hline
-		  & &  &  & & \\
-		\hline
-		  & &  & & &  \\
-		\hline
-		   &  &  & & &  \\
-		\hline
-	\end{tabular} 
-\end{table} 
-
+%\subsection{Redundant files with same filename and relative path}
+%
+%\subsection{Common directories that contains redundant files}
+%
+%\subsection{Redundant tar files}
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	%\begin{minipage}{.5\linewidth}
+%	\caption{Summary of file \& dir. characterization} \label{tbl:sum_file_dir_char} 
+%	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		Metrics & max & min & median & avg.\\
+%		\hline
+%		File size &   &   &   &  \\
+%		\hline
+%		File size (repeat cnt. $>$ 1) &   &   &    &  \\
+%		\hline
+%		File size (repeat cnt. $=$ 1) &   &   &    &  \\
+%		\hline
+%		\hline
+%		Dir. size &  &  & & \\
+%		\hline
+%		File cnt. per dir & &  &  & \\
+%		\hline
+%		Redundant ratio & &  &  & \\
+%		\hline
+%		Dir. depth  &  &  & & \\
+%		\hline
+%	\end{tabular} 
+%\end{table} 
