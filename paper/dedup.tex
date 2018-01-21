@@ -5,10 +5,15 @@
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/capacity_data_ratio.eps}
-	\caption{Redundant storage overhead.
+	%\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
+	\subfigure[File-level dedup model]{\label{fig:over-dup-overhead-cnt}
+		\includegraphics [width=0.21\textwidth]{graphs/dup-ratio-cnt.pdf}
 	}
-	\label{fig:overview_redundant_overhead}
+	\subfigure[Similar layer dedup]{\label{fig:over-dup-overhead-cap}
+		\includegraphics [width=0.225\textwidth]{graphs/dup-ratio-cap.pdf}
+	}
+	\caption{Redundant storage overhead.}
+	\label{fig:over-dup-overhead}
 \end{figure}
 
 \begin{table} 
@@ -45,14 +50,14 @@ r_{inter\_dedup.} = \frac{S_{uncompress.} - S_{shares}}{S_{uncompress.}}
 
 \begin{figure}
 	\centering
-	\subfigure[CDF of intra/inter-layer redundant ratio in terms of file count/capacity]{\label{fig:layer-dedup_cdf}
-		\includegraphics [width=0.5\textwidth]{graphs/layer-dup-ratio-cdf}
+	\subfigure[CDF of intra/inter-layer redundant ratio in terms of file count/capacity]{\label{fig:layer-dedup-cdf}
+		\includegraphics [width=0.4\textwidth]{graphs/layer-dup-ratio-cdf}
 	}
 	\subfigure[Histogram of intra/inter-layer redundant ratio in terms of file count/capacity]{\label{fig:layer-dedup_hist}
-		\includegraphics [width=0.5\textwidth]{graphs/layer-dup-ratio-pdf}
+		\includegraphics [width=0.4\textwidth]{graphs/layer-dup-ratio-pdf}
 	}
 	\caption{Layer redundant ratio}
-	\label{fig:layer-dedup_cdf_and_hist_layer}
+	\label{fig:layer-dedup-ratio}
 \end{figure}
 
 \paragraph{Inter-layer redundant ratio} Inter-layer redundant ratio is shown in Figure~\ref{fig:layer-dedup_cdf_and_hist_layer}
@@ -62,13 +67,13 @@ r_{inter\_dedup.} = \frac{S_{uncompress.} - S_{shares}}{S_{uncompress.}}
 \begin{figure}
 	\centering
 	\subfigure[CDF of intra/inter-image redundant ratio in terms of file count/capacity]{\label{fig:image-dedup_cdf}
-		\includegraphics [width=0.5\textwidth]{graphs/image-dup-ratio-pdf}
+		\includegraphics [width=0.4\textwidth]{graphs/image-dup-ratio-pdf}
 	}
 	\subfigure[Histogram of intra/inter-image redundant ratio in terms of file count/capacity]{\label{fig:image-dedup_hist}
-		\includegraphics [width=0.5\textwidth]{graphs/image-dup-ratio-cdf}
+		\includegraphics [width=0.4\textwidth]{graphs/image-dup-ratio-cdf}
 	}
 	\caption{Image redundant ratio}
-	\label{fig:image-dedup_cdf_and_hist_layer}
+	\label{fig:image-dedup-ratio}
 \end{figure}
 \paragraph{Intra-image redundant ratio} Intra-image redundant ratio is shown in Figure~\ref{fig:image-dedup_cdf_and_hist_layer}
 

@@ -1,35 +1,103 @@
-\section{Layer characterization}
+\section{Image \& layer characterization}
 \label{sec:redundant_layers}
+
+\subsubsection{Image size and layer size}
+
+\begin{figure}[!t]
+	\centering
+	\subfigure[CDF of image size]{\label{fig_reference_cnt_cdf}
+		\includegraphics[width=0.4\textwidth]{graphs/image-size-cdf.pdf}%
+	}
+	\subfigure[CDF of layer size]{\label{fig_reference_cnt_pdf}
+		\includegraphics[width=0.4\textwidth]{graphs/layer-size-cdf.pdf}
+	}
+	\caption{Image/layer size distribution}
+	\label{fig:image-size}
+\end{figure}
+
+\paragraph{Compression ratio}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{graphs/compress-ratio-cdf.pdf}
+	\caption{CDF of compression ratio.
+	}
+	\label{fig:compress-ratio}
+\end{figure}
+
+\subsection{Layer count per image}
+
+\begin{figure}[!t]
+	\centering
+	\subfigure[CDF of layer count per image]{\label{fig_reference_cnt_cdf}
+		\includegraphics[width=0.215\textwidth]{graphs/image-layer-cnt}%
+	}
+	\subfigure[Histogram of layer count per image]{\label{fig_reference_cnt_pdf}
+		\includegraphics[width=0.21\textwidth]{graphs/image-layer-cnt-pdf.pdf}
+	}
+	\caption{Image size distribution}
+	\label{fig:image-size}
+\end{figure}
 
 \subsection{Layer reference count}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/shared_cnt}
+	\includegraphics[width=0.21\textwidth]{graphs/shared-cnt-cdf.pdf}
 	\caption{CDF of layer reference count.
 	}
 	\label{fig:reference-cnt}
 \end{figure}
 
-\subsection{Layer size}
-
-
-\subsection{Compression ratio VS. intra-layer dedup ratio}
-
-
 \subsection{Directory count}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{graphs/dir-cnt-cdf.pdf}
+	\caption{CDF of directory count per image/layer.
+	}
+	\label{fig:reference-cnt}
+\end{figure}
+
+\begin{figure}[!t]
+	\centering
+	\subfigure[Histogram of directory count per image]{\label{fig_reference_cnt_cdf}
+		\includegraphics[width=0.2\textwidth]{graphs/image-dir-cnt-pdf.pdf}%
+	}
+	\subfigure[Histogram of directory count per layer]{\label{fig_reference_cnt_pdf}
+		\includegraphics[width=0.22\textwidth]{graphs/layer-dir-cnt.pdf}
+	}
+	\caption{Histogram of directory count distribution}
+	\label{fig:reference-cnt}
+\end{figure}
+
+\paragraph{Layer depth}
+
+\begin{figure}[!t]
+	\centering
+	\subfigure[CDF of layer depth]{\label{fig_reference_cnt_cdf}
+		\includegraphics[width=0.21\textwidth]{graphs/layer-depth-cdf.pdf}%
+	}
+	\subfigure[Histogram of layer depth]{\label{fig_reference_cnt_pdf}
+		\includegraphics[width=0.21\textwidth]{graphs/layer-depth-pdf.pdf}
+	}
+	\caption{Layer depth distribution}
+	\label{fig:reference-cnt}
+\end{figure}
 
 \subsection{File count}
 
-\subsection{Layer depth}
-%\begin{figure}[!t]
-%	\centering
-%	\subfigure[CDF of layer pull count]{\label{fig_reference_cnt_cdf}
-%		\includegraphics[width=0.48\textwidth]{graphs/pull_cnt.eps}%
-%	}
-%	\subfigure[PDF of layer reference count]{\label{fig_reference_cnt_pdf}
-%		\includegraphics[width=0.48\textwidth]{graphs/shared_cnt}
-%	}
-%	\caption{Layer popularity distribution}
-%	\label{fig:reference-cnt}
-%\end{figure}
+\begin{figure}[!t]
+	\centering
+	\subfigure[Histogram of directory count per image]{\label{fig_reference_cnt_cdf}
+		\includegraphics[width=0.21\textwidth]{graphs/image-file-cnt-pdf.pdf}%
+	}
+	\subfigure[Histogram of directory count per layer]{\label{fig_reference_cnt_pdf}
+		\includegraphics[width=0.22\textwidth]{graphs/layer-file-cnt-pdf.pdf}
+	}
+	\caption{Histogram of directory count distribution}
+	\label{fig:reference-cnt}
+\end{figure}
+
+
+

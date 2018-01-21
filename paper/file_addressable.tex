@@ -10,16 +10,24 @@ Benefit: saving money, reducing storage management overhead.
 
 \begin{figure}
 	\centering
-	%\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
-	\subfigure[File-level dedup model]{\label{fig:per_layer_ratio_fcnt_cdf}
-		\includegraphics [width=0.23\textwidth]{graphs/graph_compression_layers.pdf}
+	\includegraphics[width=0.3\textwidth]{graphs/graph_compression_layers.pdf}
+	\caption{File-level dedup model.
 	}
-	\subfigure[Similar layer dedup]{\label{fig:per_layer_ratio_fcnt_pdf}
-		\includegraphics [width=0.22\textwidth]{graphs/graph_reconstruct_layers.pdf}
-	}
-	\caption{File-level content addressable storage model}
-	\label{fig:eval-stdev-erasure-cnt}
+	\label{fig:file-dedup-model}
 \end{figure}
+
+%\begin{figure}
+%	\centering
+%	\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
+%	\subfigure[]{\label{fig:per_layer_ratio_fcnt_cdf}
+%		\includegraphics [width=0.23\textwidth]{graphs/}
+%	}
+%	\subfigure[Similar layer dedup]{\label{fig:per_layer_ratio_fcnt_pdf}
+%		\includegraphics [width=0.22\textwidth]{graphs/graph_reconstruct_layers.pdf}
+%	}
+%	\caption{File-level content addressable storage model}
+%	\label{fig:eval-stdev-erasure-cnt}
+%\end{figure}
 
 %\subsection{Hints for performance improvement and storage saving}
 
@@ -94,7 +102,7 @@ Typically, workload fluctuates, with peaks and troughs. To reduce overhead, we c
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/pull_cnt.eps}
+	\includegraphics[width=0.4\textwidth]{graphs/pull-cnt.pdf}
 	\caption{CDF of layer \& image pull count.
 	}
 	\label{fig:pull-cnt}
@@ -139,61 +147,61 @@ Figure~\ref{xxx} shows the compression time across
 
 
 
-\begin{table} 
-	\centering 
-	\scriptsize  
-	%\begin{minipage}{.5\linewidth}
-	\caption{Summary of layer \& image characterization} \label{tbl:redundant_ratio} 
-	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		Metrics & max & min & median & avg.\\
-		\hline
-		Compressed layer size &   &   &   &  \\
-		\hline
-		Uncompressed layer size &   &   &    &  \\
-		\hline
-		Archival size &  &  & & \\
-		\hline
-		Compression ratio &   &   &    &  \\
-		\hline
-		Layer pull cnt. &  &  & & \\
-		\hline
-		File cnt. per layer &  &  & & \\
-		\hline
-		Dir. cnt. per layer &  &  & & \\
-		\hline
-		Layer depth &  &  & & \\
-		\hline
-		\hline
-		Compressed image size &  &  & & \\
-		\hline
-		Uncompressed image size & &  &  & \\
-		\hline
-		Archival image size & &  &  & \\
-		\hline
-		Compression ratio &   &   &    &  \\
-		\hline
-		Image pull cnt.  &  &  & & \\
-		\hline
-		Layer cnt. per image  &  &  & & \\
-		\hline
-		Shared layer cnt. per image  &  &  & & \\
-		\hline
-		File cnt. per layer &  &  & & \\
-		\hline
-		Dir. cnt. per layer &  &  & & \\
-		\hline	
-	\end{tabular} 
-\end{table} 
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	%\begin{minipage}{.5\linewidth}
+%	\caption{Summary of layer \& image characterization} \label{tbl:redundant_ratio} 
+%	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		Metrics & max & min & median & avg.\\
+%		\hline
+%		Compressed layer size &   &   &   &  \\
+%		\hline
+%		Uncompressed layer size &   &   &    &  \\
+%		\hline
+%		Archival size &  &  & & \\
+%		\hline
+%		Compression ratio &   &   &    &  \\
+%		\hline
+%		Layer pull cnt. &  &  & & \\
+%		\hline
+%		File cnt. per layer &  &  & & \\
+%		\hline
+%		Dir. cnt. per layer &  &  & & \\
+%		\hline
+%		Layer depth &  &  & & \\
+%		\hline
+%		\hline
+%		Compressed image size &  &  & & \\
+%		\hline
+%		Uncompressed image size & &  &  & \\
+%		\hline
+%		Archival image size & &  &  & \\
+%		\hline
+%		Compression ratio &   &   &    &  \\
+%		\hline
+%		Image pull cnt.  &  &  & & \\
+%		\hline
+%		Layer cnt. per image  &  &  & & \\
+%		\hline
+%		Shared layer cnt. per image  &  &  & & \\
+%		\hline
+%		File cnt. per layer &  &  & & \\
+%		\hline
+%		Dir. cnt. per layer &  &  & & \\
+%		\hline	
+%	\end{tabular} 
+%\end{table} 
 
-\subsection{Constructing shared layers for redundant directories/files}
-
-\paragraph{Smaller number of layers are shared among different images}
-\input{fig-repeat-layer-cnt.tex}
-
-\paragraph{Smaller pull latency than recompression model} the registry can prepare the reconstructed layers before users issue a pull request. But this model requires users to rebuild two layers.
+%\subsection{Constructing shared layers for redundant directories/files}
+%
+%\paragraph{Smaller number of layers are shared among different images}
+%\input{fig-repeat-layer-cnt.tex}
+%
+%\paragraph{Smaller pull latency than recompression model} the registry can prepare the reconstructed layers before users issue a pull request. But this model requires users to rebuild two layers.
 
 %\subsubsection{Summary of Suggestions/trade-offs between dedup ratio and recompression overhead}
 %
