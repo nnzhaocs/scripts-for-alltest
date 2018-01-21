@@ -16,6 +16,14 @@ Benefit: saving money, reducing storage management overhead.
 	\label{fig:file-dedup-model}
 \end{figure}
 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.3\textwidth]{graphs/res-time.pdf}
+	\caption{File-level dedup model.
+	}
+	\label{fig:file-dedup-model}
+\end{figure}
+
 %\begin{figure}
 %	\centering
 %	\includegraphics [width=0.45\textwidth]{plots/exp-total-stev-erase.eps}
@@ -31,51 +39,51 @@ Benefit: saving money, reducing storage management overhead.
 
 %\subsection{Hints for performance improvement and storage saving}
 
-\begin{table} 
-	\centering 
-	\scriptsize  
-	%\begin{minipage}{.5\linewidth}
-	\caption{Latency breakdown} \label{tbl:latency_breakdown} 
-	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
-		\hline 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
-		Operations/latency (S) & max & min & median & avg.\\
-		\hline
-		 gunzip decompression (RAM) & 257.16  & 0.04  & 0.15  & 0.39 \\
- 		\hline
- 		tar extraction (RAM) & 43.41  & 0.04  &  0.14  & 0.18 \\
-		\hline
-		Digest calculation (RAM) & 3455.01  & $<$0.00  & 0.05 & 10.65 \\
-		\hline
-		tar archiving (RAM)  & 53.44 & 0.04 & 0.14 & 0.19\\
-		\hline
-		gzip compression (RAM) & 496.04 & 0.04 & 0.15 & 2.10 \\
+%\begin{table} 
+%	\centering 
+%	\scriptsize  
+%	%\begin{minipage}{.5\linewidth}
+%	\caption{Latency breakdown} \label{tbl:latency_breakdown} 
+%	\begin{tabular}{|l|l|l|l|l|}%p{0.14\textwidth} 
+%		\hline 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ... 
+%		Operations/latency (S) & max & min & median & avg.\\
 %		\hline
-%		Total time (RAM) (with compression) & & & & \\
+%		 gunzip decompression (RAM) & 257.16  & 0.04  & 0.15  & 0.39 \\
+% 		\hline
+% 		tar extraction (RAM) & 43.41  & 0.04  &  0.14  & 0.18 \\
 %		\hline
-%		Total time (RAM) (without compression) & & & & \\
-		\hline
- 		\hline
- 		gunzip decompression (SSD) &   &   &    &  \\
- 		\hline
- 		tar extraction (SSD) &   &   &    &  \\
-		\hline
-		Digest calculation (SSD) &  &  & & \\
-		\hline
-		tar archiving (SSD) &  &  & & \\
-		\hline
-		gzip compression (SSD) & &  &  & \\
-%		\hline		 
-%		Total time (SSD) (with compression) & & & & \\
+%		Digest calculation (RAM) & 3455.01  & $<$0.00  & 0.05 & 10.65 \\
 %		\hline
-%		Total time (SSD) (without compression) & & & & \\
-		\hline
-		\hline
-		Network transfer & 20587.94 & $<$ 0.00 & $<$ 0.00 & 1.20 \\
-		\hline 	
-	\end{tabular} 
-\end{table}
+%		tar archiving (RAM)  & 53.44 & 0.04 & 0.14 & 0.19\\
+%		\hline
+%		gzip compression (RAM) & 496.04 & 0.04 & 0.15 & 2.10 \\
+%%		\hline
+%%		Total time (RAM) (with compression) & & & & \\
+%%		\hline
+%%		Total time (RAM) (without compression) & & & & \\
+%		\hline
+% 		\hline
+% 		gunzip decompression (SSD) &   &   &    &  \\
+% 		\hline
+% 		tar extraction (SSD) &   &   &    &  \\
+%		\hline
+%		Digest calculation (SSD) &  &  & & \\
+%		\hline
+%		tar archiving (SSD) &  &  & & \\
+%		\hline
+%		gzip compression (SSD) & &  &  & \\
+%%		\hline		 
+%%		Total time (SSD) (with compression) & & & & \\
+%%		\hline
+%%		Total time (SSD) (without compression) & & & & \\
+%		\hline
+%		\hline
+%		Network transfer & 20587.94 & $<$ 0.00 & $<$ 0.00 & 1.20 \\
+%		\hline 	
+%	\end{tabular} 
+%\end{table}
 
 \subsection{Trade-off discussion}
 
