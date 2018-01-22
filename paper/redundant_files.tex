@@ -19,29 +19,82 @@ Almost 90\% of files have equal or less than 10 redundant copies. Most files hav
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/File_size.eps}
+	\includegraphics[width=0.5\textwidth]{graphs/File_size-KB.eps}
 	\caption{File size distribution.
 	}
 	\label{fig:file_size}
 \end{figure}
 
-%\begin{figure}
-%	\centering
-%	\subfigure[CDF of file size.]{\label{fig:dedup_cdf}
-%		\includegraphics [width=0.5\textwidth]{graphs/file_repeat_cnt_cdf.eps}
-%	}
-%	\subfigure[PDF of file size.]{\label{fig:dedup_hist}
-%		\includegraphics [width=0.5\textwidth]{graphs/file_repeat_cnt_pdf.eps}
-%	}
-%	\caption{File size distribution}
-%	\label{fig:file_repeat_count}
-%\end{figure}
-
 \subsection{File type}
+
+\paragraph{Top redundant files}
 
 \paragraph{Top redundant file types}
 
-Totally, we get around 690 types.
+Totally, we get around 690 types. We selected the file types which take largest storage space.
+
+\begin{figure}
+	\centering
+	\subfigure[Top redundant file types in terms of file count.]{\label{fig:dedup_cdf}
+		\includegraphics [width=0.4\textwidth]{graphs/type-total-cnt}
+	}
+	\subfigure[Top redundant file types in terms of capacity.]{\label{fig:dedup_hist}
+		\includegraphics [width=0.4\textwidth]{graphs/type-total-cap}
+	}
+	\caption{Top redundant file types}
+	\label{fig:file_repeat_count}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.45\textwidth]{graphs/type-tar-type}
+	\caption{Tar file distribution.
+	}
+	\label{fig:file_size}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/type-lang-cap}
+	\caption{Programming language distribution.
+	}
+	\label{fig:file_size}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/type-utili-cap}
+	\caption{Utility file distribution.
+	}
+	\label{fig:file_size}
+\end{figure}
+
+\begin{figure*}[t]
+	\centering
+	\begin{minipage}{0.35\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/type-db-cap.pdf}
+		\caption{Database related files}
+		\label{fig-dir}
+	\end{minipage}%
+	\begin{minipage}{0.3\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/type-script-cap}
+		\caption{Script related files}
+		\label{fig-file}
+	\end{minipage}
+	\begin{minipage}{0.3\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/type-exec-cap}
+		\caption{Executables}
+		\label{fig-file}
+	\end{minipage}
+\end{figure*}
+
+
+%=======================================
+%|             OLD VERSION              |
+%=======================================
 
 %\begin{table} 
 %	\centering 
@@ -210,10 +263,6 @@ Totally, we get around 690 types.
 %		\hline
 %	\end{tabular} 
 %\end{table} 
-
-%=======================================
-%|             OLD VERSION              |
-%=======================================
 
 %\begin{figure}
 %	\centering
