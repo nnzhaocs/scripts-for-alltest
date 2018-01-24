@@ -62,14 +62,14 @@ file digest uniquely and linked to the files'location.
 Meanwhile, a layer digest to its containing file content digest mapping record is also created and saved to a \textit{layer-to-file digest table}. 
  All the pulling request to the cold layers are served by file pool via searching for the layer digest from layer-to-file digest mapping table. After fetching all the containing files that are required by requested layer, FLCAS compresses these files as gzip file before sending it to Docker clients.         
 
-\subsection{Off-line file-level dedup latency} 
+\subsection{Off-line FLCAS latency} 
 
-Since file-level dedup involves operations that are either CPU intensive or I/O intensive, fast CPUs and high capacity RAM are required to improve performance.
+Since file-level dedup involves operations that are either CPU intensive or I/O intensive, fast CPUs and high capacity RAMs are required to improve performance.
 
 \paragraph{Using RAM to load \&. process layers}
 
 To improve performance, we use RAM to temporarily store \textit{small} layers and directly process them in RAM.
-Specially, we first load small layers in RAM and perform decompression, unpacking, file content digest calculation in RAM, and remove them from RAM after completion.   
+Specially, we first load small layers in a RAM disk and perform decompression, unpacking, file content digest calculation in RAM, and remove them from RAM after completion.   
 According to our findings that majority (87.3\%) of layers that are less than 50M as shown in Figure~\ref{xxx}. So majority of layers can be stored and processed in RAM to speed up file-level dedup. 
 %layers that are less than 50M are stored and processed in RAM while the rest layers are stored and processed in SSDs. 
 
@@ -77,39 +77,44 @@ According to our findings that majority (87.3\%) of layers that are less than 50
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.3\textwidth]{graphs/res-time.pdf}
+	\includegraphics[width=0.5\textwidth]{graphs/res-time.pdf}
 	\caption{Off-line file-level dedup latency.
 	}
 	\label{fig:dedup-res}
 \end{figure}
 
 %\paragraph{Image \&. layer popularity skewness} 
-To quantify the overhead of file-level dedup, we simulated a one-node docker registry with 64 RAM and 32 Cores with 60 concurrent pulling requests to cold layers since dedup process only starts periodically when the workload is lower and only cold layers are evolved in dedup process (discussed in Section~\ref{subsec:FLCAS}).
-We measured its performance by using file-level dedup for 0.89 million small layers. 
-To speed up dedup process, we leverage multi-processing. 
+To quantify the latency of file-level dedup, we simulated a one-node docker registry with 64 RAM and 32 Cores with 60 concurrent pulling requests to cold layers since dedup process only starts periodically when the workload is lower and only cold layers are evolved in dedup process (discussed in Section~\ref{subsec:FLCAS}).
+
+We wrote around 600 lines of Python code to simulate file-level dedup operations on the layer dataset, specially, it reads a layer from layer dataset to a RAM disk (i.e., tmpfs) and decompresses the layer in the RAM disk. Then it calculates each containing files' digests and append the layer-to-file digest mapping records to a mapping table. To improve searching performance, the mapping table is stored in Hive database~\cite{xxx}. To speed up dedup process, we leverage multi-processing. Only unique files are maintained in RAM disk while the redundant copies are removed from RAM disk. To simulate concurrent pulling requests to the cold layers, we randomly generate 60 different cold layer digests and each process takes one layer pulling request, then packs and compresses the layer's containing files by searching the mapping table for the layer digest. We measured its performance by using file-level dedup for 0.89 million small layers.
+
+\paragraph{File-level dedup latency}
+
+%and pulling requests for  
 %
+Figure~\ref{fig:dedup-res} shows the breakdown latency distribution for each involved operation: decompression time, unpacking time, file content digest calculation time, and searching time.
+
+First, among all the operation latencies, we see that searching time is the smallest. 80\% of searching time is less than 0.004 s. The mapping table maintains 0.98 million layer-to-file digest mapping records. Consider that more than 1.7 million layers are stored in Docker hub and the number is still increasing, it's better to choose a fast distributed database to provide high searching performance and scalability.
+  
+Second, we see that digest calculation time spreads over a large range started from xxxx to xxxxx. It's because digest calculation time largely depends on the layer size. Typically, smaller layers contains a smaller number of smaller files, which takes much less time to calculate their digests. While if the layer is bigger, the digest calculation overhead will be higher. 80\% of digest calculation time is less than 4.21 s. The layer file digest calculation can be finished within xxx on average. Thus, we suggest that multiple-threading is needed to calculate the files' digests simultaneously; Fast CPUs as well as more powerful computing nodes are required to speed up digest calculation.
+
+Third, the latencies for decompression and unpacking have the same distribution during the lowest response time range started from xxx to xxx. Around 60\% of decompression and unpacking time are less than xxx. However, decompression has the highest latencies than that of unpacking. 80\% of decompression is less than 0.55 s while 80\% of packing time is less than 0.21 s. 
+
+Figure~\ref{fig:dedup-res} also shows the total time distribution for file-level dedup which is the sum of latencies for decompression, unpacking, digest calculation, and searching. We see that 80\% of file-level dedup time is less than 9.09 s. We also measured the throughput of 60 processes. Our one-node file-level dedup prototype can process about 3 layers/s. We suggest to use more high powerful machines to improve throughput.
+
+\paragraph{Pulling latency}
+Note that the pushing performance are not influenced by the file-level dedup because once the layer reaches registry, an response message will be sent to the user. No addition delay will be added to the pushing time. However, compression time will impact pulling performance since the files need to be packed and compressed first and then sent to the users once registry receives pulling requests. 
+
+Figure~\ref{fig:dedup-res} shows the pulling time distribution. Note that the pulling time is the sum of archiving time, compression time, and searching time and does not include network transfer time. We can see that 
+compression and archiving time almost share the same distribution during the lowest response time range started from xxx to xxx. 60\% of compression and archiving time are less than xxx. While compression has the highest latency. 80\% of compression time is less than 2.82 s. We see that archiving time and compression contributes equally to pulling time when their latencies are lower than xxx while compression time almost equals to pulling time when the latency is greater than xxx. Hence, we suggest that fast compression methods are required to further reduce compression time.  
  
-Figure~\ref{fig:dedup-res} shows the breakdown latencies: decompression time, unpacking time, file content digest calculation time, archiving time, and compression time.
-
-First, 
-Second,
-
-Figure~\ref{fig:dedup-res} also shows the total time for 
 %majority (xxx) of layers'dedup times are less than xxx.
 %during peak workload, which means that we start file-level dedup whenever it receives a layer. 
 %To simulate the high intensive workload, we first sent a sequential of layer pushing requests to registry and stored, then we measure the file-level dedup  
-The throughput is 2.67 layers/s.
-
-\paragraph{Compression overhead discussion for pulling}
-Note that the pushing performance are not influenced by the file-level dedup because once the layer reaches registry, an response message will be sent to the user. No addition delay will be added to the pushing time. However, compression time will impact pulling performance since the files need to be compressed first and then sent to the users once registry receives pulling requests.  
-
+%, archiving time, and compression time.
 %Second, compare the latency for each operation, we see that xxxx
 %\paragraph{Latency breakdown}
-
 %We calculated the latency for each operation for all layers as shown as Table~\ref{tbl:latency_breakdown}.
- 
-%
-
 %Figure~\ref{xxx} shows the compression time across 
 
 %\begin{figure}[!t]
