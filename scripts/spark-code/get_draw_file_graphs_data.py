@@ -21,21 +21,43 @@ draw_repeat_cnt = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'draw_repeat_cnt.csv
 
 def main():
     sc, spark = init_spark_cluster()
-    save_file_type_by_repeat_cnt(spark, sc)
+    #save_file_type(spark, sc)
+    #save_file_type_by_repeat_cnt(spark, sc)
     #save_file_size(spark, sc)
     #save_file_repeat_cnt(spark, sc)
     #calculate_capacity(spark, sc)
-#<<<<<<< HEAD
-#=======
-#    save_file_type_by_repeat_cnt(spark, sc)
-#>>>>>>> 7ec534de6ede12c70e7da7ae06976c430aea05f4
+    #save_file_type_by_repeat_cnt(spark, sc)
+    save_top_1000_files_layer(spark, sc)
 
+
+def save_top_1000_files_layer(spark, sc):
+    """save by repeat cnt"""
+    layer_file_mapping = spark.read.parquet(LAYER_FILE_MAPPING_DIR).dropDuplicates(['layer_id', 'digest'])
+    sort_cnt = spark.read.csv(draw_type_by_repeat_cnt).select('_c5')
+    #sort_cnt.printSchema()
+    #sort_cnt.show()
+   
+    sort_cnt = sort_cnt.select(sort_cnt._c5.alias('digest'))
+    sort_cap = spark.read.csv(draw_type_by_total_sum).select('_c5')
+    sort_cap = sort_cap.select(sort_cap._c5.alias('digest'))
+
+    df = sort_cnt.join(layer_file_mapping, 'digest', 'inner')
+    df.write.csv('/redundant_file_analysis/draw_type_by_repeat_cnt_layerdir.csv')
+    df = sort_cap.join(layer_file_mapping, 'digest', 'inner')
+    df.write.csv('/redundant_file_analysis/draw_type_by_cap_layerdir.csv')
+    
+
+def save_file_type(spark, sc):
+    file_info = spark.read.parquet(unique_file_basic_info).select('type')
+    func0 = F.udf(lambda s: s[0] if len(s) else None)
+    file_type = file_info.select(func0('type').alias('type'))
+    file_type.write.csv('/redundant_file_analysis/draw_file_type.csv')
 
 def save_file_type_by_repeat_cnt(spark, sc):
     """save by repeat cnt"""
     file_info = spark.read.parquet(unique_file_basic_info).filter(F.size('type') > 0)
 
-    func = F.udf(lambda s: s[0].split(" ")[0])
+    func = F.udf(lambda s: s[0].lower().replace("sticky ", "").replact("posix ", "").replace("setgid ", "").replace("setuid ", "").replace("compiled ", "").split(" ")[0])
     func0 = F.udf(lambda s: s[0] if len(s) else None)
 
     file_info_df = file_info.select(func0('file_name').alias('filename'), 'cnt', func('type').alias('type'), func0('extension').alias('extension'),
@@ -69,7 +91,7 @@ def save_file_type_by_repeat_cnt(spark, sc):
     sort_type_size = type1.sort(type1.sum_size.desc())
     #sort_type_size.show()
     sort_type_size.write.csv(draw_type_by_size)
-
+    """
     sort_type_dup_r = type1.sort(type1.dup_ratio_cap.desc())
     #sort_type_dup_r.show()
     sort_type_dup_r.write.csv(draw_type_by_dup_ratio_cap)
@@ -77,7 +99,7 @@ def save_file_type_by_repeat_cnt(spark, sc):
     sort_type_dup_r = type1.sort(type1.dup_ratio_cnt.desc())
     #sort_type_dup_r.show()
     sort_type_dup_r.write.csv(draw_type_by_dup_ratio_cnt)
-    
+    """
 
 def calculate_capacity(spark, sc):
     df = spark.read.parquet(unique_size_cnt_total_sum)
