@@ -1,37 +1,53 @@
 \section{Redundant file characterization}
 \label{sec:redundant_files}
 
-\subsection{File repeat count}
+In this section, we present our redundant file characterization on file repeat count, file size, and file types. 
+Based on this characterization, we create three-level classification hierarchy as shown in Figure~\ref{fig:class-hierarchy}.
+At the highest level, we created two categories: \textit{common redundant file types and non-common redundant file types}. 
+The majority (xxxx\% files, with xxx TB) are common file types that consists of a largest number of redundant files with large storage space consumed, such as xxx and xxx. 
+Only xxxx\% files are non-common file types that only contains a small number of redundant files with less storage space, such as xxxx and xxxx. 
+Since our focus is on the major redundant files, our further classification expands on the xxx\% common redundant file types.  
 
-Almost 90\% of files have equal or less than 10 redundant copies. Most files have small repeat count.
+At the second level of the hierarchy, we clustered common redundant file types based on the \textit{major usage, platform, or framework} involved by each file type. We identified redundant files' types relevant to \textit{archival, productivity, programming languages, scripts, images, databases, executables, and others}.
+
+At the third level, we classified the redundant files based on the specific file type or extension. Totally, we get around 690 types. 
+%We selected the file types which take largest storage space.  
+
+Based on the second-and third-level classification, we further investigated the following two research questions: (1) What are the common redundant files?
+(2) Why there are so many redundant files? and present our investigation results.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{graphs/File_repeat_count.eps}
 	\caption{File repeat count distribution.
 	}
-	\label{fig:file_repeat}
+	\label{fig:file-repeat-cnt}
 \end{figure}
 
-\subsection{File size}
-
-91\% files'sizes are equal or less than 100KB. Most files are smaller files.
+Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability distribution of file repeat count. 
+Most files have a small repeat count. For instance, almost 90\% of files have equal or less than 10 copies. Around 50\% of files have 4 copies.
+The file that has the maximum repeat count is empty file, which means that many users creates empty files and stored in their images.
+%\subsection{File repeat count}
+%\subsection{File size}
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{graphs/File_size-KB.eps}
 	\caption{File size distribution.
 	}
-	\label{fig:file_size}
+	\label{fig:file-size}
 \end{figure}
 
-\subsection{File type}
+Figure~\ref{fig:file-size} shows the cumulative and probability distribution of file size of unique dataset after we remove the redundant files.
+Most files are smaller files. For example, 91\% files'sizes are equal or less than 100KB. 
+Around 22\% of files are less than 1 KB.
+ 
 
-\paragraph{Top redundant files}
+\subsection{Common redundant file types}
 
-\paragraph{Top redundant file types}
+%\paragraph{Top redundant files}
 
-Totally, we get around 690 types. We selected the file types which take largest storage space.
+%\paragraph{Top redundant file types}
 
 \begin{figure}
 	\centering
@@ -42,8 +58,10 @@ Totally, we get around 690 types. We selected the file types which take largest 
 		\includegraphics [width=0.4\textwidth]{graphs/type-total-cap}
 	}
 	\caption{Top redundant file types}
-	\label{fig:file_repeat_count}
+	\label{fig:file-types}
 \end{figure}
+
+\paragraph{ELF }
 
 \begin{figure}
 	\centering
@@ -90,6 +108,14 @@ Totally, we get around 690 types. We selected the file types which take largest 
 		\label{fig-file}
 	\end{minipage}
 \end{figure*}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.35\textwidth]{graphs/type-image-cap}
+	\caption{Utility file distribution.
+	}
+	\label{fig:file_size}
+\end{figure}
 
 
 %=======================================
