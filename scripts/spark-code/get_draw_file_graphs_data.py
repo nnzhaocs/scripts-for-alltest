@@ -29,32 +29,59 @@ def main():
     #calculate_capacity(spark, sc)
     #save_file_type_by_repeat_cnt(spark, sc)
     # save_top_1000_files_layer(spark, sc)
-    def save_clustering_file_types(spark, sc):
+    save_clustering_file_types(spark, sc)
 
 
-def filter_executables(tstr):
+def filter_whole_types(tstrs):
     # ELF and excutable,
+    #words = re.split(' |; |, |\"|\" ', tstr)
+    if len(tstrs):
+        tstr = tstrs[0]
+    else:
+        return 'non-type'
+
     words = re.split(' |; |, |\"|\" ', tstr)
-    if 'ELF' in words:
-        return 'ELF'
+    if 'ELF' in re.split(' |; |, |\"|\" ', tstr):
+        return filter_ELF_types(tstr)
     else:
         return 'non-ELF'
 
 
+def filter_ELF_types(tstr):
+    #words = re.split(' |; |, |\"|\" ', tstr)
+    if 'relocatable' in words:
+	return 'ELF-relocatable'
+    elif 'shared' in words:
+	return 'ELF-shared'
+    elif 'core'  in words:
+	return 'ELF-core'
+    elif 'processor-specific' in words:
+	return 'ELF-processor-specific'
+    else:
+	return 'ELF-others'
+
+
 def save_clustering_file_types(spark, sc):
     file_info = spark.read.parquet(unique_file_basic_info).select('sha256', 'type')
-    func0 = F.udf(lambda s: s[0] if len(s) else None)
-    sha_type = file_info.select('sha256', func0('type').alias('type'))
+    #func0 = F.udf(lambda s: s[0] if len(s) else None)
+    #sha_type = file_info.select('sha256', func0('type').alias('type'))
+    #sha_type.show()
+    
+    func_filter_ELF = F.udf(filter_ELF, StringType())
 
-    func_filter_ELF = F.udf(filter_executables)
-
-    sha_type = sha_type.select('sha256', 'type')
-    filter_ELF = sha_type.withColumn('ELF_or_not', func_filter_ELF('type'))
+    #sha_type = sha_type.select('sha256', 'type')
+    filter_ELF = file_info.withColumn('ELF_or_not', func_filter_ELF('type'))
 
     filter_ELF.show()
+    ELF_ts = filter_ELF.filter(F.col('ELF_or_not') == 'ELF')
+    print("=============> ELF-ts count: %d", ELF_ts.count())
+    func_filter_ELF_types = F.udf(filter_EFL_types, StringType())
+
+    ELF_ts = ELF_ts.withColumn('ELF_types', func_filter_ELF_types('type'))
+    print("=============> ELF_elf_ts count: %d", ELF_ts.count())
 
     #file_type.write.csv('/redundant_file_analysis/draw_file_type.csv')
-
+    
 
 
 def save_top_1000_files_layer(spark, sc):
