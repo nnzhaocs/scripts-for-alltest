@@ -43,11 +43,7 @@ Most files are smaller files. For example, 91\% files'sizes are equal or less th
 Around 22\% of files are less than 1 KB.
  
 
-\subsection{Common redundant file types}
-
-%\paragraph{Top redundant files}
-
-%\paragraph{Top redundant file types}
+\subsection{Overview of common redundant file types}
 
 \begin{figure}
 	\centering
@@ -61,15 +57,22 @@ Around 22\% of files are less than 1 KB.
 	\label{fig:file-types}
 \end{figure}
 
-\paragraph{ELF }
+\subsection{Executable}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.45\textwidth]{graphs/type-tar-type}
-	\caption{Tar file distribution.
-	}
-	\label{fig:file-type-tar}
-\end{figure}
+A large executable group is ELF file type, which consists of ELF 64/32-bit LSB relocatable, shared object, executable, core file, processor-specific for x86-64, MIPS,
+ARM, Intel 80386, etc. architectures.
+Another executable group contains VAX COFF executable, PE32/PE32+ executable for Windows, and 386 pure executable, VMS Alpha, etc.
+\% of files are script executable, which contains python, shell, etc.
+\% of files are RPM, Debian bin
+%The last group contains
+
+Figure~\ref{fig-elf}
+\subsection{Lib}
+
+library files contains libtool library file, OCaml native library, MIT scheme, Mach-O library, OCaml library, Palm OS dynamic library data, Microsoft c/c++ library.current ar archive random library, and other library.
+%libtool\|OCaml\|Palm\|MIT\|microsoft\|current ar archive random library\|mach-o\|rpm\|gzip
+
+\subsection{Programming languages \&. scripts}
 
 \begin{figure}
 	\centering
@@ -79,6 +82,18 @@ Around 22\% of files are less than 1 KB.
 	\label{fig:file-type-lang}
 \end{figure}
 
+\subsection{Archival}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.45\textwidth]{graphs/type-tar-type}
+	\caption{Tar file distribution.
+	}
+	\label{fig:file-type-tar}
+\end{figure}
+
+\subsection{Documents \& editors}
+
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{graphs/type-utili-cap}
@@ -86,6 +101,8 @@ Around 22\% of files are less than 1 KB.
 	}
 	\label{fig:file_size}
 \end{figure}
+
+\subsection{Database}
 
 \begin{figure*}[t]
 	\centering
@@ -108,6 +125,8 @@ Around 22\% of files are less than 1 KB.
 		\label{fig-file}
 	\end{minipage}
 \end{figure*}
+
+\subsection{Images}
 
 \begin{figure}
 	\centering

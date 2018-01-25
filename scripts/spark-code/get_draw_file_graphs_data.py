@@ -3,6 +3,7 @@
 #sys.path.append('../plotter/')
 #from draw_pic import *
 from analysis_library import *
+import re
 # import pandas as pd
 
 
@@ -27,7 +28,33 @@ def main():
     #save_file_repeat_cnt(spark, sc)
     #calculate_capacity(spark, sc)
     #save_file_type_by_repeat_cnt(spark, sc)
-    save_top_1000_files_layer(spark, sc)
+    # save_top_1000_files_layer(spark, sc)
+    def save_clustering_file_types(spark, sc):
+
+
+def filter_executables(tstr):
+    # ELF and excutable,
+    words = re.split(' |; |, |\"|\" ', tstr)
+    if 'ELF' in words:
+        return 'ELF'
+    else:
+        return 'non-ELF'
+
+
+def save_clustering_file_types(spark, sc):
+    file_info = spark.read.parquet(unique_file_basic_info).select('sha256', 'type')
+    func0 = F.udf(lambda s: s[0] if len(s) else None)
+    sha_type = file_info.select('sha256', func0('type').alias('type'))
+
+    func_filter_ELF = F.udf(filter_executables)
+
+    sha_type = sha_type.select('sha256', 'type')
+    filter_ELF = sha_type.withColumn('ELF_or_not', func_filter_ELF('type'))
+
+    filter_ELF.show()
+
+    #file_type.write.csv('/redundant_file_analysis/draw_file_type.csv')
+
 
 
 def save_top_1000_files_layer(spark, sc):
