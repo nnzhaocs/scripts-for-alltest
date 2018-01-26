@@ -42,24 +42,97 @@ def filter_whole_types(tstrs):
         return 'non-type'
 
     words = re.split(' |; |, |\"|\" ', tstr)
-    if 'ELF' in re.split(' |; |, |\"|\" ', tstr):
-        return filter_ELF_types(tstr)
+    if 'ELF' in words:
+        return filter_ELF_types(words)
+    elif 'executable' in words:
+        return filter_non_ELF_executable_types
+    elif 'relocatable' in words:
+        return 'nonELF-relocatable'
+    elif 'compiled' in words or 'Compiled' in words:
+        return filter_compiled(words)
+    elif 'library' in words:
+        return filter_library(words):
+    elif "precompiled" in words:
+        return filter_gcc_precompiled(words):
+    elif 'RPM' in words and 'bin' in words:
+        return 'RPM-bin-pak'
+    elif 'Debian' in words and 'binary' in words:
+        return 'debian-bin-pak'
+    elif 'image' in words:
+        return filter_image(words)
+    elif 'document' in words:
+        return filter_doc(words)
+    elif 'c' in words or 'C' in words or 'C++' in words or 'c++' in words:
+        return 'c-c--source'
+
+    re, find =  filter_database(words)
+    if find:
+        return re
     else:
-        return 'non-ELF'
+        re, find = filter_archival(words)
+        if find:
+            return re
+        else:
+            re, find = filter_java(words)
+            if find:
+                return re
+            else:
+                return tstr
 
 
-def filter_ELF_types(tstr):
+def filter_non_ELF_executable_types(words):
+    #words = re.split(' |; |, |\"|\" ', tstr)
+    lowcase_words = []
+    for word in words:
+        lowcase_words.append(word.lower())
+    if 'script' in lowcase_words:
+        return filter_script(lowcase_words)
+    else:
+        return filter_non_script(lowcase_words)
+
+
+def filter_script(lowcase_word):
+    if 'python' in lowcase_word:
+        return "python-script"
+    elif 'bash' in lowcase_word:
+        return 'bash-shell-script'
+    elif 'shell' in lowcase_word:
+        return 'bash-shell-script'
+    elif 'ruby' in lowcase_word:
+        return 'ruby-jruby-script'
+    elif 'jruby' in lowcase_word:
+        return 'ruby-jruby-script'
+    elif 'node' in lowcase_word:
+        return  'node-script'
+    elif 'perl' in lowcase_word:
+        return 'perl-script'
+    elif 'php' in lowcase_word:
+        return 'php-script'
+    else:
+        return 'other-script'
+
+
+def filter_non_script(lowcase_word):
+    if 'PE' in lowcase_word:
+        return 'PE-PE32-execu'
+    elif 'VAX'  in lowcase_word and 'COFF' in lowcase_word:
+        return 'VAX-COFF-execu'
+    else:
+        return 'other-nonELF-execu'
+
+
+def filter_ELF_types(words):
     #words = re.split(' |; |, |\"|\" ', tstr)
     if 'relocatable' in words:
-	return 'ELF-relocatable'
+        return 'ELF-relocatable'
     elif 'shared' in words:
-	return 'ELF-shared'
+        return 'ELF-shared'
     elif 'core'  in words:
-	return 'ELF-core'
+        return 'ELF-core'
     elif 'processor-specific' in words:
-	return 'ELF-processor-specific'
+        return 'ELF-processor-specific'
     else:
-	return 'ELF-others'
+        return 'ELF-others'
 
 
 def save_clustering_file_types(spark, sc):
@@ -68,7 +141,7 @@ def save_clustering_file_types(spark, sc):
     #sha_type = file_info.select('sha256', func0('type').alias('type'))
     #sha_type.show()
     
-    func_filter_ELF = F.udf(filter_ELF, StringType())
+    func_filter_ELF = F.udf(filter_whole_types, StringType())
 
     #sha_type = sha_type.select('sha256', 'type')
     filter_ELF = file_info.withColumn('ELF_or_not', func_filter_ELF('type'))
@@ -82,23 +155,6 @@ def save_clustering_file_types(spark, sc):
     print("=============> ELF_elf_ts count: %d", ELF_ts.count())
 
     #file_type.write.csv('/redundant_file_analysis/draw_file_type.csv')
-
-def save_top_1000_files_layer(spark, sc):
-    """save by repeat cnt"""
-    layer_file_mapping = spark.read.parquet(LAYER_FILE_MAPPING_DIR).dropDuplicates(['layer_id', 'digest'])
-    sort_cnt = spark.read.csv(draw_type_by_repeat_cnt).select('_c5')
-    #sort_cnt.printSchema()
-    #sort_cnt.show()
-   
-    sort_cnt = sort_cnt.select(sort_cnt._c5.alias('digest'))
-    sort_cap = spark.read.csv(draw_type_by_total_sum).select('_c5')
-    sort_cap = sort_cap.select(sort_cap._c5.alias('digest'))
-
-    df = sort_cnt.join(layer_file_mapping, 'digest', 'inner')
-    df.write.csv('/redundant_file_analysis/draw_type_by_repeat_cnt_layerdir.csv')
-    df = sort_cap.join(layer_file_mapping, 'digest', 'inner')
-    df.write.csv('/redundant_file_analysis/draw_type_by_cap_layerdir.csv')
-    
 
 def save_by_type(spark, sc):
     """save by repeat cnt"""
@@ -147,6 +203,23 @@ def save_by_type(spark, sc):
     #sort_type_dup_r.show()
     sort_type_dup_r.write.csv(draw_type_by_dup_ratio_cnt)
     """
+
+
+def save_top_1000_files_layer(spark, sc):
+    """save by repeat cnt"""
+    layer_file_mapping = spark.read.parquet(LAYER_FILE_MAPPING_DIR).dropDuplicates(['layer_id', 'digest'])
+    sort_cnt = spark.read.csv(draw_type_by_repeat_cnt).select('_c5')
+    # sort_cnt.printSchema()
+    # sort_cnt.show()
+
+    sort_cnt = sort_cnt.select(sort_cnt._c5.alias('digest'))
+    sort_cap = spark.read.csv(draw_type_by_total_sum).select('_c5')
+    sort_cap = sort_cap.select(sort_cap._c5.alias('digest'))
+
+    df = sort_cnt.join(layer_file_mapping, 'digest', 'inner')
+    df.write.csv('/redundant_file_analysis/draw_type_by_repeat_cnt_layerdir.csv')
+    df = sort_cap.join(layer_file_mapping, 'digest', 'inner')
+    df.write.csv('/redundant_file_analysis/draw_type_by_cap_layerdir.csv')
 
 
 def save_file_type(spark, sc):
