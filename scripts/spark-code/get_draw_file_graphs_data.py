@@ -37,18 +37,20 @@ def filter_whole_types(tstrs):
     # ELF and excutable,
     #words = re.split(' |; |, |\"|\" ', tstr)
     if len(tstrs):
-        tstr = tstrs[0]
+        tstr = tstrs[0].replace('sticky ,', '').replace('sticky ', '').replace('setuid ', '').replace('setgid ', '').replace('setuid ', '')
     else:
         return 'non-type'
 
     words = re.split(' |; |, |\"|\" ', tstr)
     if 'ELF' in words:
         return filter_ELF_types(words)
+    
     elif 'executable' in words:
-        return filter_non_ELF_executable_types
+        return filter_non_ELF_executable_types(words)
+    
     elif 'relocatable' in words:
         return 'nonELF-relocatable'
-    elif 'compiled' in words or 'Compiled' in words:
+    elif 'compiled' in words or 'Compiled' in words or 'byte-compiled' in words:
         return filter_compiled(words)
     elif 'library' in words:
         return filter_library(words)
@@ -65,19 +67,40 @@ def filter_whole_types(tstrs):
     elif 'c' in words or 'C' in words or 'C++' in words or 'c++' in words:
         return 'c-c--source'
 
-    re, find =  filter_database(words)
+    ret, find =  filter_database(words)
     if find:
-        return re
+        return ret
     else:
-        re, find = filter_archival(words)
+        ret, find = filter_archival(words)
         if find:
-            return re
+            return ret
         else:
-            re, find = filter_java(words)
+            ret, find = filter_java(words)
             if find:
-                return re
+                return ret
             else:
-                return tstr
+		if 'font' in words:
+		    return 'font-type'
+                tstr = tstr.lower()
+		if 'version' in tstr:
+		    tstr = tstr.split('version')[0]
+		if 'at' in tstr:
+		    tstr = tstr.split('at')[0]
+		if 'with' in tstr:
+		    tstr = tstr.split('with')
+                if ',' in tstr:
+		    tstr = tstr.split(',')[0]
+		if ':' in tstr or ';' in tstr or '(' in tstr:
+		    words = re.split(':|,|;|\(',tstr)#[0] != ' '#.split(',')[0]
+		    nospace_words = []
+		    for word in words:
+		        new = word.replace(' ', '')
+		        if new != '':
+		            nospace_words.append(new)
+		    return nospace_words[0]
+		else:
+		    return tstr
+    
 
 def filter_java(words):
     lowcase_words = []
@@ -85,10 +108,11 @@ def filter_java(words):
         lowcase_words.append(word.lower())
 
     if 'java' in lowcase_words and 'keystore' in lowcase_words:
-        return 'java-keystore'
+        return 'java-keystore', True
     elif 'java' in lowcase_words and 'serialization' in lowcase_words:
-        return 'java-serialization'
-
+        return 'java-serialization', True
+    else:
+	return None, False
 
 
 def filter_archival(words):
@@ -191,7 +215,7 @@ def filter_compiled(words):
         return 'python byte-compiled'
     elif 'java' in lowcase_words:
         return 'compiled-java-class'
-    elif 'emacs' in lowcase_words or 'xemacs' in lowcase_words:
+    elif 'emacs' in lowcase_words or 'xemacs' in lowcase_words or 'emacs/xemacs' in lowcase_words:
         return 'xemacs-emacs-compiled'
     elif 'terminfo' in lowcase_words:
         return 'terminfo-compiled'
@@ -299,9 +323,9 @@ def save_by_type(spark, sc):
 
     #func = F.udf(lambda s: s[0]#.replace("sticky ", "").replact("posix ", "").replace("setgid ", "").replace("setuid ", "").replace("compiled ", "").split(" ")[0])
     func0 = F.udf(filter_whole_types)
-    func1 = F.udf(lambda s: s[0] if len(s) else None)
+    #func1 = F.udf(lambda s: s[0] if len(s) else None)
 
-    file_info_df = file_info.select(func0('file_name').alias('filename'), 'cnt', func0('type').alias('type'), func1('extension').alias('extension'),
+    file_info_df = file_info.select('cnt', func0('type').alias('type'),
                 'total_sum', 'sha256', 'avg')
     file_info_df = file_info_df.filter(file_info_df.type.isNotNull())
     file_info_df.printSchema()
@@ -317,7 +341,6 @@ def save_by_type(spark, sc):
 
     type1 = file_info_df.groupby('type').agg(F.sum('cnt').alias('total_cnt'), F.sum('avg').alias('size_dropdup'),
                                             F.sum('total_sum').alias('sum_size'),
-                                            func0(F.collect_set('extension')).alias('extension'),
                                             F.size(F.collect_list('cnt')).alias('uniq_cnt'))
     type1.printSchema()
 
@@ -325,13 +348,13 @@ def save_by_type(spark, sc):
     type1 = type1.withColumn('dup_ratio_cap', (F.col('sum_size') - F.col('size_dropdup'))/F.col('sum_size')*1.0)
     type1 = type1.withColumn('dup_ratio_cnt', (F.col('total_cnt') - F.col('uniq_cnt'))* 1.0 / F.col('total_cnt'))
 
-    sort_type_cnt = type1.sort(type1.total_cnt.desc())
+    #sort_type_cnt = type1.sort(type1.total_cnt.desc())
     #sort_type_cnt.show()
-    sort_type_cnt.coalesce(400).write.csv('/redundant_file_analysis/draw_type1_by_cnt_med.csv')#draw_type1_by_repeat_cnt)
+    #sort_type_cnt.coalesce(400).write.csv('/redundant_file_analysis/draw_type1_by_cnt_med.csv')#draw_type1_by_repeat_cnt)
 
-    #sort_type_size = type1.sort(type1.sum_size.desc())
+    sort_type_size = type1.sort(type1.sum_size.desc())
     #sort_type_size.show()
-    #sort_type_size.coalesce(400).write.csv('/redundant_image_analysis/draw_type1_by_cap_med.csv')#draw_type_by_size)
+    sort_type_size.coalesce(400).write.csv('/redundant_image_analysis/draw_type1_by_cap_med.csv')#draw_type_by_size)
     """
     sort_type_dup_r = type1.sort(type1.dup_ratio_cap.desc())
     #sort_type_dup_r.show()
