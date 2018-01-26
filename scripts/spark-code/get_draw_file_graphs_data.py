@@ -51,9 +51,9 @@ def filter_whole_types(tstrs):
     elif 'compiled' in words or 'Compiled' in words:
         return filter_compiled(words)
     elif 'library' in words:
-        return filter_library(words):
+        return filter_library(words)
     elif "precompiled" in words:
-        return filter_gcc_precompiled(words):
+        return 'gcc-precompiled-header'
     elif 'RPM' in words and 'bin' in words:
         return 'RPM-bin-pak'
     elif 'Debian' in words and 'binary' in words:
@@ -78,6 +78,143 @@ def filter_whole_types(tstrs):
                 return re
             else:
                 return tstr
+
+def filter_java(words):
+    lowcase_words = []
+    for word in words:
+        lowcase_words.append(word.lower())
+
+    if 'java' in lowcase_words and 'keystore' in lowcase_words:
+        return 'java-keystore'
+    elif 'java' in lowcase_words and 'serialization' in lowcase_words:
+        return 'java-serialization'
+
+
+
+def filter_archival(words):
+    lowcase_words = []
+    for word in words:
+        lowcase_words.append(word.lower())
+
+    if 'zip' in lowcase_words:
+        return 'zip-arch', True
+    elif 'gzip' in lowcase_words:
+        return 'gzip-arch', True
+    elif 'xz' in lowcase_words:
+        return 'xz-arch', True
+    elif 'bzip2' in lowcase_words:
+        return 'bzip2-arch', True
+    elif 'tar' in lowcase_words:
+        return 'tar-arch', True
+    elif 'archive' in lowcase_words:
+        return 'other-arch', True
+    else:
+        return None, False
+
+
+def filter_database(words):
+    lowcase_words = []
+    for word in words:
+        lowcase_words.append(word.lower())
+
+    if 'berkeley' in lowcase_words and 'db' in lowcase_words:
+        return 'berkely-db', True
+    elif 'dbase' in lowcase_words:
+        return 'dbase-db', True
+    elif 'sqlite' in lowcase_words:
+        return 'sqlite-db', True
+    elif 'clam' in lowcase_words and 'antivirtus' in lowcase_words:
+        return 'clam-anti-db', True
+    elif 'ndbm' in lowcase_words and 'database' in lowcase_words:
+        return 'ndbm-db', True
+    elif 'database' in lowcase_words:
+        return 'other-db', True
+    else:
+        return None, False
+
+
+
+def filter_doc(words):
+    lowcase_words = []
+    for word in words:
+        lowcase_words.append(word.lower())
+    if 'html' in lowcase_words or 'xhtml' in lowcase_words or 'xml' in lowcase_words:
+        return 'html-xml-xhtml-doc'
+    elif 'latex' in lowcase_words or 'tex' in lowcase_words or 'bibtex' in lowcase_words:
+        return 'latex-tex-bib-doc'
+    elif 'postscript' in lowcase_words or 'pdf' in lowcase_words:
+        return 'ps-pdf-doc'
+    elif 'composite' in lowcase_words:
+        return 'composite-doc'
+    elif 'microsoft' in lowcase_words:
+        return 'microsoft-doc'
+    elif 'perl' in lowcase_words and 'pod' in lowcase_words:
+        return 'perl-pod-doc'
+    elif 'exported' in lowcase_words and 'sgml' in lowcase_words:
+        return 'exported-sgml-doc'
+    elif 'lyx' in lowcase_words:
+        return 'lyx-doc'
+    elif 'openoffice.org' in lowcase_words:
+        return 'openoffice-doc'
+    else:
+        return 'other-doc'
+
+
+def filter_image(words):
+    if 'JPEG' in words:
+        return 'jpeg-image'
+    elif 'PNG' in words:
+        return 'png-image'
+    elif 'SVG' in words:
+        return 'svg-image'
+    elif 'TIFF' in words:
+        return 'tiff-image'
+    elif 'FIG' in words:
+        return 'fig-image'
+    elif 'FITS' in words:
+        return 'fits-image'
+    elif 'pixmap' in words and 'X' in words:
+        return 'x-pixmap-image'
+    elif 'VISX' in words:
+        return 'visx-image'
+    elif 'Photoshop' in words:
+        return 'photoshop-image'
+    else:
+        return 'other-image'
+
+
+def filter_compiled(words):
+    lowcase_words = []
+    for word in words:
+        lowcase_words.append(word.lower())
+    if 'python' in lowcase_words:
+        return 'python byte-compiled'
+    elif 'java' in lowcase_words:
+        return 'compiled-java-class'
+    elif 'emacs' in lowcase_words or 'xemacs' in lowcase_words:
+        return 'xemacs-emacs-compiled'
+    elif 'terminfo' in lowcase_words:
+        return 'terminfo-compiled'
+    elif 'psi' in lowcase_words:
+        return 'psi-compiled'
+    else:
+        return 'other-compiled'
+
+def filter_library(words):
+    lowcase_words = []
+    for word in words:
+        lowcase_words.append(word.lower())
+
+    if 'libtool' in lowcase_words:
+        return 'libtool-lib'
+    elif 'ocaml' in lowcase_words:
+        return 'ocaml-lib'
+    elif 'palm' in lowcase_words:
+        return 'palm-lib'
+    elif 'mach-o' in lowcase_words:
+        return 'mach-o-lib'
+    else:
+        return 'other-lib'
 
 
 def filter_non_ELF_executable_types(words):
@@ -113,9 +250,9 @@ def filter_script(lowcase_word):
 
 
 def filter_non_script(lowcase_word):
-    if 'PE' in lowcase_word:
+    if 'pe32' in lowcase_word or 'pe32+' in lowcase_word:
         return 'PE-PE32-execu'
-    elif 'VAX'  in lowcase_word and 'COFF' in lowcase_word:
+    elif 'vax'  in lowcase_word and 'coff' in lowcase_word:
         return 'VAX-COFF-execu'
     else:
         return 'other-nonELF-execu'
@@ -161,9 +298,10 @@ def save_by_type(spark, sc):
     file_info = spark.read.parquet(unique_file_basic_info).filter(F.size('type') > 0)
 
     #func = F.udf(lambda s: s[0]#.replace("sticky ", "").replact("posix ", "").replace("setgid ", "").replace("setuid ", "").replace("compiled ", "").split(" ")[0])
-    func0 = F.udf(filter_whole_types)#F.udf(lambda s: s[0] if len(s) else None)
+    func0 = F.udf(filter_whole_types)
+    func1 = F.udf(lambda s: s[0] if len(s) else None)
 
-    file_info_df = file_info.select(func0('file_name').alias('filename'), 'cnt', func0('type').alias('type'), func0('extension').alias('extension'),
+    file_info_df = file_info.select(func0('file_name').alias('filename'), 'cnt', func0('type').alias('type'), func1('extension').alias('extension'),
                 'total_sum', 'sha256', 'avg')
     file_info_df = file_info_df.filter(file_info_df.type.isNotNull())
     file_info_df.printSchema()
@@ -189,11 +327,11 @@ def save_by_type(spark, sc):
 
     sort_type_cnt = type1.sort(type1.total_cnt.desc())
     #sort_type_cnt.show()
-    sort_type_cnt.coalesce(400).write.csv('/redundant_file_analysis/draw_type1_by_repeat_cnt_more.csv')#draw_type1_by_repeat_cnt)
+    sort_type_cnt.coalesce(400).write.csv('/redundant_file_analysis/draw_type1_by_cnt_med.csv')#draw_type1_by_repeat_cnt)
 
     #sort_type_size = type1.sort(type1.sum_size.desc())
     #sort_type_size.show()
-    #sort_type_size.coalesce(400).write.csv('/redundant_image_analysis/draw_type1_by_cap_more.csv')#draw_type_by_size)
+    #sort_type_size.coalesce(400).write.csv('/redundant_image_analysis/draw_type1_by_cap_med.csv')#draw_type_by_size)
     """
     sort_type_dup_r = type1.sort(type1.dup_ratio_cap.desc())
     #sort_type_dup_r.show()
