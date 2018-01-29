@@ -10,6 +10,8 @@
 %each VM requires its own operating system kernel and system calls have to go
 %through a privileged hypervisor. This causes long VM startup times and slows down
 %processing~\cite{Disco}.
+\nancomment{add layer-level content addressable
+	shorten other sections}
 
 Container-based virtualization (such as Linux Containers~(LXC)~\cite{LXC}) has emerged 
 as a lightweight virtualization alternative.
@@ -84,6 +86,7 @@ In Docker Hub, the user repositories are namespaced by user name, i.e.,
 while the official repositories, which
 are directly provided by Docker Inc. and partners are called
 ``$\langle repository name \rangle$".
+\paragraph{Layer level content addressable}
 %
 %\vcomment{Somewhere we need to say that clients talk to registries using REST API.}
 

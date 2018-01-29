@@ -3,12 +3,12 @@
 %\lrcomment{Intro is still a bit too long, we can probably cut down on the first
 %4 paragraphs.}
 %\abc{reduced some of the material}
-\nancomment{1. docker and docker registry trend
-	2. content addressable are using for 
-	3. But:we download and ..found
-	4. the need to provide a large scale analysis
-	5. findings and suggests
-	}
+%\nancomment{1. docker and docker registry trend
+%	2. content addressable are using for 
+%	3. But:we download and ..found
+%	4. the need to provide a large scale analysis
+%	5. findings and suggests
+%	}
 	
 =======old version=====================
 
@@ -115,6 +115,25 @@ have to be uncompressed locally anymore.
 Our findings provide a first, quick insight in the Docker image dataset which
 can help to improve the understanding of how Docker containers are structured.
 %We discuss related work in~\S\ref{sec:related} and then conclude~(\S\ref{sec:conclusion}).
+
+In our thorough analysis of the xxxx images, with xxxx layers, we investigated the following three research questions (RQs):
+
+\begin{enumerate}
+	\item What are the redundant ratio in layers and images?
+	\item What are the redundant files and why there are so many redundant files?
+	\item How to reduce the redundant files?
+\end{enumerate}
+
+In our study, we first made two major observations.
+\begin{enumerate}
+	\item There are large amount of redundant files in layers and images.
+	\item What are the redundant files and why there are so many redundant files?
+\end{enumerate}
+
+Second, we proposed file-level content addressable model to reduce the redundant files by using file-level dedup.
+
+
+The significance of this work is our empirical evidence 
 
 %This results in a compression ratio of \gap and shows the potential efffectiveness of
 %compression\nancomment{add compression ratio}.

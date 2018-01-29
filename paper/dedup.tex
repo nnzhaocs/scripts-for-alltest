@@ -2,6 +2,7 @@
 \label{sec:dedup}
 
 \subsection{Overview of redundant file overhead}
+\paragraph{Finding 1: Only 3.17\% (23.92 TB) of files are unique files while others 96.83\% of files (143.28TB) are redundant copies, indicating that Docker Hub has severe redundancy problem}
 
 \begin{figure}
 	\centering
@@ -40,6 +41,7 @@
 \end{table} 
 
 \subsection{Redundant ratio for layers}
+\paragraph{Finding 2: \% of layers contains \% of inter-layer redundant files and \% of layers contains \% of intra-layer redundant files, indicating that large amount of files are replicated across different layers and plenty of redundant files are replicated within each layer}
 
 \begin{eqnarray}
 r_{intra\_dedup.} = \frac{S_{uncompress.} - S_{dropdup.}}{S_{uncompress.}} \\
@@ -63,6 +65,7 @@ r_{inter\_dedup.} = \frac{S_{uncompress.} - S_{shares}}{S_{uncompress.}}
 \paragraph{Inter-layer redundant ratio} Inter-layer redundant ratio is shown in Figure~\ref{fig:layer-dedup_cdf_and_hist_layer}
 
 \subsection{Redundant ratio for images}
+\paragraph{Finding 3: Similar to layer, \% of images contains \% of inter-image redundant files and \% of image contains \% of intra-image redundant files, indicating that large amount of files are replicated across different images and plenty of redundant files are replicated within each image}
 
 \begin{figure}
 	\centering

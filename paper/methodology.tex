@@ -14,7 +14,7 @@ on the crawler results; iii) unpack and analyze images and layers.
 
 \input{fig-downloader-analyzer.tex}
 
-\subsection{Crawler}
+\subsection{Crawling and downloading images}
 \label{sec:crawler}
 
 % TODO: The following paragraph seems out of place (move to next subsection?).
@@ -56,8 +56,8 @@ the final repository list consists of 457,627
 distinct repositories. 
 % TODO: Could we mention something about this number difference? Readers will immediately wonder.
 
-\subsection{Downloader}
-\label{sec:downloader}
+%\subsection{Downloader}
+%\label{sec:downloader}
 
 %Docker repository is a set of images labeled with \emph{version tags}.
 Images in Docker Hub repositories are labeled with \emph{version tags}
@@ -136,9 +136,9 @@ A total of 111,384 images could not be downloaded due to three reasons:
 Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
 dataset.
 
-
-\subsection{Analyzer}
-\label{sec:analyzer}
+\subsection{Analyzing the redundancy of Dataset}
+%\subsection{Analyzer}
+%\label{sec:analyzer}
 
 The analyzer extracts the downloaded layers
 and analyzes them along with the image manifests.
@@ -146,8 +146,8 @@ For each image, it creates an image profile and individual layer profiles,
 which contain metrics for the whole image and
 its individual layers, respectively.
 %Profiles are stored in JSON format.
-
-\paragraph{Layer profile}
+\paragraph{RQ1: What are the redundant ratio of layers and images?}
+%\paragraph{Layer profile and image profile}
 
 %Layers are downloaded as compressed tar archive files.
 %
@@ -202,7 +202,7 @@ file size;
 %them in results}}
 
 
-\paragraph{Image profile}
+%\paragraph{Image profile}
 
 To create the image profile, the analyzer parses the manifest
 and obtains the configuration information such as OS and target architecture.
@@ -229,6 +229,12 @@ FIS-to-CIS;
 We released both the software that we designed
 to download the images and all profiles we generated
 publicly at {\small{\url{https://elided.for.review}}}.
+
+
+\paragraph{RQ2: What are the redundant files \& why there are so many redundant files?}
+
+\paragraph{RQ3: How to reduce the redundant files}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                            %

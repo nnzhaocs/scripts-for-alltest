@@ -1,8 +1,16 @@
 \section{Redundant file characterization}
 \label{sec:redundant_files}
 
+\begin{figure*}
+	\centering
+	\includegraphics[width=1\textwidth]{graphs/graph-types-hierarchy}
+	\caption{Taxonomy of file types.
+	}
+	\label{fig:file-type-hierarchy}
+\end{figure*}
+
 In this section, we present our redundant file characterization on file repeat count, file size, and file types. 
-Based on this characterization, we create three-level classification hierarchy as shown in Figure~\ref{fig:class-hierarchy}.
+Based on this characterization, we create three-level classification hierarchy as shown in Figure~\ref{fig:file-type-hierarchy}.
 At the highest level, we created two categories: \textit{common redundant file types and non-common redundant file types}. 
 The majority (xxxx\% files, with xxx TB) are common file types that consists of a largest number of redundant files with large storage space consumed, such as xxx and xxx. 
 Only xxxx\% files are non-common file types that only contains a small number of redundant files with less storage space, such as xxxx and xxxx. 
@@ -10,7 +18,9 @@ Since our focus is on the major redundant files, our further classification expa
 
 At the second level of the hierarchy, we clustered common redundant file types based on the \textit{major usage, platform, or framework} involved by each file type. We identified redundant files' types relevant to \textit{archival, productivity, programming languages, scripts, images, databases, executables, and others}.
 
-At the third level, we classified the redundant files based on the specific file type or extension. Totally, we get around 690 types. 
+At the third level, we classified the redundant files based on the specific file type or extension. Totally, we get around 1500 types. 
+
+133 file types that redundant capacity $>$ 5G 
 %We selected the file types which take largest storage space.  
 
 Based on the second-and third-level classification, we further investigated the following two research questions: (1) What are the common redundant files?
@@ -43,99 +53,144 @@ Most files are smaller files. For example, 91\% files'sizes are equal or less th
 Around 22\% of files are less than 1 KB.
  
 
-\subsection{Overview of common redundant file types}
+\subsection{Overview of high redundant file types}
+
+\paragraph{Finding 1: \%, \% of redundant files are source codes and EOL files, which take up over \%, \% of redundant storage capacity, indicating that users are more prone to replicate source codes and create identical big EOF files, while \%, \% of redundant files are documents and archival files, which account for \%, \% of redundant storage capacity, indicating users replicates or creates identical documents and archival files}
+
+%Some data is inherently more prone to duplicates than others.
+Figure~\ref{fig:file-types} presents redundant data vs. unique data for each clusters. 
+Document cluster has the largest number of redundant files, indicating that users replicate or create more identical documents. While the redundant document files only consume xxx (xxx\%) of storage space, indicating that the size of redundant document files are small. In comparison, \% and \% of files are EOL files and source codes, which take up over \%, \% of redundant storage capacity, indicating that users replicate source codes and create identical big EOF files.
+
+Archival files and scripts have almost similarly number of redundant files, xxx for archival and xxx for scripts. However, archival cluster consumes xxxx more than that of scripts since archival file size is inherently higher than script size.
+
+We found that xxx of files are image files and xxx of files are relevant to database, which takes xxx, xxx of storage space respectively. There are xxx (xxx TB) of redundant files in Other cluster which contains, xxx, xxx, xxx, etc. 
 
 \begin{figure}
 	\centering
-	\subfigure[Top redundant file types in terms of file count.]{\label{fig:dedup_cdf}
+	\subfigure[Redundant data vs. unique data in terms of file count.]{\label{fig:file-types-cnt}
 		\includegraphics [width=0.4\textwidth]{graphs/type-total-cnt}
 	}
-	\subfigure[Top redundant file types in terms of capacity.]{\label{fig:dedup_hist}
+	\subfigure[Redundant data vs. unique data in terms of capacity.]{\label{fig:file-types-cap}
 		\includegraphics [width=0.4\textwidth]{graphs/type-total-cap}
 	}
-	\caption{Top redundant file types}
+	\caption{Redundant data vs. unique data for high redundant file types}
 	\label{fig:file-types}
 \end{figure}
 
-\subsection{Executable}
+\subsection{EOL files and source codes}
 
-A large executable group is ELF file type, which consists of ELF 64/32-bit LSB relocatable, shared object, executable, core file, processor-specific for x86-64, MIPS,
-ARM, Intel 80386, etc. architectures.
-Another executable group contains VAX COFF executable, PE32/PE32+ executable for Windows, and 386 pure executable, VMS Alpha, etc.
-\% of files are script executable, which contains python, shell, etc.
-\% of files are RPM, Debian bin
+\paragraph{Finding 2: 31.4\% (164,059,690) and 63.7\% (333,261,220) of EOL files are ELF files and intermediate compiled files, which take up over 85.7\% (45.3TB) and 5.3\% (2.8TB) of redundant storage capacity, indicating that users replicate or create more identical ELF files and intermediate compiled files. 64.1\% (213,753,591) of intermediate compiled files are Python byte-compiled files, which take up to 79.4\% (2.2TB) of redundant storage space, indicating that users compiled more Python scripts}
+
+As shown in Figure~\ref{fig:type-eol}, intermediate compiled files have the largest number of redundant copies (333,261,220, 63.7\%), which only take up to 5.3\% (2.8TB) of EOL redundant storage space, indicating that users creates more small redundant intermediate compiled files. Among all the intermediate compiled files, python byte-compiled files have the largest number of redundant copies (64.1\%, 213,753,591), which account for 79.4\% (2.2TB) of EOL redundant storage space as shown in Figure~\ref{fig:type-compiled}. 
+
+We found that there are various redundant intermediate compiled files in layers in addition to Python byte-compiled, such as Erlang beam files, Xemacs/emacs compiled files, compiled Java class, Mach-o fat files, Guile object bytecode, and llvm bitcode files. We see that 21.6\% (71,830,155) and 10.12\% (33,740,399) of redundant intermediate compiled files are terminfo compiled and compiled java class files, which consume 76.4 GB and 104.4 GB storage space.   
+
+%ELF files have the largest redundant capacity
+%A large executable group is ELF file type, which consists of ELF 64/32-bit LSB relocatable, shared object, executable, core file, processor-specific for x86-64, MIPS,
+%ARM, Intel 80386, etc. architectures.
+%Another executable group contains VAX COFF executable, PE32/PE32+ executable for Windows, and 386 pure executable, VMS Alpha, etc.
+%\% of files are script executable, which contains python, shell, etc.
+%\% of files are RPM, Debian bin
+
+\paragraph{Finding 3: 80.2\% (548,507,865) of source codes are C/C++ source, which take up to 79.7\% (4.2TB) of redundant storage space, indicating that users are more prone to duplicate C/C++ codes, which results in more ELF file replicas.}
 %The last group contains
 
-Figure~\ref{fig-elf}
-\subsection{Lib}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/type-exec-cap}
+	\caption{Redundant data vs. unique data for EOL (Executable, object code, libraries) files.
+	}
+	\label{fig:type-eol}
+\end{figure}
 
-library files contains libtool library file, OCaml native library, MIT scheme, Mach-O library, OCaml library, Palm OS dynamic library data, Microsoft c/c++ library.current ar archive random library, and other library.
-%libtool\|OCaml\|Palm\|MIT\|microsoft\|current ar archive random library\|mach-o\|rpm\|gzip
+Figure~\ref{fig:type-source} shows the redundant file count and storage capacity distribution for source code. C/C++ source codes have the largest number of redundant files. 80.2\% (548,507,865) of source codes are C/C++ source, which take up to 79.7\% (4.2TB) of redundant storage space, indicating that users are more prone to duplicate C/C++ codes, which results in more ELF file replicas.
 
-\subsection{Programming languages \&. scripts}
+We also found other source codes, such as Perl5 module source code (9.5\%), ruby module source code (7.6\%), assembler source code (1.1\%), pascal source (0.7\%), fortran program code (0.01\%), applesoft basic source code, and Lisp/scheme source code (0.17\%).
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{graphs/type-lang-cap}
-	\caption{Programming language distribution.
+	\caption{Redundant data vs. unique data for source code files.
 	}
-	\label{fig:file-type-lang}
+	\label{fig:type-source}
 \end{figure}
 
-\subsection{Archival}
+Figure~\ref{fig:type-lib} shows the redundant library distribution. We see that Gcc precompiled header files have the lowest number of redundant library files (20.3\%), but they take up to 0.93 TB. Almost 86.4\% of redundant library files are Palm libraries, which only take up to 7.2GB space, indicating that gcc compiled header files are much bigger than other libraries.
+
+We also found there are different libraries used in layers, such as netcdf library, Ocaml lib., mach-o lib.
+
+%Figure~\ref{fig-elf}
+%\subsection{Lib}
+%
+%library files contains libtool library file, OCaml native library, MIT scheme, Mach-O library, OCaml library, Palm OS dynamic library data, Microsoft c/c++ library.current ar archive random library, and other library.
+%%libtool\|OCaml\|Palm\|MIT\|microsoft\|current ar archive random library\|mach-o\|rpm\|gzip
+
+%\subsection{Source code}
+
+\subsection{Scripts}
+\paragraph{Finding 2: \% of scripts are Python scripts, which take up over \% of redundant storage capacity, indicating that users are more prone to replicate Python scripts compare to other scripts}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.45\textwidth]{graphs/type-tar-type}
-	\caption{Tar file distribution.
+	\includegraphics[width=0.5\textwidth]{graphs/type-script-cap}
+	\caption{Redundant data vs. unique data for scripts.
 	}
-	\label{fig:file-type-tar}
+	\label{fig:type-script}
 \end{figure}
 
-\subsection{Documents \& editors}
+
+
+\subsection{Documents}
+\paragraph{Finding 3: \%, \%, and \% of documents are ASCII text, UTF-8/16 text, and HTML/XML/XHTML, which take up over \%, \%, and \% of redundant storage capacity, indicating that users replicate more ASCII text, UTF-8/16 text, and HTML/XML/XHTML compare to other documents}
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{graphs/type-utili-cap}
-	\caption{Utility file distribution.
+	\caption{Redundant data vs. unique data for documents.
 	}
-	\label{fig:file_size}
+	\label{fig:type-doc}
 \end{figure}
 
-\subsection{Database}
+%type-utili-cap
+%type-script-cap
+
+\subsection{Database related files}
+\paragraph{Finding 4: \% and \% of database files are SQLite and UTF-8/16 text, which take up over \% and \% of redundant storage capacity, indicating that users also replicate database files, especially, SQLite and Berkeley DB}
 
 \begin{figure*}[t]
 	\centering
 	\begin{minipage}{0.35\textwidth}
 		\centering
 		\includegraphics[width=1\textwidth]{graphs/type-db-cap.pdf}
-		\caption{Database related files}
+		\caption{Redundant data vs. unique data for database related files}
 		\label{fig-dir}
 	\end{minipage}%
-	\begin{minipage}{0.3\textwidth}
+	\begin{minipage}{0.278\textwidth}
 		\centering
-		\includegraphics[width=1\textwidth]{graphs/type-script-cap}
-		\caption{Script related files}
+		\includegraphics[width=1\textwidth]{graphs/type-tar-type}
+		\caption{Redundant data vs. unique data for archival files}
 		\label{fig-file}
 	\end{minipage}
-	\begin{minipage}{0.3\textwidth}
+	\begin{minipage}{0.28\textwidth}
 		\centering
-		\includegraphics[width=1\textwidth]{graphs/type-exec-cap}
-		\caption{Executables}
+		\includegraphics[width=1\textwidth]{graphs/type-image-cap}
+		\caption{Redundant data vs. unique data for image files}
 		\label{fig-file}
 	\end{minipage}
 \end{figure*}
 
+\subsection{Archival}
+\paragraph{Finding 4: \% and \% of archival files are Zip files and Gzip files, which take up over \% and \% of redundant storage capacity, indicating that users also replicate or create archival files, especially, Zip and Gzip files}
+
 \subsection{Images}
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.35\textwidth]{graphs/type-image-cap}
-	\caption{Utility file distribution.
-	}
-	\label{fig:file_size}
-\end{figure}
-
+\paragraph{Finding 4: \% and \% of image files are PNG and JPEG text, which take up over \% and \% of redundant storage capacity, indicating that users also replicate image files, especially, PNG and JPEG files}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.35\textwidth]{graphs/type-utili-cap}
+%	\caption{Image file distribution.
+%	}
+%	\label{fig:file_size}
+%\end{figure}
 
 %=======================================
 %|             OLD VERSION              |
