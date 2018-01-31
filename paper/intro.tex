@@ -12,24 +12,10 @@
 	
 Recently, \emph{containers}~\cite{process-containers-linux} have
 gained significant traction because of its lightweight, isolation, and fast distribution properties
-%as an alternative to the virtual
-%machines~\cite{rosenblum2005virtual} for virtualization both on
-%premises and in the cloud
 ---polls suggest that 87\% of enterprises are
 at various stages of adopting containers, and they are expected to
 constitute a lucrative \$2.5 billion
 market~\cite{container-grow-by2020} by 2020.
-%%
-%In contrast to virtual machines, containers share the same kernel but
-%are isolated in terms of visibility (e.g., via
-%namespaces~\cite{man-namespaces}) and resources (e.g., via control
-%groups~\cite{kernel-doc-cgroups}). This enables containers to use
-%less memory and storage, start much faster, and typically incur less
-%execution overhead~\cite{Disco, felter2015updated,
-%	HypervisorsvsLightweight}.
-%A driving force for fast container
-%adoption is the popular Docker~\cite{docker} container management
-%framework and high available Docker image distribution mechanism, i.e., Docker registry. 
 
 Docker combines process containerization with efficient and
 effective packaging of complete runtime environment
@@ -39,12 +25,9 @@ Images are composed of shareable and
 and layers are stored in Docker registry and accessed by clients as needed. 
 Since 
 layers are uniquely identified by using collision-resistant hash of the content, no duplicate layers are stored in Docker registry.
-%
-%To reduce duplicates and improve storage efficiency, i
 
 Unfortunately, it's unknown whether  
-this coarse-grain layer-level content addressable storage (LLCAS) can efficiently reduce duplicates, and what the redundant ratio is for layer, image, and registry because there is no prior research on registry dataset analysis. Currently, registry is growing rapidly. For example, 
-%that exist within an individual layer and across different layers.  
+this coarse-grain layer-level content addressable storage (LLCAS) can efficiently reduce duplicates, and how much redundant data is stored in layer, image, and registry because there is no prior research on registry dataset analysis. Currently, registry is growing rapidly. For example,   
 Docker Hub~\cite{docker-hub}, the most widely used registry, stores more than 500,000 public image repositories comprising of over 2 million layers. Moreover,
 The size of the registry 
 is steadily increasing---we observed a linear growth of the
@@ -55,34 +38,23 @@ that presents challenges to the registry
 storage infrastructure has remained a largely unexplored
 area.
 
-%We believe one of the prime reasons is the limited understanding of what data
-%is stored inside containers.
-%%
-%This knowledge can help to improve the registry and container
-%storage infrastructure and ensure scalability of and fast accesses to the
-%registry service.
-%%
-%Existing work has focused on various aspects of
-%containerization~\cite{dockerssd, dockerfinder, analysisdockergithub,
-%slacker, dockervulnerabile}.
-%However, the registry and its contents have yet to be studied in detail.
-
 In this paper, we performed the first, in-depth, large-scale 
 redundancy analysis of the images and layers stored in the Docker Hub
-registry~(\S\ref{sec:background}).
-%
-%We download all latest publicly accessible images, which amount to 51~TB of
-%image data. Based on that dataset, we analyze traditional storage properties, such
-%as file count, data compression ratios, directory depths, as well as
-%Docker-specific properties, e.g., the number of layers per image, image popularity,
-%and the amount of layer sharing.
+registry~(\S\ref{sec:background}). 
+We downloaded 51TB worth
+of Docker Hub images which contains over xxxx (167 TB) of files after decompression. 
+Surprisingly, we found only around 3\% of the
+containing files are unique files while others are redundant copies, 
+which means that current layer-level content
+addressable storage cannot efficiently reduce duplicates.
+To inspect what are the redundant files and why there are so many redundant files, 
+we conducted a 
+comprehensive redundancy analysis on the 167 TB uncompressed dataset by using Spark SQL module~\cite{xxxx}.
 
-Moreover, we conducted the first comprehensive characterization of the image dataset, which provides registry designer and Docker engine designer   
-
-%\lrcomment{Would need to tie this in with Section 3, otherwise, we should remove
-
-%this paragraph again?\nancomment{we can remove this paragraph}}
-
+Moreover, since each image represents a complete union file systems, we collected all the metadata over xxx images and  
+conducted the first comprehensive characterization of the image dataset (or union file systems). 
+We not only present the distribution for each metric but also pointed out the challenges faced by Docker engine designer and registry designer based on global knowledge (or analysis) of metadata.
+   
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{graphs/image_growth.pdf}
@@ -93,64 +65,28 @@ Moreover, we conducted the first comprehensive characterization of the image dat
 	\label{fig_image_growth}
 \end{figure}
 
-%To download this large dataset, we overcome two
-%challenges~(\S\ref{sec:methodology}): i)~we provide an efficient way of identifying
-%all stored images as Docker Hub does not provide an API for this;
-%and ii)~we ensure the dataset is clean by handling
-%duplicates and removing links to broken or private images.
-%We plan to make all metadata (over 100GB of compressed
-%JSON files) publicly available.
-%
-%Our analysis reveals several interesting insights~(\S\ref{sec:char}). 
-%We find that image
-%accesses are skewed towards a small number of popular images. Specifically,
-%90\% of repositories are pulled less than 300 times from the point of their
-%creation, while the largest number of pulls we record for an image is
-%over 600 million. This suggests that image caching is a viable improvement
-%for the registry.
-%%
-%The majority of layers are small in size and only show a low compression ratio.
-%50\% of the layers are smaller than 4 MB which holds both for compressed and 
-%uncompressed layers. This results in a median compression ratio of 2.6.
-%As compression is computationally intensive, storing small layers in the
-%registry uncompressed can improve latency during pulls as layers do not
-%have to be uncompressed locally anymore.
-%
-%Our findings provide a first, quick insight in the Docker image dataset which
-%can help to improve the understanding of how Docker containers are structured.
-%%We discuss related work in~\S\ref{sec:related} and then conclude~(\S\ref{sec:conclusion}).
-\nancomment{New, adding}
+In our thorough redundant analysis and characterization of the xxxx images, with xxxx layers and xxxx files, we investigated the following four research questions (RQs):
 
-In our thorough analysis of the xxxx images, with xxxx layers, we investigated the following three research questions (RQs):
+\begin{compactitemize}
+	\item How much redundant data stored in layers, images, and registry? Although layer-level address content addressable storage is adopted by Docker, we do not know whether  
+	this coarse-grain layer-level content addressable storage (LLCAS) can efficiently reduce duplicates, and how much redundant data is stored in layer, image, and registry.
+	\item What are the redundant files and why there are so many redundant files? We aim to identify what are the redundant files that users mostly replicate. Such information will provide Docker designer knowledge (user behavior) to better develop and optimize Docker container and Docker registry storage system.
+	\item What are the challenges faced by Docker registry and engine designer? By characterizing and analysis all the image metadata, we aim to identify the challenges' faced by registry designer and guide designers'optimization and users' development.  
+	\item How to reduce the redundant files? We aim to propose a file-level content addressable model to reduce the redundant files by using file-level dedup while maintaining a good performance.
+\end{compactitemize}
 
-\begin{enumerate}
-	\item What are the redundant ratio in layers and images?
-	\item What are the redundant files and why there are so many redundant files?
-	\item How to reduce the redundant files?
-\end{enumerate}
+In our study, we made three major observations.
+\begin{compactitemize}
+	\item There are plenty of redundant files within individual layers and images 
+	While most redundant files are across layers and images. For example, xxx of layers
+	\item Most of redundant files are ELF files and documents. For example, 
+	\item The largest redundant source codes are C/C++ source codes, which results in bigger ELF files. For example, 
+	\item The largest redundant scripts are Python scripts while the Python byte-compiled files are pretty small. For example, 
+	\item Docker developers conducted variety of developments in containers, such as,
+	 
+\end{compactitemize}
 
-In our study, we first made two major observations.
-\begin{enumerate}
-	\item There are large amount of redundant files in layers and images.
-	\item What are the redundant files and why there are so many redundant files?
-\end{enumerate}
-
-Second, we proposed file-level content addressable model to reduce the redundant files by using file-level dedup.
-
-
-The significance of this work is our empirical evidence 
-
-%This results in a compression ratio of \gap and shows the potential efffectiveness of
-%compression\nancomment{add compression ratio}.
-%\lrcomment{I thought layers are already compressed tarballs? How can we save space
-%via compression?}\abc{ditto?}\nancomment{we can remove "save space"}
-%Also, layers experience a large overlap of files with 10\% of all files
-%appearing in more than 1 images. 
-%This reveals potential for deduplication at
-%file granularity \nancomment{docker already did this. we can remove this sentence}.
-
-%   After discussing related work~(\S\ref{sec:related}),
-%   the paper concludes~(\S\ref{sec:conclusion}).
+The significance of this work are (1) our empirical evidence that large amount of redundant files exist in layers, images, and registry and layer-level content addressable storage is not efficient to remove redundant files;(2) findings about what are the redundant files and why there are so many redundant files exist;(3) first in-depth characterization on image dataset (union file systems)(4) a file-level content addressable model that can efficiently remove redundant copies while maintain a good performance.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
