@@ -1,8 +1,11 @@
 \section{Image \& layer characterization}
 \label{sec:redundant_layers}
 
-\subsection{Image size and layer size}
+%\nancomment{This section provides the basic charact}
+We present our comprehensive characterization for Docker images and layers, which provides very useful knowledge for developers to have a better understand about the file systems used by Docker container and the dataset stored by registry in a high level since there is no prior work on these union file systems~\cite{xxx} and dataset used and created by exclusively for Docker, which are different from either analysis on EX4 linux file system~\cite{xxx} or window file system~\cite{xxx}. Moreover, we provided different insights (useful parameters, metrics that developer will need to acquire before design) for developers to consider and use to optimize Docker.
 
+\subsection{Image size and layer size}
+\nancomment{cache parameters, bigger image/layer overhead for runtime}
 \begin{figure}[!t]
 	\centering
 	\subfigure[CDF of image size]{\label{fig_reference_cnt_cdf}
@@ -30,7 +33,7 @@ software in containers but include only its necessary dependencies.
 
 
 \paragraph{Compression ratio}
-
+\nancomment{there is redundancy and avg compression ratio}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.4\textwidth]{graphs/compress-ratio-cdf.pdf}
@@ -52,6 +55,7 @@ software in containers but include only its necessary dependencies.
 \end{figure}
 
 \subsection{Layer count per image}
+\nancomment{more layer more matedata? overhead for union fs}
 
 \begin{figure}[!t]
 	\centering
@@ -97,6 +101,7 @@ is not shared. This hints that the layer-based approach to improve storage
 efficiency is barely utilized and there is room for improvement in how images
 
 \subsection{Layer reference count}
+\nancomment{should create more shared layers to remove duplicates}
 
 \begin{figure}
 	\centering
@@ -107,7 +112,7 @@ efficiency is barely utilized and there is room for improvement in how images
 \end{figure}
 
 \subsection{Directory count}
-
+\nancomment{how union fs handle so large dirs}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.4\textwidth]{graphs/dir-cnt-cdf.pdf}
@@ -203,6 +208,7 @@ As the majority of layers is small and has low compression ratios, it can
 be beneficial to store small layers uncompressed in the registry to reduce pull latencies.
 
 \paragraph{Layer depth}
+\nancomment{fs metadata overhead}
 
 \begin{figure}[!t]
 	\centering
@@ -217,7 +223,7 @@ be beneficial to store small layers uncompressed in the registry to reduce pull 
 \end{figure}
 
 \subsection{File count} 
-
+\nancomment{still metadata overhead}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.4\textwidth]{graphs/file-cnt-cdf.pdf}
