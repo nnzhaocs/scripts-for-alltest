@@ -2,38 +2,55 @@
 \label{sec:redundant_layers}
 
 %\nancomment{This section provides the basic charact}
-We present our comprehensive characterization for Docker images and layers, which provides very useful knowledge for developers to have a better understand about the file systems used by Docker container and the dataset stored by registry in a high level since there is no prior work on these union file systems~\cite{xxx} and dataset used and created by exclusively for Docker, which are different from either analysis on EX4 linux file system~\cite{xxx} or window file system~\cite{xxx}. Moreover, we provided different insights (useful parameters, metrics that developer will need to acquire before design) for developers to consider and use to optimize Docker.
+In this section, we present comprehensive characterization of Docker images and
+layers.  We analyze and present the highlights of dataset stored by Docker Hub
+registry.  We also provide useful insights (parameters or metrics)
+for the developers to better
+understand the file systems used by Docker container. 
 
-\subsection{Image size and layer size}
+This analysis is particularly useful as no prior work exists on union file
+systems~\cite{xxx} and dataset used and created exclusively for Docker,
+which are different from either analysis on EX4 linux file system~\cite{xxx} or
+Windows file system~\cite{xxx}. 
+
+
+\subsection{Layer and image size}
 \nancomment{cache parameters, bigger image/layer overhead for runtime}
 \begin{figure}[!t]
+	\subfigure[CDF of layer size]{\label{fig_reference_cnt_pdf}
+		\includegraphics[width=0.4\textwidth]{graphs/layer-size-cdf.pdf}
+	}
 	\centering
 	\subfigure[CDF of image size]{\label{fig_reference_cnt_cdf}
 		\includegraphics[width=0.4\textwidth]{graphs/image-size-cdf.pdf}%
 	}
-	\subfigure[CDF of layer size]{\label{fig_reference_cnt_pdf}
-		\includegraphics[width=0.4\textwidth]{graphs/layer-size-cdf.pdf}
-	}
+
 	\caption{Image/layer size distribution}
 	\label{fig:image-layer-size}
 \end{figure}
 
-Similarly to layers, we also measure compressed image size
+\acomment{Could not locate the figures you are talking about. I see two figures layers size and image size.}
+\acomment{Where is layers analysis when you say similarly? I wrote follwing para see for consistency.}
+
+Recall that container image consists of multiple layers and each of these layer is stored in Docker registry.
+In figure~\ref{ig_reference_cnt_pdf} we show the layer size distribution. We find that around 50\% of the
+layers are 1~MB in size and 90~\% of layers are less than 100~MB. This finding is particularly
+useful for the Docker registry designers as it shows that selective or popular layers can be cached in memory
+at the registry side.
+
+%Conatiner image size determines the runtime of container if it is not already cached locally. 
+Similar to layers, we measure compressed image size
 (CIS), \ie the sum of the sizes of the compressed image layers, and the sum of the
 sizes of files contained in the image (FIS). Figure~\ref{fig_image_size_gb}
 and~\ref{fig_image_size_mb} show the image size distributions at a coarse GB resolution
 and a finer resolution only covering images smaller than 1.5 GB.
 
-90\% of the images have an uncompressed size less than 1.3 GB while compressed images
-are less than 0.48 GB. In the median, this decreases to 94MB and 17 MB, respectively.
-The largest uncompressed image is 498 GB which is a Ubuntu-based image.
 Figure~\ref{fig-image-size} shows that the majority of uncompressed images in Docker Hub are
 small which aligns with the Docker philosophy to package software and distribute
 software in containers but include only its necessary dependencies.
 
 
-\paragraph{Compression ratio}
-\nancomment{there is redundancy and avg compression ratio}
+\subsection{Compression ratio}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.4\textwidth]{graphs/compress-ratio-cdf.pdf}
@@ -44,15 +61,23 @@ software in containers but include only its necessary dependencies.
 
 \begin{figure}[!t]
 	\centering
-	\subfigure[Histogram of image compression ratio]{\label{fig_reference_cnt_cdf}
+	\subfigure[Image compression ratio]{\label{fig_reference_cnt_cdf}
 		\includegraphics[width=0.215\textwidth]{graphs/image-compress-ratio-pdf.pdf}%
 	}
-	\subfigure[Histogram of layer compression ratio]{\label{fig_reference_cnt_pdf}
+	\subfigure[Layer compression ratio]{\label{fig_reference_cnt_pdf}
 		\includegraphics[width=0.22\textwidth]{graphs/layer-compress-ratio-pdf.pdf}
 	}
-	\caption{Histogram of directory count distribution}
+	\caption{Histogram of image and layer compression ratio.}
 	\label{fig:reference-cnt}
 \end{figure}
+
+90\% of the images have an uncompressed size less than 1.3 GB and compressed size of 0.4~GB.
+%while compressed images are less than 0.48 GB. 
+In the median, this decreases to 94MB and 17 MB, respectively.
+The largest uncompressed image is 498 GB which is a Ubuntu-based image.
+High compression ratio shows the potential of compression while distributing the container images.
+\nancomment{there is redundancy and avg compression ratio}
+
 
 \subsection{Layer count per image}
 \nancomment{more layer more matedata? overhead for union fs}
