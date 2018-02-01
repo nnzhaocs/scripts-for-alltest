@@ -32,9 +32,9 @@ Windows file system~\cite{xxx}.
 Recall that container image consists of multiple layers and each of these layer
 is stored in Docker registry.  In figure~\ref{fig_layer_size} we show the layer
 size distribution. We find that around 50\% of the layers are 1~MB in size and
-90~\% of layers are less than 100~MB. This finding is particularly useful for
+90~\% of layers are less than 100~MB. \emph{This finding is particularly useful for
 the Docker registry designers as it shows that selective or popular layers can
-be cached in memory at the registry side.
+be cached in memory at the registry side.}
 
 \acomment{Where is layers analysis when you say similarly? I wrote above
 para.. see for consistency.}
@@ -48,10 +48,10 @@ resolution and a finer resolution only covering images smaller than 1.5 GB.
 \acomment{Could not locate the figures you are talking about. I see two figures
 layers size and image size.}
 
-Figure~\ref{fig_image_size} shows that the majority of uncompressed images in
+\emph{Figure~\ref{fig_image_size} shows that the majority of uncompressed images in
 Docker Hub are small which aligns with the Docker philosophy to package
 software and distribute software in containers but include only its necessary
-dependencies.
+dependencies.}
 
 \subsection{Compression ratio}
 \begin{figure}
@@ -79,18 +79,18 @@ images.  We find that 90\% of the images have an uncompressed size less than
 1.3 GB and compressed size of 0.4~GB.
 %while compressed images are less than 0.48 GB. 
 In the median, this decreases to 94MB and 17 MB, respectively.  The largest
-uncompressed image is 498 GB which is a Ubuntu-based image.  High compression
+uncompressed image is 498 GB which is a Ubuntu-based image.  \emph{High compression
 ratio shows the potential of compression while distributing the container
-images.  \nancomment{there is redundancy and avg compression ratio}
+images.  \nancomment{there is redundancy and avg compression ratio}}
 
-However looking at Figure~\ref{fig_hist_image} and Figure~\ref{fig_hist_layer}
+However, looking at Figure~\ref{fig_hist_image} and Figure~\ref{fig_hist_layer}
 we find that there are layers for which the compression ratio is zero. Doing
 compression and uncompression of such layers incur additional overhead at
 docker engine side.  For such layers, we suggest not to do compression.
-Docker engine can use a hybrid approach to perform compression by compressing
-only those layers which yield better compression ratio. This way user does
-not need to uncompress the layer which incurs no advantage and further
-reduce the container startup time. 
+Docker engine can use a hybrid approach to compress
+only those layers which yield better compression ratio. 
+\emph{This way users pulling such layers do not need to uncompress
+and will experience reduction in container startup time.}
 
 \subsection{Layer count per image}
 \nancomment{more layer more matedata? overhead for union fs}
