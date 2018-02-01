@@ -64,23 +64,31 @@ dependencies.
 
 \begin{figure}[!t]
 	\centering
-	\subfigure[Image compression ratio]{\label{fig_reference_cnt_cdf}
+	\subfigure[Image compression ratio]{\label{fig_hist_image}
 		\includegraphics[width=0.215\textwidth]{graphs/image-compress-ratio-pdf.pdf}%
 	}
-	\subfigure[Layer compression ratio]{\label{fig_reference_cnt_pdf}
+	\subfigure[Layer compression ratio]{\label{fig_hist_layer}
 		\includegraphics[width=0.22\textwidth]{graphs/layer-compress-ratio-pdf.pdf}
 	}
 	\caption{Histogram of image and layer compression ratio.}
 	\label{fig:reference-cnt}
 \end{figure}
 
-90\% of the images have an uncompressed size less than 1.3 GB and compressed size of 0.4~GB.
+Figure~\ref{fig:compress-ratio} shows the compression ratio of the container
+images.  We find that 90\% of the images have an uncompressed size less than
+1.3 GB and compressed size of 0.4~GB.
 %while compressed images are less than 0.48 GB. 
-In the median, this decreases to 94MB and 17 MB, respectively.
-The largest uncompressed image is 498 GB which is a Ubuntu-based image.
-High compression ratio shows the potential of compression while distributing the container images.
-\nancomment{there is redundancy and avg compression ratio}
+In the median, this decreases to 94MB and 17 MB, respectively.  The largest
+uncompressed image is 498 GB which is a Ubuntu-based image.  High compression
+ratio shows the potential of compression while distributing the container
+images.  \nancomment{there is redundancy and avg compression ratio}
 
+However looking at Figure~\ref{fig_hist_image} and Figure~\ref{fig_hist_layer}
+we find that there are layers for which the compression ratio is zero. Doing
+compression and uncompression of such layers incur additional overhead at
+docker engine side.  For such layers we suggest not to do compression.
+Designers can use a hybrid approach to perform compression by compressing only
+those layers which yield better compression ratio. 
 
 \subsection{Layer count per image}
 \nancomment{more layer more matedata? overhead for union fs}
