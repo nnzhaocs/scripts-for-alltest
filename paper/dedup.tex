@@ -50,14 +50,16 @@ $r_{intra\_ldedup.} = \frac{S_{un.\_l} - S_{un.\_ldedup.}}{S_{un.\_l}}$, where $
 $r_{inter\_ldedup.} = \frac{S_{un.\_l} - S_{un.\_sldedup.}}{S_{un.\_l}}$, where $S_{un.\_l}$ is the uncompressed layer size while $S_{un.\_sldedup.}$ is the uncompressed layer size after removing the inter-layer duplicate files.
 
 Figure~\ref{fig:layer-dedup-ratio} shows the intra/inter-layer duplicate ratio in terms of file count and capacity. As shown in Figure~\ref{fig:layer-dedup-cdf},
-xxx\% of layers contains less than xxx\% of inter-layer redundant files while xxx\% of layers contains less than xxx\% of intra-layer redundant files, indicating that majority of files are replicated across different layers and plenty of redundant files are replicated within each layer.
-Figure~\ref{fig:layer-dedup_hist} shows that xxx\% of layers contains xxx\% of the intra-layer duplicate files. We manually inspect few of these layers and found xxxx.
-While xxxx\% of layers contains xxxx\% of the inter-layer duplicate files. We also manually inspect few of these layers that found xxx.
+90\% of layers contains less than 53\% of intra-layer redundant files while 90\% of layers contains bigger than 97.6\% of inter-layer redundant files, indicating that majority of files are replicated across different layers and plenty of redundant files are replicated within each layer.
+Figure~\ref{fig:layer-dedup_hist} shows that 1.1 M of layers contains 45\% of the intra-layer duplicate files. We manually inspect few of these layers and found xxxx.
+While 1.5 M of layers contains 95\% of the inter-layer duplicate files. We also manually inspect few of these layers that found xxx.
 
 As shown in Figure~\ref{fig:layer-dedup-ratio}, the differences between  duplicate ratio in terms of file count and  duplicate ratio in terms of capacity are very small, meaning that there is no huge difference among the sizes of duplicate files.
 
 Similar to images, we also calculated the intra-image duplicate ratio and inter-image duplicate ratio. Figure~\ref{fig:image-dedup-ratio} shows the intra/inter-image duplicate ratio in terms of file count and capacity. 
-
+90\% of images contains less than 54.4\% of intra-image redundant files while 90\% of images contains bigger than 99.4\% of inter-image redundant files, indicating that majority of files are replicated across different images and plenty of redundant files are replicated within each image.
+Figure~\ref{fig:layer-dedup_hist} shows that 0.2 M of images contains 0.45 of the intra-image duplicate files. We manually inspect few of these images and found xxxx.
+While 0.3 M of images contains 95\% of the inter-image duplicate files. We also manually inspect few of these layers that found xxx.
 
 Interestingly, we fond that considerable duplicate files are stored across the layers referred by the same images.
 
