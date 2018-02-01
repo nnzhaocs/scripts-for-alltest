@@ -3,21 +3,25 @@
 
 \input{tab-dataset-summary.tex}
 
-%\lrcomment{ I think in general it would be good if we emphasize in this section, what
-%	was challenging about downloading all this data and how the presented approach
-%	overcame these challenges. \nancomment{challenges include: 1. obtaining a list of all the repositories in docker hub; 2. effectively downloading all the images. 3. indept analysis}}
-
-Our methodology consists of three steps~(see Figure~\ref{fig-downloader-analyzer}):
-i)~crawl Docker Hub to list all repositories;
-ii)~download the latest image (and referenced layers) from each repository based
-on the crawler results; iii) unpack and analyze images and layers.
+Our methodology consists of two steps:
+(1)~Obtain a representative Docker image dataset;
+(2)~Analyze the redundancy of the dataset.
 
 \input{fig-downloader-analyzer.tex}
 
-\subsection{Crawler}
+\subsection{Obtaining a representative dataset}
 \label{sec:crawler}
 
-% TODO: The following paragraph seems out of place (move to next subsection?).
+We chose Docker Hub~\cite{docker-hub} to download a representative dataset because (1) Docker Hub is a popular Docker registry for developers to store and distribute Docker images, and (2) Docker Hub contains a large amount of public Docker images that are available for developers to download for free.
+
+To download a representative dataset from Docker Hub, Crawling is needed because Docker Hub does not provide an API to retrieve all repository. Specifically, there are two steps:
+i)~crawl Docker Hub to list all repositories;
+ii)~download the \textit{latest} image (and referenced layers) from each repository based
+on the crawler results. Here, we chose latest image from each repository because (1)~the `latest' version is usually the newest, stable, and commonly pulled by developers;
+(2)~downloading only the `latest' version can shorten our downloading process since the latest images already took about 30 days to download. 
+
+
+\subsubsection{Crawler}
 
 To download a particular image, %or set of images (i.e., a repository)
 the name of the repository name which the image belongs to needs to be provided.
@@ -25,210 +29,75 @@ The crawler is responsible for generating a list of repositories for the downloa
 
 Public repositories 
 in Docker Hub
-(i.e., the repositories
-that anyone can pull from)
 are divided into official
 repositories---served by the Docker Hub partners---and non-official
 repositories---provided by regular users and third-party organizations.
-%
 The number official repositories is less than 200, while, the majority
 of repositories in Docker Hub are non-official (over 400 thousand).
-Listing non-official repositories requires web crawling because
-Docker Hub does not provide an API to retrieve all repository names.
-%Therefore, we implemented a Crawler to crawl Docker Hub and list all non-official
-%repositories.
-
-Our crawler utilizes the Docker Hub search engine to find all available
+To listing non-official repositories, our crawler utilizes the Docker Hub search engine to find all available
 repositories.
-%
 As the name of non-official repositories is comprised
-of the user name and the repository name separated by a ``/'', %as detailed in \ref{sec:docker-registry},
+of the user name and the repository name separated by a ``/'', 
 we can search for ``/'' and obtain a list of all non-official repositories.
 The Crawler downloads all pages from the search results and parses the web content
 to build a list of all non-official repositories.
+
 We ran the crawler on May 30th, 2017 and it delivered a list of 634,412 repositories.
-%
-%However, the obtained list contained duplicate entries because 
-%the crawling process is not atomic and some repositories have ``/'' in their description.
-%
 After removing duplicate entries (introduced by Docker Hub indexing logic),
 the final repository list consists of 457,627
 distinct repositories. 
-% TODO: Could we mention something about this number difference? Readers will immediately wonder.
 
-\subsection{Downloader}
-\label{sec:downloader}
-
-%Docker repository is a set of images labeled with \emph{version tags}.
-Images in Docker Hub repositories are labeled with \emph{version tags}
-to track different image versions.
-%The different images in the repository are labeled with tags.
-%
-%For example, \texttt{ubuntu:17.10} refers to image version \texttt{17.10} in the
-%\texttt{ubuntu} repository.
-%
-If no tag is provided when pulling an image, 
-Docker pulls the \texttt{latest} tag by default.
-%For example, \texttt{docker pull ubuntu} command pulls the
-%\texttt{ubuntu:latest} image.
-%
-In this work we focus on downloading images with the \texttt{latest} tag to
-make the analysis more feasible. We believe that the latest
-image versions represent the most up-to-date state of the images.
-%
-%and plan to analyze images with other tags in the future.
+\subsubsection{Downloader}
 
 Instead of using the Docker client to download images,
 we implement our own downloader, which calls the Docker registry API
 directly~\cite{dockerregistryclient} to download manifests
 and image layers in parallel.
-%We use Docker registry client library~\cite{dockerregistryclient} to simultaneously
-%download manifests and image layers.
-%\lrcomment{What does `original' mean here? \nancomment{without any modification}}
-%
 Our downloader runs significantly faster than a \texttt{docker pull}-based downloader
-because the latter one performs operations besides downloading the image.
-For example, it automatically extracts each layer's tar archive file
-and creates the corresponding read-only snapshot using the configured
-Docker storage driver.
-This not only takes considerable amount of time but also leads
-to overly high storage space utilization.
-%
-Furthermore, the local storage format of Docker client makes it difficult
-to analyze the contents of each layer separately.
-% TODO: Why is it difficult? (we're making a claim)
-%
-% TODO: The following sentence is mostly repetition of start of paragraph.
+because the latter one performs operations besides downloading the image, such as unpacking and creating the corresponding read-only snapshot.
 Our downloader can download multiple images simultaneously and fetch
 the individual layers of an image in parallel. Layers are transferred as gzip
 compressed tar archives.
 
-%The process consists of two steps.
-%
-%First, fetching the manifest by sending a \texttt{GET} request to
-%$/v2/\langle name \rangle/manifests/\langle reference \rangle$,
-%where~\textit{name} refers to
-%$\langle namespace\rangle/\langle repository name \rangle$
-%and \textit{reference} is typically a version $\langle tag \rangle$.
-%
-%Second, once the manifest is downloaded, the downloader uses the layer digests to
-%download individual layers
-%%(including the config file for Schema 2 versioned manifest)
-%by sending $GET$ request to $/v2/\langle name \rangle/blobs/\langle digest \rangle$.
-%\textit{Name}, as for manifests,
-%refers to $\langle namespace\rangle/\langle repository name \rangle$
-%while~\textit{digest} refers to the layer digest.
-%Layers are transferred as gzip compressed tar archives.
-
-The whole downloading process took around 30 days.
-%
 Overall, we downloaded 51~TB of data in 355,319 image manifests with 1,792,609
 compressed layers.
-%
-A total of 111,384 images could not be downloaded due to three reasons:
-%
-1)~5\% of these images required authentication;
-2)~87\% of these images did not have a \texttt{latest} tag; and
-3)~8\% of these images contained layers that cannot be downloaded.
-% 0.05189255189	0.8666056166 0.0815018315
-%As we discussed in Section~\ref{sec:crawler}, we only downloaded the \texttt{latest}
-%version of an image to shorten the downloading process.
 Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
 dataset.
 
+%We released both the software that we designed
+%to download the images and all profiles we generated
+%publicly at {\small{\url{https://elided.for.review}}}.
 
-\subsection{Analyzer}
-\label{sec:analyzer}
+\subsection{Analyzing the redundancy of Dataset}
 
-The analyzer extracts the downloaded layers
+To analyze the redundancy of dataset and characterize the image and layers, we first created a profile for each layer and image, then we performed an in-depth analysis by using Spark.
+
+\subsubsection{Image \& layer profiles}
+
+The profiler extracts the downloaded layers
 and analyzes them along with the image manifests.
 For each image, it creates an image profile and individual layer profiles,
 which contain metrics for the whole image and
 its individual layers, respectively.
-%Profiles are stored in JSON format.
 
-\paragraph{Layer profile}
+A layer profile consists of: (1)~layer metadata, such as layer id, compressed size, archival size, compression ratio, directory count and file count. (2)~file metadata, such as file name, file content digest, file type, and file size. 
+An image profile consists of layer ids, compressed size, archival size, and compression ratio. Totally, we got xxxx layer profiles and xxx image profiles.
 
-%Layers are downloaded as compressed tar archive files.
+\subsubsection{Deeper analysis by using Spark SQL}
+
+With the layer and image profiles, we chose Spark~\cite{xxx} to speed up further redundancy analysis. Specially, (1)~we built a 8-nodes HDFS~\cite{xxx} cluster and stored all the layer and image profiles in HDFS as parquet files. (2)~we performed redundancy analysis by using Spark SQL module. For example, we first query unique file content digests and redundant file content digests along with their repeat count and size from the layer and image parquet table. Then we calculated the intra/inter-layer/image redundant ratio detailed in Section~\ref{xxx}.
+
+%and investigated the following questions (RQs):  
+
+%\paragraph{RQ1: What are the redundant ratio of layers and images?}
 %
-To produce the layer profile, the analyzer first decompresses and extracts each
-layer tarball to a layer directory.
 %
-Then, it recursively traverses each subdirectory and obtains
-its metadata information. Note that 8.8\% of the layers reported errors during
-extraction and could not be analyzed.
-%that we analyzed 91.2\% of 
-%the layers we downloaded. The rest 8.8\% of layers have errors during extracting.
-%\lrcomment{put reason here}\nancomment{addressed}
-%Note that we excluded the compressed layer
-%archives that are bigger than 2 GB from the analysis because \lrcomment{put reason here}.
-%These comprise only a small subset of 1,268 layers.
+%\paragraph{RQ2: What are the redundant files \& why there are so many redundant files?}
+%%\nancomment{how to get file type?}
 %
-A layer profile consists of:
-%\nancomment{could remove archival size}
-\begin{compactenumerate}
-\item Layer metadata: \{
-layer digest; 
-%archived layer size (ALS); 
-sum of contained file sizes (FLS); 
-compressed layer size (CLS); 
-directory count;
-file count;
-max. directory depth
-%\lrcomment{How is this different from directory depth below?}\nancomment{addressed};
-\}
+%\paragraph{RQ3: How to reduce the redundant files?}
+%\nancomment{how to prototype?}
 
-\item Compression ratio: \{
-%ALS-to-CLS;
-FSL-to-CLS;
-\}
-
-\item Directory metadata (for every directory in the layer): \{
-directory name;
-directory depth;
-file count;
-directory size;
-\}
-
-\item File metadata (for every file in the layer): \{
-file name;
-file digest;
-file type;
-file size;
-\}
-\end{compactenumerate}
-%\vcomment{Instead of the table, let's us the itemized list above for now,
-%\nancomment{already add table 1. and we dont need to list metrics here since we present
-%them in results}}
-
-
-\paragraph{Image profile}
-
-To create the image profile, the analyzer parses the manifest
-and obtains the configuration information such as OS and target architecture.
-Further, once individual layers are analyzed, the analyzer builds the image
-profile by including pointers to its layer profiles. An image profile consists of:
-\begin{compactenumerate}
-
-\item Image metadata: \{
-image name; 
-%archived image size (AIS); 
-sum of containing file sizes (FIS); 
-compressed image size (CIS); 
-Directory count;
-File count;
-\}
-
-\item Compression ratio: \{
-%AIS-to-CIS;
-FIS-to-CIS;
-\}
-
-\end{compactenumerate}
-
-We released both the software that we designed
-to download the images and all profiles we generated
-publicly at {\small{\url{https://elided.for.review}}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                            %
