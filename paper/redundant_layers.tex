@@ -86,9 +86,11 @@ images.  \nancomment{there is redundancy and avg compression ratio}
 However looking at Figure~\ref{fig_hist_image} and Figure~\ref{fig_hist_layer}
 we find that there are layers for which the compression ratio is zero. Doing
 compression and uncompression of such layers incur additional overhead at
-docker engine side.  For such layers we suggest not to do compression.
-Designers can use a hybrid approach to perform compression by compressing only
-those layers which yield better compression ratio. 
+docker engine side.  For such layers, we suggest not to do compression.
+Docker engine can use a hybrid approach to perform compression by compressing
+only those layers which yield better compression ratio. This way user does
+not need to uncompress the layer which incurs no advantage and further
+reduce the container startup time. 
 
 \subsection{Layer count per image}
 \nancomment{more layer more matedata? overhead for union fs}
