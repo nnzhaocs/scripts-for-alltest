@@ -53,6 +53,31 @@ Docker Hub are small which aligns with the Docker philosophy to package
 software and distribute software in containers but include only its necessary
 dependencies.}
 
+
+\acomment{Found the following para later in directory count..}
+We characterize layer sizes using two different different metrics:
+1)~Compressed Layer Size (CLS)---the format a layer is stored in the registry
+or transferred to a client;
+%2)~Archived Layer Size (ALS)---layer in decompressed but archived format;
+and 2)~Files in Layer Size (FLS)---the sum of the sizes of the uncompressed
+files contained in the layer.
+Figure~\ref{fig_layer_size_cdf} shows the CDF of the two metrics.
+
+%The ALS and FLS curves are, expectedly, close to each other (within 5\% for
+%any given layer size) while compressed layers are typically smaller.  j
+We see that 90\% of the layers are smaller than 177~MB in uncompressed format
+and smaller than 63~MB in compressed format.
+Interestingly, about half of the layers are smaller than 4~MB, independent of
+the format. That means that the registry stores a large number of small layers
+which cannot benefit from compression.
+
+To analyze the frequencies, we zoom into the 0--128~MB range (see
+Figure~\ref{fig_hist_layer_size}).
+More than 1 million and 800,000 layers are smaller than 5~MB in compressed and
+uncompressed format, respectively. Beyond that, the frequency drops rapidly and
+we only see around 100,000 layers between 5~MB and 15~MB.
+
+
 \subsection{Compression ratio}
 \begin{figure}
 	\centering
@@ -91,6 +116,36 @@ Docker engine can use a hybrid approach to compress
 only those layers which yield better compression ratio. 
 \emph{This way users pulling such layers do not need to uncompress
 and will experience reduction in container startup time.}
+
+
+\acomment{Found following para in directory count subsection..}
+To further study the sizes and the impact of compression, we calculate the
+FLS-to-CLS compression ratios (see Figure~\ref{fig_cdf_compression_ratio}).
+%
+%The ALS-to-CLS ratio is generally greater than the FLS-to-CLS ratio because
+%small files in layers get larger when combined in a tar archive.
+%
+90\% of layers have a  FLS-to-CLS ratio less than 4 and the median compression
+ratio is 2.6. The largest compression ratio is 1026.
+%
+%Half of the layers have a compression ratio (both ALS-to-CLS and FLS-to-CLS)
+%around 3.
+%
+%
+%The maximum FLS-to-CLS is 512,930 and maximum ALS-to-CLS is 1026.
+%
+Looking at the histogram (see Figure~\ref{fig_his_compression_ratio}), we see
+that around 600,000 layers have a compression ratio of between 2 and 3 while
+more than 300,000 between 1 and 2.
+%
+%Two peaks in the graph correspond to 587,000 layers that have the FLS-to-CLS
+%ratio of 3 and 331,000 layers that have the ALS-to-CLS ratio of 3.
+
+Our size analysis reveals an interesting trade-off. Compression is
+computationally expensive and is one of the major sources of latency when
+pulling an image from Docker Hub~\cite{slacker}.  As the majority of layers is
+small and has low compression ratios, it can be beneficial to store small
+layers uncompressed in the registry to reduce pull latencies.
 
 \subsection{Layer count per image}
 \nancomment{more layer more matedata? overhead for union fs}
@@ -192,66 +247,9 @@ and the number of layers per image. Again, we conclude that most images do not
 require an extensive amount of metadata when being deployed as file and
 directory counts are low except for few outliers.
 
-We characterize layer sizes using two different different metrics:
-%
-1)~Compressed Layer Size (CLS)---the format a layer is stored in the registry
-or transferred to a client;
-%
-%2)~Archived Layer Size (ALS)---layer in decompressed but archived format;
-%
-and 2)~Files in Layer Size (FLS)---the sum of the sizes of the uncompressed
-files contained in the layer.
-%
-Figure~\ref{fig_layer_size_cdf} shows the CDF of the two metrics.
-
-
-%The ALS and FLS curves are, expectedly, close to each other (within 5\% for
-%any given layer size) while compressed layers are typically smaller.  j
-We see that 90\% of the layers are smaller than 177~MB in uncompressed format
-and smaller than 63~MB in compressed format.
-%
-Interestingly, about half of the layers are smaller than 4~MB, independent of
-the format. That means that the registry stores a large number of small layers
-which cannot benefit from compression.
-
-To analyze the frequencies, we zoom into the 0--128~MB range (see
-Figure~\ref{fig_hist_layer_size}).
-%
-More than 1 million and 800,000 layers are smaller than 5~MB in compressed and
-uncompressed format, respectively. Beyond that, the frequency drops rapidly and
-we only see around 100,000 layers between 5~MB and 15~MB.
-
 %\input{fig-char-layer-compression}
 
 %\paragraph{Layer compression ratios}
-
-To further study the sizes and the impact of compression, we calculate the
-FLS-to-CLS compression ratios (see Figure~\ref{fig_cdf_compression_ratio}).
-%
-%The ALS-to-CLS ratio is generally greater than the FLS-to-CLS ratio because
-%small files in layers get larger when combined in a tar archive.
-%
-90\% of layers have a  FLS-to-CLS ratio less than 4 and the median compression
-ratio is 2.6. The largest compression ratio is 1026.
-%
-%Half of the layers have a compression ratio (both ALS-to-CLS and FLS-to-CLS)
-%around 3.
-%
-%
-%The maximum FLS-to-CLS is 512,930 and maximum ALS-to-CLS is 1026.
-%
-Looking at the histogram (see Figure~\ref{fig_his_compression_ratio}), we see
-that around 600,000 layers have a compression ratio of between 2 and 3 while
-more than 300,000 between 1 and 2.
-%
-%Two peaks in the graph correspond to 587,000 layers that have the FLS-to-CLS
-%ratio of 3 and 331,000 layers that have the ALS-to-CLS ratio of 3.
-
-Our size analysis reveals an interesting trade-off. Compression is
-computationally expensive and is one of the major sources of latency when
-pulling an image from Docker Hub~\cite{slacker}.  As the majority of layers is
-small and has low compression ratios, it can be beneficial to store small
-layers uncompressed in the registry to reduce pull latencies.
 
 \paragraph{Layer depth}
 \nancomment{fs metadata overhead}
