@@ -17,11 +17,11 @@ Windows file system~\cite{xxx}.
 \subsection{Layer and image size}
 \nancomment{cache parameters, bigger image/layer overhead for runtime}
 \begin{figure}[!t]
-	\subfigure[CDF of layer size]{\label{fig_reference_cnt_pdf}
+	\subfigure[CDF of layer size]{\label{fig_layer_size}
 		\includegraphics[width=0.4\textwidth]{graphs/layer-size-cdf.pdf}
 	}
 	\centering
-	\subfigure[CDF of image size]{\label{fig_reference_cnt_cdf}
+	\subfigure[CDF of image size]{\label{fig_image_size}
 		\includegraphics[width=0.4\textwidth]{graphs/image-size-cdf.pdf}%
 	}
 
@@ -29,26 +29,29 @@ Windows file system~\cite{xxx}.
 	\label{fig:image-layer-size}
 \end{figure}
 
-\acomment{Could not locate the figures you are talking about. I see two figures layers size and image size.}
-\acomment{Where is layers analysis when you say similarly? I wrote follwing para see for consistency.}
+Recall that container image consists of multiple layers and each of these layer
+is stored in Docker registry.  In figure~\ref{fig_layer_size} we show the layer
+size distribution. We find that around 50\% of the layers are 1~MB in size and
+90~\% of layers are less than 100~MB. This finding is particularly useful for
+the Docker registry designers as it shows that selective or popular layers can
+be cached in memory at the registry side.
 
-Recall that container image consists of multiple layers and each of these layer is stored in Docker registry.
-In figure~\ref{ig_reference_cnt_pdf} we show the layer size distribution. We find that around 50\% of the
-layers are 1~MB in size and 90~\% of layers are less than 100~MB. This finding is particularly
-useful for the Docker registry designers as it shows that selective or popular layers can be cached in memory
-at the registry side.
+\acomment{Where is layers analysis when you say similarly? I wrote above
+para.. see for consistency.}
+%Conatiner image size determines the runtime of container if it is not already
+%cached locally. 
+Similar to layers, we measure compressed image size (CIS), \ie the sum of the
+sizes of the compressed image layers, and the sum of the sizes of files
+contained in the image (FIS). Figure~\ref{fig_image_size}
+and~\ref{fig_image_size_mb} show the image size distributions at a coarse GB
+resolution and a finer resolution only covering images smaller than 1.5 GB.
+\acomment{Could not locate the figures you are talking about. I see two figures
+layers size and image size.}
 
-%Conatiner image size determines the runtime of container if it is not already cached locally. 
-Similar to layers, we measure compressed image size
-(CIS), \ie the sum of the sizes of the compressed image layers, and the sum of the
-sizes of files contained in the image (FIS). Figure~\ref{fig_image_size_gb}
-and~\ref{fig_image_size_mb} show the image size distributions at a coarse GB resolution
-and a finer resolution only covering images smaller than 1.5 GB.
-
-Figure~\ref{fig-image-size} shows that the majority of uncompressed images in Docker Hub are
-small which aligns with the Docker philosophy to package software and distribute
-software in containers but include only its necessary dependencies.
-
+Figure~\ref{fig_image_size} shows that the majority of uncompressed images in
+Docker Hub are small which aligns with the Docker philosophy to package
+software and distribute software in containers but include only its necessary
+dependencies.
 
 \subsection{Compression ratio}
 \begin{figure}
