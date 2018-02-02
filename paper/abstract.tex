@@ -13,15 +13,14 @@ Containers are created from images which are stored in a Docker registry.
 %Docker allows sharing of such images between users via a Docker registry.
 %
 The amount of data Docker registries store is massive; for instance, Docker
-Hub---a popular public registry---stores at least a half million public images
-that occupy over \vcomment{XXX}TB.
+Hub---a popular public registry---stores at least a half million public images.
 %
 %As the amount of images stored in public and private Docker registries
 %increases it becomes important to study images' characteristics.
 %
-Investigating the storage-centric properties of Docker images can reveal useful
-insights about containerized applications and thereby prompt improvements in
-Docker design.
+%Investigating the storage-centric properties of Docker images can reveal useful
+%insights about containerized applications and thereby prompt improvements in
+%Docker design.
 %
 %The massive Docker Hub dataset offers a unique opportunity for such an
 %endeavor.
@@ -39,7 +38,7 @@ We then evaluated the potential of deduplication for the Docker registry.
 Our analysis revealed that only ~3\% of the files in unpacked images are
 unique.
 %
-We therefore designed and implemented a simulation of Docker registry that
+We, therefore, designed Docker registry that
 performs file-level deduplication of the images.
 %
 We present simulation-based estimates of performance, storage efficiency, and
