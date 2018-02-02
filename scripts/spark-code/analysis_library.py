@@ -27,6 +27,7 @@ LAYER_DB_JSON_DIR  = os.path.join(HDFS_DIR, "layer_db_jsons/*")
 LAYER_DB_JSON_DIR1  = os.path.join(HDFS_DIR, "layer_db_jsons/")
 
 LAYER_FILE_MAPPING_DIR = os.path.join(HDFS_DIR, "layer_file_mapping/*")
+LAYER_FILE_MAPPING_DIR1 = os.path.join(HDFS_DIR, "layer_file_mapping/")
 
 
 # pull_cnt_absfilename = os.path.join(LOCAL_DIR, "pull_cnt_with_filename.csv") #"_c3"
@@ -36,9 +37,9 @@ layer_db_absfilename1 = os.path.join(LAYER_DB_JSON_DIR1, "1g_big_json.parquet")
 layer_db_absfilename2 = os.path.join(LAYER_DB_JSON_DIR1, "2tb_hdd_json.parquet")
 layer_db_absfilename3 = os.path.join(LAYER_DB_JSON_DIR1, "nannan_2tb_json.parquet")
 
-layer_file_mapping1 = os.path.join('layer_file_mapping/', 'layer_file_mapping_nannan_2tb_hdd.parquet')
-layer_file_mapping2 = os.path.join('layer_file_mapping/', 'layer_file_mapping_2tb_hdd.parquet')
-layer_file_mapping3 = os.path.join('layer_file_mapping/', 'layer_file_mapping_1gb_layer.parquet')
+layer_file_mapping1 = os.path.join(LAYER_FILE_MAPPING_DIR1, 'layer_file_mapping_nannan_2tb_hdd.parquet')
+layer_file_mapping2 = os.path.join(LAYER_FILE_MAPPING_DIR1, 'layer_file_mapping_2tb_hdd.parquet')
+layer_file_mapping3 = os.path.join(LAYER_FILE_MAPPING_DIR1, 'layer_file_mapping_1gb_layer.parquet')
 
 unique_file_basic_info = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_file_basic_info.parquet')
 unique_size_cnt_total_sum = os.path.join(REDUNDANT_FILE_ANALYSIS_DIR, 'unique_size_cnt_total_sum.parquet')

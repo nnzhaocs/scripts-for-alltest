@@ -174,7 +174,7 @@ def find_file_digest_in_layer(spark, sc):
     df = spark.read.parquet(layer_db_absfilename3)#LAYER_DB_JSON_DIR)
     #df.show()
     df.filter(df.layer_id == 'sha256:00005e32ef1aa4bde012c8f1f2dc55c3699c8dd8ec3a08326f2b2a0887e9b60b').selectExpr('file_cnt', "explode(dirs) As structdirs").selectExpr('structdirs.subdir', 'structdirs.file_cnt',
-     "explode(structdirs.files) As structdirs_files").selectExpr('subdir', 'file_cnt', "structdirs_files.*").show() #000269aa093202d4e2035086b5e6ab68af8ad8f5b464b49e69478d983ca989db').show()
+     "explode(structdirs.files) As structdirs_files").selectExpr('subdir', 'file_cnt', "structdirs_files.*").show(100, False) #000269aa093202d4e2035086b5e6ab68af8ad8f5b464b49e69478d983ca989db').show()
     
 
 
