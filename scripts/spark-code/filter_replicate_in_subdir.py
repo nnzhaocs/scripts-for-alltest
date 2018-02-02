@@ -13,9 +13,9 @@ layer_file_mapping_dropsub1 = os.path.join(LAYER_FILE_MAPPING_DROPSUB, 'layer_fi
 layer_file_mapping_dropsub2 = os.path.join(LAYER_FILE_MAPPING_DROPSUB, 'layer_file_mapping_2tb_hdd.parquet')
 layer_file_mapping_dropsub3 = os.path.join(LAYER_FILE_MAPPING_DROPSUB, 'layer_file_mapping_1gb_layer.parquet')
 
-layer_mapping_file = layer_file_mapping3
+layer_mapping_file = layer_file_mapping1
 
-layer_file_mapping_dropsub = layer_file_mapping_dropsub3
+layer_file_mapping_dropsub = layer_file_mapping_dropsub1
 
 
 def main():
@@ -25,7 +25,7 @@ def main():
 
 
 def combine_new_name(digest, filename):
-    return filename+'-'+digest
+    return filename+'-sha256-'+digest
 
 def find_root_dir(absfilenames):
     # find = False
@@ -66,10 +66,10 @@ def filter_nosubdirs(absfilenames):
     filenames = file_dirs.keys()
     for root_file in root_files:
         if root_file in filenames:
-            if not check_subdirs(file_dirs[root_file]):
+            if not check_subdirs(file_dirs[root_file], absfilenames):
                 dup_root_filenames.append(os.path.join('/', root_file))
 
-    return dup_root_filenames
+    return len(dup_root_filenames)
 
 
 def drop_nosub_files(spark, sc):
@@ -82,13 +82,13 @@ def drop_nosub_files(spark, sc):
 
     dirs = df.groupby('layer_id').agg(F.collect_list('new_filename').alias('new_filenames'))
 
-    filternosubdirs = F.udf(filter_nosubdirs)
+    filternosubdirs = F.udf(filter_nosubdirs)#, ArrayType(StringType()))
 
     dup_root_fs = dirs.withColumn('dup_root_files', filternosubdirs('new_filenames'))
 
-    new_df = dup_root_fs.select('layer_id', F.explode('dup_root_files').alias('dup_root_files'))
+    new_df = dup_root_fs.select('layer_id', 'dup_root_files')#F.explode('dup_root_files').alias('dup_root_files'))
 
-    new_df.write.save(layer_file_mapping_dropsub)
+    new_df.coalesce(4000).write.save(layer_file_mapping_dropsub)
 
 
 if __name__ == '__main__':
