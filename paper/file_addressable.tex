@@ -10,7 +10,8 @@ However, as discussed in previous sections, almost 97\% of files inside the laye
 As the number of images stored in Docker registry is increasing dramatically, 
 storing and managing the large proportion of redundant files requires both storage equipment and administration investment. 
 
-In this section, a file-level content addressable storage model is suggested for Docker registry to remove redundant files and save space.   
+In this section, a file-level content addressable storage model is suggested for Docker registry to remove redundant files and save space. 
+\lrcomment{What are the challenges we overcome with FLCAS?}  
 %Docker registry can save a lot of space if using file-level content addressable storage. 
 %Benefit: saving money, reducing storage management overhead.
 
@@ -40,7 +41,12 @@ FLCAS exposes a high-level layer addressing by mapping their digests to their co
 the letter one is informal)}
 
 %\subsection{Trade-off discussion}
-File-level dedup can significantly reduce the redundant files in docker registry and save a large volume of storage space. However, it also introduces considerable overhead, which including layer decompression, file content digest calculation, searching, and layer compression overhead. These additional operations are either CPU intensive or I/O intensive.  
+File-level dedup can significantly reduce the redundant files in docker registry and save a large volume of storage space.
+However, it also introduces considerable overhead, which including layer decompression, file content digest calculation, searching,
+and layer compression overhead. These additional operations are either CPU intensive or I/O intensive.
+%
+\lrcomment{These challenges should be listed earlier in the section. They are also hard to follow as at this point, it is
+still unclear why we need searching or why we have additional compression/decompression overhead.}
 
 \begin{figure}
 	\centering
@@ -50,14 +56,20 @@ File-level dedup can significantly reduce the redundant files in docker registry
 	\label{fig:pull-cnt}
 \end{figure}
 
-\paragraph{Caching hot layers}To reduce overhead, we cache the hot/recently requested layers as gzip compressed tar files in a \textit{layer cache pool} without file-level dedup.
+\paragraph{Caching hot layers}
+\lrcomment{Before explaining how to improve performance and reduce overhead, we should explain the strategy in general.}
+%
+To reduce overhead, we cache the hot/recently requested layers as gzip compressed tar files in a \textit{layer cache pool} without file-level dedup.
 We observed that only a small proportion of images and layers are frequently requested. A majority of images and layers are \textit{cold}.
-As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total number of pullings since the layers/images are stored in Docker Hub to May 30, 2017. 
+%
+\lrcomment{Why is this important? We need to provide more details.}
+%
+As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total number of pulls since the layers/images are stored in Docker Hub to May 30, 2017. 
 We see that only 20\% and 10\% of images are pulled more that 100 and 360 times respectively. 
 Similarly, only 20\% and 10\% of layers are pulled more that 217 and 660 times. 
 Note that 
 the layers'pull count shown in Figure~\ref{fig:pull-cnt} is calculated by aggregating all the images'pull counts that refers this layer.
-Note that the image pull counts are crawled from Docker Hub website. 
+Note that the image pull counts are crawled from Docker Hub website.
 Actual layer pull count should be less than the number shown in Figure~\ref{fig:pull-cnt} because pulling a image does not necessarily pull all its containing layers as we don't pull the layers if they have already been downloaded.
 %
 
@@ -77,12 +89,16 @@ Typically, workload fluctuates, with peaks and troughs. According to IBM bluemix
 Thus, file-level dedup runs periodically to reduce redundant files without causing performance overhead. 
 %
 \vcomment{What are the units for  $\sigma_{wl}$ and  $\sigma_{su}$?}
+%
+\lrcomment{Do you mean it only runs through low workload periods? How are we predicting those or are we relying on some workload patterns? We should make that clear.}
 
 %high while start file-level dedup 
 \paragraph{FLCAS model}
 Figure~\ref{fig:file-dedup-model} shows an example of FLCAS.
 %
 \vcomment{An example?..}
+%
+\lrcomment{This explanation should come before the caching and light workloads paragraphs.}
 %
 The recently pushed layers are treated as hot layers and cached in layer cache pool. 
 All the pulling requests to these hot layers are served from layer cache pool.
@@ -103,7 +119,11 @@ Since file-level dedup involves operations that are either CPU intensive or I/O 
 To improve performance, we use RAM to temporarily store \textit{small} layers and directly process them in RAM.
 Specially, we first load small layers in a RAM disk and perform decompression, unpacking, file content digest calculation in RAM, and remove them from RAM after completion.   
 According to our findings that majority (87.3\%) of layers that are less than 50M as shown in Figure~\ref{fig:image-layer-size}. So majority of layers can be stored and processed in RAM to speed up file-level dedup. 
-%layers that are less than 50M are stored and processed in RAM while the rest layers are stored and processed in SSDs. 
+%layers that are less than 50M are stored and processed in RAM while the rest layers are stored and processed in SSDs.
+%
+\lrcomment{This should still be part of 7.1 as it explains the strategy and not the prototype/simulations.}
+%
+\lrcomment{How are small layers defined? Where is the threshold?}
 
 \paragraph{FLCAS prototype}
 
@@ -117,8 +137,21 @@ According to our findings that majority (87.3\%) of layers that are less than 50
 
 %\paragraph{Image \&. layer popularity skewness} 
 To quantify the latency of file-level dedup, we simulated a one-node docker registry with 64 RAM and 32 Cores with 60 concurrent pulling requests to cold layers since dedup process only starts periodically when the workload is lower and only cold layers are evolved in dedup process (discussed in Section~\ref{subsec:FLCAS}).
+%
+\lrcomment{By latency, do you mean the time it takes to perform the dedup? I wouldn't call that latency but rather run time or completion time.}
+%
+\lrcomment{What exactly was the setup? Where those 60 requests submitted while the dedup was running and where they submitted only once or repeatedly?}
 
-We wrote around 600 lines of Python code to simulate file-level dedup operations on the layer dataset, specially, it reads a layer from layer dataset to a RAM disk (i.e., tmpfs) and decompresses the layer in the RAM disk. Then it calculates each containing files' digests and append the layer-to-file digest mapping records to a mapping table. To improve searching performance, the mapping table is stored in Hive database~\cite{xxx}. To speed up dedup process, we leverage multi-processing. Only unique files are maintained in RAM disk while the redundant copies are removed from RAM disk. To simulate concurrent pulling requests to the cold layers, we randomly generate 60 different cold layer digests and each process takes one layer pulling request, then packs and compresses the layer's containing files by searching the mapping table for the layer digest. We measured its performance by using file-level dedup for 0.89 million small layers.
+We wrote around 600 lines of Python code to simulate file-level dedup operations on the layer dataset, specially, it reads a layer from layer dataset to a RAM disk (i.e., tmpfs) and decompresses the layer in the RAM disk. Then it calculates each containing files' digests and append the layer-to-file digest mapping records to a mapping table.
+To improve searching performance, the mapping table is stored in Hive database~\cite{xxx}.
+%
+\lrcomment{Why are we using Hive for this? It seems overkill to me, especially for such small data. Even at scale, a KeyValue store would probably provide
+better performance than clunky MapReduce-based DB.}
+%
+To speed up dedup process, we leverage multi-processing. Only unique files are maintained in RAM disk while the redundant copies are removed from RAM disk. To simulate concurrent pulling requests to the cold layers, we randomly generate 60 different cold layer digests and each process takes one layer pulling request, then packs and compresses the layer's containing files by searching the mapping table for the layer digest. We measured its performance by using file-level dedup for 0.89 million small layers.
+%
+\lrcomment{It is still not really clear to me how the workload looks.}
+
 
 \paragraph{File-level dedup latency}
 
@@ -127,20 +160,42 @@ We wrote around 600 lines of Python code to simulate file-level dedup operations
 Figure~\ref{fig:dedup-res} shows the breakdown latency distribution for each involved operation: decompression time, unpacking time, file content digest calculation time, and searching time.
 
 First, among all the operation latencies, we see that searching time is the smallest. 80\% of searching time is less than 0.004 s. The mapping table maintains 0.98 million layer-to-file digest mapping records. Consider that more than 1.7 million layers are stored in Docker hub and the number is still increasing, it's better to choose a fast distributed database to provide high searching performance and scalability.
+%
+\lrcomment{How does our DB schema look and what are the search queries?}
   
-Second, we see that digest calculation time spreads over a large range started from 0.000005 s to 124.7 s. It's because digest calculation time largely depends on the layer size. Typically, smaller layers contains a smaller number of smaller files, which takes much less time to calculate their digests. While if the layer is bigger, the digest calculation overhead will be higher. 80\% of digest calculation time is less than 4.21 s. 
+Second, we see that digest calculation time spreads over a large range started from 0.000005 s to 124.7 s. It's because digest calculation time
+largely depends on the layer size. Typically, smaller layers contains a smaller number of smaller files, which takes much less time to
+calculate their digests. While if the layer is bigger, the digest calculation overhead will be higher. 80\% of digest calculation time is
+less than 4.21 s. 
 %The layer file digest calculation can be finished within 10 s on average. 
-Thus, we suggest that multiple-threading is needed to calculate the files' digests simultaneously; Fast CPUs as well as more powerful computing nodes are required to speed up digest calculation.
+Thus, we suggest that multiple-threading is needed to calculate the files' digests simultaneously; Fast CPUs as well as more powerful computing nodes
+are required to speed up digest calculation.
 
-Third, the latencies for decompression and unpacking have the same distribution during the lowest response time range started from 0.04 s to 0.15 s. Around 60\% of decompression and unpacking time are less than 0.15 s. However, decompression has the highest latencies than that of unpacking. 80\% of decompression is less than 0.55 s while 80\% of packing time is less than 0.21 s. 
+Third, the latencies for decompression and unpacking have the same distribution during the lowest response time range started
+from 0.04 s to 0.15 s. Around 60\% of decompression and unpacking time are less than 0.15 s. However, decompression has the highest
+latencies than that of unpacking. 80\% of decompression is less than 0.55 s while 80\% of packing time is less than 0.21 s. 
 
-Figure~\ref{fig:dedup-res} also shows the total time distribution for file-level dedup which is the sum of latencies for decompression, unpacking, digest calculation, and searching. We see that 80\% of file-level dedup time is less than 9.09 s. We also measured the throughput of 60 processes. Our one-node file-level dedup prototype can process about 3 layers/s. We suggest to use more high powerful machines to improve throughput.
+Figure~\ref{fig:dedup-res} also shows the total time distribution for file-level dedup which is the sum of latencies for decompression,
+unpacking, digest calculation, and searching. We see that 80\% of file-level dedup time is less than 9.09 s.
+%
+\lrcomment{Is that per layer or per file or per image?}
+%
+We also measured the 
+throughput of 60 processes. Our one-node file-level dedup prototype can process about 3 layers/s. We suggest to use more high 
+powerful machines to improve throughput.
 
 \paragraph{Pulling latency}
-Note that the pushing performance are not influenced by the file-level dedup because once the layer reaches registry, an response message will be sent to the user. No addition delay will be added to the pushing time. However, compression time will impact pulling performance since the files need to be packed and compressed first and then sent to the users once registry receives pulling requests to the cold layers. 
+Note that the pushing performance are not influenced by the file-level dedup because once the layer reaches registry,
+an response message will be sent to the user.
+%
+\lrcomment{This should have been explained when introducing the approach.}
+%
+No addition delay will be added to the pushing time. However, compression time will impact pulling performance since the files need to be packed and compressed first and then sent to the users once registry receives pulling requests to the cold layers. 
 
 Figure~\ref{fig:dedup-res} shows the pulling time distribution. Note that the pulling time is the sum of archiving time, compression time, and searching time and does not include network transfer time. We can see that 
 compression and archiving time almost share the same distribution during the lowest response time range started from 0.04 s to 0.15 s. 60\% of compression and archiving time are less than 0.15 s. While compression has the highest latency. 80\% of compression time is less than 2.82 s. We see that archiving time and compression contributes equally to pulling time when their latencies are lower than 0.15 s while compression time almost equals to pulling time when the latency is greater than 0.15 s. Hence, we suggest that fast compression methods are required to reduce compression time.  
+%
+\lrcomment{How does this compare to pulling without dedup? What's the overhead added?}
  
 %majority (xxx) of layers'dedup times are less than xxx.
 %during peak workload, which means that we start file-level dedup whenever it receives a layer. 
