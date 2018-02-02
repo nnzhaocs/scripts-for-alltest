@@ -13,9 +13,15 @@ layer_file_mapping_dropsub1 = os.path.join(LAYER_FILE_MAPPING_DROPSUB, 'layer_fi
 layer_file_mapping_dropsub2 = os.path.join(LAYER_FILE_MAPPING_DROPSUB, 'layer_file_mapping_2tb_hdd.parquet')
 layer_file_mapping_dropsub3 = os.path.join(LAYER_FILE_MAPPING_DROPSUB, 'layer_file_mapping_1gb_layer.parquet')
 
-layer_mapping_file = layer_file_mapping1
+layer_mapping_file = layer_file_mapping3
 
-layer_file_mapping_dropsub = layer_file_mapping_dropsub1
+layer_file_mapping_dropsub = layer_file_mapping_dropsub3
+
+
+def main():
+
+    sc, spark = init_spark_cluster()
+    drop_nosub_files(spark, sc)
 
 
 def combine_new_name(digest, filename):
@@ -85,3 +91,7 @@ def drop_nosub_files(spark, sc):
     new_df.write.save(layer_file_mapping_dropsub)
 
 
+if __name__ == '__main__':
+    print 'start!'
+    main()
+    print 'finished!'
