@@ -64,6 +64,8 @@ all_json_absfilename = os.path.join(LOCAL_DIR, '2tb_hdd_json.lst')#'nannan_2tb_j
 /layer_db_jsons/nannan_2tb_json.parquet
 """
 
+"""! remove layer filename"""
+
 def extract_dir_file_digests(layer_filename, layer_id, dirs):
 
     file_lst = []
