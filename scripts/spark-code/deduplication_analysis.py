@@ -40,7 +40,7 @@ cnt_bigger_1_fileinfo = os.path.join(LOCAL_DIR, 'cnt_bigger_1_fileinfo.parquet')
 output_size_cnt_total_sum = os.path.join(LOCAL_DIR, 'output_size_cnt_total_sum.parquet')
 
 redundant_ratio_in_layers = os.path.join(LOCAL_DIR, 'redundant_ratio_in_layers.parquet')
-shared_ratio_in_layers = os.path.join(LOCAL_DIR, 'shared_ratio_in_layers')
+#shared_ratio_in_layers = os.path.join(LOCAL_DIR, 'shared_ratio_in_layers')
 
 explode_fdigest_layers = os.path.join(LOCAL_DIR, 'explode_fdigest_layers.parquet')
 

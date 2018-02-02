@@ -68,13 +68,13 @@ def init_spark_cluster():
     conf =  SparkConf()\
         .setAppName('jsonsanalysis')\
         .setMaster(master)\
-        .set("spark.executor.cores", 3)\
+        .set("spark.executor.cores", 5)\
         .set("spark.executor.instances", 1)\
         .set("spark.driver.memory", "10g")\
-        .set("spark.executor.memory", "18g")\
+        .set("spark.executor.memory", "40g")\
         .set("spark.driver.maxResultSize", "10g")\
         .set('spark.dynamicAllocation.enabled', False)\
-	.set("spark.sql.shuffle.partitions", 800)
+	.set("spark.sql.shuffle.partitions", 4000)
         #.set("spark.sql.hive.filesourcePartitionFileCacheSize", "30g")
     sc = SparkContext(conf = conf)
 

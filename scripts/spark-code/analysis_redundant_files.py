@@ -17,6 +17,9 @@ def main():
     #save_unique_file_info(spark, sc)
 
 
+def extract_file_types(spark, sc):
+
+
 """save uniqe file digests"""
 def save_unique_file_info(spark, sc):
     layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates(['layer_id'])

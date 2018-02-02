@@ -1,10 +1,16 @@
 
 from analysis_library import *
-
+import time
 
 layer_file_cnt = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_file_cnt.parquet')
 unique_file_layer_mapping = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'unique_file_layer_mapping.parquet')
 layer_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_dup_ratio.parquet')
+test_layers = os.path.join('/local/layer.json.lst_total')
+res_list = '/local/operation_time.csv'
+
+res_5_list = '/local/opertation_time_5.csv'
+
+list_elem_num = 60
 
 
 def main():
@@ -12,14 +18,74 @@ def main():
     sc, spark = init_spark_cluster()
     #save_unique_file_layer_mapping(spark, sc)
     #save_layer_file_cnt(spark, sc)
-    #find_file_digest_in_layer(spark, sc)
-    save_layer_redundant_info(spark, sc)
+    find_file_digest_in_layer(spark, sc)
+    #save_layer_redundant_info(spark, sc)
+    #save_indexing_files_layer(spark, sc)
     #save_layer_uniq_shared_size(spark, sc)
     #save_layer_info(spark, sc)
     # layer_db_df = spark.read.parquet(LAYER_DB_JSON_DIR).dropDuplicates('layer_id')
     # files = layer_db_df.selectExpr("explode(dirs) As structdirs").selectExpr(
     #     "explode(structdirs.files) As structdirs_files").selectExpr("structdirs_files.*")
     # regular_files = files.filter(files.sha256.isNotNull())
+    #parse_res_time(spark, sc)
+    #save_specifi_layer_dup_ratio(spark, sc)
+
+
+def parse_res_time(spark, sc):
+    """
+    lst = spark.read.csv(res_list)
+    total_res = lst.groupby('_c0').agg(F.size(F.collect_set('_c1')).alias('ops'), F.sum('_c2'))
+    layer_id = total_res.filter('ops == 6')#.write.csv('/local/total_res_sum.csv')
+    tested_res = lst.join(layer_id, ['_c0'], 'inner')
+    tested_res.write.csv('/local/tested_res.csv')
+    """
+    lst = spark.read.csv('/local/tested_res.csv')
+    lst = lst.where((F.col('_c1') == 'compress') | (F.col('_c1') == 'archival'))
+    lst.groupby('_c0').agg(F.sum('_c2')).write.csv('/local/light_pulling.csv')
+    """
+    dup_list = spark.read.csv(res_5_list)
+    total_res = dup_list.groupby('_c0').agg(F.size(F.collect_set('_c1')).alias('ops'), F.sum('_c2'))
+    #layer_id = 
+    total_res.filter('ops == 5').write.csv('/local/total_res_5_sum.csv')
+    """
+def split_list(datalist):
+
+    sublists = [datalist[x:x+list_elem_num] for x in range(0, len(datalist), list_elem_num)]
+
+    #print(sublists)
+    return sublists
+
+
+#def load_json_files(absfilename_list, spark):
+#
+#    #print(absfilename_list)
+#    sublists = split_list(absfilename_list)
+#
+#    for sublist in sublists:
+#        load_subset_json_files(sublist, spark)
+#        print("===========================>finished one sublist!!!!!!!!!")
+
+
+def load_subset_json_files(sublist, spark, df):
+    start = time.time()
+    df.filter(df.layer_id.isin(sublist))#.coalesce(40000).write.save(output_absfilename, format="parquet", mode='append')
+    elapsed = time.time() - start
+    print('consumed time ==> %f s', elapsed/60)
+    #print('FINISHED! to ==========> %s', layer_dir)
+
+
+def save_indexing_files_layer(spark, sc):
+    #layer_lst = spark.read.csv(test_layers)
+    absfilename_list = spark.read.text(test_layers).collect()
+    absfilenames = [str(i.value) for i in absfilename_list]
+    df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
+
+    sublists = split_list(absfilenames)
+
+    for sublist in sublists:
+        load_subset_json_files(sublist, spark, df)
+        print("===========================>finished one sublist!!!!!!!!!")
+   
 
 def save_layer_info(spark, sc):
     layer_db_df = spark.read.parquet(layer_db_absfilename3)#.dropDuplicates('layer_id')
@@ -35,6 +101,14 @@ def save_layer_info(spark, sc):
 #     'layer_id', 'structdirs.subdir', "explode(structdirs.files) As structdirs_files").selectExpr(
 #     'layer_id', 'structdirs.subdir', "structdirs_files.sha256")
 # regular_files = files.filter(files.sha256.isNotNull())
+
+
+def save_specifi_layer_dup_ratio(spark, sc):
+    df = spark.read.parquet(layer_dup_ratio).select('layer_id', 'intra_layer_dup_ratio', 'inter_layer_dup_ratio')
+    #df.show()
+    #df.filter(F.col('intra_layer_dup_ratio') > 0.4).filter(F.col('intra_layer_dup_ratio') <= 0.5).select('layer_id', 'intra_layer_dup_ratio').write.csv('/redundant_layer_analysis/4-5-layer-intra-dup.csv')
+    df.filter(F.col('inter_layer_dup_ratio') > 0.9).write.csv('/redundant_layer_analysis/9-10-layer-inter-dup.csv')
+
 
 def save_layer_redundant_info(spark, sc):
 
@@ -96,8 +170,12 @@ def save_layer_file_cnt(spark, sc):
 
 
 def find_file_digest_in_layer(spark, sc):
-    df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
-    df.filter(df.filename == '/usr/portage/x11-libs/xcb-util-cursor/Manifest').show()
+    #df = spark.read.parquet(LAYER_FILE_MAPPING_DIR)
+    df = spark.read.parquet(layer_db_absfilename3)#LAYER_DB_JSON_DIR)
+    #df.show()
+    df.filter(df.layer_id == 'sha256:00005e32ef1aa4bde012c8f1f2dc55c3699c8dd8ec3a08326f2b2a0887e9b60b').selectExpr('file_cnt', "explode(dirs) As structdirs").selectExpr('structdirs.subdir', 'structdirs.file_cnt',
+     "explode(structdirs.files) As structdirs_files").selectExpr('subdir', 'file_cnt', "structdirs_files.*").show() #000269aa093202d4e2035086b5e6ab68af8ad8f5b464b49e69478d983ca989db').show()
+    
 
 
 """save uniqe file digests"""

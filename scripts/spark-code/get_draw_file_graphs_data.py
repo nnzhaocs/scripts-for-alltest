@@ -82,22 +82,38 @@ def filter_whole_types(tstrs):
 		if 'font' in words:
 		    return 'font-type'
                 tstr = tstr.lower()
-		if 'version' in tstr:
-		    tstr = tstr.split('version')[0]
-		if 'at' in tstr:
-		    tstr = tstr.split('at')[0]
-		if 'with' in tstr:
-		    tstr = tstr.split('with')
+		#if 'version' in tstr:
+		#    tstr = tstr.split('version')[0]
+		#if 'at' in tstr:
+		#    tstr = tstr.split('at')[0]
+		#if 'with' in tstr:
+		#    tstr = tstr.split('with')
+		tstr = tstr.strip()
                 if ',' in tstr:
-		    tstr = tstr.split(',')[0]
+		    if tstr.split(',')[0].strip() != '':
+		        tstr = tstr.split(',')[0].strip()
+		    else:
+			tstr = tstr.split(',')[1].strip()
+			
+		if 'version' in tstr:
+                    tstr = tstr.split(' version ')[0].strip()
+                if 'at' in tstr:
+                    tstr = tstr.split(' at ')[0].strip()
+                if 'with' in tstr:
+                    tstr = tstr.split(' with ')[0].strip()
 		if ':' in tstr or ';' in tstr or '(' in tstr:
-		    words = re.split(':|,|;|\(',tstr)#[0] != ' '#.split(',')[0]
-		    nospace_words = []
-		    for word in words:
-		        new = word.replace(' ', '')
-		        if new != '':
-		            nospace_words.append(new)
-		    return nospace_words[0]
+		    words = re.split(':|;|\(| . | - ',tstr)#[0] != ' '#.split(',')[0]
+		    if words[0].strip() != '':
+                        return  words[0].strip()
+                    else:
+                        return words[1].strip()
+
+		    #nospace_words = []
+		    #for word in words:
+		    #    new = word.replace(' ', '')
+		    #    if new != '':
+		    #        nospace_words.append(new)
+		    #return nospace_words[0]
 		else:
 		    return tstr
     
