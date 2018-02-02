@@ -1,51 +1,63 @@
 \begin{abstract}
 
-Docker containers have become a prominent solution for 
-supporting modern enterprise applications due to the highly desirable features of 
-isolation, low overhead, and efficient packaging of the execution environment.
+Docker containers have become a prominent solution for supporting modern
+enterprise applications due to the highly desirable features of isolation, low
 %
 %Containers are created from images that preserve software dependencies,
 %environment configuration, and other parameters that affect the application's
 %runtime.
 %
-Containers are created from images which are shared between users via a Docker registry.
+Containers are created from images which are shared between users via a Docker
+registry.
 %
-%Docker allows sharing of such images between users via a Docker registry. 
+%Docker allows sharing of such images between users via a Docker registry.
 %
-The amount of data Docker registries store is massive; for instance, Docker Hub---a popular
-public registry---stores at least a half million public images.
+The amount of data Docker registries store is massive; for instance, Docker
+Hub---a popular public registry---stores at least a half million public images.
 %
 %As the amount of images stored in public and private Docker registries
 %increases it becomes important to study images' characteristics.
 %
+Investigating the storage-centric properties of containerized applications can
+reveal useful insights that can enable new optimizations, higher performance,
+and identification of bottlenecks.
 %
-Investigating the storage-centric properties of containerized applications can reveal useful
-insights that can enable new optimizations, higher performance, and identification
-of bottlenecks.
-
 %The massive Docker Hub dataset offers a unique opportunity
 %for such an endeavor.
 %
-In this paper, we perform the first in-depth analysis of a large scale Docker registry.  
+In this paper, we perform the first in-depth analysis of a large scale Docker
 %
 %Our goal is to collect statistics from a large amount of Docker images and
 %perform a large-scale characterization of Docker images.
 %
-We download 51TB worth of Docker Hub images and found only ~3\% (5TB) of its containing files are unique files while others are redundant copies, which means that current layer-level content addressable storage cannot efficiently reduce duplicates and a file-level content addressable storage mode is suggested. Furthermore, we applied chunk-level deduplication method on the 5TB unique files and reduced the storage consumption to 1TB. Moreover, we presents a comprehensive deduplication analysis followed by different useful suggestions that docker registry designers need to know for eliminating duplicates. Last but not least, we collected a large range of statistics from our Docker image dataset that can help to make conscious decisions when designing storage for
-containers and Docker registry in particular. 
-%perform a large-scale characterization of Docker images.  
-
-
-%characterize them using multiple metrics, \eg
-%image size distribution, layer size, the number of layers per image, and the amount of
-%layers shared among images.
+We download 51TB worth of Docker Hub images and found only ~3\% (5TB) of its
+containing files are unique files while others are redundant copies, which means
+that current layer-level content addressable storage cannot efficiently reduce
+duplicates and a file-level content addressable storage mode is suggested.
 %
-%\abc{add an example or two of the key findings?\nancomment{added findings to the end of intro}}
-%For example, we find that small layers only have low compression ratios, suggesting
-%that storing these layers uncompressed can help save computation while not
-%sacrificing storage.
+Furthermore, we applied chunk-level deduplication method on the 5TB unique files
+and reduced the storage consumption to 1TB.
+%
+Moreover, we presents a comprehensive deduplication analysis followed by
+different useful suggestions that docker registry designers need to know for
+eliminating duplicates.
+%
+Last but not least, we collected a large range of statistics from our Docker
+image dataset that can help to make conscious decisions when designing storage
+for containers and Docker registry in particular.
+%
+%perform a large-scale characterization of Docker images.
+%
+%
+%characterize them using multiple metrics, \eg image size distribution, layer
+%size, the number of layers per image, and the amount of layers shared among
+%images.
+%
+%\abc{add an example or two of the key findings?\nancomment{added findings to
+%the end of intro}} For example, we find that small layers only have low
+%compression ratios, suggesting that storing these layers uncompressed can help
+%save computation while not sacrificing storage.
 %
 %Our findings help to make conscious decisions when designing storage for
 %containers and Docker in particular.
- 
 \end{abstract}
