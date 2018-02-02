@@ -52,7 +52,7 @@ def filter_nosubdirs(absfilenames):
     dup_root_filenames = []
 
     if not find_root_dir(absfilenames):
-        return []
+        return 0 #[]
 
     file_dirs = defaultdict(list)
     root_files = []
@@ -72,9 +72,19 @@ def filter_nosubdirs(absfilenames):
     return len(dup_root_filenames)
 
 
+def filter_root_files(filename):
+    dirname = os.path.dirname(filename)
+    if dirname == '/':
+        return True
+    return False
+
+
 def drop_nosub_files(spark, sc):
     df = spark.read.parquet(layer_mapping_file)
-
+    filterrootfile = F.udf(filter_root_files)
+    df = df.withColumn('rootfile', filterrootfile('filename'))
+    print(df.filter(F.col('rootfile') == True).count())
+    return
     combin_func = F.udf(combine_new_name)
 
     df = df.withColumn('new_filename', combin_func('digest', 'filename'))
@@ -86,9 +96,9 @@ def drop_nosub_files(spark, sc):
 
     dup_root_fs = dirs.withColumn('dup_root_files', filternosubdirs('new_filenames'))
 
-    new_df = dup_root_fs.select('layer_id', 'dup_root_files')#F.explode('dup_root_files').alias('dup_root_files'))
-
-    new_df.coalesce(4000).write.save(layer_file_mapping_dropsub)
+    new_df = dup_root_fs.select(F.sum('dup_root_files'))#F.explode('dup_root_files').alias('dup_root_files'))
+    new_df.show(20, False)
+    #new_df.coalesce(4000).write.save(layer_file_mapping_dropsub)
 
 
 if __name__ == '__main__':
