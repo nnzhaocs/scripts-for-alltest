@@ -1,7 +1,7 @@
 \section{Rethinking storage model for Docker registry}
 \label{sec:file_adressable}
 \vcomment{Nannan, please, do not use lines longer than 80 characters. It will simplify review
-and revision process.}
+and revision process.}\nancomment{Addressed}
 
 %\subsection{}
 %\paragraph{Benefit of file-level content addressable storage}
@@ -10,7 +10,14 @@ However, as discussed in previous sections, almost 97\% of files inside the laye
 As the number of images stored in Docker registry is increasing dramatically, 
 storing and managing the large proportion of redundant files requires both storage equipment and administration investment. 
 
-In this section, a file-level content addressable storage model is suggested for Docker registry to remove redundant files and save space. 
+File-level dedup can significantly reduce the redundant files in docker registry and save a large volume of storage space.
+However, it also introduces considerable overhead, which including decompressing layer compressed archival file, calculating the file content digest, searching for identical files. These additional operations are either CPU intensive or I/O intensive. Moreover, how to server pulling requests are also an important issue. 
+
+In this section, a file-level content addressable storage model (FLCAS) is suggested for Docker registry to remove redundant files and save space while maintain a good performance.
+%
+\lrcomment{These challenges should be listed earlier in the section. They are also hard to follow as at this point, it is
+	still unclear why we need searching or why we have additional compression/decompression overhead.}
+% while maintain a good performance. 
 \lrcomment{What are the challenges we overcome with FLCAS?}  
 %Docker registry can save a lot of space if using file-level content addressable storage. 
 %Benefit: saving money, reducing storage management overhead.
@@ -27,9 +34,9 @@ In this section, a file-level content addressable storage model is suggested for
 	\label{fig:file-dedup-model}
 \end{figure}
 
-File-level content addressable storage system (FLCAS) uses file-level dedup to remove the redundant copies of an identical file by generating a digest (such as MD5 or SHA256) from the file it refers to.
+File-level content addressable storage system (FLCAS) uses file-level dedup to remove the redundant copies of an identical file by generating a digest (such as MD5 or SHA256) from the file this digest refers to.
 %
-\vcomment{Who is ``it''?}
+\vcomment{Who is ``it''?}\nancomment{addressed}
 %
 FLCAS exposes a high-level layer addressing by mapping their digests to their containing file digests.     
 %
@@ -41,12 +48,6 @@ FLCAS exposes a high-level layer addressing by mapping their digests to their co
 the letter one is informal)}
 
 %\subsection{Trade-off discussion}
-File-level dedup can significantly reduce the redundant files in docker registry and save a large volume of storage space.
-However, it also introduces considerable overhead, which including layer decompression, file content digest calculation, searching,
-and layer compression overhead. These additional operations are either CPU intensive or I/O intensive.
-%
-\lrcomment{These challenges should be listed earlier in the section. They are also hard to follow as at this point, it is
-still unclear why we need searching or why we have additional compression/decompression overhead.}
 
 \begin{figure}
 	\centering
