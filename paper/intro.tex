@@ -46,11 +46,17 @@ of files after decompression.
 %
 We started our analysis
 with collecting all the metadata over xxx images and  conducted the first
-comprehensive characterization of the image dataset (or union file systems).
+comprehensive characterization of the image dataset (or union file systems). This analysis is particularly useful as no prior work exists on union file
+systems~\cite{xxx} and dataset used and created exclusively for Docker,
+which are different from either analysis on EX4 linux file system~\cite{xxx} or
+Windows file system~\cite{xxx}.
 %
-We not only present the distribution for each metric but also pointed out the
-challenges faced by Docker engine designer and registry designer based on
-global knowledge (or analysis) of metadata.
+%We not only present the distribution for each metric but also pointed out the
+%challenges faced by Docker engine designer and registry designer based on
+%global knowledge (or analysis) of metadata. 
+We also provide useful insights (parameters or metrics)
+for the developers to better
+understand the file systems used by Docker container. 
 
 %Unfortunately, it's unknown whether  this coarse-grain layer-level content
 %addressable storage (LLCAS) can efficiently reduce duplicates, and how much

@@ -1,7 +1,8 @@
 \section{Rethinking storage model for Docker registry}
 \label{sec:file_adressable}
-\vcomment{Nannan, please, do not use lines longer than 80 characters. It will simplify review
-and revision process.}\nancomment{Addressed}
+%\vcomment{Nannan, please, do not use lines longer than 80 characters. It will simplify review
+%and revision process.}\nancomment{Addressed}
+\nancomment{Converted to discussion}
 
 %\subsection{}
 %\paragraph{Benefit of file-level content addressable storage}
@@ -22,7 +23,7 @@ In this section, a file-level content addressable storage model (FLCAS) is sugge
 %Docker registry can save a lot of space if using file-level content addressable storage. 
 %Benefit: saving money, reducing storage management overhead.
 
-\subsection{File-level content addressable storage model (FLCAS)}
+\subsection{Caching hot layers to improve performance}
 \label{subsec:FLCAS}
 
 \begin{figure}
@@ -57,7 +58,7 @@ the letter one is informal)}
 	\label{fig:pull-cnt}
 \end{figure}
 
-\paragraph{Caching hot layers}
+%\paragraph{Caching hot layers to improve performance}
 \lrcomment{Before explaining how to improve performance and reduce overhead, we should explain the strategy in general.}
 %
 To reduce overhead, we cache the hot/recently requested layers as gzip compressed tar files in a \textit{layer cache pool} without file-level dedup.
@@ -85,7 +86,7 @@ Can we say that?}
 \vcomment{somewhere we will need to talk about eviction policy, how to
 size the caching layer, and, finally, what happens if the cache is full.}
  
-\paragraph{Dedup when workload is light}Consider that dedup is expensive in terms of performance overhead, file-level dedup is only triggered for removing the redundant files for cold layers when the workload is lower than a predefined threshold $\sigma_{wl}$ and storage utilization is higher than a predefined threshold $\sigma_{su}$. 
+\subsection{Dedup when workload is light}Consider that dedup is expensive in terms of performance overhead, file-level dedup is only triggered for removing the redundant files for cold layers when the workload is lower than a predefined threshold $\sigma_{wl}$ and storage utilization is higher than a predefined threshold $\sigma_{su}$. 
 Typically, workload fluctuates, with peaks and troughs. According to IBM bluemix workload analysis\cite{xxx}, xxx of time, there were only xxx requests. %During high intensive load, 
 Thus, file-level dedup runs periodically to reduce redundant files without causing performance overhead. 
 %
@@ -94,7 +95,7 @@ Thus, file-level dedup runs periodically to reduce redundant files without causi
 \lrcomment{Do you mean it only runs through low workload periods? How are we predicting those or are we relying on some workload patterns? We should make that clear.}
 
 %high while start file-level dedup 
-\paragraph{FLCAS model}
+%\paragraph{FLCAS model}
 Figure~\ref{fig:file-dedup-model} shows an example of FLCAS.
 %
 \vcomment{An example?..}
@@ -111,11 +112,11 @@ file digest uniquely and linked to the files'location.
 Meanwhile, a layer digest to its containing file content digest mapping record is also created and saved to a \textit{layer-to-file digest table}. 
  All the pulling request to the cold layers are served by file pool via searching for the layer digest from layer-to-file digest mapping table. After fetching all the containing files that are required by requested layer, FLCAS compresses these files as gzip file before sending it to Docker clients.         
 
-\subsection{Off-line FLCAS latency} 
+%\subsection{Off-line FLCAS latency} 
 
 Since file-level dedup involves operations that are either CPU intensive or I/O intensive, fast CPUs and high capacity RAMs are required to improve performance.
 
-\paragraph{Using RAM to load \&. process layers}
+\subsection{Using RAM to load \&. process layers}
 
 To improve performance, we use RAM to temporarily store \textit{small} layers and directly process them in RAM.
 Specially, we first load small layers in a RAM disk and perform decompression, unpacking, file content digest calculation in RAM, and remove them from RAM after completion.   

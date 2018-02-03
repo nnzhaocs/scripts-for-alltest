@@ -1,116 +1,150 @@
 \subsection{Images}
 \label{sec:images}
 
-Next, we study images in terms of their popularity, size and their use of layers.
+\paragraph{Image size}%{Layer and image size}
+%\nancomment{cache parameters, bigger image/layer overhead for runtime}
+\begin{figure}[!t]
+	\subfigure[CDF of layer size]{\label{fig_layer_size}
+		\includegraphics[width=0.4\textwidth]{graphs/layer-size-cdf.pdf}
+	}
+	\centering
+	\subfigure[CDF of image size]{\label{fig_image_size}
+		\includegraphics[width=0.4\textwidth]{graphs/image-size-cdf.pdf}%
+	}
+
+	\caption{Image/layer size distribution}
+	\label{fig:image-layer-size}
+\end{figure}
+\nancomment{add pdf if can}
+Recall that container image consists of multiple layers and each of these layer
+is stored in Docker registry. In figure~\ref{fig_layer_size} we show the compressed/uncompressed layer
+size distribution. We find that around 50\% of the layers are 1~MB in size and
+90~\% of layers are less than 100~MB. \emph{This finding is particularly useful for
+the Docker registry designers as it shows that selective or popular layers can
+be cached in memory at the registry side.}
+
+We see that 90\% of the layers are smaller than 177~MB in uncompressed format
+and smaller than 63~MB in compressed format.
+%Interestingly, about half of the layers are smaller than 4~MB, independent of
+%the format. 
+\nancomment{need check num}
+That means that the registry stores a large number of small layers
+which can benefit from compression.
+
+To analyze the frequencies, we zoom into the 0--128~MB range (see
+Figure~\ref{fig_hist_layer_size}).
+More than 1 million and 800,000 layers are smaller than 5~MB in compressed and
+uncompressed format, respectively. Beyond that, the frequency drops rapidly and
+we only see around 100,000 layers between 5~MB and 15~MB.
+
+%\acomment{Where is layers analysis when you say similarly? I wrote above
+%para.. see for consistency.}
+%Conatiner image size determines the runtime of container if it is not already
+%cached locally. 
+Similar to layers, we measured compressed and uncompressed image size. Figure~\ref{fig_image_size} show the image size distributions at a coarse GB
+resolution. 
+%and a finer resolution only covering images smaller than 1.5 GB.
+%\acomment{Could not locate the figures you are talking about. I see two figures
+%layers size and image size.}
+
+We find that 90\% of the images have an uncompressed size less than
+1.3 GB and compressed size of 0.4~GB.
+%while compressed images are less than 0.48 GB. 
+In the median, this decreases to 94MB and 17 MB, respectively.  The largest
+uncompressed image is 498 GB which is a Ubuntu-based image.  
+
+\emph{Figure~\ref{fig_image_size} shows that the majority of uncompressed images in
+Docker Hub are small which aligns with the Docker philosophy to package
+software and distribute software in containers but include only its necessary
+dependencies.}
+
+\paragraph{Compression ratio}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{graphs/compress-ratio-cdf.pdf}
+	\caption{CDF of compression ratio.
+	}
+	\label{fig:compress-ratio}
+\end{figure}
 
 \begin{figure}[!t]
 	\centering
-	\subfigure[CDF of repositories by pull count]{\label{fig_pull_cnt_total}
-		\includegraphics[width=0.23\textwidth]{graphs/pull_cnt.pdf}%
+	\subfigure[Image compression ratio]{\label{fig_hist_image}
+		\includegraphics[width=0.215\textwidth]{graphs/image-compress-ratio-pdf.pdf}%
 	}
-	\subfigure[Histogram of repositories by pull count]{\label{fig_pull_cnt_count}
-		\includegraphics[width=0.22\textwidth]{graphs/count_pull_cnt.pdf}
+	\subfigure[Layer compression ratio]{\label{fig_hist_layer}
+		\includegraphics[width=0.22\textwidth]{graphs/layer-compress-ratio-pdf.pdf}
 	}
-	\caption{Repository popularity distribution}
-	\label{fig-pop}
+	\caption{Histogram of image and layer compression ratio.}
+	\label{fig:reference-cnt}
 \end{figure}
 
-\paragraph{Image popularity}
+Figure~\ref{fig:compress-ratio} shows the compression ratio of the container
+images.    %\nancomment{there is redundancy and avg compression ratio}}
+
+However, looking at Figure~\ref{fig_hist_image} and Figure~\ref{fig_hist_layer}
+we find that there are layers for which the compression ratio is zero. Doing
+compression and uncompression of such layers incur additional overhead at
+docker engine side.  For such layers, we suggest not to do compression.
+Docker engine can use a hybrid approach to compress
+only those layers which yield better compression ratio. 
+\emph{This way users pulling such layers do not need to uncompress
+	and will experience reduction in container startup time.}
+
+\emph{High compression
+	ratio shows the potential of compression while distributing the container
+	images.}
+
+
+%\acomment{Found following para in directory count subsection..}
+To further study the sizes and the impact of compression, we calculate the
+compression ratios (see Figure~\ref{}).
 %
-We start by analyzing image popularity.
-Figure~\ref{fig-pop} shows the repository popularity distribution on May 31st in
-terms of the pull count of individual images.
-%The x-axies show the pull count (i.e., total number of pulls) for repositories
-%by May 31th with different ranges.  
-The CDF in Figure~\ref{fig_pull_cnt_total} reveals a large degree of skew in image
-pulls. In the median, images are only pulled 40 times while in the 90\% percentile we
-see a pull count of 333. On the other hand, the largest pull count is more than 650M 
-which is for the official \textit{nginx} repository. This is followed by
-Google's \textit{cadvisor} (434M pulls), \textit{redis} (264M pulls),
-\textit{ubuntu} (28M pulls) and GliderLabs' \textit{registrator} (212M pulls).
-
-
-Looking at the pull frequencies for repositories (see Figure~\ref{fig_pull_cnt_count})
-confirms the skewness. We see that 31,200 of repositories are only pulled between 0 and
-2 times while 34,100 repositories are pulled between 3 to 5 times. What is interesting is
-that there is a second peak around a pull count of 37 which does not fit a heavy-tailed
-distribution.
-%\lrcomment{Any explanation for this?}
-
-%and 27,600 repositories are pulled
-%~37 times, which are the two peaks shown in the figure.  Overall, repository
-%frequency decreases with the pull count.
-
-The skewness of two curves in Figure~\ref{fig-pop} suggests that Docker hub is
-a good fit for caching popular repositories or images to
-reduce \textit{pull} latencies.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\paragraph{Image size distribution}
-\label{sec:image-size}
-
-\input{fig_image_size.tex}
-
-\input{fig-layer-cnt.tex}
-
-Similarly to layers, we also measure compressed image size
-(CIS), \ie the sum of the sizes of the compressed image layers, and the sum of the
-sizes of files contained in the image (FIS). Figure~\ref{fig_image_size_gb}
-and~\ref{fig_image_size_mb} show the image size distributions at a coarse GB resolution
-and a finer resolution only covering images smaller than 1.5 GB.
-
-90\% of the images have an uncompressed size less than 1.3 GB while compressed images
-are less than 0.48 GB. In the median, this decreases to 94MB and 17 MB, respectively.
-The largest uncompressed image is 498 GB which is a Ubuntu-based image.
-Figure~\ref{fig-image-size} shows that the majority of uncompressed images in Docker Hub are
-small which aligns with the Docker philosophy to package software and distribute
-software in containers but include only its necessary dependencies.
-
-%As shown in figure~\ref{fig_image_size_gb}, The CDF distribution of images for AIS and FIS are
-%almost similar. 90\% of images have a less than 1.3GB decompressed size for either FIS or AIS,
-%while 90\% of images can be compressed less than 0.48 GB. The largest AIS and FIS are ~498 GB
-%while the largest CIS is only 202 GB.
-
-%Figure~\ref{fig_image_size_mb} shows the cumulative image probability by image size in MBs.
-%70\% of the images can be compressed less than 190 MB. And 70\% of the images have a less
-%than 478 MB uncompressed size (i.e., AIS or FIS). Half of the images can be compressed less
-%than ~17 MB. Half of the images are less than 46 MB in AIS format and 94 MB in FIS formats
-%respectively.
-
-%\paragraph{Compression rate distribution}
+%The ALS-to-CLS ratio is generally greater than the FLS-to-CLS ratio because
+%small files in layers get larger when combined in a tar archive.
 %
-%\input{fig_image_compression_ratio.tex}
+90\% of layers have a  compression ratio less than 4 and the median compression
+ratio is 2.6. The largest compression ratio is 1026.
 %
-%To understand compressibility, we again compute the FIS-to-CIS compression ratio
+Half of the layers have a compression ratio around 3.
 %
-%%As discussed in~\ref{sec:image-size}, three kinds of image size are measured: AIS, CIS, and
-%%FIS. Thus, we calculated two kinds of compression ratio: the ratio of AIS to CIS (AIS-to-CIS)
-%%and the ratio of FIS to CIS (FIS-to-CIS).
 %
-%Figure~\ref{fig-image-compression-ratio} shows the cumulative image probability by compression
-%ratio. Overall, we can see that AIS-to-CIS is greater than FIS-to-CIS. 90\% of images have a
-%AIS-to-CIS less than ~4 while 90\% of images have a FIS-to-CIS less than 35. Half of the images
-%have a compression ratio (both AIS-to-CIS and FIS-to-CIS) around 3. The maximum compression
-%ratio are 512,930 and 1028 in FIS-CIS and AIS-CIS formats respectively.
-%Figure~\ref{fig_image_compression_ratio_less} shows a histogram of image probability by
-%compression ratio. 134,000 images' FIS-to-CISs are 3.5 and 90,000 images'AIS-to-CISs are 2.5,
-%which are two peaks shown in the graph.
+%The maximum FLS-to-CLS is 512,930 and maximum ALS-to-CLS is 1026.
 %
-%Figure~\ref{fig-image-compression-ratio} suggests that Docker images has a great potential
-%for compression to save space.
+Looking at the histogram (see Figure~\ref{}), we see
+that around 600,000 layers have a compression ratio of between 2 and 3 while
+more than 300,000 between 1 and 2.
+%
+%Two peaks in the graph correspond to 587,000 layers that have the FLS-to-CLS
+%ratio of 3 and 331,000 layers that have the ALS-to-CLS ratio of 3.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Our size analysis reveals an interesting trade-off. Compression is
+computationally expensive and is one of the major sources of latency when
+pulling an image from Docker Hub~\cite{slacker}.  As the majority of layers is
+small and has low compression ratios, it can be beneficial to store small
+layers uncompressed in the registry to reduce pull latencies.
 
+\paragraph{Layer count per image}
+%\nancomment{more layer more matedata? overhead for union fs}
 
-\paragraph{Layer count distribution}
+\begin{figure}[!t]
+	\centering
+	\subfigure[CDF of layer count]{\label{fig:layer_count}
+		\includegraphics[width=0.215\textwidth]{graphs/image-layer-cnt}%
+	}
+	\subfigure[Histogram of layer count]{\label{fig:hist_layer_count}
+		\includegraphics[width=0.21\textwidth]{graphs/image-layer-cnt-pdf.pdf}
+	}
+	\caption{CDF and histogram of Layer count per image.}
+	\label{fig:image-size}
+\end{figure}
 
 As discussed in~\ref{sec-image-layers}, images consist of a set of layers.
 It is important to understand the layer count of the images as previous
 work found that the number of layers can impact the performance of
 I/O operations~\cite{slacker}. Therefore, we count the number of layers
-per image and plot the CDF (see Figure~\ref{fig-layer-cnt})
-and layer count frequencies (see Figure~\ref{fig_hist_layer_cnt})for all
+per image and plot the CDF (see Figure~\ref{fig:layer_count})
+and layer count frequencies (see Figure~\ref{fig:hist_layer_count})for all
 Docker Hub images.
 
 The results show that 90\% of the images have less than 18 layers while
@@ -119,48 +153,77 @@ frequent layer value with 51,300 images consisting of exactly 8 layers.
 The maximum layer count is 120 in the \textit{cfgarden/120-layer-image}.
 We also find that there are 7,060 images which only consist of a single layer.
 
-\input{fig-repeat-layer-cnt.tex}
+\emph{As a rule of thumb, less number of layers is better for the union file
+	system as it then needs to handle less metadata. However, as a tradeoff,
+	reducing the number of layers significantly effects the data sharing among images.
+	%As a result, we see less number of layers shared among different images.
+	For an example, if a image consists of only single layer its data can not be shared
+	with other images.}
+%\input{fig-repeat-layer-cnt.tex}
 
 %\paragraph{Repeat layer count distribution}
+\paragraph{Layer reference count}
+%\nancomment{should create more shared layers to remove duplicates}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.21\textwidth]{graphs/shared-cnt-cdf.pdf}
+	\caption{CDF of layer reference count.
+	}
+	\label{fig:ref_count}
+\end{figure}
 
 An interesting question is what is the sharing rate of layers across images.
-We analyze all image manifests and count for each layer, how many times it
-is referenced by an image. Figure~\ref{fig_repeate_layer} shows that around 90\%
-of layers are only reference by a single image while 95\% are reference by not
-more than 2 images.
-%99\% of layers are shared among less than 25 images. 
-%
-Figure~\ref{fig_hist_repeate_layer} shows the absolute values, revealing that
-almost 1.5 million images are only referenced once. While there is again a large
-spectrum of reference counts, the maximum is 33,428, the vast majority of layers
-is not shared. This hints that the layer-based approach to improve storage
-efficiency is barely utilized and there is room for improvement in how images
-are constructed.
+We analyze all image manifests and count for each layer, how many times it is
+referenced by an image. Figure~\ref{fig:ref_count} shows that around 90\% of
+layers are only reference by a single image while 95\% are reference by not
+more than 2 images. Similarly, 99\% of layers are shared among less than 25
+images. 
 
+Figure~\ref{} shows the absolute values, revealing that
+almost 1.5 million images are only referenced once.  \acomment{Figure is
+	missing} While there is again a large spectrum of reference counts, the maximum
+is 33,428, the vast majority of layers is not shared. This hints that the
+layer-based approach to improve storage efficiency is barely utilized and there
+is room for improvement in how to construct more sharable layers.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\emph{These findings reveal that layer level CAS has not been very successful
+	and most of the layers that exists in Docker Hub are not shared among images.
+	Hence, there is a dire need of a better redundancy management.}
 
+\paragraph{Directory count and File count}
+%\nancomment{how union fs handle so large dirs}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{graphs/dir-cnt-cdf.pdf}
+	\caption{CDF of directory count per image/layer.
+	}
+	\label{fig:reference-cnt}
+\end{figure}
 
-\paragraph{Directory and file count distribution}
+\begin{figure}[!t]
+	\centering
+	\subfigure[Histogram of directory count per image]{\label{fig_reference_cnt_cdf}
+		\includegraphics[width=0.2\textwidth]{graphs/image-dir-cnt-pdf.pdf}%
+	}
+	\subfigure[Histogram of directory count per layer]{\label{fig_reference_cnt_pdf}
+		\includegraphics[width=0.22\textwidth]{graphs/layer-dir-cnt.pdf}
+	}
+	\caption{Histogram of directory count distribution}
+	\label{fig:reference-cnt}
+\end{figure}
 
-\input{fig_dir_file_cnt.tex}
-
-Lastly, we look at the directory (see Figure~\ref{fig-dir}) and file counts
-(see Figure~\ref{fig-file}) in images to determine if deploying
-images requires handling of large amounts of metadata. Looking at directories,
-we see that 90\% of images have less than 7,344 directories while the median
-is at 296. For files, 90\% of images have less than 64,780 files with a median
-of 1,090.
+Next, we look at the directory (Figure~\ref{fig-dir}) and file count
+(Figure~\ref{fig-file}) in images to determine if deploying images requires
+handling of large amounts of metadata. Looking at directories, we see that 90\%
+of images have less than 7,344 directories while the median is at 296. For
+files, 90\% of images have less than 64,780 files with a median of 1,090.
 
 This is consistent with our analysis of layer-based file and directory counts
-and the number of layers per image. Again, we conclude that most images
-do not require an extensive amount of metadata when being deployed as file and
+and the number of layers per image. Again, we conclude that most images do not
+require an extensive amount of metadata when being deployed as file and
 directory counts are low except for few outliers.
 
-%Figure~\ref{fig-dir} shows the cumulative image probability by directories. 90\% of images
-%have less than 7,344 directories. Half of images have less than 296 directories. The maximum
-%is 1,168,160 while the minimum is 1. The average is 2,705. 
+%\input{fig-char-layer-compression}
 
-%Figure~\ref{fig-file} shows the cumulative image frequency by files. 90\% of images have
-%less than 64,780 files. Half of images have less than 1,090 files. The maximum is 8,509,958
-%while the minimum is 1. The average is 21,413.
+%\paragraph{Layer compression ratios}

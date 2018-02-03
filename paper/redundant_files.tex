@@ -1,62 +1,15 @@
-\section{Redundant file characterization}
+\section{File-level deduplication results}
 \label{sec:redundant_files}
 \nancomment{1. high repeat cnt type examples
 			2. use case for each type
 			3. analyze the others cluster, if have time}
 
-\begin{figure*}
-	\centering
-	\includegraphics[width=1\textwidth]{graphs/graph-types-hierarchy}
-	\caption{Taxonomy of file types.
-	}
-	\label{fig:file-type-hierarchy}
-\end{figure*}
+%Based on the second-and third-level classification, we investigated the following two research questions: (1) What are the common redundant files?
+%(2) Why there are so many redundant files? and present our investigation results.
 
-In this section, we present our redundant file characterization on file repeat count, file size, and file types. 
-Based on this characterization, we create three-level classification hierarchy as shown in Figure~\ref{fig:file-type-hierarchy}.
-At the highest level, we created two categories: \textit{High redundant file types and low redundant file types} based on the total redundant file size for each type. 
-Totally, we got around 1,500 types after analyzing our whole dataset. 
-We found that only 133 file types's total redundant file sizes are greater than 5 GB, which take up to 98.4\% files with 166.8 TB totally. We put these 133 file types into high redundant file type group and the remaining files into low redundant file types. Our further classification expands on the 98.4\% common redundant file types. 
+\input{dedup}
 
-%are common file types that consists of a largest number of redundant files with large storage space consumed, such as xxx and xxx. 
-%Only xxxx\% files are non-common file types that only contains a small number of redundant files with less storage space, such as xxxx and xxxx. 
- 
-At the second level of the hierarchy, we clustered high redundant file types based on the \textit{major file format, usage or platform} involved by each file type. We identified redundant files' types relevant to \textit{EOF (executable, object code, and libraries), source code, scripts, documents, archival, images, databases, and others}.
-
-At the third level, we present the specific redundant file types which take a large percentage of redundant files or storage space.
-% or further classify the redundant files based on involved by each file type. 
-%We selected the file types which take largest storage space.  
-Based on the second-and third-level classification, we investigated the following two research questions: (1) What are the common redundant files?
-(2) Why there are so many redundant files? and present our investigation results.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/File_repeat_count.eps}
-	\caption{File repeat count distribution.
-	}
-	\label{fig:file-repeat-cnt}
-\end{figure}
-
-Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability distribution of file repeat count. 
-Most files have a small repeat count. For instance, almost 90\% of files have equal or less than 10 copies. Around 50\% of files have 4 copies.
-The file that has the maximum repeat count is empty file, which means that many users creates empty files and stored in their images.
-%\subsection{File repeat count}
-%\subsection{File size}
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/File_size-KB.eps}
-	\caption{File size distribution.
-	}
-	\label{fig:file-size}
-\end{figure}
-
-Figure~\ref{fig:file-size} shows the cumulative and probability distribution of file size of unique dataset after we remove the redundant files.
-Most files are smaller files. For example, 91\% files'sizes are equal or less than 100KB. 
-Around 22\% of files are less than 1 KB.
- 
-
-\subsection{Overview of high redundant file types}
+\subsection{Deduplication by file types}
 
 \paragraph{Finding 1: 13.38\% and 10.23\% of redundant files are source codes and EOL files, which take up over 3.66\% (5.3 TB) and 36.85\% (52.9 TB) of redundant storage space, indicating that users are more prone to replicate source codes and create identical big EOF files, while 43.15\% and 8.53\% of redundant files are documents and archival files, which account for 14.54\% (20.87 TB) and 22.93\% (32.9 TB) of redundant storage space, indicating users replicates more documents and archival files compare to other clusters}
 
