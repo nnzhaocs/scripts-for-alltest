@@ -3,64 +3,86 @@
 
 \input{tab-dataset-summary.tex}
 
-Our methodology consists of two steps:
-(1)~Obtain a representative Docker image dataset;
-(2)~Analyze the redundancy of the dataset.
+In this section we describe our methodology for:
+%
+(1)~obtaining a representative Docker image dataset, and
+%
+(2)~analyzing basic and deduplication properties of the dataset.
 
-\input{fig-downloader-analyzer.tex}
+%\input{fig-downloader-analyzer.tex}
 
-\subsection{Obtaining a representative dataset}
+\subsection{Dataset acquisition}
 \label{sec:crawler}
 
-We chose Docker Hub~\cite{docker-hub} to download a representative dataset because (1) Docker Hub is a popular Docker registry for developers to store and distribute Docker images, and (2) Docker Hub contains a large amount of public Docker images that are available for developers to download for free.
+We chose Docker Hub~\cite{docker-hub} to download a representative dataset
+because (1) Docker Hub is a popular Docker registry for developers to store and
+distribute Docker images, and (2) Docker Hub contains a large amount of
+\emph{public} Docker images that are available for developers to download for
+free.
+%
+We believe Docker Hub dataset is representative of other registry deployments.
 
-To download a representative dataset from Docker Hub, Crawling is needed because Docker Hub does not provide an API to retrieve all repository. Specifically, there are two steps:
-i)~crawl Docker Hub to list all repositories;
-ii)~download the \textit{latest} image (and referenced layers) from each repository based
-on the crawler results. Here, we chose latest image from each repository because (1)~the `latest' version is usually the newest, stable, and commonly pulled by developers;
-(2)~downloading only the `latest' version can shorten our downloading process since the latest images already took about 30 days to download. 
+To download a representative dataset from Docker Hub, web crawling is needed
+because Docker Hub does not provide an API to retrieve all repository names.
+%
+Specifically, there are two steps: i)~crawl Docker Hub web pages to list all
+repositories; ii)~download the \textit{latest} image (and referenced layers)
+from each repository based on the crawler results.
+%
+Here, we chose latest image from each repository because (1)~the ``latest''
+version is usually the newest, stable, and commonly pulled by developers;
+(2)~downloading only the ``latest'' version can shorten our downloading process
+since the latest images already took about 30 days to download.
+%
+We plan to extend our analysis to other, non-``latest'', images in the future.
 
+\paragraph{Web crawler}
 
-\subsubsection{Crawler}
-
-To download a particular image, %or set of images (i.e., a repository)
-the name of the repository name which the image belongs to needs to be provided.
-The crawler is responsible for generating a list of repositories for the downloader.
-
-Public repositories 
-in Docker Hub
-are divided into official
+Public repositories in Docker Hub are divided into official
 repositories---served by the Docker Hub partners---and non-official
 repositories---provided by regular users and third-party organizations.
-The number official repositories is less than 200, while, the majority
-of repositories in Docker Hub are non-official (over 400 thousand).
-To listing non-official repositories, our crawler utilizes the Docker Hub search engine to find all available
+%
+The number official repositories is less than 200, while, the majority of
+repositories in Docker Hub are non-official (over 400 thousand).
+%
+To list non-official repositories, our crawler utilizes the Docker Hub
+web-based search engine to find all available repositories.
+%
+As the name of non-official repositories is comprised of the user name and the
+repository name separated by a ``/'', we can search for ``/'' and obtain a list
+of all non-official repositories.
+%
+The Crawler downloads all pages from the search results and parses the web
+content to build a list of all non-official repositories.
+%
+We ran the crawler on May 30th, 2017 and it produced a list of 634,412
 repositories.
-As the name of non-official repositories is comprised
-of the user name and the repository name separated by a ``/'', 
-we can search for ``/'' and obtain a list of all non-official repositories.
-The Crawler downloads all pages from the search results and parses the web content
-to build a list of all non-official repositories.
+%
+After removing duplicate entries (introduced by Docker Hub indexing logic), the
+final repository list consists of 457,627 distinct repositories.
 
-We ran the crawler on May 30th, 2017 and it delivered a list of 634,412 repositories.
-After removing duplicate entries (introduced by Docker Hub indexing logic),
-the final repository list consists of 457,627
-distinct repositories. 
+\paragraph{Downloader}
 
-\subsubsection{Downloader}
-
-Instead of using the Docker client to download images,
-we implement our own downloader, which calls the Docker registry API
-directly~\cite{dockerregistryclient} to download manifests
-and image layers in parallel.
-Our downloader runs significantly faster than a \texttt{docker pull}-based downloader
-because the latter one performs operations besides downloading the image, such as unpacking and creating the corresponding read-only snapshot.
-Our downloader can download multiple images simultaneously and fetch
-the individual layers of an image in parallel. Layers are transferred as gzip
-compressed tar archives.
-
+Instead of using the Docker client to download images, we implement our own
+downloader, which calls the Docker registry API
+directly~\cite{dockerregistryclient} to download manifests and image layers in
+parallel.
+%
+Our downloader runs significantly faster than a \texttt{docker pull}-based
+downloader because the latter one performs other operations besides downloading
+the image, such as unpacking the layers and creating the corresponding
+read-only snapshots.
+%
+Our downloader can download multiple images simultaneously and fetch the
+individual layers of an image in parallel.
+%
+Layers are transferred as gzip compressed tar archives.
+%
 Overall, we downloaded 51~TB of data in 355,319 image manifests with 1,792,609
 compressed layers.
+%
+\vcomment{Say just one sentence why we did not download some images.}
+%
 Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
 dataset.
 
@@ -68,24 +90,49 @@ dataset.
 %to download the images and all profiles we generated
 %publicly at {\small{\url{https://elided.for.review}}}.
 
-\subsection{Analyzing the redundancy of Dataset}
+\subsection{Dataset analysis}
 
-To analyze the redundancy of dataset and characterize the image and layers, we first created a profile for each layer and image, then we performed an in-depth analysis by using Spark.
+To characterize the dataset perform its redundancy analysis, we first created a
+profile for each layer and image, then we performed an in-depth analysis by
+using Spark~\vcomment{cite}.
 
-\subsubsection{Image \& layer profiles}
+\paragraph{Profiler}
 
-The profiler extracts the downloaded layers
-and analyzes them along with the image manifests.
-For each image, it creates an image profile and individual layer profiles,
-which contain metrics for the whole image and
-its individual layers, respectively.
+For each image and each layer, profiler creates a profile in JSON format.
+%
+An image profile contains layer IDs, compressed size, archival size, and
+compression ratio of \vcomment{what?}.
+%
+To generate a layer profile, profiler first unpacks layer tarball.
+%
+A layer profile consists of: (1)~layer metadata, such as layer id, compressed
+size, archival size, compression ratio, directory count and file count.
+%
+(2)~for every file in a layer---file name, file content digest, file type, and
+file size.
+%
+Totally, we \vcomment{XXX} layer profiles and \vcomment{XXX} image profiles.
+%
+\vcomment{Explain briefly why we did not analyze all downloaded images and
+layers.}
 
-A layer profile consists of: (1)~layer metadata, such as layer id, compressed size, archival size, compression ratio, directory count and file count. (2)~file metadata, such as file name, file content digest, file type, and file size. 
-An image profile consists of layer ids, compressed size, archival size, and compression ratio. Totally, we got xxxx layer profiles and xxx image profiles.
+\paragraph{Spark-based analyzer}
 
-\subsubsection{Deeper analysis by using Spark SQL}
-
-With the layer and image profiles, we chose Spark~\cite{xxx} to speed up further redundancy analysis. Specially, (1)~we built a 8-nodes HDFS~\cite{xxx} cluster and stored all the layer and image profiles in HDFS as parquet files. (2)~we performed redundancy analysis by using Spark SQL module. For example, we first query unique file content digests and redundant file content digests along with their repeat count and size from the layer and image parquet table. Then we calculated the intra/inter-layer/image redundant ratio detailed in Section~\ref{xxx}.
+To quickly perform analysis on hundreds of thousands of profiles, we built an
+8-nodes HDFS~\vcomment{cite} and Spark~\vcomment{cite} cluster.
+%
+We stored all the layer and image profiles in HDFS as parquet
+files~\vcommnet{cite}.
+%
+We then performed basic and redundancy analysis using Spark SQL
+module~\vcomment{cite}.
+%
+For example, for deduplication analysis, we first query unique file content
+digests and redundant file content digests along with their repeat counts and
+sizes from the layer and image parquet tables.
+%
+We then calculate corresponding deduplication ratios, as detailed in
+Section~\vcomment{ref}.
 
 %and investigated the following questions (RQs):  
 
@@ -97,7 +144,6 @@ With the layer and image profiles, we chose Spark~\cite{xxx} to speed up further
 %
 %\paragraph{RQ3: How to reduce the redundant files?}
 %\nancomment{how to prototype?}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                            %
