@@ -9,6 +9,25 @@
 
 \input{dedup}
 
+\paragraph{File repeat count}
+
+As discussed in compression ratio analysis, we see that there is redundant data in both layers and images.
+A simple duplication is to replicate full content of a file. To find out if how many full file duplicates in the dataset, we calculated a digest of the complete file. 
+%We conducted simple form of deduplication to  
+Interestingly,
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/File_repeat_count.eps}
+	\caption{File repeat count distribution.
+	}
+	\label{fig:file-repeat-cnt}
+\end{figure}
+
+Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability distribution of file repeat count. 
+Most files have a small repeat count. For instance, almost 90\% of files have equal or less than 10 copies. Around 50\% of files have 4 copies.
+The file that has the maximum repeat count is empty file, which means that many users creates empty files and stored in their images.
+
 \subsection{Deduplication by file types}
 
 \paragraph{Finding 1: 13.38\% and 10.23\% of redundant files are source codes and EOL files, which take up over 3.66\% (5.3 TB) and 36.85\% (52.9 TB) of redundant storage space, indicating that users are more prone to replicate source codes and create identical big EOF files, while 43.15\% and 8.53\% of redundant files are documents and archival files, which account for 14.54\% (20.87 TB) and 22.93\% (32.9 TB) of redundant storage space, indicating users replicates more documents and archival files compare to other clusters}
