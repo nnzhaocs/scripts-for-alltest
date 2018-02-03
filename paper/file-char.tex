@@ -96,11 +96,26 @@ This is because average ELF file size is 312.7 KB while average intermediate com
 	\label{fig:type-eof}
 \end{figure}
 
-We also find 0.2\% of EOL files are libraries, which contains 
-There are Microsoft executables (2\%) in the dataset, meaning that developers also use other operating systems in addition to Linux.   
+%We also find 0.2\% of EOL files are libraries, which contains 
+There are Microsoft executables (2\%) and Mach-O files ($<$0.0001) in the EOL type group. Consider that libraries are also an important files for Docker developer. We found the following major libraries: Palm OS dynamic library, OCaml library, and GNU C libraries. 
+%\textit{meaning that developers also use other operating systems in addition to Linux, such as Windows and mac OS.}
+\textit{We can see that developers conduct a diversity developments on different operating systems, such as Linux/Unix, macOS, Windows, and other operating systems for smart devices by using different programing languages.} 
 
 \paragraph{Source code (SC.)}
+Next, we inspect what kind of languages are commonly used by Docker developer. 
 
+
+%\begin{figure}
+%	\centering
+%	\subfigure[File count (in \%) by file type.]{\label{fig:type-eof-cnt}
+%		\includegraphics [width=0.225\textwidth]{graphs/type-eof-cnt}
+%	}
+%	\subfigure[Capacity (in \%) by file type.]{\label{fig:type-eof-size}
+%		\includegraphics [width=0.225\textwidth]{graphs/type-eof-size}
+%	}
+%	\caption{EOL files}
+%	\label{fig:type-eof}
+%\end{figure}
 
 \paragraph{scripts (Scr.)}
 
