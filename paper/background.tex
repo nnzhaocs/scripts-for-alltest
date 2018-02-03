@@ -4,30 +4,28 @@
 \nancomment{1. add layer-level content addressable
 	2. shorten other sections}
 
-Container-based virtualization (such as Linux Containers~(LXC)~\cite{LXC}) has
-emerged as a lightweight virtualization alternative.
+Container-based virtualization (such as Linux Containers~\cite{LXC}) has
+emerged as a lightweight alternative to full virtualization.
 %
-Compared to Virtual Machine based server virtualization technologies (\eg
-VMware~\cite{VMware} or Xen~\cite{xen}), container virtualization works at the
-operating system level.
+Compared to Virtual Machines (\eg VMware~\cite{VMware} or Xen~\cite{xen}),
+containers work at the operating system level.
 %
 Containers share the same kernel which improves startup times and significantly
 reduces the storage and memory overhead ~\cite{ContainerVirtualization}.
 
 \subsection{Docker}
 
-Docker~\cite{docker} is a new, popular container-based virtualization
-technology that extends LXC with higher level APIs and additional
-functionality.
+Docker~\cite{docker} is a popular container-based virtualization technology
+that extends LXC with higher level APIs and additional functionality.
 %
 It automates the deployment of applications inside Linux containers, and
-provides the capability to package an application with its runtime dependencies
-into a container~\cite{slacker}.
+provides the capability to efficiently package an application with its runtime
+dependencies in a container image~\cite{slacker}.
 
 \input{fig-docker-architecture.tex}
 
-As shown in Figure~\ref{fig-docker-architecture}, the Docker ecosystem consists
-of several components.
+As shown in Figure~\ref{fig-docker-architecture}, the Docker setup consists of
+several components.
 %
 Users interact with Docker via the Docker \emph{client}, which sends commands
 to the Docker \emph{daemon}.
@@ -49,11 +47,11 @@ distributing, and running applications.
 %
 Docker images consist of a series of individual \emph{layers}.
 %
-A layer contains a subset of the files in the image and usually represents a
+A layer contains a subset of the files in the image and often represents a
 specific component/dependency of the image, \eg a shared library.
 %
-This modular design allows layers to be shared between two images if both
-images depend on the same component.
+This modular design allows layers to be shared between two or more
+images if both images depend on the same component.
 
 Image layers are read-only.
 %
@@ -65,7 +63,8 @@ Any changes made to files in the image will be reflected inside the writable
 layer via a copy-on-write mechanism.
 %
 This leaves layers unmodified throughout the lifetime of a container and
-enables layer sharing.
+enables layer sharing between multiple containers spawned from the same or
+different images.
 %
 Docker supports multiple storage drivers, \eg Aufs and Btrfs, which efficiently
 combine read-only and writable layers in a single
@@ -101,9 +100,19 @@ In Docker Hub, the user repositories are namespaced by user name, i.e.,
 official repositories, which are directly provided by Docker Inc. and partners
 are called ``$\langle repository name \rangle$".
 
-
-\paragraph{Layer level content addressable}
+Modern Docker registry identifies and addresses a layer with a digest that is
+computed based on the layer's content (e.g., SHA-256).
 %
+This allows registry to store only one instance of a layer even if multiple
+users accidentally built identical layers.
+%
+Notice, however, that even if a single file in two otherwise identical layers
+differs, the two layers are treated as completely different and stored in their
+entirety.
+
+
+
+
 %\vcomment{Somewhere we need to say that clients talk to registries using REST API.}
 
 %Docker registry stores and exchanges layers as compressed archival files and images
