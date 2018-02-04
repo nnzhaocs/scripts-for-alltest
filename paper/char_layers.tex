@@ -8,14 +8,18 @@ directory counts, and layer directory depths.
 
 \input{fig-layer-size-compress-cdf.tex}
 
-Recall that container image consists of multiple layers and each of these layer
-is stored in Docker registry.
+Figure~\ref{fig:layer-size-cdf} presents compressed/uncompressed layer size
+distribution.
 %
-In figure~\ref{fig:layer-size-cdf} we show the compressed/uncompressed layer
-size distribution.
+\vcomment{add a sentence explaining what compression algorithm and level is
+used.}
 %
-We find that around 50\% of the layers are 1~MB in size and 90~\% of layers are
+We find that around 50\% of the layers are 1~MB or less in size and 90~\% of layers are
 less than 64~MB in compressed format.
+%
+\vcomment{Given that the corresponding graph uses 10 base on X axis,
+can we replace 64MB above with 100MB and corresponding percentage (seems
+like around 95\%)}
 %
 \emph{This finding is particularly useful for the Docker registry designers as
 it shows that selective or popular layers can be cached in memory at the

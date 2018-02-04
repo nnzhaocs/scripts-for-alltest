@@ -1,13 +1,12 @@
 \section{General characteristics}
 \label{sec:char}
 
-In this section we carry out our analysis of the Docker Hub dataset by
-characterizing layers and images based on the presented metrics.
+In this section, we describe the basic properties of our dataset: layer and
+image sizes, compressibility, \vcomment{add more}, and more.
 %
-While overall we are interested in its general structure, we also analyze
-specific properties that allow us to draw conclusions regarding the caching,
-compression, and resource provisioning.
+Based on the characterization we draw conclusions that can impact optimized
+Docker registry's design.
 
 \input{char_layers}
 \input{char_images}
-\input{file-char}
+\input{char_files}
