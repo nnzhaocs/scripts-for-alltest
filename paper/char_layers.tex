@@ -4,80 +4,60 @@
 We start by analyzing layers in terms of size and compressibility, file and
 directory counts, and layer directory depths.
 
-\paragraph{Layer size}
+\paragraph{Layer size and compressibility}
 
-\input{fig-layer-size-compress-cdf.tex}
+\input{fig-layer-size-compress-cdf}
 
-Figure~\ref{fig:layer-size-cdf} presents compressed/uncompressed layer size
+Figure~\ref{fig:layer-size-cdf} presents compressed and uncompressed layer size
 distribution.
 %
 \vcomment{add a sentence explaining what compression algorithm and level is
 used.}
 %
-We find that around 50\% of the layers are 1~MB or less in size and 90~\% of layers are
-less than 64~MB in compressed format.
+We find that around 50\% of the layers are 1~MB or less in size and 90~\% of
+layers are less than 64~MB in compressed format.
 %
-\vcomment{Given that the corresponding graph uses 10 base on X axis,
-can we replace 64MB above with 100MB and corresponding percentage (seems
-like around 95\%)}
+\vcomment{Given that the corresponding graph uses 10 base on X axis, can we
+replace 64MB above with 100MB and corresponding percentage (seems like around
+95\%)}
 %
-\emph{This finding is particularly useful for the Docker registry designers as
-it shows that selective or popular layers can be cached in memory at the
-registry side.}
-
-%90\% of layers are less than 180 MB in uncompressed format
+50\% of layers are smaller than 2 MB and 90\% of layers are smaller than 170 MB
+in uncompressed format.
 %
-%As shown in , 90\% of layers are smaller than 64 MB
-
-
-We decompressed the layer compressed gzip archival files and measured the
-uncompressed layer size as shown in Figure~\ref{fig:layer-size-cdf}.
+\vcomment{Given that the corresponding graph uses 10 base on X axis, can we
+replace 170MB above with 100MB and corresponding percentage (seems like around
+85\%)}
 %
-We see that 50\% of layers are smaller than 2 MB in uncompressed format and
-90\% of layers are smaller than 170 MB in uncompressed format.
-%
-\emph{Compare with compressed layer size, we see that there are plenty of
-redundant data in layers}
-
-%We see that 90\% of the layers are smaller than 177~MB in uncompressed format
-%and smaller than 63~MB in compressed format.
-%%Interestingly, about half of the layers are smaller than 4~MB, independent of
-%%the format.
-%\nancomment{need check num}
-%That means that the registry stores a large number of small layers
-%which can benefit from compression.
-
-%To analyze the frequencies, we zoom into the 0--128~MB range (see
-%Figure~\ref{fig_hist_layer_size}).
-%More than 1 million and 800,000 layers are smaller than 5~MB in compressed and
-%uncompressed format, respectively. Beyond that, the frequency drops rapidly and
-%we only see around 100,000 layers between 5~MB and 15~MB.
-
-\paragraph{Compression ratio}
+\emph{Relatively small size of many layer allows to consider selective
+in-memory caching at the registry side.}
 
 To understand how much redundant data is in each layer, we calculated the
 compression ration as shown in Figure~\ref{fig:compress-ratio}.
 %
-We see that 80\% of layers have compression ratio less than 11 and 50\% of
-layers have compression ratio less than 4.
+We see that 80\% of layers have compression ratio of \vcomment{XXX} or higher
+and 50\% of layers have compression ratio larger than \vcomment{XXX}.
 %
 \emph{High compression ratio shows the potential of compression while
 distributing the container images.}
 
-However, looking at Figure~\ref{fig:compress-ratio},
-Figure~\ref{fig_hist_layer} we find that there are 3\% of layers for which the
-compression ratio is around 1.
+% VASILY: I commented the text below out as 3\% seems to be a very
+%  	  minor number.  Correct me if you think otherwise.
+%-------------------------------------------------------------------
+%However, looking at Figure~\ref{fig:compress-ratio},
+%Figure~\ref{fig_hist_layer} we find that there are 3\% of layers for which the
+%compression ratio is around 1.
 %
-Doing compression and uncompression of such layers incur additional overhead at
-docker engine side.
+%Doing compression and uncompression of such layers incur additional overhead at
+%docker engine side.
 %
-For such layers, we suggest not to do compression.
+%For such layers, we suggest not to do compression.
 %
-Docker engine can use a hybrid approach to compress only those layers which
-yield better compression ratio.
+%Docker engine can use a hybrid approach to compress only those layers which
+%yield better compression ratio.
 %
-\emph{This way users pulling such layers do not need to uncompress and will
-experience reduction in container startup time.}
+%\emph{This way users pulling such layers do not need to uncompress and will
+%experience reduction in container startup time.}
+%-------------------------------------------------------------------
 
 %\begin{figure}[!t]
 %	\centering
