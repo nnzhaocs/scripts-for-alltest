@@ -2,53 +2,65 @@
 \label{sec:file_adressable}
 %\vcomment{Nannan, please, do not use lines longer than 80 characters. It will simplify review
 %and revision process.}\nancomment{Addressed}
-\nancomment{Converted to discussion}
-
+%\nancomment{Converted to discussion}
+%
 %\subsection{}
 %\paragraph{Benefit of file-level content addressable storage}
-Currently, Docker registry uses layer-level content addressable storage model to avoid storing redundant copies of an identical layer. 
-However, as discussed in previous sections, almost 97\% of files inside the layers are redundant which accounts for 86\% of storage space (uncompressed). 
-As the number of images stored in Docker registry is increasing dramatically, 
-storing and managing the large proportion of redundant files requires both storage equipment and administration investment. 
-
-File-level dedup can significantly reduce the redundant files in docker registry and save a large volume of storage space.
-However, it also introduces considerable overhead, which including decompressing layer compressed archival file, calculating the file content digest, searching for identical files. These additional operations are either CPU intensive or I/O intensive. Moreover, how to server pulling requests are also an important issue. 
-
-In this section, a file-level content addressable storage model (FLCAS) is suggested for Docker registry to remove redundant files and save space while maintain a good performance.
 %
-\lrcomment{These challenges should be listed earlier in the section. They are also hard to follow as at this point, it is
-	still unclear why we need searching or why we have additional compression/decompression overhead.}
-% while maintain a good performance. 
-\lrcomment{What are the challenges we overcome with FLCAS?}  
+%Currently, Docker registry uses layer-level content addressable storage model
+%to avoid storing redundant copies of an identical layer.  However, as discussed
+%in previous sections, almost 97\% of files inside the layers are redundant
+%which accounts for 86\% of storage space (uncompressed).  
+As the number of images stored in Docker registry is increasing dramatically,
+storing and managing the large proportion of redundant files requires both
+storage equipment and administration investment.  In this section, as an
+alternative to layer-level content addressable storage, a file-level content
+addressable storage model (FLCAS) is suggested for Docker registry to remove
+redundant files and save space while maintaing good performance.  File-level
+deduplication can significantly reduce the redundant files in docker registry
+and save a large volume of storage space.  However, deduplication may also
+introduce considerable overheads, which include decompressing layers compressed
+archival file, calculating the file content digest, searching for identical
+files, etc. 
+In this section, we also provide suggestions on how one can
+mitigate the affects of such overheads and efficiently server push/pull requests. 
+
+%\lrcomment{These challenges should be listed earlier in the section. They are
+%also hard to follow as at this point, it it is still unclear why we need
+%searching or why we have additional compression/decompression overhead.} while
+%maintain a good performance. 
+%\lrcomment{What are the challenges we overcome with FLCAS?}  
 %Docker registry can save a lot of space if using file-level content addressable storage. 
 %Benefit: saving money, reducing storage management overhead.
 
-\subsection{Caching hot layers to improve performance}
-\label{subsec:FLCAS}
+\paragraph{Deduplication of layers}
+FLCAS exposes a high-level layer addressing by mapping layer digests to their
+containing file digests. File-level deduplication mainly consists of three
+steps: layer decompression, file content digest calculation, and searching \&.
+indexing.  During file-level deduplication, the unique files are stored in a
+\textit{file pool} and redundant copies are removed. A unique \textit{file
+content address} is recorded, which is a file digest uniquely and linked to the
+files'location. Meanwhile, a layer digest to its containing file content digest
+mapping record is also created and saved to a \textit{layer-to-file digest
+table}.  All the pulling request to the layers are served by file pool via
+searching for the layer digest from layer-to-file digest mapping table. After
+fetching all the containing files that are required by requested layer, FLCAS
+compresses these files as gzip file before sending it to Docker clients.         
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.3\textwidth]{graphs/graph_compression_layers.pdf}
-	\caption{File-level content addressable model.
-	\vcomment{1) Do not see ``cache'' word on the figure. 2) Font is too small in the middle section. 3) We need to describe how we depict layers vs. files. 4) There are pull requests both from the top and the bottom . I think we should just remove the part below the File pool.}
-	}
-	\label{fig:file-dedup-model}
-\end{figure}
+Deduplication can be expensive in terms of performance overhead, file-level
+dedupilication can be only triggered for removing the redundant files for cold
+layers when the workload is low and storage utilization is high.  Typically,
+workload fluctuates, with peaks and troughs. According to IBM container
+registry workload analysis~\cite{xxx}, 80\% of time, there were only 100
+requests.
 
-File-level content addressable storage system (FLCAS) uses file-level dedup to remove the redundant copies of an identical file by generating a digest (such as MD5 or SHA256) from the file this digest refers to.
-%
-\vcomment{Who is ``it''?}\nancomment{addressed}
-%
-FLCAS exposes a high-level layer addressing by mapping their digests to their containing file digests.     
-%
-\vcomment{Who are ``they''? Avoid using ``it'' and ``they''. Use actual nouns instead.}
-%
- %a digest generated by a cryptographic hash function (such as ) 
-%
-\vcomment{Let's use ``deduplication'' instead of ``dedup'' everywhere (because
-the letter one is informal)}
-
-%\subsection{Trade-off discussion}
+Deduplication process can run periodically to reduce redundant files without
+causing performance overhead.  To improve performance, we also suggest to use
+RAM to temporarily store \textit{small} layers and directly process them in RAM
+to perform decompression, unpacking, file content digest calculation.
+According to our findings majority (87.3\%) of layers that are less than 50M as
+shown in Figure~\ref{fig:image-layer-size}. So majority of layers can be stored
+and processed in RAM to speed up file-level dedup. 
 
 \begin{figure}
 	\centering
@@ -58,75 +70,93 @@ the letter one is informal)}
 	\label{fig:pull-cnt}
 \end{figure}
 
+To reduce overhead, we suggest caching the hot/recently requested layers as
+gzip compressed tar files.  We observed that only a small proportion of images
+and layers are frequently requested. A majority of images and layers are
+\textit{cold}. As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total
+number of pulls since the layers/images are stored in Docker Hub to May 30,
+2017.  We see that only 20\% and 10\% of images are pulled more that 100 and
+360 times respectively. Similarly, only 20\% and 10\% of layers are pulled more
+that 217 and 660 times.  Note that the layers'pull count shown in
+Figure~\ref{fig:pull-cnt} is calculated by aggregating all the images'pull
+counts that refers this layer. Note that the image pull counts are crawled from
+Docker Hub website. Actual layer pull count should be less than the number
+shown in Figure~\ref{fig:pull-cnt} because pulling a image does not necessarily
+pull all its containing layers as we don't pull the layers if they have already
+been downloaded.
+
+%
+%\vcomment{What are the units for  $\sigma_{wl}$ and  $\sigma_{su}$?}
+%
+%\lrcomment{Do you mean it only runs through low workload periods? How are we
+%predicting those or are we relying on some workload patterns? We should make
+%that clear.}
+
+%high while start file-level dedup \paragraph{FLCAS model}
+%Figure~\ref{fig:file-dedup-model} shows an example of FLCAS.
+%
+%\vcomment{An example?..}
+%
+%\lrcomment{This explanation should come before the caching and light workloads
+%paragraphs.}
+%
+
 %\paragraph{Caching hot layers to improve performance}
-\lrcomment{Before explaining how to improve performance and reduce overhead, we should explain the strategy in general.}
+%\label{subsec:FLCAS}
 %
-To reduce overhead, we cache the hot/recently requested layers as gzip compressed tar files in a \textit{layer cache pool} without file-level dedup.
-We observed that only a small proportion of images and layers are frequently requested. A majority of images and layers are \textit{cold}.
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.3\textwidth]{graphs/graph_compression_layers.pdf}
+%	\caption{File-level content addressable model.
+%	\vcomment{1) Do not see ``cache'' word on the figure. 2) Font is too small in the middle section. 3) We need to describe how we depict layers vs. files. 4) There are pull requests both from the top and the bottom . I think we should just remove the part below the File pool.}
+%	}
+%	\label{fig:file-dedup-model}
+%\end{figure}
+
 %
-\lrcomment{Why is this important? We need to provide more details.}
+%\vcomment{Who is ``it''?}\nancomment{addressed}
 %
-As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total number of pulls since the layers/images are stored in Docker Hub to May 30, 2017. 
-We see that only 20\% and 10\% of images are pulled more that 100 and 360 times respectively. 
-Similarly, only 20\% and 10\% of layers are pulled more that 217 and 660 times. 
-Note that 
-the layers'pull count shown in Figure~\ref{fig:pull-cnt} is calculated by aggregating all the images'pull counts that refers this layer.
-Note that the image pull counts are crawled from Docker Hub website.
-Actual layer pull count should be less than the number shown in Figure~\ref{fig:pull-cnt} because pulling a image does not necessarily pull all its containing layers as we don't pull the layers if they have already been downloaded.
+%
+%\vcomment{Who are ``they''? Avoid using ``it'' and ``they''. Use actual nouns instead.}
+%
+ %a digest generated by a cryptographic hash function (such as ) 
+%
+%\vcomment{Let's use ``deduplication'' instead of ``dedup'' everywhere (because
+%the letter one is informal)}
+
+%\subsection{Trade-off discussion}
+
 %
 
-\vcomment{I think there are two reasons for the cache 1) reduce push latency
-and 2) reduce pull latency. The text above talks only about reducing pull
-latencies.  We also need to talk about pushes.  Furthermore, the current
-discussion of pull counts does not really justify read (pull) cache.  For the
-read (pull) cache to be efficient there should be many pulls that access the
-same layers. E.g., that XXX\% of pulls go to the few YYY popular layers.
-Can we say that?}
-%
-\vcomment{somewhere we will need to talk about eviction policy, how to
-size the caching layer, and, finally, what happens if the cache is full.}
- 
-\subsection{Dedup when workload is light}Consider that dedup is expensive in terms of performance overhead, file-level dedup is only triggered for removing the redundant files for cold layers when the workload is lower than a predefined threshold $\sigma_{wl}$ and storage utilization is higher than a predefined threshold $\sigma_{su}$. 
-Typically, workload fluctuates, with peaks and troughs. According to IBM bluemix workload analysis\cite{xxx}, xxx of time, there were only xxx requests. %During high intensive load, 
-Thus, file-level dedup runs periodically to reduce redundant files without causing performance overhead. 
-%
-\vcomment{What are the units for  $\sigma_{wl}$ and  $\sigma_{su}$?}
-%
-\lrcomment{Do you mean it only runs through low workload periods? How are we predicting those or are we relying on some workload patterns? We should make that clear.}
+%\vcomment{I think there are two reasons for the cache 1) reduce push latency
+%and 2) reduce pull latency. The text above talks only about reducing pull
+%latencies.  We also need to talk about pushes.  Furthermore, the current
+%discussion of pull counts does not really justify read (pull) cache.  For the
+%read (pull) cache to be efficient there should be many pulls that access the
+%same layers. E.g., that XXX\% of pulls go to the few YYY popular layers.
+%Can we say that?}
+%%
+%\vcomment{somewhere we will need to talk about eviction policy, how to
+%size the caching layer, and, finally, what happens if the cache is full.}
+% 
 
-%high while start file-level dedup 
-%\paragraph{FLCAS model}
-Figure~\ref{fig:file-dedup-model} shows an example of FLCAS.
+%\subsection{Using RAM to load \&. process layers}
 %
-\vcomment{An example?..}
+%To improve performance, we use RAM to temporarily store \textit{small} layers
+%and directly process them in RAM.  Specially, we first load small layers in a
+%RAM disk and perform decompression, unpacking, file content digest calculation
+%in RAM, and remove them from RAM after completion.   According to our findings
+%that majority (87.3\%) of layers that are less than 50M as shown in
+%Figure~\ref{fig:image-layer-size}. So majority of layers can be stored and
+%processed in RAM to speed up file-level dedup. 
+%%layers that are less than 50M are stored and processed in RAM while the rest
+%%layers are stored and processed in SSDs.
+%%
+%\lrcomment{This should still be part of 7.1 as it explains the strategy and not
+%the prototype/simulations.}
+%%
+%\lrcomment{How are small layers defined? Where is the threshold?}
 %
-\lrcomment{This explanation should come before the caching and light workloads paragraphs.}
-%
-The recently pushed layers are treated as hot layers and cached in layer cache pool. 
-All the pulling requests to these hot layers are served from layer cache pool.
-When the workload is lower than $\sigma_{wl}$ and storage utilization is higher than $\sigma_{su}$, file-level dedup is triggered. 
-File-level dedup mainly contains three steps: layer decompression, file content digest calculation, and searching \&. indexing.
-During file-level dedup, the unique files are stored in a \textit{file pool} and redundant copies are removed.  
-A unique \textit{file content address} is recorded, which is a
-file digest uniquely and linked to the files'location.
-Meanwhile, a layer digest to its containing file content digest mapping record is also created and saved to a \textit{layer-to-file digest table}. 
- All the pulling request to the cold layers are served by file pool via searching for the layer digest from layer-to-file digest mapping table. After fetching all the containing files that are required by requested layer, FLCAS compresses these files as gzip file before sending it to Docker clients.         
-
-%\subsection{Off-line FLCAS latency} 
-
-Since file-level dedup involves operations that are either CPU intensive or I/O intensive, fast CPUs and high capacity RAMs are required to improve performance.
-
-\subsection{Using RAM to load \&. process layers}
-
-To improve performance, we use RAM to temporarily store \textit{small} layers and directly process them in RAM.
-Specially, we first load small layers in a RAM disk and perform decompression, unpacking, file content digest calculation in RAM, and remove them from RAM after completion.   
-According to our findings that majority (87.3\%) of layers that are less than 50M as shown in Figure~\ref{fig:image-layer-size}. So majority of layers can be stored and processed in RAM to speed up file-level dedup. 
-%layers that are less than 50M are stored and processed in RAM while the rest layers are stored and processed in SSDs.
-%
-\lrcomment{This should still be part of 7.1 as it explains the strategy and not the prototype/simulations.}
-%
-\lrcomment{How are small layers defined? Where is the threshold?}
-
 \paragraph{FLCAS prototype}
 
 \begin{figure}
