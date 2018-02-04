@@ -1,12 +1,29 @@
-
 \subsection{Deduplication ratio}
-\label{sec:dedup}
+\label{sec:dedup_ratio}
 
-In this section, we investigate how many duplicate files are in layers, images, and registry in term of file count and capacity and present the results.
+%\subsection{Overview of file duplicates}
+%\paragraph{File repeat count}
+\paragraph{Full file duplicates}
+As discussed in compression ratio analysis, we see that there is redundant data in both layers and images.
+A simple duplication is to replicate full content of a file. To find out if how many full file duplicates in the dataset, we calculated a digest of the complete file. 
+%We conducted simple form of deduplication to  
+Interestingly,
 
-\subsection{Overview of file duplicates}
-\paragraph{Finding 1: Majority of files in registry are duplicates}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{graphs/File_repeat_count.eps}
+	\caption{File repeat count distribution.
+	}
+	\label{fig:file-repeat-cnt}
+\end{figure}
+
+Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability distribution of file repeat count. 
+Most files have a small repeat count. For instance, almost 90\% of files have equal or less than 10 copies. Around 50\% of files have 4 copies.
+The file that has the maximum repeat count is empty file, which means that many users creates empty files and stored in their images.
+
 Figure~\ref{fig:over-dup-overhead} shows the redundant file overhead of the uncompressed dataset in terms of file count and capacity. We see that only 0.58\% of files have a single copy while majority of the files have more than one copies. After file-level deduplication, the total number of duplicate files (i.e., repeat cnt. $>$ 1) decrease to 2.59\%. Consequently, only 3.17\% (23.92 TB) of files are unique files while 96.83\% of files (143.28 TB) are redundant copies, indicating that Docker Hub has severe redundancy problem. Table~\ref{tbl:overall-redundant_ratio} summaries the overall redundant file overhead in terms of file count and capacity.
+
+Finding 1: Majority of files in registry are duplicates
 
 \begin{figure}
 	\centering
@@ -43,8 +60,11 @@ Figure~\ref{fig:over-dup-overhead} shows the redundant file overhead of the unco
 	\end{tabular} 
 \end{table} 
 
-\subsection{Cross image sharing}
-\paragraph{Finding 2: There are a lot of duplicate files existing within individual layers and images while more duplicate files are stored across layers and images}
+%\subsection{Cross image sharing}
+
+\paragraph{Cross image sharing}
+
+Finding 2: There are a lot of duplicate files existing within individual layers and images while more duplicate files are stored across layers and images
 
 We define two duplicate ratio for layers: intra-layer duplicate ratio and inter-layer duplicate ratio. Intra-layer duplicate ratio $r_{intra\_ldedup.}$ is calculated as:
 $r_{intra\_ldedup.} = \frac{S_{un.\_l} - S_{un.\_ldedup.}}{S_{un.\_l}}$, where $S_{un.\_l}$ is the uncompressed layer size while $S_{un.\_ldedup.}$ is the uncompressed layer size after removing the intra-layer duplicate files. Inter-layer duplicate ratio $r_{inter\_ldedup.}$ is calculated as:
@@ -101,6 +121,7 @@ Interestingly, we fond that considerable duplicate files are stored across the l
 	\caption{Image redundant ratio}
 	\label{fig:image-dedup-ratio}
 \end{figure}
+
 
 %\paragraph{Intra-image redundant ratio} Intra-image redundant ratio is shown in Figure~\ref{fig:image-dedup-ratio}
 
