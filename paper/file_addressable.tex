@@ -85,7 +85,7 @@ pull all its containing layers as we don't pull the layers if they have already
 been downloaded.
 
 
-\subsection{FLCAS prototype}
+\subsection{Performance analysis}
 %
 \begin{figure}
 	\centering
@@ -107,14 +107,14 @@ been downloaded.
 %\lrcomment{What exactly was the setup? Where those 60 requests submitted while
 %the dedup was running and where they submitted only once or repeatedly?}
 
-We wrote around 600 lines of Python code to simulate file-level deduplication
+We wrote around 600 lines of Python code to perform file-level deduplication
 operations on the layer dataset, specially, we read a layer from layer dataset
 to a RAM disk (i.e., tmpfs) and then decompresses it. Then we
 calculate each containing files' digests and append the layer-to-file digest
 mapping records to a mapping table.  Only unique files are maintained in RAM
 disk while the redundant copies are removed.
 
-To quantify the run time to perform file-level deduplication, we simulate a
+To quantify the run time to perform file-level deduplication, we setup a
 one-node Docker registry with 64~GB RAM and 32 Cores.  We performed
 deduplication of 60 concurrent layers for 0.9 Million layers in total.
 %To improve searching performance, the
@@ -129,7 +129,7 @@ because once the layer reaches registry, an response message will be sent to
 the user. No addition delay will be added to the pushing time. However,
 compression time will impact pulling latency since the files need to be packed
 and compressed first and then sent to the users once registry receives pulling
-requests to the cold layers. Similarl to deduplication, to simulate pull layer
+requests to the cold layers. Similar to deduplication, to generate pull layer
 requests, we randomly request 60 different layers in pralallel for 0.9 Million
 layers. For pull layer requests, we packs and compresses the layer's containing
 files by searching the mapping table for the layer digest. 
