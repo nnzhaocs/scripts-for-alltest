@@ -44,7 +44,7 @@ At the third level, we present the specific redundant file types which take a la
 Figure~\ref{fig:type-total} shows the 8 type groups in terms of file count and capacity.  
 13\%, 11\%, and 9\% of files are source code, EOL, and scripts. 
 EOL occupy the most of capacity (37\%). 
-We can infer that developers mostly use Docker to develop, build, and run applications. This finding align with that images package more source code and executables.
+We can infer that developers mostly use Docker to develop, build, and run applications. This finding align with that images package more source codes and binaries needed for runtime.
 
 We also see that Docker developers conduct many other activities in addition to coding. 
 For example, 44\% of files are documents that contains Microsoft office files, LaTex files, etc., which means that developers also composite documents in Docker containers. 4\% of files are image data files that contains PNG, JPEG, etc. Besides, we found small amount of video files, such as AVI, MPEG, etc., meaning that developers also process images or videos in Docker containers.
@@ -80,7 +80,7 @@ Figure~\ref{fig:type-total-avg-size}. We see that Database files are much bigger
 Based on the second-and third-classification, we further investigate the file size and file count by specific file types. We first start with EOF type group which contains the following types: ELF files, COFF files, intermediate representation that can be executed by virtual machine, Microsoft executables, Debian/RPM binary packages, libraries, and other EOF files.
 
 Figure~\ref{fig:type-eof} shows file type distribution in terms of file count and capacity for EOL type group. 
-We see that majority of EOL files are ELF and intermediate complied files. ELF files contains ELF relocatable, shared object, and executables. Intermediate representations mainly contains Python Byte-compiled files, compiled java class, and terminfo compiled files. Although intermediate representations take up to 64\% of EOL files, 30\% of EOL files occupy 84\% of storage space consumed by EOL group. 
+We see that majority of EOL files are ELF and intermediate complied files. ELF files mainly contains ELF relocatable, shared object, and executables. Intermediate representations mainly contains Python Byte-compiled files (majority), compiled java class, and terminfo compiled files. Although intermediate representations take up to 64\% of EOL files, 30\% of EOL files occupy 84\% of storage space consumed by EOL group. 
 This is because average ELF file size is 312.7 KB while average intermediate compiled file size is 9 KB. In addition to ELF files and representations, we found Microsoft executables (2\%) and Mach-O files ($<$0.01\%) in the EOL type group.
 
 \textit{We conclude that among all file types, ELF files occupy most capacity. There are large amount of intermediate representations but they take very less storage space.}
@@ -136,7 +136,7 @@ We see that more than half of scripts are Python script (53.5\%), which take up 
 
 \paragraph{Documents (Doc.)}
 As discussed before, 44\% of files are documents which take up to 14\% of storage space. So it's important to know what kinds of documents Docker developers create and store in Container. 
-As shown in Figure~\ref{xxx}, we see that majority of documents are text files including ASCII text (80\%), UTF8/16 text (5\%), and ISO-8859 text (0.4\%), which take up to 70\% of storage space occupied by documents. Note that these text files are \textit{raw text files which are undetectable type files} since we already filter the text based well-known file types%applications
+As shown in Figure~\ref{xxx}, we see that majority of documents are text files including ASCII text (80\%), UTF8/16 text (5\%), and ISO-8859 text (0.4\%), which take up to 70\% of storage space occupied by documents. Note that these text files are \textit{raw text files} since we already filter the text based well-known file types%applications
 , such as scripts and source codes.
 
 We see that XML/HTML/XHTML documents are the second most commonly used documents (13\%), which take up over 18\% of storage space occupied by documents. Moreover, we found a small amount of pdf/ps documents and LaTex files in our dataset.%, meaning that Docker developers process different kinds of documents.
