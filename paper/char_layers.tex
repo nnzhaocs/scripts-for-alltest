@@ -9,36 +9,38 @@ directory counts, and layer directory depths.
 \input{fig-layer-size-compress-cdf}
 
 Figure~\ref{fig:layer-size-cdf} presents compressed and uncompressed layer size
-distribution.
+distributions.
 %
 \vcomment{add a sentence explaining what compression algorithm and level is
 used.}
 %
-We find that around 50\% of the layers are 1~MB or less in size and 90~\% of
-layers are less than 64~MB in compressed format.
+We find that 50\% of the layers are less than 1MB and 90\% of the layers are
+less than 64MB in compressed format.
 %
 \vcomment{Given that the corresponding graph uses 10 base on X axis, can we
 replace 64MB above with 100MB and corresponding percentage (seems like around
 95\%)}
 %
-50\% of layers are smaller than 2 MB and 90\% of layers are smaller than 170 MB
-in uncompressed format.
+If uncompressed, 50\% of the layers are smaller than 2 MB and 90\% of the
+layers are smaller than 170MB.
 %
 \vcomment{Given that the corresponding graph uses 10 base on X axis, can we
 replace 170MB above with 100MB and corresponding percentage (seems like around
 85\%)}
 %
 \emph{Relatively small size of many layer allows to consider selective
-in-memory caching at the registry side.}
-
-To understand how much redundant data is in each layer, we calculated the
-compression ration as shown in Figure~\ref{fig:compress-ratio}.
+in-memory layer caching at the registry side.}
 %
-We see that 80\% of layers have compression ratio of \vcomment{XXX} or higher
-and 50\% of layers have compression ratio larger than \vcomment{XXX}.
+We also calculated the layer compression ratio a shown in
+Figure~\ref{fig:compress-ratio}.
+%
+We see that 80\% of the layers have compression ratio of \vcomment{XXX} or
+higher and 50\% of layers have compression ratio larger than \vcomment{XXX}.
 %
 \emph{High compression ratio shows the potential of compression while
 distributing the container images.}
+%
+\vcomment{Isn't it what Docker already does?}
 
 % VASILY: I commented the text below out as 3\% seems to be a very
 %  	  minor number.  Correct me if you think otherwise.
@@ -77,39 +79,43 @@ distributing the container images.}
 %small and has low compression ratios, it can be beneficial to store small
 %layers uncompressed in the registry to reduce pull latencies.
 
-\paragraph{Directory count}
 
-\input{fig-dir-count-depth.tex}
+\paragraph{File and directory structure}
 
-Next, we look at the directory (Figure~\ref{fig:dir-cnt-cdf}), layer directory
-depth(Figure~\ref{fig:layer-depth-cdf}) and file count
-(Figure~\ref{fig:file-cnt-cdf}) in layers to determine if deploying images
-requires handling of large amounts of metadata.
+\input{fig-file-count-img-size}
+\input{fig-dir-count-depth}
 
-First looking at directories, we see that
-%90\% of layers have less than 1,146 directories
-70\% of layers have less than 100 directories and around 10\% of layers have
-bigger than 1,000 directories while the median is at 8.
+
+We examine internal layer structure to determine if extracted
+layers require large amounts of metadata from the storage system.
 %
-\emph{Majority of layers have a small number of directories while a small
-number of layers contains large amount of directories, which might cause
-metadata overhead for the underlying union file system.}
-%For files, 90\% of images have less than 64,780 files with a median of 1,090.
-
-\paragraph{Layer directory depth}
-
 To further understand the metadata overhead, we decompressed the layer gzip
 compressed archival file as a layer directory and counted the layer directory
 depth as the maximum directory depth of its containing directories as shown in
-Figure~\ref{fig:layer-depth-cdf}.
 %
-50\% of layers have less 4 levels in layer directory depth and 90\% of layers
-have less than 11 levels.
+Figure~\ref{fig:file-cnt-cdf} shows the CDF of the number of files per layer.
 %
-\emph{Most of Layers have a moderate number of directory levels, which means
-directory depth is not a big concern of Docker designer.}
-
-\paragraph{File count}
+90\% of the layers contain less than 10,000 files while half of the layers have
+less than 12 files.
+%
+Interestingly, 13\% of the layers have only a single file.
+%
+\vcomment{here we need to give some hint what are those files?}
+%
+Figure~\ref{fig:dir-cnt-cdf} shows taht 70\% of layers have less than 100
+directories and around 10\% of layers have more than 1,000 directories while
+the median is 8.
+%
+Directory depth is shallow (\ref{fig:layer-depth-cdf}) as 50\% of layers have
+less 4 levels in layer directory depth and 90\% of layers have less than 11
+levels.
+%
+\emph{This analysis shows that the majority of layers consists only of a small
+number of files an directories and does not contain deeply nested directory
+hierarchies.
+%
+Hence, except a few outliers, unpacked layers do not require a large amount of
+metadata from the storage system.}
 
 %\nancomment{still metadata overhead}
 %\begin{figure}
@@ -132,26 +138,6 @@ directory depth is not a big concern of Docker designer.}
 %	\label{fig:reference-cnt}
 %\end{figure}
 
-Lastly, we look at file count in layers as shown in
-Figure~\ref{fig:file-cnt-cdf}.
-%
-%and directory metrics in layers.  and~\ref{fig_dir_cnt}
-%Figure~\ref{fig:file-cnt-cdf} show the CDFs of file and directory counts in
-%all layers, respectively.
-%
-The results show that 90\% of layers contain less than 9,467 files while half
-of the layers have less than 12 files.
-%50\% of layers have less 12 files and 90\% of images have           files
-%
-We also found that 13\% of the layers only have a single file.
-%
-30\% of layers have more than 600 files.
-%
-\emph{This analysis shows that the majority of layers consists only of a small
-number of files and does not contain deeply nested directory hierarchies.
-%
-Hence, except a few outliers, unpacked layers do not require a large amount of
-metadata from the storage system.}
 
 % while 7\% even
 %showed no files at all. We currently do not know the exact reason for the
