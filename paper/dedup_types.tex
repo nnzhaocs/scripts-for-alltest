@@ -1,16 +1,35 @@
 \subsection{Deduplication by file types}
 
 %\paragraph{Deduplication for common file types}
-
-Finding 1: 13.38\% and 10.23\% of redundant files are source codes and EOL files, which take up over 3.66\% (5.3 TB) and 36.85\% (52.9 TB) of redundant storage space, indicating that users are more prone to replicate source codes and create identical big EOF files, while 43.15\% and 8.53\% of redundant files are documents and archival files, which account for 14.54\% (20.87 TB) and 22.93\% (32.9 TB) of redundant storage space, indicating users replicates more documents and archival files compare to other clusters.
-
 %Some data is inherently more prone to duplicates than others.
-Figure~\ref{fig:file-types} presents redundant data vs. unique data for each clusters. 
-Document cluster has the largest number of redundant files (43.15\%), indicating that users replicate more documents than other clusters. While the redundant document files only consume 14.54\% (20.87 TB) of storage space, indicating that the size of redundant document files are small (10.2 KB on average). In comparison, 13.38\% and 10.23\% of files are EOL files and source codes, which take up over 3.66\% (5.3 TB) and 36.85\% (52.9 TB) of redundant storage space, indicating that users replicate source codes and create big identical EOF files (108.6 KB on average).
 
-Archival files and scripts have almost similarly number of redundant files, 8.53\% for archival and 8.69\% for scripts. However, archival cluster consumes more storage space than that of scripts (32.9 TB for archival and 3.9 TB for scripts) since archival file size (81 KB on avg.) is inherently higher than script size (9.4 KB on avg.).
+To understand what are the file duplicates and why there are so many file duplicates, we look at the deduplication results from the perspective of file types. In this section, we present the deduplication results for common file types that occupy the most capacity as described in Section~\ref{xxx}.
 
-We found that 4.15\% of redundant files are image files and 0.09\% of redundant files are relevant to database, which takes 2.1 TB and 3.9 GB storage space respectively. There are 10.17\% (21.2 TB) of redundant files in \textit{Other} cluster which mainly contains binary data (9.76), GNU message catalog (3.37 TB), font related type (3.02 TB), git pack files (1.9 TB), etc. 
+Figure~\ref{fig:file-types} shows deduplication results for 
+the following type groups: EOL, archival, source code, script, image, and database. Note that the y-axies shows percentage of capacity occupied by different type group. Specifically, we break down the percentage into two parts: unique file percentage and redundant file percentage.
+
+The overall deduplication ratio is 85.69\%, and most of the type group have a comparable ratio. For example, 86\% of EOL files, which contains executables, object files, and libraries, can be deduplicated at file-level.
+Source codes, scripts, and documents have the highest deduplication ratio (96.8\% for source codes, 98\% for scripts, and 92\% for documents), \textit{which means that Docker developers are more prone to replicate source codes, scripts, and documents rather than creating their own.}
+
+Next, we see that EOL files, archival, and images have a similar deduplication (around 86\%). Compare with other type groups, the redundant EOL files and archival files occupy over half of the capacity (51.4\%). 
+%This is mainly because EOL and archival file sizes are bigger than other type group. 
+Database related files have the lowest deduplication ratio (76\%), which contributes little to the overall savings.
+
+\textit{Finding 3: All the common file types have a high deduplication ratio.
+Especially,
+EOL and archival files contribute a lot to the overall savings.
+Besides, developers are likely to replicate codes rather than creating their own.}
+ 
+%We see that 43.15\% of redundant files are documents,
+%%Documents have the largest number of redundant files (), 
+%indicating that users replicate more documents than other clusters. While the redundant document files only consume 14.54\% (20.87 TB) of storage space, indicating that the size of redundant document files are small (10.2 KB on average). In comparison, 13.38\% and 10.23\% of files are EOL files and source codes, which take up over 3.66\% (5.3 TB) and 36.85\% (52.9 TB) of redundant storage space, indicating that users replicate source codes and create big identical EOF files (108.6 KB on average).
+%
+%Archival files and scripts have almost similarly number of redundant files, 8.53\% for archival and 8.69\% for scripts. However, archival cluster consumes more storage space than that of scripts (32.9 TB for archival and 3.9 TB for scripts) since archival file size (81 KB on avg.) is inherently higher than script size (9.4 KB on avg.).
+%
+%We found that 4.15\% of redundant files are image files and 0.09\% of redundant files are relevant to database, which takes 2.1 TB and 3.9 GB storage space respectively. There are 10.17\% (21.2 TB) of redundant files in \textit{Other} cluster which mainly contains binary data (9.76), GNU message catalog (3.37 TB), font related type (3.02 TB), git pack files (1.9 TB), etc. 
+
+%\textit{
+%Finding 1: 13.38\% and 10.23\% of redundant files are source codes and EOL files, which take up over 3.66\% (5.3 TB) and 36.85\% (52.9 TB) of redundant storage space, indicating that users are more prone to replicate source codes and create identical big EOF files, while 43.15\% and 8.53\% of redundant files are documents and archival files, which account for 14.54\% (20.87 TB) and 22.93\% (32.9 TB) of redundant storage space, indicating users replicates more documents and archival files compare to other clusters.}
 
 \begin{figure}
 	\centering
@@ -20,17 +39,25 @@ We found that 4.15\% of redundant files are image files and 0.09\% of redundant 
 	\subfigure[Redundant data vs. unique data in terms of capacity.]{\label{fig:file-types-cap}
 		\includegraphics [width=0.4\textwidth]{graphs/type-total-cap}
 	}
-	\caption{Redundant data vs. unique data for high redundant file types}
+	\caption{\nancomment{Deduplication results for different type group}}
 	\label{fig:file-types}
 \end{figure}
 
-\paragraph{EOL files and source codes}
+\paragraph{Executable, object code, and libraries (EOL)}
+We further calculated the deduplication ratio for specific file types in each common type group. We started from EOL group since it occupies the most capacity and contributes a lot to the overall savings after deduplication. 
 
-Finding 2: 31.4\% (164,059,690) and 63.7\% (333,261,220) of EOL files are ELF files and intermediate compiled files, which take up over 85.7\% (45.3TB) and 5.3\% (2.8TB) of redundant storage capacity, indicating that users replicate or create more identical ELF files and intermediate compiled files. 64.1\% (213,753,591) of intermediate compiled files are Python byte-compiled files, which take up to 79.4\% (2.2TB) of redundant storage space, indicating that users compiled more Python scripts (similar to Finding 2.)
+Figure~\ref{fig:type-eol} shows the deduplication results for EOL files.
+We see that ELF files, intermediate representations, and PE files have the highest deduplication ratio (around 87\%). Especially, the redundant ELF files occupy the most capacity (73.4\%). 
+\nancomment{replace MS exec with PE files}
+Libraries and COFF files have the lowest deduplication ratio of 53.5\% and 61\% respectively.
 
-As shown in Figure~\ref{fig:type-eol}, intermediate compiled files have the largest number of redundant copies (333,261,220, 63.7\%), which only take up to 5.3\% (2.8TB) of EOL redundant storage space, indicating that users creates more small redundant intermediate compiled files. Among all the intermediate compiled files, python byte-compiled files have the largest number of redundant copies (64.1\%, 213,753,591), which account for 79.4\% (2.2TB) of EOL redundant storage space as shown in Figure~\ref{fig:type-compiled}. 
+We also calculated the deduplication ratio for each intermediate representation and libraries. We found that all the intermediate representations have a very higher deduplication ratio (greater than 77\%). Especially, the redundant Python byte-compiled codes take up to 67\% of capacity occupied by intermediate representations. Although overall library's deduplication is lower, we found that GUN C/C++ library and Palm OS dynamic library have a higher deduplication ratio over 90\%.
 
-We found that there are various redundant intermediate compiled files in layers in addition to Python byte-compiled, such as Erlang beam files, Xemacs/emacs compiled files, compiled Java class, Mach-o fat files, Guile object bytecode, and llvm bitcode files. We see that 21.6\% (71,830,155) and 10.12\% (33,740,399) of redundant intermediate compiled files are terminfo compiled and compiled java class files, which consume 76.4 GB and 104.4 GB storage space.   
+\textit{Finding 4: ELF files have the highest deduplication ratio among all EOL files and contribute most to the overall savings. Python byte-compiled codes have the highest deduplication ratio and also achieve a better capacity savings after dedupliation compared with other intermediate representations. Most libraries have the lowest deduplication ratio among all EOL files.}
+
+%As shown in , intermediate compiled files have the largest number of redundant copies (333,261,220, 63.7\%), which only take up to 5.3\% (2.8TB) of EOL redundant storage space, indicating that users creates more small redundant intermediate compiled files. Among all the intermediate compiled files, python byte-compiled files have the largest number of redundant copies (64.1\%, 213,753,591), which account for 79.4\% (2.2TB) of EOL redundant storage space as shown in Figure~\ref{fig:type-compiled}. 
+%
+%We found that there are various redundant intermediate compiled files in layers in addition to Python byte-compiled, such as Erlang beam files, Xemacs/emacs compiled files, compiled Java class, Mach-o fat files, Guile object bytecode, and llvm bitcode files. We see that 21.6\% (71,830,155) and 10.12\% (33,740,399) of redundant intermediate compiled files are terminfo compiled and compiled java class files, which consume 76.4 GB and 104.4 GB storage space.   
 
 %ELF files have the largest redundant capacity
 %A large executable group is ELF file type, which consists of ELF 64/32-bit LSB relocatable, shared object, executable, core file, processor-specific for x86-64, MIPS,
@@ -39,20 +66,34 @@ We found that there are various redundant intermediate compiled files in layers 
 %\% of files are script executable, which contains python, shell, etc.
 %\% of files are RPM, Debian bin
 
-Finding 3: 80.2\% (548,507,865) of source codes are C/C++ source, which take up to 79.7\% (4.2TB) of redundant storage space, indicating that users are more prone to duplicate C/C++ codes, which results in more ELF file replicas.
-%The last group contains
-
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{graphs/type-exec-cap}
-	\caption{Redundant data vs. unique data for EOL (Executable, object code, libraries) files.
+	\caption{\nancomment{Deduplication results for EOL files}.
 	}
 	\label{fig:type-eol}
 \end{figure}
 
-Figure~\ref{fig:type-source} shows the redundant file count and storage capacity distribution for source code. C/C++ source codes have the largest number of redundant files. 80.2\% (548,507,865) of source codes are C/C++ source, which take up to 79.7\% (4.2TB) of redundant storage space, indicating that users are more prone to duplicate C/C++ codes, which results in more ELF file replicas.
+%Finding 2: 31.4\% (164,059,690) and 63.7\% (333,261,220) of EOL files are ELF files and intermediate compiled files, which take up over 85.7\% (45.3TB) and 5.3\% (2.8TB) of redundant storage capacity, indicating that users replicate or create more identical ELF files and intermediate compiled files. 64.1\% (213,753,591) of intermediate compiled files are Python byte-compiled files, which take up to 79.4\% (2.2TB) of redundant storage space, indicating that users compiled more Python scripts (similar to Finding 2.)
 
-We also found other source codes, such as Perl5 module source code (9.5\%), ruby module source code (7.6\%), assembler source code (1.1\%), pascal source (0.7\%), fortran program code (0.01\%), applesoft basic source code, and Lisp/scheme source code (0.17\%).
+\paragraph{Source code (SC.)}
+
+%Finding 3: 80.2\% (548,507,865) of source codes are C/C++ source, which take up to 79.7\% (4.2TB) of redundant storage space, indicating that users are more prone to duplicate C/C++ codes, which results in more ELF file replicas.
+%The last group contains
+
+As discussed, Docker developers are more prone to replicate codes. 
+To find out which kind of source codes are replicated frequently, we conducted deduplication on 7 common source codes as shown in Figure~\ref{fig:type-source}.
+
+We see that all the source codes have a high deduplication ratio over 90\% except 
+Lisp/scheme program. Especially, the redundant C/C++ source codes take up over 77\% of capacity occupied by source codes. To find out why there are so many C/C++ source codes, we inspect the C/C++ source codes and find a frequently replicated C/C++ source code called Google Test~\cite{xxx} which is a cross-platform C++ test framework and available in GitHub~\cite{xxx}. Interestingly, we found there are plenty of repositories related to Google Test while there is no official repository for Google Test. We suspect that many developers replicate open source code from external public repositories, such as GitHub, and store them in containers. This would also explain why there are so many shared source codes across different images.
+Consider that Docker Hub allows developer to automatically build images from source code in external public repositories and automatically push the built image to their Docker repositories, we believe that more open source code would be replicated into different images stored in Docker Hub registry. \textit{To eliminate redundant open source codes in Docker registry in the future, we suggest that Docker Hub can create more offical images for popular open source codes so that developers can directly pull the image as a read-only layer. }
+
+\textit{Finding 5: C/C++ source codes have a high redundant ratio and contribute a lot to the overall savings. Many redundant source codes shared cross images are replicated or automatically build from external public repositories. To eliminate redundant source codes in Docker registry, we suggest to create more official images for these open source codes and convince developers to pull them from registry.}
+
+%\nancomment{found some libc++ source code here, did not put them into libraries.}
+% shows the redundant file count and storage capacity distribution for source code. C/C++ source codes have the largest number of redundant files. 80.2\% (548,507,865) of source codes are C/C++ source, which take up to 79.7\% (4.2TB) of redundant storage space, indicating that users are more prone to duplicate C/C++ codes, which results in more ELF file replicas.
+
+%We also found other source codes, such as Perl5 module source code (9.5\%), ruby module source code (7.6\%), assembler source code (1.1\%), pascal source (0.7\%), fortran program code (0.01\%), applesoft basic source code, and Lisp/scheme source code (0.17\%).
 
 \begin{figure}
 	\centering
@@ -62,9 +103,9 @@ We also found other source codes, such as Perl5 module source code (9.5\%), ruby
 	\label{fig:type-source}
 \end{figure}
 
-Figure~\ref{fig:type-lib} shows the redundant library distribution. We see that Gcc precompiled header files have the lowest number of redundant library files (20.3\%), but they take up to 0.93 TB. Almost 86.4\% of redundant library files are Palm libraries, which only take up to 7.2GB space, indicating that gcc compiled header files are much bigger than other libraries.
-
-We also found there are different libraries used in layers, such as netcdf library, Ocaml lib., mach-o lib.
+%Figure~\ref{fig:type-lib} shows the redundant library distribution. We see that Gcc precompiled header files have the lowest number of redundant library files (20.3\%), but they take up to 0.93 TB. Almost 86.4\% of redundant library files are Palm libraries, which only take up to 7.2GB space, indicating that gcc compiled header files are much bigger than other libraries.
+%
+%We also found there are different libraries used in layers, such as netcdf library, Ocaml lib., mach-o lib.
 
 %Figure~\ref{fig-elf}
 %\subsection{Lib}
@@ -73,8 +114,8 @@ We also found there are different libraries used in layers, such as netcdf libra
 %%libtool\|OCaml\|Palm\|MIT\|microsoft\|current ar archive random library\|mach-o\|rpm\|gzip
 %\subsection{Source code}
 
-\paragraph{Scripts}
-Finding 2: 53.6\% (238,353,674) of redundant scripts are Python scripts, which take up over 2.6TB storage space, indicating that users are more prone to replicate Python scripts compare to other scripts.
+\paragraph{Scripts(Scr.)}
+%Finding 2: 53.6\% (238,353,674) of redundant scripts are Python scripts, which take up over 2.6TB storage space, indicating that users are more prone to replicate Python scripts compare to other scripts.
 
 \begin{figure}
 	\centering
@@ -84,13 +125,28 @@ Finding 2: 53.6\% (238,353,674) of redundant scripts are Python scripts, which t
 	\label{fig:type-script}
 \end{figure}
 
-Figure~\ref{fig:type-script} shows the redundant scripts distribution. Python script has the largest number of redundant scripts (238353674, 53.6\%), which take up to 2.6TB storage space, indicating that users are more prone to replicate Python scripts compare to other scripts. 
-%This finding also explains that why python byte compiled files takes the largest proportion of intermediate 
+Similar to source codes, we present the deduplication ratio for scripts as shown in
+Figure~\ref{fig:type-script}.
+We see that most of the scripts have a high deduplication ratio over 95\%. Especially, the redundant Python scripts take up over 65\% of capacity occupied by scripts. 
 
-We find that users use different scripts in the images. 
-For example, 20\%, 9.7\% and 4.4\% of scripts are bash/shell scripts, ruby scripts, and awk scripts. Other scripts such as perl script (4.2\%), php script(3.9\%), makefile script(1.3\%), and M4 macro processor script(0.7\%) are also used.
+We inspect the Python scripts and found a frequently replicated Python scripts called kraken-tools~\cite{xxx}, which is a tool for managing system requirements for kraken-lib~\cite{xxx} while kraken-lib is an orchestration and cluster-level management system for Kubernetes~\cite{xxx}.
+% a tool for  for Kubernetes cluster.
+%kraken-lib
+%Kubernetes is an open source platform that automates Linux container operations
+%
+Although kraken-tools seems like an Docker image repository, it is maintained in GitHub rather than Docker registry. Interestingly, kraken-lib does not have a official repository in Docker Hub but it has a public repository in QUAY registry~\cite{xxx}.
+\textit{Similar to source codes, we suggest to create more official images in registry for some popular public scripts %, especially containerized applications 
+and convince developers to pull them from registry as a read-only layer to reduce redundant scripts in registry.}
 
-\paragraph{Documents}
+\textit{Finding 6: Scripts have a very high deduplication ratio. Especially, redundant Python scripts contribute a lot to the overall savings. Many redundant scripts are replicated from external public repositories such as GitHub. 
+we suggest to create more official images for these public scripts and convince developers to pull them from registry.}
+% shows the redundant scripts distribution. Python script has the largest number of redundant scripts (238353674, 53.6\%), which take up to 2.6TB storage space, indicating that users are more prone to replicate Python scripts compare to other scripts. 
+%%This finding also explains that why python byte compiled files takes the largest proportion of intermediate 
+%
+%We find that users use different scripts in the images. 
+%For example, 20\%, 9.7\% and 4.4\% of scripts are bash/shell scripts, ruby scripts, and awk scripts. Other scripts such as perl script (4.2\%), php script(3.9\%), makefile script(1.3\%), and M4 macro processor script(0.7\%) are also used.
+
+\paragraph{Documents(Doc.)}
 Finding 3: 79.7\%, 5.2\%, and 12.4\% of redundant documents are ASCII text, UTF-8/16 text, and HTML/XML/XHTML, which take up over 11TB, 3.4TB, and 3.9TB redundant storage, indicating that users replicate more ASCII text, UTF-8/16 text, and HTML/XML/XHTML compare to other documents.
 
 \begin{figure}
@@ -112,7 +168,7 @@ Various documents are replicated in images, such as PS/PDF documents (0.9\%), La
 %type-utili-cap
 %type-script-cap
 
-\paragraph{Database related files}
+\paragraph{Databases (DB.)}
 Finding 4: 28.7\%, 30.9\%, and 11.9\% of redundant database files are Berkeley DB, Mysql, and Dbase related files, which only take up over 1.1 TB, 26 GB, and 47.2 GB redundant storage, indicating that users replicate a lot small database files related to Mysql and Berkeley DB. While there are only 7.3\% of SQLite files, which take up over 2.6TB storage space, indicating SQLite files are much bigger than others.
 
 Figure~\ref{fig:type-db} presents database related redundant files. 30.9\% of redundant database related files are related to MySQL, which only take up to 26GB storage space while SQLite database related redundant files which only take up 7.3\% of redundant database related files consume 2.56 TB storage space, indicating users replicate more MySQL related files and bigger SQLite database related files. %MySQL related files contains mysql table definitation files, mysql misam index files, and mysql misam compressed data. 
@@ -142,14 +198,14 @@ Moreover, we also find different redundant database related files are replicated
 	\end{minipage}
 \end{figure*}
 
-\paragraph{Archival}
+\paragraph{Archival (Arch.)}
 Finding 4: 89.5\% and 7.0\% of redundant archival files are Gzip files and Zip files, which take up over 8.4 TB and 15.2 TB storage space, indicating that users replicate more Gzip files and Zip files are much bigger than Gzip files.
 
 Figure~\ref{fig:type-arch} shows the redundant archival file distribution. Gzip files have the largest number of redundant archival files (89.5\%), which take up to 8TB storage space, indicating that users replicate more Gzip compressed files. Although Zip files only take 7.00\% of redundant archival files, they consume 15.5 TB storage space since they are much bigger than Gzip files.
 
 We found other different kinds of archive files, such as XZ (0.42\%), Bzip2(0.96\%), and Tar files(0.36\%).
 
-\paragraph{Images}
+\paragraph{Images (Img.)}
 Finding 4: 67.8\%, 14.3\%, and 4.0\% of redundant image files are PNG, SVG, and JPEG images, which take up over 1.01TB, 4.6 GB, and 401.5 GB storage space, indicating that users also replicate image files, especially, PNG, SVG, and JPEG files.
 
 Figure~\ref{fig:type-img} shows the redundant image file distribution. PNG image files have the largest number of redundant image files (67.8\%), which take up to over 1 TB storage space. 14.3\%, and 4.0\% of redundant image files are SVG, and JPEG images, which take up over 4.6 GB and 401.5 GB storage space, indicating that users also replicate image files, especially, PNG, SVG, and JPEG files. Moreover, there are different redundant image file types, such as FITS (0.05\%), TIFF (0.07\%), and EPS (0.01\%) image files.
