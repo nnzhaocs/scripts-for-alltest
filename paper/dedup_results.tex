@@ -7,12 +7,24 @@
 %Based on the second-and third-level classification, we investigated the following two research questions: (1) What are the common redundant files?
 %(2) Why there are so many redundant files? and present our investigation results.
 
-As discussed in Section~\ref{xxx}, analysis of compression ratio indicates that plenty of redundant data exists in individual layers and images. However, it's unknown how much redundant data is in Docker registry. In this section, we investigate the potential for data deduplication in Docker registry. 
+%As discussed in Section~\ref{xxx}, analysis of compression ratio indicates that
+%plenty of redundant data exists in individual layers and images. However, it's
+%unknown how much redundant data is in Docker registry. 
 
-Since layers are stored in gzip compressed format and gzip-compressed files have very small deduplication ratio\cite{xxxx}, we decompressed and unpacked all gzip-compressed layers and conducted deduplication analysis on this uncompressed dataset. 
-
-In this section, we adapt file-level deduplication strategy to find out whether there are duplicates of source codes, scripts, EOL files, documents, etc. File-level deduplication is a simple and efficient content-based deduplication strategy, which can eliminate files whose full content is a duplicate of another file. To find out how many full file duplicates in the dataset, we calculated a digest of the complete file by using MD5 hash algorithm and presents file-level deduplication results.
-%A simple deduplication is to eliminate the replicates of full content of a file.  
+In this section, we
+investigate the potential for data deduplication in Docker registry. 
+Since, layers are stored in gzip compressed format and no two layers are
+duplicated, we decompressed and unpacked all the layers, and conducted
+deduplication analysis on the uncompressed dataset. 
+We adapt file-level deduplication strategy to find out whether
+there are duplicates of source codes, scripts, EOL files, documents, etc.
+File-level deduplication is a simple and efficient content-based deduplication
+strategy, which can eliminate files whose full content is a duplicate of
+another file. To find out how many full file duplicates in the dataset, we
+calculated a digest of the complete file by using MD5 hash algorithm and
+presents file-level deduplication results.
+%A simple deduplication is to eliminate the replicates of full content of a
+%file.  
 %In this section, we investigate how many duplicate files are in layers, images, and registry in term of file count and capacity and present the results.
 \nancomment{will replace all graphs}
 \input{dedup_ratio}
