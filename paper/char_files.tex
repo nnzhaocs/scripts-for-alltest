@@ -97,6 +97,43 @@ This is because average ELF file size is 312.7 KB while average intermediate com
 	\label{fig:type-eof}
 \end{figure}
 
+\begin{figure}
+	\centering
+	\subfigure[File count (in \%) by file type.]{\label{fig:type-sc-cnt}
+		\includegraphics [width=0.4\textwidth]{graphs/type-sc-cnt}
+	}
+	\subfigure[Capacity (in \%) by file type.]{\label{fig:type-sc-size}
+		\includegraphics [width=0.38\textwidth]{graphs/type-sc-size}
+	}
+	\caption{Source codes}
+	\label{fig:type-sc}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\subfigure[File count (in \%) by file type.]{\label{fig:type-scrp-cnt}
+		\includegraphics [width=0.4\textwidth]{graphs/type-scrp-cnt}
+	}
+	\subfigure[Capacity (in \%) by file type.]{\label{fig:type-scrp-size}
+		\includegraphics [width=0.4\textwidth]{graphs/type-scrp-size}
+	}
+	\caption{Scripts}
+	\label{fig:type-script}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\subfigure[File count (in \%) by file type.]{\label{fig:type-doc-cnt}
+		\includegraphics [width=0.4\textwidth]{graphs/type-doc-cnt}
+	}
+	\subfigure[Capacity (in \%) by file type.]{\label{fig:type-doc-size}
+		\includegraphics [width=0.4\textwidth]{graphs/type-doc-size}
+	}
+	\caption{Documents}
+	\label{fig:type-doc}
+\end{figure} 
+
+
 %We also find 0.2\% of EOL files are libraries, which contains 
  
 % meaning that developers also use other operating systems in addition to Linux, such as Windows and mac OS.
@@ -107,22 +144,11 @@ To know what kind of libraries are used in Docker containers, we categorized the
 %also an important files for Docker developer
 \paragraph{Source code (SC.)}
 Next, we inspect what kind of languages are commonly used by Docker developer. 
-Figure~\ref{xxx} shows 7 major types of source codes in our dataset: C/C++ source, Perl5 module source, Ruby module source, Pascal source, Fortran program, Applesoft basic program, Lisp/scheme program.
+Figure~\ref{fig:type-sc} shows 7 major types of source codes in our dataset: C/C++ source, Perl5 module source, Ruby module source, Pascal source, Fortran program, Applesoft basic program, Lisp/scheme program.
 80.3\% of source codes are C/C++ source codes which take up to 80\% of storage space occupied by source codes. Perl5 module source code and Ruby module source code have almost similar percentage in terms of file count (9\% for Perl5 module source and 8\% for Ruby module source) while slightly different percentage in terms of capacity (11\% for Perl5 module source and 3\% for Ruby module source).
 
 \textit{We conclude that C/C++ is the most commonly used programming language by Docker developers. In addition to C/C++, some developers also wrote small amount of codes in other different languages.}
 
-%\begin{figure}
-%	\centering
-%	\subfigure[File count (in \%) by file type.]{\label{fig:type-eof-cnt}
-%		\includegraphics [width=0.225\textwidth]{graphs/type-eof-cnt}
-%	}
-%	\subfigure[Capacity (in \%) by file type.]{\label{fig:type-eof-size}
-%		\includegraphics [width=0.225\textwidth]{graphs/type-eof-size}
-%	}
-%	\caption{EOL files}
-%	\label{fig:type-eof}
-%\end{figure}
 
 \paragraph{Scripts (Scr.)}
 Scripting languages are common used high-level programing languages since they operate at a high level of abstraction. Compare to source codes, we found more different types of scripts. 
@@ -136,35 +162,88 @@ We see that more than half of scripts are Python script (53.5\%), which take up 
 
 \paragraph{Documents (Doc.)}
 As discussed before, 44\% of files are documents which take up to 14\% of storage space. So it's important to know what kinds of documents Docker developers create and store in Container. 
-As shown in Figure~\ref{xxx}, we see that majority of documents are text files including ASCII text (80\%), UTF8/16 text (5\%), and ISO-8859 text (0.4\%), which take up to 70\% of storage space occupied by documents. Note that these text files are \textit{raw text files} since we already filter the text based well-known file types%applications
+As shown in Figure~\ref{fig:type-doc}, we see that majority of documents are text files including ASCII text (80\%), UTF8/16 text (5\%), and ISO-8859 text (0.4\%), which take up to 70\% of storage space occupied by documents. Note that these text files are \textit{raw text files} since we already filter the text based well-known file types%applications
 , such as scripts and source codes.
 
 We see that XML/HTML/XHTML documents are the second most commonly used documents (13\%), which take up over 18\% of storage space occupied by documents. Moreover, we found a small amount of pdf/ps documents and LaTex files in our dataset.%, meaning that Docker developers process different kinds of documents.
 
 \textit{We conclude that majority of documents are raw ASCII files.
 In addition to ASCII files, XML/HTML/XHTML documents are the second most commonly composed documents by Docker developers. 
-Moreover, Docker developers compose various types of documents in Docker containers.}  
+Moreover, Docker developers compose various types of documents in Docker containers.} 
 
 %documents take up to  and 14\% in the dataset. 
 
 \paragraph{Archival (Arch.)}
-As discussed before, archival file group which takes up to 23\% of capacity is the second most commonly used file type groups. To figure out what kind of archival files are used in Docker containers, we look at the archival file type distribution as shown in Figure~\ref{xxx}. We see that majority of archival files are Zip/Gzip files (96.3\%) which take up to 70\% of storage space occupied by archival files, meaning that Zip/Gzip files have a lower average file size. We calculated the average file size for each file type. 
+As discussed before, archival file group which takes up to 23\% of capacity is the second most commonly used file type groups. To figure out what kind of archival files are used in Docker containers, we look at the archival file type distribution as shown in Figure~\ref{fig:arc-doc}. We see that majority of archival files are Zip/Gzip files (96.3\%) which take up to 70\% of storage space occupied by archival files, meaning that Zip/Gzip files have a lower average file size. We calculated the average file size for each file type. 
 The average file sizes are 67 KB, 199 KB, 466 KB, and 534 KB for Zip/Gzip, Bzip2, Tar, and XZ files respectively. 
 
 \textit{We conclude that majority of archival files are Zip/Gzip files while the average file size of Zip/Gzip files are lower than other archival files.}
 
+%\begin{figure}[t]
+%	\centering
+%	\begin{minipage}{0.22\textwidth}
+%		\centering
+%		\includegraphics[width=1\textwidth]{graphs/file-cnt-cdf.pdf}
+%		\caption{CDF of file count.}
+%		\label{fig:file-cnt-cdf}
+%	\end{minipage}
+%	\begin{minipage}{0.22\textwidth}
+%		\centering
+%		\includegraphics[width=1\textwidth]{graphs/image-size-cdf.pdf}
+%		\caption{CDF of image size (MB)}
+%		\label{fig:image-size-cdf}
+%	\end{minipage}%
+%\end{figure}
+
+\begin{figure}
+	\centering
+	\subfigure[File count (in \%) by file type.]{\label{fig:type-arc-cnt}
+		\includegraphics [width=0.22\textwidth]{graphs/type-arc-cnt}
+	}
+	\subfigure[Capacity (in \%) by file type.]{\label{fig:type-arc-size}
+		\includegraphics [width=0.22\textwidth]{graphs/type-arc-size}
+	}
+	\caption{Archival}
+	\label{fig:arc-doc}
+\end{figure} 
+
 \paragraph{Databases (DB.)}
 
-Interestingly, we found plenty of database related files in our dataset as currently there is a debate about whether we should run a database inside a container or not~\cite{xxx}. As shown in Figure~\ref{xxx}, we see that over half of database related files are Berkely DB (33\%) and MySQL (30\%) related files, but these two database related files take less than 40\% of capacity occupied by database related files. 7\% of database related files are SQLite DB files, which take up over 57\% of capacity occupied by database related files. 
+Interestingly, we found plenty of database related files in our dataset as currently there is a debate about whether we should run a database inside a container or not~\cite{xxx}. As shown in Figure~\ref{fig:arc-db}, we see that over half of database related files are Berkely DB (33\%) and MySQL (30\%) related files, but these two database related files take less than 40\% of capacity occupied by database related files. 7\% of database related files are SQLite DB files, which take up over 57\% of capacity occupied by database related files. 
 %Database related files have the highest average file size.
 
 \textit{We conclude that Docker developers run databases inside Docker containers. Most frequently used databases are Berkeley DB and MySQL, but they take less storage space. Most commonly used database (in terms of capacity) by Docker developer is SQLite DB.}
+
+\begin{figure}
+	\centering
+	\subfigure[File count (in \%) by file type.]{\label{fig:type-db-cnt}
+		\includegraphics [width=0.225\textwidth]{graphs/type-db-cnt}
+	}
+	\subfigure[Capacity (in \%) by file type.]{\label{fig:type-db-size}
+		\includegraphics [width=0.225\textwidth]{graphs/type-db-size}
+	}
+	\caption{Databases}
+	\label{fig:arc-db}
+\end{figure} 
+
 \paragraph{Images (Img.)}
 
 Interestingly, Docker developers process image data files in Docker contains as we found plenty of image data files, such as PNG, JPEG, SVG, etc., although it requires efforts to run GUI applications inside containers.
 As shown in figure~\ref{xxx}, more than half of image files are PNG files (67\%), which take up to 45\% of capacity occupied by image files. The second most commonly used image files are JPEG files which take up over 20\% capacity occupied by image files.
 
 \textit{We conclude that majority of commonly used image files are PNG files and there are different types of image data files stored in Docker container.}
+
+\begin{figure}
+	\centering
+	\subfigure[File count (in \%) by file type.]{\label{fig:type-img-cnt}
+		\includegraphics [width=0.225\textwidth]{graphs/type-img-cnt}
+	}
+	\subfigure[Capacity (in \%) by file type.]{\label{fig:type-img-size}
+		\includegraphics [width=0.225\textwidth]{graphs/type-img-size}
+	}
+	\caption{Images}
+	\label{fig:arc-img}
+\end{figure} 
 %, , archival, images, databases, and others
 %\paragraph{Overall file size}
 
