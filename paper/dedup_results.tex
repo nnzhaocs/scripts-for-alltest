@@ -14,7 +14,7 @@ Since layers are stored in gzip compressed format and gzip-compressed files have
 In this section, we adapt file-level deduplication strategy to find out whether there are duplicates of source codes, scripts, EOL files, documents, etc. File-level deduplication is a simple and efficient content-based deduplication strategy, which can eliminate files whose full content is a duplicate of another file. To find out how many full file duplicates in the dataset, we calculated a digest of the complete file by using MD5 hash algorithm and presents file-level deduplication results.
 %A simple deduplication is to eliminate the replicates of full content of a file.  
 %In this section, we investigate how many duplicate files are in layers, images, and registry in term of file count and capacity and present the results.
-
+\nancomment{will replace all graphs}
 \input{dedup_ratio}
 \input{dedup_types}
 
