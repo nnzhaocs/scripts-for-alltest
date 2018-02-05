@@ -31,17 +31,17 @@ Besides, developers are likely to replicate codes rather than creating their own
 %\textit{
 %Finding 1: 13.38\% and 10.23\% of redundant files are source codes and EOL files, which take up over 3.66\% (5.3 TB) and 36.85\% (52.9 TB) of redundant storage space, indicating that users are more prone to replicate source codes and create identical big EOF files, while 43.15\% and 8.53\% of redundant files are documents and archival files, which account for 14.54\% (20.87 TB) and 22.93\% (32.9 TB) of redundant storage space, indicating users replicates more documents and archival files compare to other clusters.}
 
-\begin{figure}
-	\centering
-	\subfigure[Redundant data vs. unique data in terms of file count.]{\label{fig:file-types-cnt}
-		\includegraphics [width=0.4\textwidth]{graphs/type-total-cnt}
-	}
-	\subfigure[Redundant data vs. unique data in terms of capacity.]{\label{fig:file-types-cap}
-		\includegraphics [width=0.4\textwidth]{graphs/type-total-cap}
-	}
-	\caption{\nancomment{Deduplication results for different type group}}
-	\label{fig:file-types}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\subfigure[Redundant data vs. unique data in terms of file count.]{\label{fig:file-types-cnt}
+%		\includegraphics [width=0.4\textwidth]{graphs/type-total-cnt}
+%	}
+%	\subfigure[Redundant data vs. unique data in terms of capacity.]{\label{fig:file-types-cap}
+%		\includegraphics [width=0.4\textwidth]{graphs/type-total-cap}
+%	}
+%	\caption{\nancomment{Deduplication results for different type group}}
+%	\label{fig:file-types}
+%\end{figure}
 
 \paragraph{Executable, object code, and libraries (EOL)}
 We further calculated the deduplication ratio for specific file types in each common type group. We started from EOL group since it occupies the most capacity and contributes a lot to the overall savings after deduplication. 
@@ -66,13 +66,13 @@ We also calculated the deduplication ratio for each intermediate representation 
 %\% of files are script executable, which contains python, shell, etc.
 %\% of files are RPM, Debian bin
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/type-exec-cap}
-	\caption{\nancomment{Deduplication results for EOL files}.
-	}
-	\label{fig:type-eol}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{graphs/type-exec-cap}
+%	\caption{\nancomment{Deduplication results for EOL files}.
+%	}
+%	\label{fig:type-eol}
+%\end{figure}
 
 %Finding 2: 31.4\% (164,059,690) and 63.7\% (333,261,220) of EOL files are ELF files and intermediate compiled files, which take up over 85.7\% (45.3TB) and 5.3\% (2.8TB) of redundant storage capacity, indicating that users replicate or create more identical ELF files and intermediate compiled files. 64.1\% (213,753,591) of intermediate compiled files are Python byte-compiled files, which take up to 79.4\% (2.2TB) of redundant storage space, indicating that users compiled more Python scripts (similar to Finding 2.)
 
@@ -95,13 +95,13 @@ Consider that Docker Hub allows developer to automatically build images from sou
 
 %We also found other source codes, such as Perl5 module source code (9.5\%), ruby module source code (7.6\%), assembler source code (1.1\%), pascal source (0.7\%), fortran program code (0.01\%), applesoft basic source code, and Lisp/scheme source code (0.17\%).
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/type-lang-cap}
-	\caption{Redundant data vs. unique data for source code files.
-	}
-	\label{fig:type-source}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{graphs/type-lang-cap}
+%	\caption{Redundant data vs. unique data for source code files.
+%	}
+%	\label{fig:type-source}
+%\end{figure}
 
 %Figure~\ref{fig:type-lib} shows the redundant library distribution. We see that Gcc precompiled header files have the lowest number of redundant library files (20.3\%), but they take up to 0.93 TB. Almost 86.4\% of redundant library files are Palm libraries, which only take up to 7.2GB space, indicating that gcc compiled header files are much bigger than other libraries.
 %
@@ -117,13 +117,13 @@ Consider that Docker Hub allows developer to automatically build images from sou
 \paragraph{Scripts(Scr.)}
 %Finding 2: 53.6\% (238,353,674) of redundant scripts are Python scripts, which take up over 2.6TB storage space, indicating that users are more prone to replicate Python scripts compare to other scripts.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/type-script-cap}
-	\caption{Redundant data vs. unique data for scripts.
-	}
-	\label{fig:type-script}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{graphs/type-script-cap}
+%	\caption{Redundant data vs. unique data for scripts.
+%	}
+%	\label{fig:type-script}
+%\end{figure}
 
 Similar to source codes, we present the deduplication ratio for scripts as shown in
 Figure~\ref{fig:type-script}.
@@ -159,13 +159,13 @@ Second, after inspected HTML/XML/XHTML documents, we found plenty HTML/XML/XHTML
 
 \textit{Finding 7: Documents have a very high redundant ratio. Majority redundant documents are raw text files and HTML/XML/XHTML documents. They are replicated along with source code or script projects and serves as input data for testing or informative documents.}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{graphs/type-utili-cap}
-	\caption{Redundant data vs. unique data for documents.
-	}
-	\label{fig:type-doc}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{graphs/type-utili-cap}
+%	\caption{Redundant data vs. unique data for documents.
+%	}
+%	\label{fig:type-doc}
+%\end{figure}
 
 %https://pkgs.alpinelinux.org/contents?branch=edge&name=gnome-vfs-doc&arch=x86_64&repo=main
 % presents redundant document distribution. We first group documents into two categories: non-text documents and raw text documents. 
@@ -194,27 +194,27 @@ As discussed, Database related files have the lowest deduplication ratio at file
 %While there are only 7.3\% of SQLite files, which take up over 2.6TB storage space, indicating SQLite files are much bigger than others.
 
 
-\begin{figure*}[t]
-	\centering
-	\begin{minipage}{0.35\textwidth}
-		\centering
-		\includegraphics[width=1\textwidth]{graphs/type-db-cap.pdf}
-		\caption{Redundant data vs. unique data for database related files}
-		\label{fig:type-db}
-	\end{minipage}%
-	\begin{minipage}{0.278\textwidth}
-		\centering
-		\includegraphics[width=1\textwidth]{graphs/type-tar-type}
-		\caption{Redundant data vs. unique data for archival files}
-		\label{fig:type-arch}
-	\end{minipage}
-	\begin{minipage}{0.28\textwidth}
-		\centering
-		\includegraphics[width=1\textwidth]{graphs/type-image-cap}
-		\caption{Redundant data vs. unique data for image files}
-		\label{fig:type-img}
-	\end{minipage}
-\end{figure*}
+%\begin{figure*}[t]
+%	\centering
+%	\begin{minipage}{0.35\textwidth}
+%		\centering
+%		\includegraphics[width=1\textwidth]{graphs/type-db-cap.pdf}
+%		\caption{Redundant data vs. unique data for database related files}
+%		\label{fig:type-db}
+%	\end{minipage}%
+%	\begin{minipage}{0.278\textwidth}
+%		\centering
+%		\includegraphics[width=1\textwidth]{graphs/type-tar-type}
+%		\caption{Redundant data vs. unique data for archival files}
+%		\label{fig:type-arch}
+%	\end{minipage}
+%	\begin{minipage}{0.28\textwidth}
+%		\centering
+%		\includegraphics[width=1\textwidth]{graphs/type-image-cap}
+%		\caption{Redundant data vs. unique data for image files}
+%		\label{fig:type-img}
+%	\end{minipage}
+%\end{figure*}
 
 \paragraph{Archival (Arch.)}
 
