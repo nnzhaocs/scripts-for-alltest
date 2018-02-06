@@ -71,6 +71,18 @@ We see that majority of the files have more than one copies (99.42\%), which tak
 
 \paragraph{Cross layer sharing}
 
+\begin{figure}
+	\centering
+	\subfigure[CDF of cross-layer shared file ratio.]{\label{fig:layer-dedup-ratio}
+		\includegraphics [width=0.22\textwidth]{graphs/layer-dup-ratio-cdf}
+	}
+	\subfigure[CDF of cross-image shared file ratio.]{\label{fig:image-dedup-ratio}
+		\includegraphics [width=0.22\textwidth]{graphs/image-dup-ratio-pdf}
+	}
+	\caption{Cross layer sharing and cross image sharing}
+	\label{fig:dedup-ratio}
+\end{figure} 
+
 Based on the high deduplication ratio, we guess that a large amount of files are shared between layers and the large potential from deduplication is due to files sharing between layers. Cross layer shared files are files that stored in more than one layers. There could be a high probability for Docker registry. For example, different developers work on same source codes and build same executables in their layers. Now, we calculated the percentage of cross layer shared files for each layer as shown in Figure~\ref{fig:layer-dedup-ratio}. 
  
 %The analysis of compression ratio shows plenty redundant data exist in individual layers. 
@@ -83,7 +95,7 @@ Based on the high deduplication ratio, we guess that a large amount of files are
 %in terms of file count and capacity. %As shown in Figure~\ref{fig:layer-dedup-cdf},
 %\nancomment{following description have problem.}
 %90\% of layers contains less than 53\% of intra-layer redundant files while
-90\% of layers contains bigger than 97.6\% of files that are cross layer shared files. Similar to images, we also calculated the percentage of cross image shared files for each image as shown in Figure~\ref{fig:layer-dedup-ratio}. 90\% of images contains bigger than 99.4\% of files that are cross image shared files, indicating that majority of files are replicated cross different images and cross layers.
+90\% of layers contains bigger than 97.6\% of files that are cross layer shared files. Similar to images, we also calculated the percentage of cross image shared files for each image as shown in Figure~\ref{fig:image-dedup-ratio}. 90\% of images contains bigger than 99.4\% of files that are cross image shared files, indicating that majority of files are replicated cross different images and cross layers.
 
 \textit{Finding 2: Majority duplicate files are stored cross layers and cross images, indicating developers store same files in containers as other developers.}
 \nancomment{one graph}

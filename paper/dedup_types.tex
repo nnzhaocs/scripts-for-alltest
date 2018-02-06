@@ -5,7 +5,7 @@
 
 To understand what are the file duplicates and why there are so many file duplicates, we look at the deduplication results from the perspective of file types. In this section, we present the deduplication results for common file types that occupy the most capacity as described in Section~\ref{xxx}.
 
-Figure~\ref{fig:file-types} shows deduplication results for 
+Figure~\ref{fig:dedup-overall} shows deduplication results for 
 the following type groups: EOL, archival, source code, script, image, and database. Note that the y-axies shows percentage of capacity occupied by different type group. Specifically, we break down the percentage into two parts: unique file percentage and redundant file percentage.
 
 The overall deduplication ratio is 85.69\%, and most of the type group have a comparable ratio. For example, 86\% of EOL files, which contains executables, object files, and libraries, can be deduplicated at file-level.
@@ -43,10 +43,83 @@ Besides, developers are likely to replicate codes rather than creating their own
 %	\label{fig:file-types}
 %\end{figure}
 
+\begin{figure}[t]
+	\centering
+	\begin{minipage}{0.22\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/dedup-overall}
+		\caption{Overall deduplication ratio.}
+		\label{fig:dedup-overall}
+	\end{minipage}
+	\begin{minipage}{0.22\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/dedup-eol}
+		\caption{Deduplication results for EOL files.}
+		\label{fig:dedup-eol}
+	\end{minipage}%
+\end{figure}
+
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.23\textwidth]{graphs/dedup-overall}
+%	\caption{Overall deduplication ratio.
+%	}
+%	\label{}
+%\end{figure}
+%
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.23\textwidth]{graphs/dedup-eol}
+%	\caption{Deduplication results for EOL files.
+%	}
+%	\label{}
+%\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.35\textwidth]{graphs/dedup-sc}
+	\caption{Deduplication results for source codes.
+	}
+	\label{fig:dedup-sc}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.45\textwidth]{graphs/dedup-scrp}
+	\caption{\nancomment{Deduplication results for scripts}.
+	}
+	\label{fig:dedup-scrp}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.35\textwidth]{graphs/dedup-doc}
+	\caption{\nancomment{Deduplication results for documents}.
+	}
+	\label{fig:dedup-doc}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{graphs/dedup-db}
+	\caption{\nancomment{Deduplication results for EOL files}.
+	}
+	\label{fig:dedup-db}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.35\textwidth]{graphs/dedup-img}
+	\caption{\nancomment{Deduplication results for EOL files}.
+	}
+	\label{fig:dedup-img}
+\end{figure}
+
+
 \paragraph{Executable, object code, and libraries (EOL)}
 We further calculated the deduplication ratio for specific file types in each common type group. We started from EOL group since it occupies the most capacity and contributes a lot to the overall savings after deduplication. 
 
-Figure~\ref{fig:type-eol} shows the deduplication results for EOL files.
+Figure~\ref{fig:dedup-eol} shows the deduplication results for EOL files.
 We see that ELF files, intermediate representations, and PE files have the highest deduplication ratio (around 87\%). Especially, the redundant ELF files occupy the most capacity (73.4\%). 
 \nancomment{replace MS exec with PE files}
 Libraries and COFF files have the lowest deduplication ratio of 53.5\% and 61\% respectively.
@@ -82,7 +155,7 @@ We also calculated the deduplication ratio for each intermediate representation 
 %The last group contains
 
 As discussed, Docker developers are more prone to replicate codes. 
-To find out which kind of source codes are replicated frequently, we conducted deduplication on 7 common source codes as shown in Figure~\ref{fig:type-source}.
+To find out which kind of source codes are replicated frequently, we conducted deduplication on 7 common source codes as shown in Figure~\ref{fig:dedup-sc}.
 
 We see that all the source codes have a high deduplication ratio over 90\% except 
 Lisp/scheme program. Especially, the redundant C/C++ source codes take up over 77\% of capacity occupied by source codes. To find out why there are so many C/C++ source codes, we inspect the C/C++ source codes and find a frequently replicated C/C++ source code called Google Test~\cite{xxx} which is a cross-platform C++ test framework and available in GitHub~\cite{xxx}. Interestingly, we found there are plenty of repositories related to Google Test while there is no official repository for Google Test. We suspect that many developers replicate open source code from external public repositories, such as GitHub, and store them in containers. This would also explain why there are so many shared source codes across different images.
@@ -126,7 +199,7 @@ Consider that Docker Hub allows developer to automatically build images from sou
 %\end{figure}
 
 Similar to source codes, we present the deduplication ratio for scripts as shown in
-Figure~\ref{fig:type-script}.
+Figure~\ref{fig:dedup-scrp}.
 We see that most of the scripts have a high deduplication ratio over 95\%. Especially, the redundant Python scripts take up over 65\% of capacity occupied by scripts. 
 
 We inspect the Python scripts and found a frequently replicated Python scripts called kraken-tools~\cite{xxx}, which is a tool for managing system requirements for kraken-lib~\cite{xxx} while kraken-lib is an orchestration and cluster-level management system for Kubernetes~\cite{xxx}.
@@ -149,7 +222,7 @@ we suggest to create more official images for these public scripts and convince 
 \paragraph{Documents(Doc.)}
 %Finding 3: 79.7\%, 5.2\%, and 12.4\% of redundant documents are ASCII text, UTF-8/16 text, and HTML/XML/XHTML, which take up over 11TB, 3.4TB, and 3.9TB redundant storage, indicating that users replicate more ASCII text, UTF-8/16 text, and HTML/XML/XHTML compare to other documents.
 
-Next, we present the deduplication results for different documents as shown in Figure~\ref{fig:type-doc}. 
+Next, we present the deduplication results for different documents as shown in Figure~\ref{fig:dedup-doc}. 
 We see that all the documents have a very high deduplication ratio of 84\% or higher.
 Especially, redundant raw text files and HTML/XML/XHTML documents take up over 48\% and 17\% of capacity occupied by documents. To understand why there are so many document duplicates, we inspect raw text files and HTML/XML/XHTML documents respectively. First, we found that a large amount of redundant raw text files are input data for testing source codes and 
 they are replicated along with source code or script projects from external public repositories. 
@@ -181,7 +254,7 @@ Second, after inspected HTML/XML/XHTML documents, we found plenty HTML/XML/XHTML
 
 \paragraph{Databases (DB.)}
 
-As discussed, Database related files have the lowest deduplication ratio at file-level. It makes sense because it's unusual for different users to create large amount of identical database files. Figure~\ref{xxx} shows the deduplication ratio for different types of databases. We see that SQLite database files have the largest deduplication ratio of 87\% and could be deduplicated for saving up to half of the capacity. To find out why there are so many redundant SQLite files, we inspected SQLite files manually and found majority of redundant SQLite files are created by Yum~\cite{xxx} for maintaining a list of well-know repositories.
+As discussed, Database related files have the lowest deduplication ratio at file-level. It makes sense because it's unusual for different users to create large amount of identical database files. Figure~\ref{fig:dedup-db} shows the deduplication ratio for different types of databases. We see that SQLite database files have the largest deduplication ratio of 87\% and could be deduplicated for saving up to half of the capacity. To find out why there are so many redundant SQLite files, we inspected SQLite files manually and found majority of redundant SQLite files are created by Yum~\cite{xxx} for maintaining a list of well-know repositories.
 
 \textit{Finding 8: Databases have a low deduplication ratio. But SQLite files have the largest amount of redundant files and contribute a lot for saving capacity. The redundant SQLite files are mainly for saving identical list of repositories.}
 
