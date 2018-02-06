@@ -4,7 +4,10 @@
 %\subsection{Overview of file duplicates}
 %\paragraph{File repeat count}
 
-The first step of our deduplication analysis is to calculate the file repeat count based on the file digests. Then we calculated the deduplication ratio using the savings after elimiation of file duplicates in terms of file count and capacity.
+%The first step of our deduplication analysis is to calculate the file repeat
+%count based on the file digests. Then we calculated the deduplication ratio
+%using the savings after elimiation of file duplicates in terms of file count
+%and capacity.
 
 \paragraph{File repeat count}
 %\paragraph{Full file duplicates}
@@ -16,21 +19,34 @@ The first step of our deduplication analysis is to calculate the file repeat cou
 	\label{fig:file-repeat-cnt}
 \end{figure}
 
-Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability distribution of file repeat count.
-\textit{We see that majority of files have more than one copies (99.42\%).
-Most files have a small repeat count.} For instance, almost 90\% of files have equal or less than 10 copies. Around 50\% of files have 4 copies.
-The file that has the maximum repeat count is empty file, which means that many users creates empty files and stored in their images.
+Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability
+distribution of file repeat count.  \textit{We see that majority of files have
+more than one copies (99.42\%).  Most files have a small repeat count.} For
+instance, almost 90\% of files have equal or less than 10 copies. Around 50\%
+of files have 4 copies.  The file that has the maximum repeat count is an empty
+file, which means that many users create and store empty files in their
+images.
 
 \paragraph{Deduplication ratio}
-%As discussed in compression ratio analysis, we see that there is redundant data in both layers and images.
-%We conducted simple form of deduplication to  
+%As discussed in compression ratio analysis, we see that there is redundant
+%data in both layers and images.  We conducted simple form of deduplication to
 %Interestingly,
-Next, we calculated deduplication ratio in terms of file count and capacity for the whole uncompressed dataset as shown in Table~\ref{tbl:overall-redundant_ratio}.
+Next, we calculate deduplication ratio in terms of file count and capacity for
+the complete uncompressed dataset (Table~\ref{tbl:overall-redundant_ratio}).
 %the redundant file overhead of the uncompressed dataset 
-We see that majority of the files have more than one copies (99.42\%), which take up over 89\% of capacity. After elimination of file duplicates, the percentage of files that have more than one copies decrease to 2.59\%. Overall, only 3.17\% (23.92 TB) of files are unique files while 96.83\% of files (143.28 TB) are redundant copies. Correspondingly, the deduplication ratio is 96.83\% and 85.69\% in terms of file count and capacity respectively.
-% Table~\ref{tbl:overall-redundant_ratio} summaries the overall redundant file overhead in terms of file count and capacity.
+We find that majority of the files have more than one copy (99.42\%), which
+take up over 89\% of capacity.
+After elimination of file duplicates, the
+percentage of such files decrease from 99.42\% to 2.59\%. 
+Overall, only 3.17\% (23.92 TB) of files are unique files while 96.83\% of files 
+(143.28 TB) are redundant copies. Correspondingly, the deduplication ratio is 96.83\%
+and 85.69\% in terms of file count and capacity, respectively.
+% Table~\ref{tbl:overall-redundant_ratio} summaries the overall redundant file
+% overhead in terms of file count and capacity.
 
-\textit{Finding 1: Majority of files in Docker registry are full file duplicates which occupy most of capacity, indicating that Docker Hub has severe redundancy problem.}
+\textit{Finding 1: Majority of files in Docker registry are
+duplicates which occupy most of capacity, indicating that Docker Hub has severe
+redundancy problem.}
 
 %\begin{figure}
 %	\centering
@@ -71,6 +87,7 @@ We see that majority of the files have more than one copies (99.42\%), which tak
 
 \paragraph{Cross layer sharing}
 
+%<<<<<<< HEAD
 \begin{figure}
 	\centering
 	\subfigure[CDF of cross-layer shared file ratio.]{\label{fig:layer-dedup-ratio}
@@ -85,8 +102,19 @@ We see that majority of the files have more than one copies (99.42\%), which tak
 
 Based on the high deduplication ratio, we guess that a large amount of files are shared between layers and the large potential from deduplication is due to files sharing between layers. Cross layer shared files are files that stored in more than one layers. There could be a high probability for Docker registry. For example, different developers work on same source codes and build same executables in their layers. Now, we calculated the percentage of cross layer shared files for each layer as shown in Figure~\ref{fig:layer-dedup-ratio}. 
  
+%=======
+%Based on the high deduplication ratio, we infer that there is a great
+%potential of deduplication as large amount of files
+%are shared between the layers.  
+Cross layer shared files are files that are stored in
+more than one layers. 
+%There could be a high probability for Docker registry.
+%For example, different developers work on same source codes and build same
+%executables in their layers. 
+% 
+%>>>>>>> 888904bc46b49ab605af4f202d35c8d68f7e868f
 %The analysis of compression ratio shows plenty redundant data exist in individual layers. 
-
+%
 %We define two duplicate ratio for layers: intra-layer duplicate ratio and inter-layer duplicate ratio. Intra-layer duplicate ratio $r_{intra\_ldedup.}$ is calculated as:
 %$r_{intra\_ldedup.} = \frac{S_{un.\_l} - S_{un.\_ldedup.}}{S_{un.\_l}}$, where $S_{un.\_l}$ is the uncompressed layer size while $S_{un.\_ldedup.}$ is the uncompressed layer size after removing the intra-layer duplicate files. Inter-layer duplicate ratio $r_{inter\_ldedup.}$ is calculated as:
 %$r_{inter\_ldedup.} = \frac{S_{un.\_l} - S_{un.\_sldedup.}}{S_{un.\_l}}$, where $S_{un.\_l}$ is the uncompressed layer size while $S_{un.\_sldedup.}$ is the uncompressed layer size after removing the inter-layer duplicate files.
@@ -95,10 +123,24 @@ Based on the high deduplication ratio, we guess that a large amount of files are
 %in terms of file count and capacity. %As shown in Figure~\ref{fig:layer-dedup-cdf},
 %\nancomment{following description have problem.}
 %90\% of layers contains less than 53\% of intra-layer redundant files while
+%<<<<<<< HEAD
 90\% of layers contains bigger than 97.6\% of files that are cross layer shared files. Similar to images, we also calculated the percentage of cross image shared files for each image as shown in Figure~\ref{fig:image-dedup-ratio}. 90\% of images contains bigger than 99.4\% of files that are cross image shared files, indicating that majority of files are replicated cross different images and cross layers.
 
 \textit{Finding 2: Majority duplicate files are stored cross layers and cross images, indicating developers store same files in containers as other developers.}
-\nancomment{one graph}
+%=======
+Figure~\ref{fig:layer-dedup-ratio} shows percentage of cross layer
+shared files for each layer. We find that 90\% of layers contain more than 97.6\%
+of files that are shared across layers. We also calculate the percentage of
+files that are shared across images. As shown in
+Figure~\ref{fig:layer-dedup-ratio}, 90\% of images contain more than 99.4\% of
+files that are shared across images, indicating that majority of files are
+replicated across different images and layers.
+
+\textit{Finding 2: Majority duplicate files are stored cross layers and cross
+images, indicating developers store same files in containers as other
+developers.} 
+%>>>>>>> 888904bc46b49ab605af4f202d35c8d68f7e868f
+%\nancomment{one graph}
 %Figure~\ref{fig:image-dedup-ratio} shows the intra/inter-image duplicate ratio in terms of file count and capacity. 
 %90\% of images contains less than 54.4\% of intra-image redundant files while 
 %Figure~\ref{fig:layer-dedup_hist} shows that 0.2 M of images contains 0.45 of the intra-image duplicate files. We manually inspect few of these images and found xxxx.
