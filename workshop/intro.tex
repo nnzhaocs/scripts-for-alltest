@@ -30,7 +30,7 @@ layers.
 %
 The size of the registry continues to steadily increase---we observed a
 linear growth of the number of images in Docker Hub over a period from June to
-September 2017, with an average creation rate of 1,241 repositories per day
+September 2017, with an average creation rate of 1,241 repositories per day.
 %
 %(as shown in Figure~\ref{fig_image_growth}.
 %
@@ -41,29 +41,29 @@ In this paper, we performed the first, in-depth, large-scale redundancy
 analysis of the images and layers stored in the Docker Hub
 registry~(\S\ref{sec:background}).
 %
-We downloaded 51TB worth of Docker Hub images which contains over xxxx (167 TB)
+We downloaded 51TB worth of Docker Hub images which contains over 5 billion (167 TB)
 of files after decompression.
 %
-We started our analysis
-with collecting all the metadata over xxx images and  conducted the first
-comprehensive characterization of the image dataset (or union file systems). This analysis is particularly useful as no prior work exists on union file
-systems~\cite{xxx} and dataset used and created exclusively for Docker,
-which are different from either analysis on EX4 linux file system~\cite{xxx} or
-Windows file system~\cite{xxx}.
+%We started our analysis
+%with collecting all the metadata over xxx images and  conducted the first
+%comprehensive characterization of the image dataset (or union file systems). This analysis is particularly useful as no prior work exists on union file
+%systems~\cite{xxx} and dataset used and created exclusively for Docker,
+%which are different from either analysis on EX4 linux file system~\cite{xxx} or
+%Windows file system~\cite{xxx}.
+%%
+%%We not only present the distribution for each metric but also pointed out the
+%%challenges faced by Docker engine designer and registry designer based on
+%%global knowledge (or analysis) of metadata. 
+%We also provide useful insights (parameters or metrics)
+%for the developers to better
+%understand the file systems used by Docker container. 
 %
-%We not only present the distribution for each metric but also pointed out the
-%challenges faced by Docker engine designer and registry designer based on
-%global knowledge (or analysis) of metadata. 
-We also provide useful insights (parameters or metrics)
-for the developers to better
-understand the file systems used by Docker container. 
-
-%Unfortunately, it's unknown whether  this coarse-grain layer-level content
-%addressable storage (LLCAS) can efficiently reduce duplicates, and how much
-%redundant data is stored in layer, image, and registry because there is no
-%prior research on registry dataset analysis.
-
-We continued with the deduplication analysis of the dataset.
+%%Unfortunately, it's unknown whether  this coarse-grain layer-level content
+%%addressable storage (LLCAS) can efficiently reduce duplicates, and how much
+%%redundant data is stored in layer, image, and registry because there is no
+%%prior research on registry dataset analysis.
+%
+%We continued with the deduplication analysis of the dataset.
 %
 Surprisingly, we found only around 3\% of the containing files are unique files
 while others are redundant copies, which means that current layer-level content
@@ -77,76 +77,70 @@ We made three major observations.
 %
 \begin{compactitemize}
 %
-\item There are plenty of redundant files within individual layers and images
-While most redundant files are across layers and images.
+\item Only 10\% of layers are referred by more than one images, 
+meaning that layer-level content addressability is not efficiently utilized by Docker registry.
 %
-For example, xxx of layers
+\item A large amount of full file duplicates are shared cross layers and cross images. 
+Only 3\% of files in the uncompressed layer dataset are unique files while others are redundant file copies.
 %
-\item Most of redundant files are ELF files and documents.
+\item Majority of the file duplicates are executables and object files, which are mostly created by the source code duplicates.
 %
-For example,
-%
-\item The largest redundant source codes are C/C++ source codes, which results
-in bigger ELF files.
-%
-For example,
-%
-\item The largest redundant scripts are Python scripts while the Python
-byte-compiled files are pretty small.
-%
-For example,
-%
-\item Docker developers conducted variety of developments in containers, such
-as,
-%
+We found that different Docker developers are prone to replicate same source codes from external public repositories (e.g., GitHub~\cite{xxx}) and store these source code duplicates cross layers because there is no official images available for pulling.  
+
 \end{compactitemize}
 
-Finally, we propsed and implemented Docker registry design that performs
-deduplication.
+Finally, we proposed a file-level content addressable storage model (FLCAS) for Docker registry, which. 
 %
-In our thorough redundant analysis and characterization of the xxxx images,
-with xxxx layers and xxxx files, we investigated the following four research
-questions (RQs):
-%
-\begin{compactitemize}
-%
-\item How much redundant data stored in layers, images, and registry? Although
-layer-level address content addressable storage is adopted by Docker, we do not
-know whether  this coarse-grain layer-level content addressable storage (LLCAS)
-can efficiently reduce duplicates, and how much redundant data is stored in
-layer, image, and registry.
-%
-\item What are the redundant files and why there are so many redundant files?
-We aim to identify what are the redundant files that users mostly replicate.
-%
-Such information will provide Docker designer knowledge (user behavior) to
-better develop and optimize Docker container and Docker registry storage
-system.
-%
-\item What are the challenges faced by Docker registry and engine designer? By
-characterizing and analysis all the image metadata, we aim to identify the
-challenges' faced by registry designer and guide designers'optimization and
-users' development.
-%
-\item How to reduce the redundant files? We aim to propose a file-level content
-addressable model to reduce the redundant files by using file-level dedup while
-maintaining a good performance.
-%
-\end{compactitemize}
+We simulated FLCAS by using xxx
+The simulation result shows that xxx
 
-The significance of this work are (1) our empirical evidence that large amount
-of redundant files exist in layers, images, and registry and layer-level
-content addressable storage is not efficient to remove redundant files;(2)
-findings about what are the redundant files and why there are so many redundant
-files exist;(3) first in-depth characterization on image dataset (union file
-systems)(4) a file-level content addressable model that can efficiently remove
-redundant copies while maintain a good performance.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                            %
 %                                OLD INTRO                                   %
 %                                                                            %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Finally, we proposed and implemented Docker registry design that performs
+%deduplication.
+%%
+%In our thorough redundant analysis and characterization of the xxxx images,
+%with xxxx layers and xxxx files, we investigated the following four research
+%questions (RQs):
+%
+%\begin{compactitemize}
+%%
+%\item How much redundant data stored in layers, images, and registry? Although
+%layer-level address content addressable storage is adopted by Docker, we do not
+%know whether  this coarse-grain layer-level content addressable storage (LLCAS)
+%can efficiently reduce duplicates, and how much redundant data is stored in
+%layer, image, and registry.
+%%
+%\item What are the redundant files and why there are so many redundant files?
+%We aim to identify what are the redundant files that users mostly replicate.
+%%
+%Such information will provide Docker designer knowledge (user behavior) to
+%better develop and optimize Docker container and Docker registry storage
+%system.
+%%
+%\item What are the challenges faced by Docker registry and engine designer? By
+%characterizing and analysis all the image metadata, we aim to identify the
+%challenges' faced by registry designer and guide designers'optimization and
+%users' development.
+%%
+%\item How to reduce the redundant files? We aim to propose a file-level content
+%addressable model to reduce the redundant files by using file-level dedup while
+%maintaining a good performance.
+%%
+%\end{compactitemize}
+%
+%The significance of this work are (1) our empirical evidence that large amount
+%of redundant files exist in layers, images, and registry and layer-level
+%content addressable storage is not efficient to remove redundant files;(2)
+%findings about what are the redundant files and why there are so many redundant
+%files exist;(3) first in-depth characterization on image dataset (union file
+%systems)(4) a file-level content addressable model that can efficiently remove
+%redundant copies while maintain a good performance.
 
 %For years, virtual machines served as a cornerstone of computing resource
 %virtualization both on premises and in the cloud~\cite{rosenblum2005virtual}.

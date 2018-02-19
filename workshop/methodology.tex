@@ -81,7 +81,7 @@ Layers are transferred as gzip compressed tar archives.
 Overall, we downloaded 51~TB of data in 355,319 image manifests with 1,792,609
 compressed layers. A total of 111,384 images could not be downloaded mainly because they did not have the \texttt{latest} tag. 
 %
-\vcomment{Say just one sentence why we did not download some images.}\nancomment{Addressed}
+%\vcomment{Say just one sentence why we did not download some images.}\nancomment{Addressed}
 %
 Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
 dataset.
@@ -101,7 +101,7 @@ using Spark~\vcomment{cite}.
 For each image and each layer, profiler creates a profile in JSON format.
 %
 An image profile contains layer IDs, compressed size, archival size, and
-compression ratio of image or layer\vcomment{what?}\nancomment{addressed}.
+compression ratio of image or layer.%\vcomment{what?}\nancomment{addressed}.
 %
 To generate a layer profile, profiler first unpacks layer tarball.
 %
@@ -109,13 +109,13 @@ A layer profile consists of: (1)~layer metadata, such as layer id, compressed
 size, archival size, compression ratio, directory count and file count.
 %
 (2)~for every file in a layer---file name, file content digest, file type, and
-file size.\nancomment{add digest algori, type migic library}
+file size.%\nancomment{add digest algori, type migic library}
 %
 Totally, we 1,762,639 layer profiles and 355,196 image profiles. A total of 11,130 images cannot be analyzed because their layers reported reported errors during
 extraction and could not be analyzed.
 %
-\vcomment{Explain briefly why we did not analyze all downloaded images and
-layers.}\nancomment{addressed}
+%\vcomment{Explain briefly why we did not analyze all downloaded images and
+%layers.}\nancomment{addressed}
 
 \paragraph{Spark-based analyzer}
 
