@@ -3,16 +3,16 @@
 
 \input{tab-dataset-summary.tex}
 
-In this section we describe our methodology for:
+In this section we describe our methodology for obtaining a representative Docker image dataset.
+%%
+%(1)~obtaining a representative Docker image dataset, and
+%%
+%(2)~analyzing basic and deduplication properties of the dataset.
 %
-(1)~obtaining a representative Docker image dataset, and
+%%\input{fig-downloader-analyzer.tex}
 %
-(2)~analyzing basic and deduplication properties of the dataset.
-
-%\input{fig-downloader-analyzer.tex}
-
-\subsection{Dataset acquisition}
-\label{sec:crawler}
+%\subsection{Dataset acquisition}
+%\label{sec:crawler}
 
 We chose Docker Hub~\cite{docker-hub} to download a representative dataset
 because (1) Docker Hub is a popular Docker registry for developers to store and
@@ -36,47 +36,47 @@ since the latest images already took about 30 days to download.
 %
 We plan to extend our analysis to other, non-``latest'', images in the future.
 
-\paragraph{Web crawler}
+%\paragraph{Web crawler}
+%
+%Public repositories in Docker Hub are divided into official
+%repositories---served by the Docker Hub partners---and non-official
+%repositories---provided by regular users and third-party organizations.
+%%
+%The number official repositories is less than 200, while, the majority of
+%repositories in Docker Hub are non-official (over 400 thousand).
+%%
+%To list non-official repositories, our crawler utilizes the Docker Hub
+%web-based search engine to find all available repositories.
+%%
+%As the name of non-official repositories is comprised of the user name and the
+%repository name separated by a ``/'', we can search for ``/'' and obtain a list
+%of all non-official repositories.
+%%
+%The Crawler downloads all pages from the search results and parses the web
+%content to build a list of all non-official repositories.
+%%
+%We ran the crawler on May 30th, 2017 and it produced a list of 634,412
+%repositories.
+%%
+%After removing duplicate entries (introduced by Docker Hub indexing logic), the
+%final repository list consists of 457,627 distinct repositories.
 
-Public repositories in Docker Hub are divided into official
-repositories---served by the Docker Hub partners---and non-official
-repositories---provided by regular users and third-party organizations.
-%
-The number official repositories is less than 200, while, the majority of
-repositories in Docker Hub are non-official (over 400 thousand).
-%
-To list non-official repositories, our crawler utilizes the Docker Hub
-web-based search engine to find all available repositories.
-%
-As the name of non-official repositories is comprised of the user name and the
-repository name separated by a ``/'', we can search for ``/'' and obtain a list
-of all non-official repositories.
-%
-The Crawler downloads all pages from the search results and parses the web
-content to build a list of all non-official repositories.
-%
-We ran the crawler on May 30th, 2017 and it produced a list of 634,412
-repositories.
-%
-After removing duplicate entries (introduced by Docker Hub indexing logic), the
-final repository list consists of 457,627 distinct repositories.
+%\paragraph{Downloader}
 
-\paragraph{Downloader}
-
-Instead of using the Docker client to download images, we implement our own
-downloader, which calls the Docker registry API
-directly~\cite{dockerregistryclient} to download manifests and image layers in
-parallel.
-%
-Our downloader runs significantly faster than a \texttt{docker pull}-based
-downloader because the latter one performs other operations besides downloading
-the image, such as unpacking the layers and creating the corresponding
-read-only snapshots.
-%
-Our downloader can download multiple images simultaneously and fetch the
-individual layers of an image in parallel.
-%
-Layers are transferred as gzip compressed tar archives.
+%Instead of using the Docker client to download images, we implement our own
+%downloader, which calls the Docker registry API
+%directly~\cite{dockerregistryclient} to download manifests and image layers in
+%parallel.
+%%
+%Our downloader runs significantly faster than a \texttt{docker pull}-based
+%downloader because the latter one performs other operations besides downloading
+%the image, such as unpacking the layers and creating the corresponding
+%read-only snapshots.
+%%
+%Our downloader can download multiple images simultaneously and fetch the
+%individual layers of an image in parallel.
+%%
+%Layers are transferred as gzip compressed tar archives.
 %
 Overall, we downloaded 51~TB of data in 355,319 image manifests with 1,792,609
 compressed layers. A total of 111,384 images could not be downloaded mainly because they did not have the \texttt{latest} tag. 
@@ -90,50 +90,50 @@ dataset.
 %to download the images and all profiles we generated
 %publicly at {\small{\url{https://elided.for.review}}}.
 
-\subsection{Dataset analysis}
-
-To characterize the dataset perform its redundancy analysis, we first created a
-profile for each layer and image, then we performed an in-depth analysis by
-using Spark~\vcomment{cite}.
-
-\paragraph{Profiler}
-
-For each image and each layer, profiler creates a profile in JSON format.
+%\subsection{Dataset analysis}
 %
-An image profile contains layer IDs, compressed size, archival size, and
-compression ratio of image or layer.%\vcomment{what?}\nancomment{addressed}.
+%To characterize the dataset perform its redundancy analysis, we first created a
+%profile for each layer and image, then we performed an in-depth analysis by
+%using Spark~\vcomment{cite}.
 %
-To generate a layer profile, profiler first unpacks layer tarball.
+%\paragraph{Profiler}
 %
-A layer profile consists of: (1)~layer metadata, such as layer id, compressed
-size, archival size, compression ratio, directory count and file count.
+%For each image and each layer, profiler creates a profile in JSON format.
+%%
+%An image profile contains layer IDs, compressed size, archival size, and
+%compression ratio of image or layer.%\vcomment{what?}\nancomment{addressed}.
+%%
+%To generate a layer profile, profiler first unpacks layer tarball.
+%%
+%A layer profile consists of: (1)~layer metadata, such as layer id, compressed
+%size, archival size, compression ratio, directory count and file count.
+%%
+%(2)~for every file in a layer---file name, file content digest, file type, and
+%file size.%\nancomment{add digest algori, type migic library}
+%%
+%Totally, we 1,762,639 layer profiles and 355,196 image profiles. A total of 11,130 images cannot be analyzed because their layers reported reported errors during
+%extraction and could not be analyzed.
+%%
+%%\vcomment{Explain briefly why we did not analyze all downloaded images and
+%%layers.}\nancomment{addressed}
 %
-(2)~for every file in a layer---file name, file content digest, file type, and
-file size.%\nancomment{add digest algori, type migic library}
+%\paragraph{Spark-based analyzer}
 %
-Totally, we 1,762,639 layer profiles and 355,196 image profiles. A total of 11,130 images cannot be analyzed because their layers reported reported errors during
-extraction and could not be analyzed.
-%
-%\vcomment{Explain briefly why we did not analyze all downloaded images and
-%layers.}\nancomment{addressed}
-
-\paragraph{Spark-based analyzer}
-
-To quickly perform analysis on hundreds of thousands of profiles, we built an
-8-nodes HDFS~\vcomment{cite} and Spark~\vcomment{cite} cluster.
-%
-We stored all the layer and image profiles in HDFS as parquet
-files.~%\vcommnet{cite}.
-%
-We then performed basic and redundancy analysis using Spark SQL
-module~\vcomment{cite}.
-%
-For example, for deduplication analysis, we first query unique file content
-digests and redundant file content digests along with their repeat counts and
-sizes from the layer and image parquet tables.
-%
-We then calculate corresponding deduplication ratios, as detailed in
-Section~\vcomment{ref}.
+%To quickly perform analysis on hundreds of thousands of profiles, we built an
+%8-nodes HDFS~\vcomment{cite} and Spark~\vcomment{cite} cluster.
+%%
+%We stored all the layer and image profiles in HDFS as parquet
+%files.~%\vcommnet{cite}.
+%%
+%We then performed basic and redundancy analysis using Spark SQL
+%module~\vcomment{cite}.
+%%
+%For example, for deduplication analysis, we first query unique file content
+%digests and redundant file content digests along with their repeat counts and
+%sizes from the layer and image parquet tables.
+%%
+%We then calculate corresponding deduplication ratios, as detailed in
+%Section~\vcomment{ref}.
 
 %and investigated the following questions (RQs):  
 
