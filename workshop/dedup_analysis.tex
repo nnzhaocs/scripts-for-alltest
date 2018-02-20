@@ -1,4 +1,4 @@
-\section{File-level deduplication analysis}
+\section{Deduplication analysis}
 \label{sec:redundant_files}
 %\nancomment{1. high repeat cnt type examples
 %			2. use case for each type
@@ -17,8 +17,8 @@ Since, layers are stored in gzip compressed format and layers are not
 duplicated, we decompressed and unpacked all the layers, and conducted
 deduplication analysis on the uncompressed dataset.
  
-We adapt file-level deduplication strategy to find out whether
-there are full file duplicates.%duplicates of source codes, scripts,  files, documents, etc.
+%We adapt file-level deduplication strategy to find out whether
+%there are full file duplicates.%duplicates of source codes, scripts,  files, documents, etc.
 File-level deduplication is a simple and efficient content-based deduplication
 strategy, which can eliminate files whose full content is a duplicate of
 another file. To find out how many full file duplicates in the dataset, we

@@ -89,10 +89,12 @@ We found that different Docker developers are prone to replicate same source cod
 
 \end{compactitemize}
 
-Finally, we proposed a file-level content addressable storage model (FLCAS) for Docker registry, which. 
+Finally, we proposed a file-level content addressable storage model (FLCAS) for Docker registry, which utilizes file-level deduplication to remove redundant files. 
 %
-We simulated FLCAS by using xxx
-The simulation result shows that xxx
+We simulated FLCAS for 0.9 million layers and provided different suggestions to improve deduplication performance. The simulation result shows that (1) processing layers in parallel can largely improve throughput. For example, 80\% of file-level deduplication time is
+less than 9.09 s per layer and by processing 60 layers in parallel, our one-node file-level deduplica-
+tion prototype can process about 3 layers per second.
+(2) Fast compression methods can mitigate pulling overhead caused by re-compression  because files are required to be re-compressed as a compressed layer archival file to serve the incoming pulling requests.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

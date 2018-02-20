@@ -9,14 +9,18 @@
 %using the savings after elimiation of file duplicates in terms of file count
 %and capacity.
 
-\paragraph{Layer reference count}
+In Docker registry, layers are sharing among different images to avoid storing layer duplicates. 
+An interesting question is what is the sharing rate of layers across images.
+This will tell us how efficiently layer-level content addressable store is utilized by Docker registry 
+and how much space was saved by using layer-level content addressable store.
+Another interesting question is what is the remaining redundant data cross images.
+Is layer-level content addressable enough for Docker registry to mitigate redundancy?
+
+
+\paragraph{Layer reference count \& current deduplication ratio}
 
 \input{fig-layer-ref-cnt}
 
-An interesting question is what is the sharing rate of layers across images.
-This will tell us how efficiently layer-level content addressable store is utilized by Docker registry 
-and how much space is saved currently by layer-level content addressable store
-%
 We analyze all image manifests and count for each layer, how many times it is
 referenced by an image.
 %
@@ -25,7 +29,8 @@ by a single image while 95\% are reference by not more than 2 images.
 %
 Similarly, 99\% of layers are shared among less than 25 images. 
 %
-Accordingly, we calculated the redundant ratio achieved by layer CAS which is xxx.
+Accordingly, we calculated the total storage space consumed before layer-level content addressability was adopted, which was 84.75 TB. 
+Thus the redundant ratio achieved by layer-level content addressability is around 1.8.
 %Figure~\ref{} shows the absolute values, revealing that almost 1.5 million
 %images are only referenced once.  \acomment{Figure is missing} While there is
 %again a large spectrum of reference counts, the maximum is 33,428, the vast
@@ -35,7 +40,7 @@ This hints that the layer-based approach to improve storage efficiency is
 barely utilized and there is room for improvement in how to construct more
 sharable layers.
 %
-\emph{These findings reveal that layer level CAS has not been very successful
+\emph{These findings reveal that layer level content addressable store has not been very successful
 	and most of the layers that exists in Docker Hub are not shared among images.
 	%
 	Hence, there is a dire need of a better redundancy management.}
@@ -54,7 +59,7 @@ Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability
 distribution of file repeat count.  \textit{We see that majority of files have
 more than one copies (99.42\%).  Most files have a small repeat count.} For
 instance, almost 90\% of files have equal or less than 10 copies. Around 50\%
-of files have 4 copies.  The file that has the maximum repeat count is an empty
+of files have 4 copies. The file that has the maximum repeat count is an empty
 file, which means that many users create and store empty files in their
 images.
 

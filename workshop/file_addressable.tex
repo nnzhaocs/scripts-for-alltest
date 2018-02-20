@@ -25,7 +25,7 @@ introduce considerable overheads, which include decompressing compressed layer
 archival files, calculating the file content digest, searching for identical
 files, etc. 
 To reduce above overhead, we provide different suggestions on how one can
-mitigate the affects of such overheads and efficiently server push/pull requests. We also simulated FLCAS on xxx layers and provided performance analysis.
+mitigate the affects of such overheads and efficiently server push/pull requests. We also simulated FLCAS on 0.9 million layers and provided performance analysis.
 
 %\lrcomment{These challenges should be listed earlier in the section. They are
 %also hard to follow as at this point, it it is still unclear why we need
@@ -49,15 +49,13 @@ During file-level deduplication, the unique files are stored in a
 content address} is recorded, which is a file digest uniquely and linked to the
 files'location. Meanwhile, a layer digest to its containing file content digest
 mapping record is also created and saved to a \textit{layer-to-file digest
-table}.  All the pulling request to the layers are served by file pool via
-searching for the layer digest from layer-to-file digest mapping table. After
-fetching all the containing files that are required by requested layer, FLCAS
-compresses these files as gzip file before sending it to Docker clients.         
+table}.     
 
 \paragraph{Deduplicating when workload is light}
 Deduplication can be expensive in terms of performance overhead, file-level
 dedupilication can be triggered for removing the redundant files for cold
-layers only when the workload is low and storage utilization is high.  Typically,
+layers only when the workload is low and storage utilization is high.  
+Typically,
 workload fluctuates, with peaks and troughs. According to IBM container
 registry workload analysis~\cite{xxx}, 80\% of time, there were only 100
 requests.
@@ -78,13 +76,13 @@ and processed in RAM to speed up file-level dedup.
 
 \paragraph{Caching hot layers}
 To reduce overhead, we suggest caching the hot/recently requested layers as
-gzip compressed tar files.  We observed that only a small proportion of images
+gzip compressed tar files. We observed that only a small proportion of images
 and layers are frequently requested. A majority of images and layers are
 \textit{cold}. As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total
 number of pulls since the layers/images are stored in Docker Hub to May 30,
-2017.  We see that only 20\% and 10\% of images are pulled more that 100 and
+2017. We see that only 20\% and 10\% of images are pulled more that 100 and
 360 times respectively. Similarly, only 20\% and 10\% of layers are pulled more
-that 217 and 660 times.  Note that the layers'pull count shown in
+that 217 and 660 times. Note that the layers'pull count shown in
 Figure~\ref{fig:pull-cnt} is calculated by aggregating all the images'pull
 counts that refers this layer. Note that the image pull counts are crawled from
 Docker Hub website. Actual layer pull count should be less than the number
@@ -119,7 +117,8 @@ We wrote around 600 lines of Python code to perform file-level deduplication
 operations on the layer dataset, specially, we read a layer from layer dataset
 to a RAM disk (i.e., tmpfs) and then decompresses it. Then we
 calculate each containing files' digests and append the layer-to-file digest
-mapping records to a mapping table.  Only unique files are maintained in RAM
+mapping records to a mapping table. 
+Only unique files are maintained in RAM
 disk while the redundant copies are removed.
 
 To quantify the run time to perform file-level deduplication, we setup a

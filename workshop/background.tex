@@ -1,16 +1,16 @@
-\section{Background}
+\section{Background \& Methodology}
 \label{sec:background}
 
-Container-based virtualization (such as Linux Containers~\cite{LXC}) has
-emerged as a lightweight alternative to full virtualization.
-%
-Compared to Virtual Machines (\eg VMware~\cite{VMware} or Xen~\cite{xen}),
-containers work at the operating system level.
-%
-Containers share the same kernel which improves startup times and significantly
-reduces the storage and memory overhead ~\cite{ContainerVirtualization}.
+%Container-based virtualization (such as Linux Containers~\cite{LXC}) has
+%emerged as a lightweight alternative to full virtualization.
+%%
+%Compared to Virtual Machines (\eg VMware~\cite{VMware} or Xen~\cite{xen}),
+%containers work at the operating system level.
+%%
+%Containers share the same kernel which improves startup times and significantly
+%reduces the storage and memory overhead ~\cite{ContainerVirtualization}.
 
-\subsection{Docker}
+%\subsection{Docker}
 
 Docker~\cite{docker} is a popular container-based virtualization technology
 that extends LXC with higher level APIs and additional functionality.
@@ -67,7 +67,7 @@ Docker supports multiple storage drivers, \eg Aufs and Btrfs, which efficiently
 combine read-only and writable layers in a single
 namespace~\cite{docker-driver-eval}.
 %
-The writable layers are deleted when the container is deleted.
+%The writable layers are deleted when the container is deleted.
 
 %Image is represented by a \emph{manifest} which describes the various
 %constituents of a Docker image, such as the target hardware platform and
@@ -85,7 +85,7 @@ The Docker registry is a platform for storing and sharing container images.
 It stores images in \emph{repositories}, each containing different versions of
 the same image.
 %
-Image layers are stored as compressed archival files and image manifests as
+Image layers are stored as \textbf{compressed archival files} and image manifests as
 JSON-based files.
 %
 %Docker Hub is one of the most popular public registries, supporting both public
