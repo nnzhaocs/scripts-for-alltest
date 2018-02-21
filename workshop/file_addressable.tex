@@ -53,18 +53,21 @@ mapping record is also created and saved to a \textit{layer-to-file digest
 table}.     
 
 \paragraph{Deduplicating when workload is light}
+
+\input{fig-layer-size-compress-cdf}
+
 Deduplication can be expensive in terms of performance overhead, file-level
 dedupilication can be triggered for removing the redundant files for cold
 layers only when the workload is low and storage utilization is high.  
 Typically,
 workload fluctuates, with peaks and troughs. According to IBM container
-registry workload analysis~\cite{xxx}, 80\% of time, there were only 100
+registry workload analysis~\cite{dockerworkload}, 80\% of time, there were only 100
 requests.
 To improve performance, we also suggest to use
 RAM to temporarily store \textit{small} layers and directly process them in RAM
 to perform decompression, unpacking, file content digest calculation.
 According to our findings majority (87.3\%) of layers that are less than 50M as
-shown in Figure~\ref{fig:image-layer-size}. So majority of layers can be stored
+shown in Figure~\ref{fig:layer-size-cdf}. So majority of layers can be stored
 and processed in RAM to speed up file-level dedup. 
 
 \begin{figure}

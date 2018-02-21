@@ -196,8 +196,8 @@ We see that all the source codes have a high deduplication ratio over 90\%
 except Lisp/scheme program. Especially, the redundant C/C++ source codes take
 up over 77\% of capacity occupied by source codes. To find out why there are so
 many C/C++ source codes, we inspect the C/C++ source codes and find a
-frequently replicated C/C++ source code called Google Test~\cite{xxx} which is
-a cross-platform C++ test framework and available in GitHub~\cite{xxx}.
+frequently replicated C/C++ source code called Google Test~\cite{googletest} which is
+a cross-platform C++ test framework and available in GitHub~\cite{github}.
 Interestingly, we found there are plenty of repositories related to Google Test
 while there is no official repository for Google Test. We suspect that many
 developers replicate open source code from external public repositories, such
@@ -273,15 +273,15 @@ high deduplication ratio over 95\%. Especially, the redundant Python scripts
 take up over 65\% of capacity occupied by scripts. 
 
 We inspect the Python scripts and found a frequently replicated Python scripts
-called kraken-tools~\cite{xxx}, which is a tool for managing system
-requirements for kraken-lib~\cite{xxx} while kraken-lib is an orchestration and
-cluster-level management system for Kubernetes~\cite{xxx}.
+called kraken-tools~\cite{krakentools}, which is a tool for managing system
+requirements for kraken-lib~\cite{krakenlib} while kraken-lib is an orchestration and
+cluster-level management system for Kubernetes~\cite{kubernetes}.
 %% a tool for  for Kubernetes cluster.  %kraken-lib %Kubernetes is an open
 %source platform that automates Linux container operations %
 Although kraken-tools seems like an Docker image repository, it is maintained
 in GitHub rather than Docker registry. Interestingly, kraken-lib does not have
 a official repository in Docker Hub but it has a public repository in QUAY
-registry~\cite{xxx}.  \textit{Similar to source codes, we suggest to create
+registry~\cite{quay}.  \textit{Similar to source codes, we suggest to create
 more official images in registry for some popular public scripts %, especially
 containerized applications and convince developers to pull them from registry
 as a read-only layer to reduce redundant scripts in registry.}
@@ -310,7 +310,7 @@ convince developers to pull them from registry.}
 \begin{figure} \centering
 \includegraphics[width=0.35\textwidth]{graphs/dedup-doc} \caption{Deduplication
 results for documents: ASCII, UTF, ISO-8859, HTML/XML/XHTML, PDF, LaTex
-documents, Composite document files, and others.  } \label{fig:dedup-doc}
+documents, Composite document files, and others.} \label{fig:dedup-doc}
 \end{figure}
 
 Next, we present the deduplication results for different documents as shown in
@@ -321,15 +321,15 @@ documents. To understand why there are so many document duplicates, we inspect
 raw text files and HTML/XML/XHTML documents respectively. First, we found that
 a large amount of redundant raw text files are input data for testing source
 codes and they are replicated along with source code or script projects from
-external public repositories.  For example, scipy~\cite{xxx}, a
+external public repositories.  For example, scipy~\cite{scipy}, a
 metamathematical software, is replicated from GitHub and stored in different
 images, which contains over 30 raw text files for testing purpose.
 
 Second, after inspected HTML/XML/XHTML documents, we found plenty
 HTML/XML/XHTML documents serves as readme, manual, or license. For example, we
-found plenty redundant HTML documents related to gnome-vfs-doc~\cite{xxx},
+found plenty redundant HTML documents related to gnome-vfs-doc~\cite{gnome-vfs-doc},
 which are documentation for GNOME virtual filesystem subsystem available
-online~\cite{xxx}.
+online~\cite{gvfs}.
 
 \textit{Finding 7: Documents have a very high redundant ratio. Majority
 redundant documents are raw text files and HTML/XML/XHTML documents. They are
@@ -371,7 +371,7 @@ deduplication ratio for different types of databases.  We see that SQLite
 database files have the largest deduplication ratio of 87\% and could be
 deduplicated for saving up to half of the capacity. To find out why there are
 so many redundant SQLite files, we inspected SQLite files manually and found
-majority of redundant SQLite files are created by Yum~\cite{xxx} for
+majority of redundant SQLite files are created by Yum~\cite{yum} for
 maintaining a list of well-know repositories.
 
 \textit{Finding 8: Databases have a low deduplication ratio. But SQLite files
@@ -460,7 +460,7 @@ Especially, PNG images contributes to almost half of capacity savings after
 deduplication.  To understand why there are so many redundant image files, we
 inspected redundant PNG images and found plenty of PNG images are logo, icons,
 wallpapers, and images for testing.  For example, we found plenty of redundant
-PNG images related to matplotlib~\cite{xxx} for testing purpose. matplotlib is
+PNG images related to matplotlib~\cite{matplotlib} for testing purpose. matplotlib is
 a Python 2D plotting library and available on GitHub.
 
 \textit{Finding 10: Most image files have a high deduplication ratio. PNG files
