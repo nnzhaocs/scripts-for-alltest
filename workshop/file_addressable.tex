@@ -18,14 +18,14 @@ alternative to layer-level content addressable storage, a file-level content
 addressable storage model (FLCAS) is suggested for Docker registry to remove
 redundant files.% and save space while maintaing good performance.
 
-FLCAS, which is essentially a file-level
-deduplication, can significantly reduce the redundant files in docker registry
-and save a large volume of storage space. However, FLCAS may also
-introduce considerable overheads, which include decompressing compressed layer
-archival files, calculating the file content digest, searching for identical
-files, etc. 
-To reduce above overhead, we provide different suggestions on how one can
-mitigate the affects of such overheads and efficiently server push/pull requests. We also simulated FLCAS on 0.9 million layers and provided performance analysis.
+FLCAS, which is essentially a file-level deduplication, can significantly
+reduce the redundant files in docker registry and save a large volume of
+storage space. However, FLCAS may also introduce considerable overheads, which
+include decompressing compressed layer archival files, calculating the file
+content digest, searching for identical files, etc.  To reduce above overhead,
+we provide different suggestions on how one can mitigate the affects of such
+overheads and efficiently server push/pull requests. We also simulated FLCAS on
+0.9 million layers and provided performance analysis.
 
 %\lrcomment{These challenges should be listed earlier in the section. They are
 %also hard to follow as at this point, it it is still unclear why we need
@@ -36,10 +36,11 @@ mitigate the affects of such overheads and efficiently server push/pull requests
 %Benefit: saving money, reducing storage management overhead.
 
 \subsection{File-level content addressable storage model (FLCAS)}
-File-level content addressable storage system (FLCAS) uses file-level deduplication to remove the redundant copies of an identical file by generating a digest (such as MD5 or SHA256) from the file the digest refers to. 
-Consequently,
-FLCAS exposes a high-level layer addressing by mapping layer digests to their
-containing file digests. 
+File-level content addressable storage system (FLCAS) uses file-level
+deduplication to remove the redundant copies of an identical file by generating
+a digest (such as MD5 or SHA256) from the file the digest refers to.
+Consequently, FLCAS exposes a high-level layer addressing by mapping layer
+digests to their containing file digests. 
 
 File-level deduplication mainly consists of three
 steps: layer decompression, file content digest calculation, and searching \&.
