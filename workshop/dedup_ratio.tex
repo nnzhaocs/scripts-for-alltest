@@ -9,13 +9,12 @@
 %using the savings after elimiation of file duplicates in terms of file count
 %and capacity.
 
-In Docker registry, layers are sharing among different images to avoid storing layer duplicates. 
-An interesting question is what is the sharing rate of layers across images.
-This will tell us how efficiently layer-level content addressable store is utilized by Docker registry 
-and how much space was saved by using layer-level content addressable store.
-Another interesting question is what is the remaining redundant data cross images.
-Is layer-level content addressable enough for Docker registry to mitigate redundancy?
-
+In Docker registry, layers are shared among different images to eliminate duplicates.
+In this section, we investigate if layer-level content addressable is enough for Docker
+registry to mitigate redundancy.
+To do so, we find out the sharing rate of layers across images to calculate
+how much space is saved by using layer-level content addressable storage.
+We also investigate that how much redundant data exists across images.
 
 \paragraph{Layer reference count \& current deduplication ratio}
 
