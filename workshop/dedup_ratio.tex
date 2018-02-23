@@ -1,75 +1,68 @@
 \subsection{Deduplication ratio} 
 \label{sec:dedup_ratio}
 
-In Docker registry, layers are shared among different images to eliminate
-duplicates.  
+%In Docker registry, layers are shared among different images to eliminate
+%duplicates.  
 %
-In this section, we investigate if layer-level content addressable
-is enough for Docker registry to mitigate redundancy.  
+%In this section, we investigate if layer-level content addressable
+%is enough for Docker registry to mitigate redundancy.  
 %
-Specifically, we look in
-to the sharing rate of layers across images to calculate how much space is
-saved by using layer-level content addressable storage.  
+%Specifically, we look in
+%$to the sharing rate of layers across images to calculate how much space is
+%aved by using layer-level content addressable storage.  
 %
-We also investigate
-that how much redundant data exists across images.
+%We also investigate
+%that how much redundant data exists across images.
 
-\paragraph{Layer reference count \& current deduplication ratio}
+\paragraph{Layer sharing}
 
 \input{fig-layer-ref-cnt}
 
-We analyzed all image manifests and count for each layer, how many times it is
-referenced by an image.
+In its simplest implementation Docker would not support layer sharing.
 %
-Figure~\ref{fig:ref_count} shows that around 90\% of layers are only reference
-by a single image while 95\% are reference by not more than 2 images.
+Instead, every image would be a single flat archive.
 %
-Similarly, 99\% of layers are shared among less than 25 images. 
+In fact, some existing containerization frameworks \VT{cite singularity and
+openvz} use flat images.
 %
-Accordingly, we calculated the total storage space consumed before layer-level
-content addressability was adopted, which was 84.75 TB.  Thus the redundant
-ratio achieved by layer-level content addressability is around 1.8.
+Our estimates show that without layer sharing our dataset would grow from 47TB
+to 85TB, resulting in \textbf{1.8$\times$} deduplication ratio.
+% 
+We further computed for each layer, how many times it is referenced by images.
+%
+Figure~\ref{fig:ref_count} shows that around 90\% of layers are referenced by
+only a single image, additional 5\% are referenced by 2 images, and less than
+1\% of the layers are shared by more than 25 images.
+%
+%Accordingly, we calculated the total storage space consumed before layer-level
+%content addressability was adopted, which was 84.75 TB.  Thus the redundant
+%ratio achieved by layer-level content addressability is around 1.8.
 %
 %Figure~\ref{} shows the absolute values, revealing that almost 1.5 million
 %images are only referenced once.  \acomment{Figure is missing} While there is
 %again a large spectrum of reference counts, the maximum is 33,428, the vast
 %majority of layers is not shared. 
 %
-This hints that the layer-based approach to improve storage efficiency is
-barely utilized and there is room for improvement in how to construct more
-sharable layers.
+%This hints that the layer-based approach to improve storage efficiency is
+%barely utilized and there is room for improvement in how to construct more
+%sharable layers.
 %
-\emph{These findings reveal that layer level content addressable store has not
-been very successful and most of the layers that exists in Docker Hub are not
-shared among images.
-	%
-	Hence, there is a dire need of a better redundancy management.}
+%\emph{These findings reveal that layer level content addressable store has not
+%been very successful and most of the layers that exists in Docker Hub are not
+%shared among images.
+%
+%Hence, there is a dire need of a better redundancy management.}
+%
+%
+Interestingly, there were several layers that were referenced about 1 million
+times.
+%
+Our investigation showed  that these layers are~\VT{Verify this
+sentence and extend with analysis.}
 
-\paragraph{File repeat count}
-%\paragraph{Full file duplicates}
+\VT{Use \% instead of probability in all Figures (both # and labels).}
 
-\begin{figure} \centering
-	\includegraphics[width=0.45\textwidth]{graphs/File_repeat_count.eps}
-	\caption{File repeat count distribution.  } \label{fig:file-repeat-cnt}
-\end{figure}
-
-%
-Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability
-distribution of file repeat count.  
-%
-\textit{We see that majority of files have
-more than one copies (99.42\%).  
-%
-Most files have a small repeat count.} For
-instance, almost 90\% of files have equal or less than 10 copies. 
-%
-Around 50\%
-of files have 4 copies. 
-%
-The file that has the maximum repeat count is an empty
-file, which means that many users create and store empty files in their images.
-
-\paragraph{Deduplication ratio}
+\paragraph{File-level deduplication}
 %As discussed in compression ratio analysis, we see that there is redundant
 %data in both layers and images.  We conducted simple form of deduplication to
 %Interestingly,
@@ -78,17 +71,23 @@ the complete uncompressed dataset (Table~\ref{tbl:overall-redundant_ratio}).
 %the redundant file overhead of the uncompressed dataset 
 %
 We find that majority of the files have more than one copy (99.42\%), which
-take up over 89\% of capacity.  
+take up over 89\% of capacity.
 %
-After elimination of file duplicates, the
-percentage of such files decrease from 99.42\% to 2.59\%.  
+\VT{not clear what exactly takes 89\% of capacity}
 %
-Overall, only 3.17\%
-(23.92 TB) of files are unique files while 96.83\% of files (143.28 TB) are
-redundant copies. 
+After elimination of file duplicates, the percentage of such files decreases
+from 99.42\% to 2.59\%.  
 %
-Correspondingly, the deduplication ratio is 96.83\% and
-85.69\% in terms of file count and capacity, respectively.
+\VT{huh? Shouldn't the percentage of duplicate files go to 0?}
+%
+Overall, only 3.17\% (23.92 TB) of files are unique files while 96.83\% of
+files (143.28 TB) are redundant copies. 
+%
+Correspondingly, the deduplication ratio is 96.83\% and 85.69\% in terms of
+file count and capacity, respectively.
+%
+\VT{let's use $\times$ for dedup ratio, it's conventional}.
+%
 % Table~\ref{tbl:overall-redundant_ratio} summaries the overall redundant file
 % overhead in terms of file count and capacity.
 %
@@ -97,3 +96,24 @@ occupy most of capacity, indicating that Docker Hub has severe redundancy
 problem.}
 
 \input{tab-file-count-capacity-dedup}
+
+\VT{Move all figures to separate fig- files and tables to tab- files.}
+
+\begin{figure} \centering
+	\includegraphics[width=0.45\textwidth]{graphs/File_repeat_count.eps}
+	\caption{File repeat count distribution.  } \label{fig:file-repeat-cnt}
+\end{figure}
+
+We further analyzed the repeat count for for various files.
+%
+Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability
+distribution of file repeat count.  
+%
+We see that over 99.42\% of files have more than one copy.
+%
+Around 50\% of files have 4 copies and 90\% of files have less or equal than 10
+copies. 
+%
+The file that has the maximum repeat count---\VT{SPECIFY}---is an empty file.
+%
+\VT{Do we know anything about those empty files}.
