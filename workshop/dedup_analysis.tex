@@ -1,29 +1,22 @@
-\section{Deduplication analysis} \label{sec:redundant_files}
-%\nancomment{1. high repeat cnt type examples 2. use case for each type 3.
-%analyze the others cluster, if have time}
-
-%Based on the second-and third-level classification, we investigated the
-%following two research questions: (1) What are the common redundant files?
-%(2) Why there are so many redundant files? and present our investigation
-%results.
-
-%As discussed in Section~\ref{xxx}, analysis of compression ratio indicates
-%that plenty of redundant data exists in individual layers and images. However,
-%it's unknown how much redundant data is in Docker registry. 
+\section{Deduplication analysis}
+\label{sec:redundant_files}
 
 In this section, we investigate the potential for data deduplication in Docker
-registry.  Since, layers are stored in gzip compressed format and layers are
-not duplicated, we decompressed and unpacked all the layers, and conduct
-deduplication analysis on the uncompressed dataset. We also investigate the
-efficacy of File-level deduplication.
- 
-%We adapt file-level deduplication strategy to find out whether there are full
-%file duplicates.%duplicates of source codes, scripts,  files, documents, etc.
+registry.
+%
+Since, layers are stored in gzip compressed format and layers are not
+duplicated, we decompressed and unpacked all the layers, and conduct
+deduplication analysis on the uncompressed dataset.
+%
+We also investigate the efficacy of File-level deduplication.
 
 File-level deduplication is a simple and efficient content-based deduplication
 strategy, which can eliminate files whose full content is a duplicate of
-another file. To find out how many full file duplicates in the dataset, we
-calculated a digest of the complete file by using MD5 hash algorithm~\cite{MD5}
-and presents file-level deduplication analysis results.  \input{dedup_ratio}
-\input{dedup_types}
+another file.
+%
+To find out how many full file duplicates in the dataset, we calculated a
+digest of the complete file by using MD5 hash algorithm~\cite{MD5} and presents
+file-level deduplication analysis results.
 
+\input{dedup_ratio}
+input{dedup_types}
