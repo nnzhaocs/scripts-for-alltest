@@ -13,18 +13,26 @@
 %which accounts for 86\% of storage space (uncompressed).  
 As the number of images stored in Docker registry is increasing dramatically,
 storing and managing the large proportion of redundant files requires both
-storage equipment and administration investment.  In this section, as an
+storage equipment and administration investment. 
+%
+In this section, as an
 alternative to layer-level content addressable storage, a file-level content
 addressable storage model (FLCAS) is suggested for Docker registry to remove
 redundant files.% and save space while maintaing good performance.
 
 FLCAS, which is essentially a file-level deduplication, can significantly
 reduce the redundant files in docker registry and save a large volume of
-storage space. However, FLCAS may also introduce considerable overheads, which
+storage space. 
+%
+However, FLCAS may also introduce considerable overheads, which
 include decompressing compressed layer archival files, calculating the file
-content digest, searching for identical files, etc.  To reduce above overhead,
+content digest, searching for identical files, etc.  
+%
+To reduce above overhead,
 we provide different suggestions on how one can mitigate the affects of such
-overheads and efficiently server push/pull requests. We also simulated FLCAS on
+overheads and efficiently server push/pull requests. 
+%
+We also simulated FLCAS on
 0.9 million layers and provided performance analysis.
 
 %\lrcomment{These challenges should be listed earlier in the section. They are
@@ -39,16 +47,22 @@ overheads and efficiently server push/pull requests. We also simulated FLCAS on
 File-level content addressable storage system (FLCAS) uses file-level
 deduplication to remove the redundant copies of an identical file by generating
 a digest (such as MD5 or SHA256) from the file the digest refers to.
+%
 Consequently, FLCAS exposes a high-level layer addressing by mapping layer
 digests to their containing file digests. 
 
 File-level deduplication mainly consists of three
 steps: layer decompression, file content digest calculation, and searching \&.
-indexing.  
+indexing. 
+% 
 During file-level deduplication, the unique files are stored in a
-\textit{file pool} and redundant copies are removed. A unique \textit{file
+\textit{file pool} and redundant copies are removed. 
+%
+A unique \textit{file
 content address} is recorded, which is a file digest uniquely and linked to the
-files'location. Meanwhile, a layer digest to its containing file content digest
+files'location. 
+%
+Meanwhile, a layer digest to its containing file content digest
 mapping record is also created and saved to a \textit{layer-to-file digest
 table}.     
 
@@ -58,16 +72,23 @@ table}.
 
 Deduplication can be expensive in terms of performance overhead, file-level
 dedupilication can be triggered for removing the redundant files for cold
-layers only when the workload is low and storage utilization is high.  
+layers only when the workload is low and storage utilization is high.
+%  
 Typically,
-workload fluctuates, with peaks and troughs. According to IBM container
+workload fluctuates, with peaks and troughs. 
+%
+According to IBM container
 registry workload analysis~\cite{dockerworkload}, 80\% of time, there were only 100
 requests.
+%
 To improve performance, we also suggest to use
 RAM to temporarily store \textit{small} layers and directly process them in RAM
 to perform decompression, unpacking, file content digest calculation.
+%
 According to our findings majority (87.3\%) of layers that are less than 50M as
-shown in Figure~\ref{fig:layer-size-cdf}. So majority of layers can be stored
+shown in Figure~\ref{fig:layer-size-cdf}.
+%
+So majority of layers can be stored
 and processed in RAM to speed up file-level dedup. 
 
 \begin{figure}
@@ -80,16 +101,32 @@ and processed in RAM to speed up file-level dedup.
 
 \paragraph{Caching hot layers}
 To reduce overhead, we suggest caching the hot/recently requested layers as
-gzip compressed tar files. We observed that only a small proportion of images
-and layers are frequently requested. A majority of images and layers are
-\textit{cold}. As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total
+gzip compressed tar files. 
+%
+We observed that only a small proportion of images
+and layers are frequently requested. 
+%
+A majority of images and layers are
+\textit{cold}. 
+%
+As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total
 number of pulls since the layers/images are stored in Docker Hub to May 30,
-2017. We see that only 20\% and 10\% of images are pulled more that 100 and
-360 times respectively. Similarly, only 20\% and 10\% of layers are pulled more
-that 217 and 660 times. Note that the layers'pull count shown in
+2017. 
+%
+We see that only 20\% and 10\% of images are pulled more that 100 and
+360 times respectively. 
+%
+Similarly, only 20\% and 10\% of layers are pulled more
+that 217 and 660 times. 
+%
+Note that the layers'pull count shown in
 Figure~\ref{fig:pull-cnt} is calculated by aggregating all the images'pull
-counts that refers this layer. Note that the image pull counts are crawled from
-Docker Hub website. Actual layer pull count should be less than the number
+counts that refers this layer. 
+%
+Note that the image pull counts are crawled from
+Docker Hub website. 
+%
+Actual layer pull count should be less than the number
 shown in Figure~\ref{fig:pull-cnt} because pulling a image does not necessarily
 pull all its containing layers as we don't pull the layers if they have already
 been downloaded.
@@ -119,14 +156,19 @@ been downloaded.
 
 We wrote around 600 lines of Python code to perform file-level deduplication
 operations on the layer dataset, specially, we read a layer from layer dataset
-to a RAM disk (i.e., tmpfs) and then decompresses it. Then we
+to a RAM disk (i.e., tmpfs) and then decompresses it. 
+%
+Then we
 calculate each containing files' digests and append the layer-to-file digest
 mapping records to a mapping table. 
+%
 Only unique files are maintained in RAM
 disk while the redundant copies are removed.
 
 To quantify the run time to perform file-level deduplication, we setup a
-one-node Docker registry with 64~GB RAM and 32 Cores.  We performed
+one-node Docker registry with 64~GB RAM and 32 Cores.  
+%
+We performed
 deduplication of 60 concurrent layers for 0.9 Million layers in total.
 %To improve searching performance, the
 %mapping table is stored in Hive database~\cite{xxx}. 
@@ -137,12 +179,20 @@ deduplication of 60 concurrent layers for 0.9 Million layers in total.
 %
 Note that the pushing latency is not influenced by the file-level deduplication
 because once the layer reaches registry, an response message will be sent to
-the user. No addition delay will be added to the pushing time. However,
+the user. 
+%
+No addition delay will be added to the pushing time. 
+%
+However,
 compression time will impact pulling latency since the files need to be packed
 and compressed first and then sent to the users once registry receives pulling
-requests to the cold layers. Similar to deduplication, to generate pull layer
+requests to the cold layers. 
+%
+Similar to deduplication, to generate pull layer
 requests, we randomly request 60 different layers in pralallel for 0.9 Million
-layers. For pull layer requests, we packs and compresses the layer's containing
+layers. 
+%
+For pull layer requests, we packs and compresses the layer's containing
 files by searching the mapping table for the layer digest. 
 
 \paragraph{File-level deduplication run time}
@@ -154,8 +204,14 @@ involved operation: decompression time, unpacking time, file content digest
 calculation time, and searching time.
 
 First, among all the operations, we see that searching time is the
-smallest. 80\% of searching time is less than 0.004 s. The mapping table
-maintains 0.98 million layer-to-file digest mapping records. Consider that more
+smallest. 
+%
+80\% of searching time is less than 0.004 s. 
+%
+The mapping table
+maintains 0.98 million layer-to-file digest mapping records. 
+%
+Consider that more
 than 1.7 million layers are stored in Docker hub and the number is still
 increasing, it's better to choose a fast distributed database to provide high
 searching performance and scalability.
@@ -163,42 +219,76 @@ searching performance and scalability.
 %\lrcomment{How does our DB schema look and what are the search queries?}
   
 Second, we see that digest calculation time spreads over a large range started
-from 0.000005 s to 124.7 s. It's because digest calculation time largely
-depends on the layer size. Typically, smaller layers contains a smaller number
-of smaller files, which takes much less time to calculate their digests. While
-if the layer is bigger, the digest calculation overhead will be higher. 80\% of
+from 0.000005 s to 124.7 s. 
+%
+It's because digest calculation time largely
+depends on the layer size. 
+%
+Typically, smaller layers contains a smaller number
+of smaller files, which takes much less time to calculate their digests. 
+%
+While
+if the layer is bigger, the digest calculation overhead will be higher. 
+%
+80\% of
 digest calculation time is less than 4.21 s. 
+%
 Thus, we suggest that multiple-threading is needed to calculate the files'
-digests simultaneously; Fast CPUs as well as more powerful computing nodes are
+digests simultaneously; 
+%
+Fast CPUs as well as more powerful computing nodes are
 required to speed up digest calculation.
 
 Third, the run time for decompression and unpacking have the same distribution
-during the lowest response time range started from 0.04 s to 0.15 s. Around
-60\% of decompression and unpacking time are less than 0.15 s. However,
-decompression has the highest time than that of unpacking. 80\% of
+during the lowest response time range started from 0.04 s to 0.15 s. 
+%
+Around
+60\% of decompression and unpacking time are less than 0.15 s. 
+%
+However,
+decompression has the highest time than that of unpacking. 
+%
+80\% of
 decompression is less than 0.55 s while 80\% of packing time is less than 0.21 s. 
 
 Figure~\ref{fig:dedup-res} also shows the total time distribution for
 file-level deduplication which is the sum of run time for decompression, unpacking,
-digest calculation, and searching. We see that 80\% of file-level dedup time is
+digest calculation, and searching. 
+%
+We see that 80\% of file-level dedup time is
 less than 9.09 s per layer.
 %
 %\lrcomment{Is that per layer or per file or per image?}
 %
-We also measured the throughput of 60 processes. Our one-node file-level
-deduplication prototype can process about 3 layers/s. We suggest to use more
+We also measured the throughput of 60 processes. 
+%
+Our one-node file-level
+deduplication prototype can process about 3 layers/s. 
+%
+We suggest to use more
 high powerful machines to improve throughput.
 
 \paragraph{Pulling latency} Figure~\ref{fig:dedup-res} shows the pulling latency
-distribution. Note that the pulling latency is the sum of archiving time,
+distribution. 
+%
+Note that the pulling latency is the sum of archiving time,
 compression time, and searching time and does not include network transfer
-time. We can see that compression and archiving time almost share the same
+time. 
+%
+We can see that compression and archiving time almost share the same
 distribution during the lowest response time range started from 0.04 s to 0.15
-s. 60\% of compression and archiving time are less than 0.15 s. While
-compression has the highest run time. 80\% of compression time is less than 2.82
-s. We see that archiving time and compression contributes equally to pulling
+s. 60\% of compression and archiving time are less than 0.15 s.
+%
+While
+compression has the highest run time. 
+%
+80\% of compression time is less than 2.82 s. 
+%
+We see that archiving time and compression contributes equally to pulling
 latency when their run time are lower than 0.15 s while compression time almost
-equals to pulling latency when the compression time is greater than 0.15 s. Hence, we
+equals to pulling latency when the compression time is greater than 0.15 s. 
+%
+Hence, we
 suggest that fast compression methods are required to reduce compression time.  
 %
 %\lrcomment{How does this compare to pulling without dedup? What's the overhead

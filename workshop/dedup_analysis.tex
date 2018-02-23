@@ -4,16 +4,16 @@
 In this section, we investigate the potential for data deduplication in Docker
 registry.
 %
-Since, layers are stored in gzip compressed format and layers are not
-duplicated, we decompressed and unpacked all the layers, and conduct
+Since, layers are stored in gzip compressed format, 
+we decompressed and unpacked all the layers, and conduct
 deduplication analysis on the uncompressed dataset.
 %
 \VT{Not sure what you mean by ``layers are not duplicated''. Rephrase or
 clarify.}
 %
-We also investigate the efficacy of File-level deduplication.
+We investigate the efficacy of File-level deduplication for Docker registry.
 %
-\VT{Why ``also''? What else do we do?}
+\VT{Why ``also''? What else do we do?}\NZ{addressed all above comments}
 
 File-level deduplication eliminates files whose full content is a duplicate of
 another file.

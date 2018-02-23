@@ -23,7 +23,8 @@ because it is popular among developers and contains many public repositories.
 %
 We believe Docker Hub dataset is representative of other registry deployments.
 
-To download a representative dataset from Docker Hub, web crawling is needed
+To download a representative dataset from Docker Hub, 
+we used web crawling to obtain a list of repositories
 because Docker Hub does not provide an API to retrieve all repository names.
 %
 \VT{Nannan, avoid using passive voice in the sentences. E.g., above, instead of
@@ -83,10 +84,11 @@ We plan to extend our analysis to other, non-``latest'', images in the future.
 %%
 %Layers are transferred as gzip compressed tar archives.
 %
-Overall, we downloaded 51~TB of data in 355,319 image manifests with 1,792,609
-compressed layers. A total of 111,384 images could not be downloaded mainly
-because they did not have the \texttt{latest} tag.  The downloading process
-took about 30 days.
+Overall, we downloaded 47~TB of data in 355,319 image manifests with 1,792,609
+compressed layers, which contains 5,278,465,130 files. 
+%A total of 111,384 images could not be downloaded mainly
+%because they did not have the \texttt{latest} tag.  
+The downloading process took about 30 days.
 %
 %\vcomment{Say just one sentence why we did not download some
 %images.}\nancomment{Addressed}

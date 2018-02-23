@@ -79,7 +79,11 @@ namespace~\cite{docker-driver-eval}.
 The Docker registry is a platform for storing and sharing container images.
 %
 It stores images in \emph{repositories}, each containing different versions of
-the same image.
+the same image. 
+%
+Each image is consisted of a image manifest and a set of layers.
+%
+The image manifest provides a configuration and a set of layers'digests.
 %
 Image layers are stored as compressed archival files and image
 manifests as JSON-based files.
@@ -97,7 +101,7 @@ manifests as JSON-based files.
 %are called ``$\langle repository name \rangle$".
 
 Modern Docker registry identifies and addresses a layer with a digest that is
-computed based on the layer's content (e.g., SHA-256).
+computed based on the uncompressed layer's content (e.g., SHA-256).
 %
 \VT{Compressed or uncompressed content?}
 %

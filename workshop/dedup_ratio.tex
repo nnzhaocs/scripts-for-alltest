@@ -1,17 +1,18 @@
-\subsection{Deduplication ratio} \label{sec:dedup_ratio}
+\subsection{Deduplication ratio} 
+\label{sec:dedup_ratio}
 
-%\subsection{Overview of file duplicates} \paragraph{File repeat count}
-
-%The first step of our deduplication analysis is to calculate the file repeat
-%count based on the file digests. Then we calculated the deduplication ratio
-%using the savings after elimiation of file duplicates in terms of file count
-%and capacity.
 
 In Docker registry, layers are shared among different images to eliminate
-duplicates.  In this section, we investigate if layer-level content addressable
-is enough for Docker registry to mitigate redundancy.  Specifically, we look in
+duplicates.  
+%
+In this section, we investigate if layer-level content addressable
+is enough for Docker registry to mitigate redundancy.  
+%
+Specifically, we look in
 to the sharing rate of layers across images to calculate how much space is
-saved by using layer-level content addressable storage.  We also investigate
+saved by using layer-level content addressable storage.  
+%
+We also investigate
 that how much redundant data exists across images.
 
 \paragraph{Layer reference count \& current deduplication ratio}
@@ -29,6 +30,7 @@ Similarly, 99\% of layers are shared among less than 25 images.
 Accordingly, we calculated the total storage space consumed before layer-level
 content addressability was adopted, which was 84.75 TB.  Thus the redundant
 ratio achieved by layer-level content addressability is around 1.8.
+%
 %Figure~\ref{} shows the absolute values, revealing that almost 1.5 million
 %images are only referenced once.  \acomment{Figure is missing} While there is
 %again a large spectrum of reference counts, the maximum is 33,428, the vast
@@ -46,16 +48,26 @@ shared among images.
 
 \paragraph{File repeat count}
 %\paragraph{Full file duplicates}
+
 \begin{figure} \centering
-\includegraphics[width=0.45\textwidth]{graphs/File_repeat_count.eps}
-\caption{File repeat count distribution.  } \label{fig:file-repeat-cnt}
+	\includegraphics[width=0.45\textwidth]{graphs/File_repeat_count.eps}
+	\caption{File repeat count distribution.  } \label{fig:file-repeat-cnt}
 \end{figure}
 
+%
 Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability
-distribution of file repeat count.  \textit{We see that majority of files have
-more than one copies (99.42\%).  Most files have a small repeat count.} For
-instance, almost 90\% of files have equal or less than 10 copies. Around 50\%
-of files have 4 copies. The file that has the maximum repeat count is an empty
+distribution of file repeat count.  
+%
+\textit{We see that majority of files have
+more than one copies (99.42\%).  
+%
+Most files have a small repeat count.} For
+instance, almost 90\% of files have equal or less than 10 copies. 
+%
+Around 50\%
+of files have 4 copies. 
+%
+The file that has the maximum repeat count is an empty
 file, which means that many users create and store empty files in their images.
 
 \paragraph{Deduplication ratio}
@@ -65,15 +77,22 @@ file, which means that many users create and store empty files in their images.
 Next, we calculate deduplication ratio in terms of file count and capacity for
 the complete uncompressed dataset (Table~\ref{tbl:overall-redundant_ratio}).
 %the redundant file overhead of the uncompressed dataset 
+%
 We find that majority of the files have more than one copy (99.42\%), which
-take up over 89\% of capacity.  After elimination of file duplicates, the
-percentage of such files decrease from 99.42\% to 2.59\%.  Overall, only 3.17\%
+take up over 89\% of capacity.  
+%
+After elimination of file duplicates, the
+percentage of such files decrease from 99.42\% to 2.59\%.  
+%
+Overall, only 3.17\%
 (23.92 TB) of files are unique files while 96.83\% of files (143.28 TB) are
-redundant copies. Correspondingly, the deduplication ratio is 96.83\% and
+redundant copies. 
+%
+Correspondingly, the deduplication ratio is 96.83\% and
 85.69\% in terms of file count and capacity, respectively.
 % Table~\ref{tbl:overall-redundant_ratio} summaries the overall redundant file
 % overhead in terms of file count and capacity.
-
+%
 \textit{Finding 1: Majority of files in Docker registry are duplicates which
 occupy most of capacity, indicating that Docker Hub has severe redundancy
 problem.}
@@ -85,17 +104,28 @@ problem.}
 %\includegraphics [width=0.225\textwidth]{graphs/dup-ratio-cap.pdf} }
 %\caption{Redundant file overhead.} \label{fig:over-dup-overhead} \end{figure}
 
-\begin{table} \centering \scriptsize  
+\begin{table} 
+	\centering 
+	\scriptsize  
 	%\begin{minipage}{.5\linewidth}
 	\caption{Redundant ratio in terms of file count and capacity}
-\label{tbl:overall-redundant_ratio} \begin{tabular}{|l|l|l|}%p{0.14\textwidth}
-\hline  & File count & Capacity \\ \hline Repeat cnt = 1 & 0.58\% & 10.87\%\\
-\hline Repeat cnt $>$ 1 after dedup. & 2.59\% & 3.44\%\\ \hline Repeat cnt $>$
-1 before dedup.  & 99.42\%  & 89.13\%\\ \hline Unique dataset (Uncompressed) &
-3.17\% (167,251,437)  &  14.31\% (23.92 TB) \\ \hline Total dataset
-(Uncompressed) & 5,278,465,130 & 167.20 TB \\ \hline 	
-		%\hline 
-	\end{tabular} \end{table} 
+	\label{tbl:overall-redundant_ratio} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth}
+		\hline  
+		& File count & Capacity \\ 
+		\hline 
+		Repeat cnt = 1 & 0.58\% & 10.87\%\\
+		\hline 
+		Repeat cnt $>$ 1 after dedup. & 2.59\% & 3.44\%\\ 
+		\hline 
+		Repeat cnt $>$ 1 before dedup.  & 99.42\%  & 89.13\%\\ 
+		\hline 
+		Unique dataset (Uncompressed) & 3.17\% (167,251,437)  &  14.31\% (23.92 TB) \\ 
+		\hline 
+		Total dataset (Uncompressed) & 5,278,465,130 & 167.20 TB \\ \hline 	
+			%\hline 
+	\end{tabular} 
+\end{table} 
 
 %\subsection{Cross image sharing}
 
