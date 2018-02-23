@@ -4,23 +4,17 @@
 In this section, we investigate the potential for data deduplication in Docker
 registry.
 %
-Since, layers are stored in gzip compressed format, 
-we decompressed and unpacked all the layers, and conduct
-deduplication analysis on the uncompressed dataset.
+Docker, in its current state, already performs rudimentary deduplication by
+sharing identical layers between images. 
 %
-\VT{Not sure what you mean by ``layers are not duplicated''. Rephrase or
-clarify.}
+We start our analysis from quantifying how much benefits does this existing
+approach provides.
 %
-We investigate the efficacy of File-level deduplication for Docker registry.
+However, we believe that there is significantly more potential in deduplicating
+individual files in the layers.
 %
-\VT{Why ``also''? What else do we do?}\NZ{addressed all above comments}
-
-File-level deduplication eliminates files whose full content is a duplicate of
-another file.
-%
-To identify full file duplicates in our dataset, we calculated each file's
-digest using MD5 hash algorithm~\cite{MD5} and present file-level deduplication
-analysis results.
+We, therefore, estimate the efficacy of file-level deduplication and analyze
+the root causes of high high redundancy.
 
 \input{dedup_ratio}
 \input{dedup_types}
