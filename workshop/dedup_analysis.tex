@@ -8,15 +8,19 @@ Since, layers are stored in gzip compressed format and layers are not
 duplicated, we decompressed and unpacked all the layers, and conduct
 deduplication analysis on the uncompressed dataset.
 %
+\VT{Not sure what you mean by ``layers are not duplicated''. Rephrase or
+clarify.}
+%
 We also investigate the efficacy of File-level deduplication.
+%
+\VT{Why ``also''? What else do we do?}
 
-File-level deduplication is a simple and efficient content-based deduplication
-strategy, which can eliminate files whose full content is a duplicate of
+File-level deduplication eliminates files whose full content is a duplicate of
 another file.
 %
-To find out how many full file duplicates in the dataset, we calculated a
-digest of the complete file by using MD5 hash algorithm~\cite{MD5} and presents
-file-level deduplication analysis results.
+To identify full file duplicates in our dataset, we calculated each file's
+digest using MD5 hash algorithm~\cite{MD5} and present file-level deduplication
+analysis results.
 
 \input{dedup_ratio}
-input{dedup_types}
+\input{dedup_types}
