@@ -1,4 +1,4 @@
-\subsection{Methodology}
+\section{Methodology}
 \label{sec:methodology}
 
 \input{tab-dataset-summary.tex}
@@ -14,28 +14,33 @@
 %\subsection{Dataset acquisition}
 %\label{sec:crawler}
 
-We chose Docker Hub~\cite{docker-hub} to download a representative dataset
-because (1) Docker Hub is a popular Docker registry for developers to store and
-distribute Docker images, and (2) Docker Hub contains a large amount of
-\emph{public} Docker images that are available for developers to download for
-free.
+To estimate the benefits of sub-layer deduplication for Docker registry and
+identify the main sources of duplicates we downloaded a large set of
+representative Docker images.
+%
+We chose Docker Hub~\cite{docker-hub} registry as a source of the images
+because it is popular among developers and contains many public repositories.
 %
 We believe Docker Hub dataset is representative of other registry deployments.
 
 To download a representative dataset from Docker Hub, web crawling is needed
 because Docker Hub does not provide an API to retrieve all repository names.
 %
+\VT{Nannan, avoid using passive voice in the sentences. E.g., above, instead of
+``is needed`` you can say ``we used web crawlig to...``. Please, check the
+whole text for passive voice and change where applies.}
+%
 Specifically, there are two steps: i)~crawl Docker Hub web pages to list all
 repositories; ii)~download the \textit{latest} image (and referenced layers)
 from each repository based on the crawler results.
 %
-Here, we chose latest image from each repository because (1)~the ``latest''
-version is usually the newest, stable, and commonly pulled by developers;
-(2)~downloading only the ``latest'' version can shorten our downloading process
-since the latest images already took about 30 days to download.
+%Here, we chose latest image from each repository because (1)~the ``latest''
+%version is usually the newest, stable, and commonly pulled by developers;
+%(2)~downloading only the ``latest'' version can shorten our downloading
+%process since the latest images already took about 30 days to download.
 %
 We plan to extend our analysis to other, non-``latest'', images in the future.
-
+%
 %\paragraph{Web crawler}
 %
 %Public repositories in Docker Hub are divided into official
@@ -49,8 +54,8 @@ We plan to extend our analysis to other, non-``latest'', images in the future.
 %web-based search engine to find all available repositories.
 %%
 %As the name of non-official repositories is comprised of the user name and the
-%repository name separated by a ``/'', we can search for ``/'' and obtain a list
-%of all non-official repositories.
+%repository name separated by a ``/'', we can search for ``/'' and obtain a
+%list of all non-official repositories.
 %%
 %The Crawler downloads all pages from the search results and parses the web
 %content to build a list of all non-official repositories.
@@ -58,11 +63,11 @@ We plan to extend our analysis to other, non-``latest'', images in the future.
 %We ran the crawler on May 30th, 2017 and it produced a list of 634,412
 %repositories.
 %%
-%After removing duplicate entries (introduced by Docker Hub indexing logic), the
-%final repository list consists of 457,627 distinct repositories.
-
+%After removing duplicate entries (introduced by Docker Hub indexing logic),
+%the final repository list consists of 457,627 distinct repositories.
+%
 %\paragraph{Downloader}
-
+%
 %Instead of using the Docker client to download images, we implement our own
 %downloader, which calls the Docker registry API
 %directly~\cite{dockerregistryclient} to download manifests and image layers in
@@ -80,10 +85,20 @@ We plan to extend our analysis to other, non-``latest'', images in the future.
 %
 Overall, we downloaded 51~TB of data in 355,319 image manifests with 1,792,609
 compressed layers. A total of 111,384 images could not be downloaded mainly
-because they did not have the \texttt{latest} tag.
+because they did not have the \texttt{latest} tag.  The downloading process
+took about 30 days.
 %
 %\vcomment{Say just one sentence why we did not download some
 %images.}\nancomment{Addressed}
 %
 Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
 dataset.
+%
+\VT{Let's not go into details in the table and in the text how many images we
+downloaded but did not analyze, or how many we could not download, etc.  Let's
+just state the total number of images/repos/layers we finally analyzed and
+their sizes and file numbers.}
+%
+\VT{Maybe mention a sentece or two that we used SPARK cluster to do the
+analysis?}
+

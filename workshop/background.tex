@@ -1,4 +1,4 @@
-\section{Background \& Methodology}
+\section{Background}
 \label{sec:background}
 
 %Container-based virtualization (such as Linux Containers~\cite{LXC}) has
@@ -10,14 +10,12 @@
 %Containers share the same kernel which improves startup times and significantly
 %reduces the storage and memory overhead ~\cite{ContainerVirtualization}.
 
-%\subsection{Docker}
-
 Docker~\cite{docker} is a popular container-based virtualization technology
-that extends LXC with higher level APIs and additional functionality.
+that extends traditional OS containers with higher level APIs and
+functionalities.
 %
-It automates the deployment of applications inside Linux containers, and
-provides the capability to efficiently package an application with its runtime
-dependencies in a container image~\cite{slacker}.
+It automates the deployment of software and allows to efficiently package an
+application with its runtime dependencies in a container image~\cite{slacker}.
 
 \input{fig-docker-architecture.tex}
 
@@ -36,9 +34,8 @@ them to a Docker \emph{registry}.
 In case a user wants to launch a container from an image that is not available
 locally, the daemon will \emph{pull} the required image from the registry.
 
-\subsection{Docker images and layers}
-\label{sec-image-layers}
-
+\paragraph{Images and layers}
+%
 At the center of Docker is the concept of container images for packaging,
 distributing, and running applications.
 %
@@ -52,9 +49,9 @@ both images depend on the same component.
 
 Image layers are read-only.
 %
-When users start a container via {\tt docker run}, Docker creates a new
-writable layer on top of the underlying read-only layers as shown in
-Figure~\ref{fig-docker-architecture}.
+When users start a container, Docker creates a new
+writable layer on top of the underlying read-only layers
+(Figure~\ref{fig-docker-architecture}).
 %
 Any changes made to files in the image will be reflected inside the writable
 layer via a copy-on-write mechanism.
@@ -77,16 +74,18 @@ namespace~\cite{docker-driver-eval}.
 %by the image.
 
 
-\subsection{Docker registry}
-\label{sec:docker-registry}
-
+\paragraph{Registry}
+%
 The Docker registry is a platform for storing and sharing container images.
 %
 It stores images in \emph{repositories}, each containing different versions of
 the same image.
 %
-Image layers are stored as \textbf{compressed archival files} and image
+Image layers are stored as compressed archival files and image
 manifests as JSON-based files.
+%
+\VT{What is image manifest? Need to introduce}
+%
 %
 %Docker Hub is one of the most popular public registries, supporting both
 %public and private repositories, via which users can upload, search, and
@@ -99,6 +98,8 @@ manifests as JSON-based files.
 
 Modern Docker registry identifies and addresses a layer with a digest that is
 computed based on the layer's content (e.g., SHA-256).
+%
+\VT{Compressed or uncompressed content?}
 %
 This allows registry to store only one instance of a layer even if multiple
 users accidentally built identical layers.
