@@ -29,7 +29,7 @@ because Docker Hub does not provide an API to retrieve all repository names.
 %
 \VT{Nannan, avoid using passive voice in the sentences. E.g., above, instead of
 ``is needed`` you can say ``we used web crawlig to...``. Please, check the
-whole text for passive voice and change where applies.}
+whole text for passive voice and change where applies.}\NZ{addressed}
 %
 Specifically, there are two steps: i)~crawl Docker Hub web pages to list all
 repositories; ii)~download the \textit{latest} image (and referenced layers)
@@ -99,8 +99,10 @@ dataset.
 \VT{Let's not go into details in the table and in the text how many images we
 downloaded but did not analyze, or how many we could not download, etc.  Let's
 just state the total number of images/repos/layers we finally analyzed and
-their sizes and file numbers.}
+their sizes and file numbers.}\NZ{addressed}
 %
+Specifically, we built a 8-node Spark~\cite{xxx} cluster with HDFS~\cite{xxx} as a backend storage system
+to do an in-depth analysis and save analysis results to HDFS.
 \VT{Maybe mention a sentece or two that we used SPARK cluster to do the
-analysis?}
+analysis?}\NZ{addressed}
 

@@ -93,7 +93,7 @@ of layers which make up the image.
 Layers are identified via a digest that is computed as a hashsum over the
 layers' uncompressed content and they are stored as compressed archival files.
 %
-\VT{Compressed or uncompressed content?}
+\VT{Compressed or uncompressed content?\NZ{addressed}}
 %
 %Image layers are stored as compressed archival files and image
 %manifests as JSON files.
@@ -117,7 +117,7 @@ Identifying layers by their content allows the registry to store only one instan
 of a layer even if it is referenced by multiple images.
 %
 \LR{Is that actually done across the entire registry or only within a single
-user/repository?}
+user/repository? \NZ{entire registry}}
 %multiple users accidentally built identical layers.
 %
 However, if only a single file in two otherwise identical layers

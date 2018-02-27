@@ -54,7 +54,7 @@ only a single image, additional 5\% are referenced by 2 images, and less than
 %Hence, there is a dire need of a better redundancy management.}
 %
 %
-Interestingly, there were several layers that were referenced about 1 million
+Interestingly, there were xxx\% layers that were referenced about 1 million
 times.
 %
 Our investigation showed  that these layers are~\VT{Verify this
@@ -62,12 +62,16 @@ sentence and extend with analysis.}
 
 \VT{Use \% instead of probability in all Figures (both # and labels).}
 
+\paragraph{Compressibility}
+
+
+
 \paragraph{File-level deduplication}
 %As discussed in compression ratio analysis, we see that there is redundant
 %data in both layers and images.  We conducted simple form of deduplication to
 %Interestingly,
 Next, we calculate deduplication ratio in terms of file count and capacity for
-the complete uncompressed dataset (Table~\ref{tbl:overall-redundant_ratio}).
+the complete uncompressed dataset. %(Table~\ref{tbl:overall-redundant_ratio}).
 %the redundant file overhead of the uncompressed dataset 
 %
 We find that majority of the files have more than one copy (99.42\%), which
@@ -95,7 +99,7 @@ file count and capacity, respectively.
 occupy most of capacity, indicating that Docker Hub has severe redundancy
 problem.}
 
-\input{tab-file-count-capacity-dedup}
+%\input{tab-file-count-capacity-dedup}
 
 \VT{Move all figures to separate fig- files and tables to tab- files.}
 
