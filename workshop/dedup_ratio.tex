@@ -16,7 +16,7 @@
 
 \paragraph{Layer sharing}
 
-\input{fig-layer-ref-cnt}
+%\input{fig-layer-ref-cnt}
 
 In its simplest implementation Docker would not support layer sharing.
 %
@@ -60,11 +60,32 @@ times.
 Our investigation showed  that these layers are~\VT{Verify this
 sentence and extend with analysis.}
 
-\VT{Use \% instead of probability in all Figures (both # and labels).}
+\VT{Use \% instead of probability in all Figures (both  # and labels).}
 
 \paragraph{Compressibility}
 
+\input{fig-layer-size-compress-cdf}
 
+Figure~\ref{fig:layer-size-cdf} presents compressed and uncompressed layer size
+distributions.
+%
+%Note that compressed layer sizes are measure right after layers are downloaded.
+%
+We find that 50\% of the layers are less than 1MB and 90\% of the layers are
+less than 64MB in compressed format.
+%
+If uncompressed, 50\% of the layers are smaller than 2 MB and 90\% of the
+layers are smaller than 170MB.
+%
+%\emph{Relatively small size of many layer allows to consider selective
+%	in-memory layer caching at the registry side.}
+%
+Moreover, the total compressed layer dataset grows from 47~TB to 167.2~TB after decompression, resulting in \textbf{3.6$\times$} compression ratio.
+% a shown in
+%Figure~\ref{fig:compress-ratio}.
+%
+%
+%
 
 \paragraph{File-level deduplication}
 %As discussed in compression ratio analysis, we see that there is redundant
@@ -74,23 +95,25 @@ Next, we calculate deduplication ratio in terms of file count and capacity for
 the complete uncompressed dataset. %(Table~\ref{tbl:overall-redundant_ratio}).
 %the redundant file overhead of the uncompressed dataset 
 %
-We find that majority of the files have more than one copy (99.42\%), which
-take up over 89\% of capacity.
+We find that 99.42\% of the files have more than one copies. 
+%and these redundant copies
+%take up over 89\% of capacity.
 %
-\VT{not clear what exactly takes 89\% of capacity}
+\VT{not clear what exactly takes 89\% of capacity}\NZ{addressed}
 %
-After elimination of file duplicates, the percentage of such files decreases
-from 99.42\% to 2.59\%.  
+%After elimination of file duplicates, the percentage of such files decreases
+%from 99.42\% to 2.59\%.  
 %
-\VT{huh? Shouldn't the percentage of duplicate files go to 0?}
+%\VT{huh? Shouldn't the percentage of duplicate files go to 0?}
 %
-Overall, only 3.17\% (23.92 TB) of files are unique files while 96.83\% of
-files (143.28 TB) are redundant copies. 
+After removing redundant files, there are only 3.17\% (23.92 TB) of files left. These remaining files take up to 14.32\% of total uncompressed dataset storage space.
+% while 96.83\% of
+%files () are redundant copies. out of 167.20 TB TB
 %
-Correspondingly, the deduplication ratio is 96.83\% and 85.69\% in terms of
+Correspondingly, the deduplication ratio is \textbf{31.55$\times$} and \textbf{6.99$\times$} in terms of
 file count and capacity, respectively.
 %
-\VT{let's use $\times$ for dedup ratio, it's conventional}.
+\VT{let's use $\times$ for dedup ratio, it's conventional}\NZ{addressed}.
 %
 % Table~\ref{tbl:overall-redundant_ratio} summaries the overall redundant file
 % overhead in terms of file count and capacity.
