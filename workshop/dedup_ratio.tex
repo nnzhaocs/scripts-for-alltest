@@ -22,8 +22,8 @@ In its simplest implementation Docker would not support layer sharing.
 %
 Instead, every image would be a single flat archive.
 %
-In fact, some existing containerization frameworks \VT{cite singularity and
-openvz} use flat images.
+In fact, some existing containerization frameworks~\cite{singularity}~\cite{openvz} \VT{cite singularity and
+openvz}\NZ{addressed} use flat images.
 %
 Our estimates show that without layer sharing our dataset would grow from 47TB
 to 85TB, resulting in \textbf{1.8$\times$} deduplication ratio.
@@ -54,13 +54,12 @@ only a single image, additional 5\% are referenced by 2 images, and less than
 %Hence, there is a dire need of a better redundancy management.}
 %
 %
-Interestingly, there were xxx\% layers that were referenced about 1 million
-times.
+Interestingly, there is one layer that is referenced by 184,171 images, which is an empty layer.
 %
-Our investigation showed  that these layers are~\VT{Verify this
-sentence and extend with analysis.}
+\VT{Our investigation showed  that these layers are~, Verify this
+sentence and extend with analysis.}\NZ{addressed}
 
-\VT{Use \% instead of probability in all Figures (both  # and labels).}
+%\VT{Use \% instead of probability in all Figures (both  # and labels).}
 
 \paragraph{Compressibility}
 
@@ -124,7 +123,7 @@ problem.}
 
 %\input{tab-file-count-capacity-dedup}
 
-\VT{Move all figures to separate fig- files and tables to tab- files.}
+\VT{Move all figures to separate fig- files and tables to tab- files.}\NZ{addressed}
 
 \begin{figure} \centering
 	\includegraphics[width=0.45\textwidth]{graphs/File_repeat_count.eps}
@@ -141,6 +140,6 @@ We see that over 99.42\% of files have more than one copy.
 Around 50\% of files have 4 copies and 90\% of files have less or equal than 10
 copies. 
 %
-The file that has the maximum repeat count---\VT{SPECIFY}---is an empty file.
+The file that has the maximum repeat count---\VT{SPECIFY}\NZ{addressed} 53,654,306---is an empty file.
 %
 \VT{Do we know anything about those empty files}.
