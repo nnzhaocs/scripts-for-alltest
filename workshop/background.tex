@@ -14,8 +14,11 @@ Docker~\cite{docker} is a popular container-based virtualization technology
 that extends traditional OS containers with higher level APIs and
 functionalities.
 %
-It automates the deployment of software and allows to efficiently package an
-application with its runtime dependencies in a container image~\cite{slacker}.
+It allows to efficiently package an application and its runtime dependencies
+in a container image to simplify and automate application deployment~\cite{slacker}.
+%
+%It automates the deployment of software and allows to efficiently package an
+%application with its runtime dependencies in a container image~\cite{slacker}.
 
 \input{fig-docker-architecture.tex}
 
@@ -60,8 +63,8 @@ This leaves layers unmodified throughout the lifetime of a container and
 enables layer sharing between multiple containers spawned from the same or
 different images.
 %
-Docker supports multiple storage drivers, \eg Aufs and Btrfs, which efficiently
-combine read-only and writable layers in a single
+Docker supports multiple \emph{storage drivers} such as Aufs or Btrfs, which
+efficiently combine read-only and writable layers in a single
 namespace~\cite{docker-driver-eval}.
 %
 %The writable layers are deleted when the container is deleted.
@@ -81,14 +84,21 @@ The Docker registry is a platform for storing and sharing container images.
 It stores images in \emph{repositories}, each containing different versions of
 the same image. 
 %
-Each image is consisted of a image manifest and a set of layers.
+Each image consists of an image manifest and a set of layers.
 %
-The image manifest provides a configuration and a set of layers'digests.
+The manifest is a JSON file, which contains the runtime configuration for a
+container image (\eg target platform and environment variables) and the list
+of layers which make up the image.
 %
-Image layers are stored as compressed archival files and image
-manifests as JSON-based files.
+Layers are identified via a digest that is computed as a hashsum over the
+layers' uncompressed content and they are stored as compressed archival files.
 %
-\VT{What is image manifest? Need to introduce}
+\VT{Compressed or uncompressed content?}
+%
+%Image layers are stored as compressed archival files and image
+%manifests as JSON files.
+%
+%\VT{What is image manifest? Need to introduce}
 %
 %
 %Docker Hub is one of the most popular public registries, supporting both
@@ -100,14 +110,15 @@ manifests as JSON-based files.
 %official repositories, which are directly provided by Docker Inc. and partners
 %are called ``$\langle repository name \rangle$".
 
-Modern Docker registry identifies and addresses a layer with a digest that is
-computed based on the uncompressed layer's content (e.g., SHA-256).
+%Modern Docker registry identifies and addresses a layer with a digest that is
+%computed based on the uncompressed layer's content (e.g., SHA-256).
 %
-\VT{Compressed or uncompressed content?}
+Identifying layers by their content allows the registry to store only one instance
+of a layer even if it is referenced by multiple images.
 %
-This allows registry to store only one instance of a layer even if multiple
-users accidentally built identical layers.
+\LR{Is that actually done across the entire registry or only within a single
+user/repository?}
+%multiple users accidentally built identical layers.
 %
-Notice, however, that even if a single file in two otherwise identical layers
-differs, the two layers are treated as completely different and stored in their
-entirety.
+However, if only a single file in two otherwise identical layers
+differs, the two layers are treated as different and stored separately.
