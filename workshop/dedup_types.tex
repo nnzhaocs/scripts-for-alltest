@@ -4,75 +4,72 @@
 \input{fig-dedup-overall}
 
 %
-To understand what are the file duplicates and why there are so many file
-duplicates, we look at the deduplication results from the perspective of file
-types. 
 %
 In this section, we present the deduplication results for common file
-types that occupy the most capacity (98.4\%, with 166.8 TB).
+types that occupy the largest part of capacity (98.4\%, with 166.8 TB).
 % as described in Section~\ref{xxx}.
+%To understand what are the file duplicates and why there are so many file
+%duplicates.
+We look at the deduplication results from the perspective of file types and 
+examine the following file type groups: executables, object files,
+and libraries (EOL), archival, source code, script, image, and database files. 
+%
+Figure~\ref{fig:dedup-overall} illustrates the deduplication results.
+The y-axies shows percentage of capacity occupied by different type group,
+broken down into unique file percentage and redundant file percentage.
 
-Figure~\ref{fig:dedup-overall} shows deduplication results for the following
-type groups: Executables, object files, and libraries(EOL), archival, source
-code, script, image, and database. 
+The overall deduplication ratio is \textbf{6.99$\times$} and most
+type groups have a comparable ratio.
 %
-Note that the y-axies shows percentage of
-capacity occupied by different type group. 
+For example, 86\% of EOL files can be deduplicated at file-level.
+\DIM{We use the dedup ration before and after, maybe we should add it for EOL as well? 1/(1-0.86) = 7.14}
 %
-Specifically, we break down the
-percentage into two parts: unique file percentage and redundant file
-percentage.
+Source code, scripts, and documents have the highest deduplication ratio
+(\textbf{31.25$\times$} for source code, \textbf{50$\times$} for scripts,
+and \textbf{12.5$\times$} for documents), \textit{which means that
+Docker developers are more prone to replicate source code, scripts, and
+documents rather than creating their own. Moreover, the source code and
+script duplicates generate additional executables and object files that are
+identical.} 
+%
 
-The overall deduplication ratio is \textbf{6.99$\times$}, and most of the type group have a
-comparable ratio. 
+We found that redundant C/C++ source code takes up over 77\%
+of the capacity occupied by source code. Looking closer we found
+that Google Test~\cite{googletest} - a cross-platform C++ test
+framework available on GitHub~\cite{github} - is frequently replicated.
+\DIM{Okay - but could we say something more precise, e.g., what \% of 77\% is taken by gtest?}
 %
-For example, 86\% of EOL files, which contains executables,
-object files, and libraries, can be deduplicated at file-level.  
-%
-Source codes,
-scripts, and documents have the highest deduplication ratio (\textbf{31.25$\times$} for source
-codes, \textbf{50$\times$} for scripts, and \textbf{12.5$\times$} for documents), \textit{which means that
-Docker developers are more prone to replicate source codes, scripts, and
-documents rather than creating their own. 
-%
-Moreover, these source code and
-script duplicates generate more identical executables and object files.} 
-%
-Especially, we found that the redundant C/C++ source codes take up over 77\%
-of capacity occupied by source codes. To find out why there are so many C/C++
-source codes, we inspect the C/C++ source codes and find a frequently
-replicated C/C++ source code called Google Test~\cite{googletest} which is a
-cross-platform C++ test framework and available in GitHub~\cite{github}.
-Interestingly, we found there are plenty of repositories related to Google
+Interestingly, we found there are multiple repositories \DIM{Docker repositories?} related to Google
 Test while there is no official repository for Google Test. We suspect that
 many developers replicate open source code from external public repositories,
-such as GitHub, and store them in containers. This would also explain why
-there are so many shared source codes across different images.
+such as GitHub, and store them in containers. This would also explain the shared
+source code across different images.
 
-Consider that Docker Hub allows developer to automatically build images from
+Docker Hub allows developers to automatically build images from
 source code in external public repositories and automatically push the built
 image to their Docker repositories, we believe that more open source code
-would be replicated into different images stored in Docker Hub registry.
+may be replicated into different images stored in Docker Hub registry.
+%
 \textit{To eliminate redundant open source codes in Docker registry in the
-future, we suggest that Docker Hub can create more offical images for popular
-open source codes so that developers can directly pull the image as a
+future, we suggest that Docker Hub creates offical images for popular
+open source codebases so developers can directly pull the image as a
 read-only layer}.
 
 Next, we see that EOL files, archival, and images have a similar deduplication
 (around \textbf{6.99$\times$}). 
 %
-Compare with other type groups, the redundant EOL files and
-archival files occupy over half of the capacity (51.4\%). 
+Compared with other type groups, the redundant EOL files and archival files
+occupy over half of the capacity (51.4\%). 
 %This is mainly because EOL and archival file sizes are bigger than other type
 %group.
 % 
-Database related files have the lowest deduplication ratio (\textbf{4.2$\times$}), which
-contributes little to the overall savings.
+Database related files have the lowest deduplication ratio (\textbf{4.2$\times$}),
+which contributes little to the overall savings.
 
-\textit{Finding 2: All the common file types have a high deduplication ratio.
+\textit{Finding 2 \DIM{Where is Finding 1?}: All common file types have a high deduplication ratio.
 Especially, EOL and archival files contribute a lot to the overall savings.
-Besides, developers are likely to replicate codes rather than creating their
-own.}
+Also, developers are likely to reuse code rather than create their
+own. \DIM{Ffrom the data we see there is high source code dedup, but this might be too much of a generic statement based on this data.}}
 
 %We see that 43.15\% of redundant files are documents, 
 %%
