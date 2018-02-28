@@ -146,13 +146,13 @@ def process_layer(layer_filename):
     if archival_size == -1 or compressed_size_with_method_gzip == -1:
         return
 
-    depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
-    dir_depth = {
-        'dir_max_depth': max(depths),
-        'dir_min_depth': min(depths),
-        'dir_median_depth': statistics.median(depths),
-        'dir_avg_depth': statistics.mean(depths)
-    }
+    # depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
+    # dir_depth = {
+    #     'dir_max_depth': max(depths),
+    #     'dir_min_depth': min(depths),
+    #     'dir_median_depth': statistics.median(depths),
+    #     'dir_avg_depth': statistics.mean(depths)
+    # }
 
     sha, id, timestamp = str(layer_filename).split("-")
 
@@ -165,9 +165,9 @@ def process_layer(layer_filename):
     layer = {
         'layer_id': sha+':'+id,  # str(layer_id).replace("/", ""),
         'dirs': sub_dirs,  # getLayersBychainID(chain_id),
-        'layer_depth': dir_depth,
+        # 'layer_depth': dir_depth,
         'size': size,  # sum of files size,
-        'repeats': 0,
+        # 'repeats': 0,
         'file_cnt': sum_file_cnt(sub_dirs)
     }
 

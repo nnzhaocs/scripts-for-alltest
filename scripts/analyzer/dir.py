@@ -281,23 +281,19 @@ def sum_dir_size(s_dir_files):
 
 def load_files(layer_dir, sub_dirs, layer_dir_level):
     start = time.time()
+
+    all_dirs = []
+    all_files = []
+
     try:
         for path, subdirs, files in os.walk(layer_dir):
-            if not len(files):  # empty layer dir
-                logging.warn('################### No files found in the layer_dir ###################')
-                sub_dir = {
-                    'subdir': None,
-                    'dir_depth': 0,
-                    'file_cnt': 0,
-                    'files': None,  # full path of f = dir/files
-                    'dir_size': 0
-                }
-                sub_dirs.append(sub_dir)
-                continue
-            else:  # not empty
-                sub_dir = {}
-                s_dir_files = []
-                for f in os.listdir(path):  # extract root dir files
+            if len(subdirs):
+                for dirname in subdirs:
+                    s_dir = os.path.join(path, dirname)
+                    if os.path.isdir(s_dir):
+                        all_dirs.append(s_dir.replace(layer_dir, ""))
+
+                for f in files:
                     try:
                         filename = os.path.isfile(os.path.join(path, f))
                     except:
@@ -309,50 +305,13 @@ def load_files(layer_dir, sub_dirs, layer_dir_level):
                     if os.path.isfile(os.path.join(path, f)):
                         s_dir_file = load_file(os.path.join(path, f))
                         if s_dir_file:
-                            s_dir_files.append(s_dir_file)
+                            all_files.append(s_dir_file)
 
                 sub_dir = {
-                    'subdir': None,
-                    'dir_depth': 0,
-                    'file_cnt': len(s_dir_files),
-                    'files': s_dir_files,  # full path of f = dir/files
-                    'dir_size': sum_dir_size(s_dir_files)
-                }
-                sub_dirs.append(sub_dir)
-
-            if not len(subdirs):
-                continue
-
-            sub_dir = {}
-            for dirname in subdirs:
-                s_dir = os.path.join(path, dirname)
-                if not os.path.isdir(s_dir):
-                    logging.warn('################### layer subdir %s is invalid ###################',
-                                 s_dir.replace(layer_dir, ""))
-                    continue
-
-                dir_level = s_dir.count(os.sep) - layer_dir_level
-                s_dir_files = []
-                for f in os.listdir(s_dir):
-                    try:
-                        filename = os.path.isfile(os.path.join(s_dir, f))
-                    except:
-                        exc_type, exc_value, exc_traceback = sys.exc_info()
-                        traceback.print_exception(exc_type, exc_value, exc_traceback,
-                                                  limit=2, file=sys.stdout)
-                        continue
-
-                    if os.path.isfile(os.path.join(s_dir, f)):
-                        s_dir_file = load_file(os.path.join(s_dir, f))
-                        if s_dir_file:
-                            s_dir_files.append(s_dir_file)
-
-                sub_dir = {
-                    'subdir': s_dir.replace(layer_dir, ""),
-                    'dir_depth': dir_level,
-                    'file_cnt': len(s_dir_files),
-                    'files': s_dir_files,  # full path of f = dir/files
-                    'dir_size': sum_dir_size(s_dir_files)
+                    'subdirs': all_dirs,
+                    'file_cnt': len(all_files),
+                    'files': all_files,  # full path of f = dir/files
+                    'dir_size': sum_dir_size(all_files)
                 }
                 sub_dirs.append(sub_dir)
 
@@ -360,9 +319,6 @@ def load_files(layer_dir, sub_dirs, layer_dir_level):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_exception(exc_type, exc_value, exc_traceback,
                                   limit=2, file=sys.stdout)
-        # sub_dirs = []
-        # clear_dir(layer_dir)
-        # return sub_dirs, -1
         return False
 
     elapsed = time.time() - start
