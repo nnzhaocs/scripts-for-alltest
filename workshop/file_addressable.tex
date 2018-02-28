@@ -17,12 +17,19 @@ For all the \emph{push image} requests, file-level deduplication mainly
 consists of three steps: layer decompression, file content digest calculation,
 and searching \& indexing. The unique files are stored in a \textit{file pool}
 and redundant copies are removed. \alicomment{How are we saving the location
-of each file in the layer? It is not clear from the following sentences.} For each
+of each file in the layer? It is not clear from the following sentences.}
+\NZ{addressed} For each
 file in a layer, \textit{file content address} is recorded, which is a file
 digest linked to the files' location.  Also for all layers, layer digest to its
 containing file content digest mapping record is also created and saved to a
-\textit{layer-to-file digest table}.     
+\textit{layer-to-file table}. The \textit{layer-to-file table} also records the 
+file path within each layer associated with each file.      
 \alicomment{Separately mention pull layer requests}
+
+For all the \emph{pull image} requests, Docker registry will first fetch 
+all its containing files by consulting the \textit{layer-to-file table} and 
+create a layer archive file by compressing these files, 
+then send the compressed layer archive file to the clients.
 
 \paragraph{Deduplicating when workload is light}
 Deduplication can be expensive in terms of performance overhead.  However
