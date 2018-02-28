@@ -1,95 +1,41 @@
 \section{Rethinking storage for Docker registry}
 \label{sec:file_adressable}
-%\vcomment{Nannan, please, do not use lines longer than 80 characters. It will simplify review
-%and revision process.}\nancomment{Addressed}
-%\nancomment{Converted to discussion}
-%
-%\subsection{}
-%\paragraph{Benefit of file-level content addressable storage}
-%
-%Currently, Docker registry uses layer-level content addressable storage model
-%to avoid storing redundant copies of an identical layer.  However, as discussed
-%in previous sections, almost 97\% of files inside the layers are redundant
-%which accounts for 86\% of storage space (uncompressed).  
-As the number of images stored in Docker registry is increasing dramatically,
-storing and managing the large proportion of redundant files requires both
-storage equipment and administration investment. 
-%
-In this section, as an
-alternative to layer-level content addressable storage, a file-level content
-addressable storage model (FLCAS) is suggested for Docker registry to remove
-redundant files.% and save space while maintaing good performance.
-
-FLCAS, which is essentially a file-level deduplication, can significantly
-reduce the redundant files in docker registry and save a large volume of
-storage space. 
-%
-However, FLCAS may also introduce considerable overheads, which
-include decompressing compressed layer archival files, calculating the file
-content digest, searching for identical files, etc.  
-%
-To reduce above overhead,
-we provide different suggestions on how one can mitigate the affects of such
-overheads and efficiently server push/pull requests. 
-%
-We also simulated FLCAS on
-0.9 million layers and provided performance analysis.
-
-%\lrcomment{These challenges should be listed earlier in the section. They are
-%also hard to follow as at this point, it it is still unclear why we need
-%searching or why we have additional compression/decompression overhead.} while
-%maintain a good performance. 
-%\lrcomment{What are the challenges we overcome with FLCAS?}  
-%Docker registry can save a lot of space if using file-level content addressable storage. 
-%Benefit: saving money, reducing storage management overhead.
+In this section, as an alternative to layer-level content addressable storage,
+a file-level content addressable storage model (FLCAS) is suggested for Docker
+registry to remove redundant files.% and save space while maintaing good
+performance. FLCAS, can significantly reduce the redundant files in docker
+registry and save a large volume of storage space. However, FLCAS may also
+introduce considerable overheads, which include compressions/decompression of
+layer archival files, calculation of file content digest, searching for
+identical files, etc. We provide different suggestions on how Docker registry
+can mitigate the affects of such overheads and efficiently server push/pull
+requests.  We also simulated FLCAS on 0.9 million layers and provided
+performance analysis.
 
 \subsection{File-level content addressable storage model (FLCAS)}
-File-level content addressable storage system (FLCAS) uses file-level
-deduplication to remove the redundant copies of an identical file by generating
-a digest (such as MD5 or SHA256) from the file the digest refers to.
-%
-Consequently, FLCAS exposes a high-level layer addressing by mapping layer
-digests to their containing file digests. 
-
-File-level deduplication mainly consists of three
-steps: layer decompression, file content digest calculation, and searching \&.
-indexing. 
-% 
-During file-level deduplication, the unique files are stored in a
-\textit{file pool} and redundant copies are removed. 
-%
-A unique \textit{file
-content address} is recorded, which is a file digest uniquely and linked to the
-files'location. 
-%
-Meanwhile, a layer digest to its containing file content digest
-mapping record is also created and saved to a \textit{layer-to-file digest
-table}.     
+For all the \emph{push image} requests, file-level deduplication mainly
+consists of three steps: layer decompression, file content digest calculation,
+and searching \& indexing. The unique files are stored in a \textit{file pool}
+and redundant copies are removed. \alicomment{How are we saving the location
+of each file in the layer? It is not clear from the following sentences.} For each
+file in a layer, \textit{file content address} is recorded, which is a file
+digest linked to the files' location.  Also for all layers, layer digest to its
+containing file content digest mapping record is also created and saved to a
+\textit{layer-to-file digest table}.     
+\alicomment{Separately mention pull layer requests}
 
 \paragraph{Deduplicating when workload is light}
-
-%\input{fig-layer-size-compress-cdf}
-
-Deduplication can be expensive in terms of performance overhead, file-level
+Deduplication can be expensive in terms of performance overhead.  However
+according to IBM container registry workload analysis~\cite{dockerworkload},
+workload fluctuates, with peaks and troughs~\cite{dockerworkload}. Also, 80\%
+of the time, registry serves only 100 or less requests. So file-level
 dedupilication can be triggered for removing the redundant files for cold
-layers only when the workload is low and storage utilization is high.
-%  
-Typically,
-workload fluctuates, with peaks and troughs. 
-%
-According to IBM container
-registry workload analysis~\cite{dockerworkload}, 80\% of time, there were only 100
-requests.
-%
-To improve performance, we also suggest to use
-RAM to temporarily store \textit{small} layers and directly process them in RAM
-to perform decompression, unpacking, file content digest calculation.
-%
-According to our findings majority (87.3\%) of layers that are less than 50M as
-shown in Figure~\ref{fig:layer-size-cdf}.
-%
-So majority of layers can be stored
-and processed in RAM to speed up file-level dedup. 
+layers only when the workload is low and storage utilization is high.  To
+further improve the performance of FLCAS, we also suggest to use main memory
+for temporarily storing and processing \textit{small} layers. According to our
+findings, majority (87.3\%) of layers are smaller than 50~MB as shown in
+Figure~\ref{fig:layer-size-cdf} So majority of layers can be stored and
+processed in RAM to speed up file-level dedup. 
 
 \begin{figure}
 	\centering
@@ -101,36 +47,19 @@ and processed in RAM to speed up file-level dedup.
 
 \paragraph{Caching hot layers}
 To reduce overhead, we suggest caching the hot/recently requested layers as
-gzip compressed tar files. 
-%
-We observed that only a small proportion of images
-and layers are frequently requested. 
-%
-A majority of images and layers are
-\textit{cold}. 
-%
-As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total
+gzip compressed tar files. We observed that only a small proportion of images
+and layers are frequently requested and majority of images and layers are
+\textit{cold}. As shown in Figure~\ref{fig:pull-cnt}, x-axis shows the total
 number of pulls since the layers/images are stored in Docker Hub to May 30,
-2017. 
-%
-We see that only 20\% and 10\% of images are pulled more that 100 and
-360 times respectively. 
-%
-Similarly, only 20\% and 10\% of layers are pulled more
-that 217 and 660 times. 
-%
-Note that the layers'pull count shown in
+2017.  We see that only 20\% and 10\% of images are pulled more that 100 and
+360 times respectively.  Similarly, only 20\% and 10\% of layers are pulled
+more that 217 and 660 times.  Note that the layers'pull count shown in
 Figure~\ref{fig:pull-cnt} is calculated by aggregating all the images'pull
-counts that refers this layer. 
-%
-Note that the image pull counts are crawled from
-Docker Hub website. 
-%
-Actual layer pull count should be less than the number
-shown in Figure~\ref{fig:pull-cnt} because pulling a image does not necessarily
-pull all its containing layers as we don't pull the layers if they have already
-been downloaded.
-
+counts that refers this layer.  Note that the image pull counts are crawled
+from Docker Hub website.  Actual layer pull count should be less than the
+number shown in Figure~\ref{fig:pull-cnt} because pulling a image does not
+necessarily pull all its containing layers as we don't pull the layers if they
+have already been downloaded.
 
 \subsection{Performance analysis}
 %
