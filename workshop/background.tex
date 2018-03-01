@@ -1,17 +1,8 @@
 \section{Background}
 \label{sec:background}
 
-%Container-based virtualization (such as Linux Containers~\cite{LXC}) has
-%emerged as a lightweight alternative to full virtualization.
-%%
-%Compared to Virtual Machines (\eg VMware~\cite{VMware} or Xen~\cite{xen}),
-%containers work at the operating system level.
-%%
-%Containers share the same kernel which improves startup times and significantly
-%reduces the storage and memory overhead ~\cite{ContainerVirtualization}.
-
-Docker~\cite{docker} is a popular container-based virtualization technology
-that extends traditional OS containers with higher level APIs and
+Docker~\cite{docker} is a popular virtualization technology
+that extends traditional OS containers with higher level
 functionalities.
 %
 It allows to efficiently package an application and its runtime dependencies
@@ -19,23 +10,27 @@ in a container image to simplify and automate application deployment~\cite{slack
 %
 %It automates the deployment of software and allows to efficiently package an
 %application with its runtime dependencies in a container image~\cite{slacker}.
-
+%
 \input{fig-docker-architecture.tex}
-
-As shown in Figure~\ref{fig-docker-architecture}, the Docker setup consists of
-several components.
 %
-Users interact with Docker via the Docker \emph{client}, which sends commands
-to the Docker \emph{daemon}.
+As shown in Figure~\ref{fig-docker-architecture}, a typical
+Docker setup consists of three main components: 1)~\emph{client},
+2)~\emph{daemon}, and 3)~\emph{registry}.
 %
-The daemon is responsible for \emph{running} containers from locally available
+Users interact with Docker using the Docker client which, in turn,
+sends commands to the Docker daemon.
+%
+Both client and daemon typically run on the same machine.
+%
+The daemon implements the core logic of Docker and
+is responsible for \emph{running} containers from locally available
 images.
 %
-Additionally, the daemon supports \emph{building} new images and \emph{pushing}
-them to a Docker \emph{registry}.
+In case a user launches a container from an image that is not available
+locally, the daemon \emph{pull}s the required image from the Docker registry.
 %
-In case a user wants to launch a container from an image that is not available
-locally, the daemon will \emph{pull} the required image from the registry.
+Additionally, the daemon supports \emph{building} new images and \emph{pushing}
+them to the registry.
 
 \paragraph{Images and layers}
 %
