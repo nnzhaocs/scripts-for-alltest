@@ -308,12 +308,12 @@ def load_files(layer_dir, sub_dirs, layer_dir_level):
                         if s_dir_file:
                             all_files.append(s_dir_file)
 
-                sub_dirs = {
-                    'subdirs': all_dirs,
-                    'file_cnt': len(all_files),
-                    'files': all_files,  # full path of f = dir/files
-                    'dir_size': sum_dir_size(all_files)
-                }
+        sub_dirs = {
+            'subdirs': all_dirs,
+            'file_cnt': len(all_files),
+            'files': all_files,  # full path of f = dir/files
+            'dir_size': sum_dir_size(all_files)
+        }
                 #sub_dirs.append(sub_dir)
 
     except:

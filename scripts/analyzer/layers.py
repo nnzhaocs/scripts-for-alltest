@@ -136,7 +136,7 @@ def process_layer(layer_filename):
         logging.info('################### The layer tarball type is neither tar or gzip! layer file name %s ###################', layer_filename)
         return
 
-    if not len(sub_dirs):
+    if not sub_dirs:
         """"write to bad layer_tarball"""
         with open("bad_nonanalyzed_layer_list-%s.out" % processname, 'a+') as f:
             f.write(layer_filename+'\n')
