@@ -20,7 +20,7 @@ def get_file_type(mode):
         return 'Unknown'
 
 
-def load_file(abs_filename):
+def load_file(abs_filename, path):
     #return None
     if not os.path.isfile(abs_filename):
 	return None
@@ -89,7 +89,7 @@ def load_file(abs_filename):
         extension = os.path.splitext(abs_filename)[1]
 
     dir_file = {
-        'filename': os.path.basename(abs_filename),
+        'filename': abs_filename.replace(path, ""),
         'sha256': sha256,
         'type': f_type,
         'extension': extension

@@ -143,7 +143,7 @@ def cp_file(layer_file, cp_layer_tarball_name):
 
 
 def load_dirs(layer_filename, filetype):
-    sub_dirs = []
+    sub_dirs = {}
 
     """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
     extracting to extracting_dir/<layer_id>
@@ -303,17 +303,18 @@ def load_files(layer_dir, sub_dirs, layer_dir_level):
                         continue
 
                     if os.path.isfile(os.path.join(path, f)):
-                        s_dir_file = load_file(os.path.join(path, f))
+                        s_dir_file = load_file(os.path.join(path, f), path)
+			#s_dir_file.filename = os.path.join(path, s_dir_file.filename).replace(layer_dir, "")
                         if s_dir_file:
                             all_files.append(s_dir_file)
 
-                sub_dir = {
+                sub_dirs = {
                     'subdirs': all_dirs,
                     'file_cnt': len(all_files),
                     'files': all_files,  # full path of f = dir/files
                     'dir_size': sum_dir_size(all_files)
                 }
-                sub_dirs.append(sub_dir)
+                #sub_dirs.append(sub_dir)
 
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
