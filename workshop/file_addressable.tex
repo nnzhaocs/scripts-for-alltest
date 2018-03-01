@@ -2,37 +2,39 @@
 \label{sec:file_adressable}
 In this section, as an alternative to layer-level content addressable storage,
 a file-level content addressable storage model (FLCAS) is suggested for Docker
-registry to remove redundant files.% and save space while maintaing good
-performance. FLCAS, can significantly reduce the redundant files in docker
-registry and save a large volume of storage space. However, FLCAS may also
-introduce considerable overheads, which include compressions/decompression of
-layer archival files, calculation of file content digest, searching for
-identical files, etc. We provide different suggestions on how Docker registry
-can mitigate the affects of such overheads and efficiently server push/pull
-requests.  We also simulated FLCAS on 0.9 million layers and provided
-performance analysis.
+registry to remove redundant files. % and save space while maintaing good
+FLCAS, can significantly reduce the redundant files in docker registry and save
+a large volume of storage space. However, FLCAS may also introduce considerable
+overheads, which include compressions/decompression of layer archival files,
+calculation of file content digest, searching for identical files, etc. In this
+section, we explain how FLCAS supports \emph{push layer} and \emph{pull layer}
+requests. We also
+provide different suggestions on how Docker registry can mitigate
+the affects of such overheads and efficiently server push/pull requests. We
+also simulated FLCAS on 0.9 million layers and provided performance analysis.
 
 \subsection{File-level content addressable storage model (FLCAS)}
-For all the \emph{push image} requests, file-level deduplication mainly
+For all the \emph{push layer} requests, file-level deduplication mainly
 consists of three steps: layer decompression, file content digest calculation,
 and searching \& indexing. The unique files are stored in a \textit{file pool}
-and redundant copies are removed. \alicomment{How are we saving the location
-of each file in the layer? It is not clear from the following sentences.}
-\NZ{addressed} For each
-file in a layer, \textit{file content address} is recorded, which is a file
-digest linked to the files' location.  Also for all layers, layer digest to its
-containing file content digest mapping record is also created and saved to a
-\textit{layer-to-file table}. The \textit{layer-to-file table} also records the 
-file path within each layer associated with each file.      
-\alicomment{Separately mention pull layer requests}
+and redundant copies are removed. 
+%\alicomment{How are we saving the location
+%of each file in the layer? It is not clear from the following sentences.}
+%\NZ{addressed}
+For each file in a layer, \textit{file content address} is recorded, which is a
+file digest linked to the files' location.  Also for all layers, layer digest
+to its containing file content digest mapping record is also created and saved
+to a \textit{layer-to-file table}. The \textit{layer-to-file table} also
+records the file path within each layer associated with each file.
+%\alicomment{Separately mention pull layer requests}
 
-For all the \emph{pull image} requests, Docker registry will first fetch 
+For all the \emph{pull layer} requests, Docker registry will first fetch 
 all its containing files by consulting the \textit{layer-to-file table} and 
 create a layer archive file by compressing these files, 
 then send the compressed layer archive file to the clients.
 
 \paragraph{Deduplicating when workload is light}
-Deduplication can be expensive in terms of performance overhead.  However
+Deduplication can be expensive in terms of performance overhead. However
 according to IBM container registry workload analysis~\cite{dockerworkload},
 workload fluctuates, with peaks and troughs~\cite{dockerworkload}. Also, 80\%
 of the time, registry serves only 100 or less requests. So file-level
@@ -114,8 +116,8 @@ deduplication of 60 concurrent layers for 0.9 Million layers in total.
 %better performance than clunky MapReduce-based DB.}
 %
 Note that the pushing latency is not influenced by the file-level deduplication
-because once the layer reaches registry, an response message will be sent to
-the user. 
+because as soon as one replica of layer is stored by the registry, a response
+message will be sent to the user. 
 %
 No addition delay will be added to the pushing time. 
 %
