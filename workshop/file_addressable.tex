@@ -1,5 +1,9 @@
 \section{Rethinking storage for Docker registry}
 \label{sec:file_adressable}
+\NZ{The main goal of this section is to provide some hints for designer to implement a fast dedup system.
+	We do not give any design in the workshop paper. We will keep performance analysis and simulation part, 
+	just give some basic latencies for each involved operations for designer to think about how to improve their design and what will be the bottleneck.
+	}
 In this section, as an alternative to layer-level content addressable storage,
 a file-level content addressable storage model (FLCAS) is suggested for Docker
 registry to remove redundant files. % and save space while maintaing good

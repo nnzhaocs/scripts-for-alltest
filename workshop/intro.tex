@@ -40,9 +40,9 @@ infrastructure and so far has remained largely unexplored.
 In this paper, we perform the first, in-depth, large-scale redundancy
 analysis of the images and layers stored in Docker Hub.
 %
-We download 51\,TB (167\,TB uncompressed) worth of Docker Hub images,
+We download 47\,TB (167\,TB uncompressed) worth of Docker Hub images,
 %
-\LR{In the abstract it says 47TB?}
+\LR{In the abstract it says 47TB?}\NZ{addressed}
 %
 which contain over 5 billion files in total.
 %
@@ -88,7 +88,10 @@ resulting in only 3\% of unique files.
 \item \LR{This point is unclear. If the source code is duplicated, I would expect that to be the major
 source of redundancy, not the resulting executables? Isn't that also what we're saying in Section 3?}
 The majority of the file duplicates are executables and object files, which are
-mostly created by source code duplicates.
+mostly created by source code duplicates.\NZ{I did see a lot of executables/intermediate representations have the same filename with the source codes/scripts. 
+	For example, a.py and a.pyc. But i did not calculate the total number.
+	How about we replace with: }
+	We found source codes and scripts have a very high deduplication ratio (\textbf{$31.25\times$} for souce codes and \textbf{$50\times$} for scripts), which indicates that Docker developers are prone to replicate source codes or scripts (i.e., code reuse). Moreover, these source code duplicates and script duplicates would result in more executable duplicates and object file duplicates.
 
 \end{compactitemize}
 
@@ -105,7 +108,7 @@ We simulate FLCAS for 0.9 million layers and provide different suggestions to im
 deduplication performance.
 %
 \LR{Do we have some numbers on overhead/saved storage space that we can put here?
-If so, we should replace the two suggestions below by those numbers.}
+If so, we should replace the two suggestions below by those numbers.}\NZ{We can just say we provide some hints for dedup implementation in registry by using a simple simulation.}
 %
 The simulation result show that (1)~processing layers in
 parallel can largely improve throughput. For example, 80\% of file-level deduplication time is
