@@ -143,7 +143,7 @@ def cp_file(layer_file, cp_layer_tarball_name):
 
 
 def load_dirs(layer_filename, filetype):
-    sub_dirs = []
+    sub_dirs = {}
 
     """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
     extracting to extracting_dir/<layer_id>
@@ -255,7 +255,8 @@ def load_dirs(layer_filename, filetype):
     layer_dir_level = layer_dir.count(os.sep)
     logging.debug("(%s, %s)", layer_dir, layer_dir_level)
 
-    if not load_files(layer_dir, sub_dirs, layer_dir_level):
+    sub_dirs = load_files(layer_dir, layer_dir_level)
+    if not sub_dirs:
         clear_dir(layer_dir)
         return sub_dirs, -1
 
@@ -279,7 +280,7 @@ def sum_dir_size(s_dir_files):
     return sum_size
 
 
-def load_files(layer_dir, sub_dirs, layer_dir_level):
+def load_files(layer_dir, layer_dir_level):
     start = time.time()
 
     all_dirs = []
@@ -293,35 +294,36 @@ def load_files(layer_dir, sub_dirs, layer_dir_level):
                     if os.path.isdir(s_dir):
                         all_dirs.append(s_dir.replace(layer_dir, ""))
 
-                for f in files:
-                    try:
-                        filename = os.path.isfile(os.path.join(path, f))
-                    except:
-                        exc_type, exc_value, exc_traceback = sys.exc_info()
-                        traceback.print_exception(exc_type, exc_value, exc_traceback,
-                                                  limit=2, file=sys.stdout)
-                        continue
+            for f in files:
+                try:
+                    filename = os.path.isfile(os.path.join(path, f))
+                except:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    traceback.print_exception(exc_type, exc_value, exc_traceback,
+                                              limit=2, file=sys.stdout)
+                    continue
 
-                    if os.path.isfile(os.path.join(path, f)):
-                        s_dir_file = load_file(os.path.join(path, f))
-                        if s_dir_file:
-                            all_files.append(s_dir_file)
+                if os.path.isfile(os.path.join(path, f)):
+                    s_dir_file = load_file(os.path.join(path, f), path)
+                    #s_dir_file.filename = os.path.join(path, s_dir_file.filename).replace(layer_dir, "")
+                    if s_dir_file:
+                        all_files.append(s_dir_file)
 
-                sub_dir = {
-                    'subdirs': all_dirs,
-                    'file_cnt': len(all_files),
-                    'files': all_files,  # full path of f = dir/files
-                    'dir_size': sum_dir_size(all_files)
-                }
-                sub_dirs.append(sub_dir)
+        sub_dirs = {
+            'subdirs': all_dirs,
+            'file_cnt': len(all_files),
+            'files': all_files,  # full path of f = dir/files
+            'dir_size': sum_dir_size(all_files)
+        }
+        #sub_dirs.append(sub_dir)
 
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_exception(exc_type, exc_value, exc_traceback,
                                   limit=2, file=sys.stdout)
-        return False
+        return {}
 
     elapsed = time.time() - start
     logging.info('process layer_id:%s : file digest calculation for layer, ==> %f s', layer_dir, elapsed)
 
-    return True
+    return sub_dirs
