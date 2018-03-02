@@ -293,20 +293,20 @@ def load_files(layer_dir, sub_dirs, layer_dir_level):
                     if os.path.isdir(s_dir):
                         all_dirs.append(s_dir.replace(layer_dir, ""))
 
-                for f in files:
-                    try:
-                        filename = os.path.isfile(os.path.join(path, f))
-                    except:
-                        exc_type, exc_value, exc_traceback = sys.exc_info()
-                        traceback.print_exception(exc_type, exc_value, exc_traceback,
-                                                  limit=2, file=sys.stdout)
-                        continue
+            for f in files:
+                try:
+                    filename = os.path.isfile(os.path.join(path, f))
+                except:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    traceback.print_exception(exc_type, exc_value, exc_traceback,
+                                              limit=2, file=sys.stdout)
+                    continue
 
-                    if os.path.isfile(os.path.join(path, f)):
-                        s_dir_file = load_file(os.path.join(path, f), path)
-			#s_dir_file.filename = os.path.join(path, s_dir_file.filename).replace(layer_dir, "")
-                        if s_dir_file:
-                            all_files.append(s_dir_file)
+                if os.path.isfile(os.path.join(path, f)):
+                    s_dir_file = load_file(os.path.join(path, f), path)
+                    #s_dir_file.filename = os.path.join(path, s_dir_file.filename).replace(layer_dir, "")
+                    if s_dir_file:
+                        all_files.append(s_dir_file)
 
         sub_dirs = {
             'subdirs': all_dirs,
