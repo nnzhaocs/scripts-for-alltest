@@ -1,14 +1,19 @@
 \section{Deduplication analysis}
 \label{sec:redundant_files}
 
-In this section, we investigate the potential for data deduplication in
-the Docker registry.
+In this section, we investigate the potential for data deduplication in the
+Docker registry.
 %
-Therefor, we download a large set of images from the Docker Hub
-registry~\cite{docker-hub} and analyze the benefits of the current layer-level
-deduplication approach.
+Therefore, we download a large set of images from the Docker Hub
+registry~\cite{docker-hub} and analyze the benefits of data reduction
+techniques that Docker already implements---layer sharing and local
+compression.
 %
-\LR{We should introduce the term layer-level deduplication in the previous section.}
+\LR{We should introduce the term layer-level deduplication in the previous
+section.}
+%
+\VT{Lukas, I rephrased and changed to layer sharing, which was introduced in
+prev. section. c if it reads better now.}
 %
 %Docker, in its current state, already performs rudimentary deduplication by
 %sharing identical layers between images.
@@ -16,12 +21,12 @@ deduplication approach.
 %We start our analysis from quantifying how much benefits does this existing
 %approach provides.
 %
-%However, we believe that there is significantly more potential in deduplicating
-%individual files in the layers.
+%However, we believe that there is significantly more potential in
+%deduplicating individual files in the layers.
 %
-We then use the same dataset to estimate the efficacy of file-level deduplication
-and analyze the root causes of the high file redundancy found across container
-images.
+We then use the same dataset to estimate the efficacy of file-level
+deduplication and analyze the root causes of the high file redundancy found
+across container images.
 %
 
 \input{methodology}
