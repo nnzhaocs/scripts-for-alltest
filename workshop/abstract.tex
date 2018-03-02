@@ -1,6 +1,6 @@
 \begin{abstract}
 
-Due to the tight isolation, low overhead, and efficient packaging of the
+Due to their tight isolation, low overhead, and efficient packaging of the
 execution environment, Docker containers have become a prominent solution for
 deploying modern applications.
 %
@@ -12,8 +12,9 @@ Containers are created from images which are stored in a Docker registry.
 %
 %Docker allows sharing of such images between users via a Docker registry.
 %
-The amount of data Docker registries store is massive; for instance, Docker
-Hub---a popular public registry---stores at least a half million public images.
+Docker registries store a large amount of images and with the increasing
+popularity of Docker, they continue to grow. For example, Docker
+Hub---a popular public registry---stores more than half a million public images.
 %
 %As the amount of images stored in public and private Docker registries
 %increases it becomes important to study images' characteristics.
@@ -27,22 +28,26 @@ Hub---a popular public registry---stores at least a half million public images.
 %
 %Our goal is to collect statistics from a large amount of Docker images and
 %perform a large-scale characterization of Docker images.
+
+In this paper, we download and analyze over 47~TB of Docker images from
+Docker Hub and derive major trends and useful insights.
 %
-In this study, we downloaded over 47~TB of real Docker images,
-analyzed their content, and derived major trends and useful insights.
+\LR{This is out of context, we haven't introduced layers yet. Can we put
+a better highlight?}
+For example, we find that only 10\% of layers are referred to by more than one image.
 %
-For example, we found that only 10\% of layers are referred by more than one image.
+We then evaluate the potential of file deduplication for the Docker registry.
 %
-We then evaluated the potential of deduplication for the Docker registry.
-%
-Our analysis revealed that only ~3\% of the files in unpacked images are
+Our analysis reveals that only ~3\% of the files in unpacked images are
 unique.
 %
-We, therefore, designed Docker registry that
-performs file-level deduplication of the images.
+Based on this finding, we present the design for a Docker registry, which
+performs file-level deduplication across the stored images.
 %
-We present simulation-based estimates of performance, storage efficiency, and
-resource utilization in this paper.
+We conduct a simulation-based analysis to assess the feasibility of our design
+and show that \LR{put 1 or 2 highlight results here}.
+
+%estimate performance, storage efficiency, and resource utilization
 
 %
 %Furthermore, we applied chunk-level deduplication method on the 5TB unique
