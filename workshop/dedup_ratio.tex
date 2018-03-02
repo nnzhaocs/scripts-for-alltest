@@ -1,4 +1,4 @@
-\subsection{Deduplication ratio} 
+\subsection{Data reduction analysis} 
 \label{sec:dedup_ratio}
 
 %In Docker registry, layers are shared among different images to eliminate
@@ -24,12 +24,19 @@ Instead, every image would be a single flat archive.
 %
 In fact, some existing containerization frameworks
 ~\cite{singularity}~\cite{openvz} 
-\VT{cite singularity and
-openvz}\NZ{addressed} use flat images.
 %
-Our estimates show that without layer sharing our dataset would grow from 47TB
-to 85TB, resulting in \textbf{1.8$\times$} deduplication ratio.
-% 
+\VT{cite singularity and openvz}
+%
+\NZ{addressed}
+%
+\VT{No, not addressed, citation for singularity is still missing}
+%
+use flat images.
+%
+Our estimates show that without layer sharing Docker Hub dataset would grow
+from 47TB to 85TB, implying \textbf{1.8$\times$} deduplication ratio provided
+by the layer sharing technique.
+ 
 We further computed for each layer, how many times it is referenced by images.
 %
 Figure~\ref{fig:ref_count} shows that around 90\% of layers are referenced by
@@ -56,14 +63,17 @@ only a single image, additional 5\% are referenced by 2 images, and less than
 %Hence, there is a dire need of a better redundancy management.}
 %
 %
-Interestingly, there is one layer that is referenced by 184,171 images, which is an empty layer.
+Interestingly, there is one layer that is referenced by 184,171 images.  Our
+analysis revealed that this is an empty layer.
 %
-\VT{Our investigation showed  that these layers are~, Verify this
-sentence and extend with analysis.}\NZ{addressed}
+\VT{Explain the reason for empty layer.}
+%
+\VT{I feel we might need to talk about 2 more "most referenced" layers.}
+%
+\VT{Use \% instead of probability in all Figures (both  # and labels).
+We use \% in the text, so we MUST do it.}
 
-%\VT{Use \% instead of probability in all Figures (both  # and labels).}
-
-\paragraph{Compressibility}
+\paragraph{Compression}
 
 \input{fig-layer-size-compress-cdf}
 
@@ -81,7 +91,7 @@ layers are smaller than 170MB.
 %\emph{Relatively small size of many layer allows to consider selective
 %	in-memory layer caching at the registry side.}
 %
-Moreover, the total compressed layer dataset grows from 47~TB to 167.2~TB after decompression, resulting in \textbf{3.6$\times$} compression ratio.
+Moreover, the total compressed layer dataset grows from 47~TB to 167~TB after decompression, resulting in \textbf{3.6$\times$} compression ratio.
 % a shown in
 %Figure~\ref{fig:compress-ratio}.
 %
