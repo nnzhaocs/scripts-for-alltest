@@ -3,17 +3,6 @@
 
 \input{tab-dataset-summary.tex}
 
-%In this section we describe our methodology for obtaining a representative Docker image dataset.
-%%
-%(1)~obtaining a representative Docker image dataset, and
-%%
-%(2)~analyzing basic and deduplication properties of the dataset.
-%
-%%\input{fig-downloader-analyzer.tex}
-%
-%\subsection{Dataset acquisition}
-%\label{sec:crawler}
-
 To analyze the benefits of data reduction techniques for Docker registry and
 identify the main sources of data redundancy, we downloaded a large number of
 Docker images.
@@ -85,13 +74,9 @@ We plan to extend our analysis to other image versions in the future.
 
 Overall, we downloaded 355,319 images, which consist of a total of 1,792,609
 compressed layers and 5,278,465,130 files, resulting in a total dataset
-of 47~TB
-%A total of 111,384 images could not be downloaded mainly
-%because they did not have the \texttt{latest} tag.  
-The downloading process took about 30 days.
+of 47~TB.
 %
-%\vcomment{Say just one sentence why we did not download some
-%images.}\nancomment{Addressed}
+The downloading process took about 30 days.
 %
 Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
 dataset.
@@ -101,17 +86,5 @@ numbers are mentioned in the text above.}
 %
 \VT{What about leaving the Table instead but remove the text?}
 %
-%
-%\VT{Let's not go into details in the table and in the text how many images we
-%downloaded but did not analyze, or how many we could not download, etc.  Let's
-%just state the total number of images/repos/layers we finally analyzed and
-%their sizes and file numbers.}
-%\NZ{addressed}
-%
 To store and analyze the data, we deployed an 8-node Spark~\VT{\cite{xxx}}
 cluster with HDFS~\VT{\cite{xxx}} for backend storage.
-%
-%\VT{Maybe mention a sentece or two that we used SPARK cluster to do the
-%analysis?}
-%\NZ{addressed}
-
