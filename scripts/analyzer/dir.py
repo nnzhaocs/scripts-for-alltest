@@ -255,7 +255,8 @@ def load_dirs(layer_filename, filetype):
     layer_dir_level = layer_dir.count(os.sep)
     logging.debug("(%s, %s)", layer_dir, layer_dir_level)
 
-    if not load_files(layer_dir, sub_dirs, layer_dir_level):
+    sub_dirs = load_files(layer_dir, layer_dir_level)
+    if not sub_dirs:
         clear_dir(layer_dir)
         return sub_dirs, -1
 
@@ -279,7 +280,7 @@ def sum_dir_size(s_dir_files):
     return sum_size
 
 
-def load_files(layer_dir, sub_dirs, layer_dir_level):
+def load_files(layer_dir, layer_dir_level):
     start = time.time()
 
     all_dirs = []
@@ -314,15 +315,15 @@ def load_files(layer_dir, sub_dirs, layer_dir_level):
             'files': all_files,  # full path of f = dir/files
             'dir_size': sum_dir_size(all_files)
         }
-                #sub_dirs.append(sub_dir)
+        #sub_dirs.append(sub_dir)
 
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_exception(exc_type, exc_value, exc_traceback,
                                   limit=2, file=sys.stdout)
-        return False
+        return {}
 
     elapsed = time.time() - start
     logging.info('process layer_id:%s : file digest calculation for layer, ==> %f s', layer_dir, elapsed)
 
-    return True
+    return sub_dirs
