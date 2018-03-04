@@ -15,14 +15,14 @@ in a container image to simplify and automate application deployment~\cite{slack
 %
 As shown in Figure~\ref{fig-docker-architecture}, a typical
 Docker setup consists of three main components: 1)~\emph{client},
-2)~\emph{daemon}, and 3)~\emph{registry}.
+2)~\emph{host}, and 3)~\emph{registry}.
 %
 Users interact with Docker using the Docker client which, in turn,
-sends commands to the Docker daemon.
+sends commands to the Docker host.
 %
-Both client and daemon typically run on the same machine.
+Both client and host can run on the same machine.
 %
-The daemon implements the core logic of Docker and
+Docker host runs a daemon process that implements the core logic of Docker and
 is responsible for \emph{running} containers from locally available
 images.
 %

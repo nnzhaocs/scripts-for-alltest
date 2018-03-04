@@ -1,22 +1,7 @@
-\subsection{Deduplication ratio} 
+\subsection{Data reduction analysis} 
 \label{sec:dedup_ratio}
 
-%In Docker registry, layers are shared among different images to eliminate
-%duplicates.  
-%
-%In this section, we investigate if layer-level content addressable
-%is enough for Docker registry to mitigate redundancy.  
-%
-%Specifically, we look in
-%$to the sharing rate of layers across images to calculate how much space is
-%aved by using layer-level content addressable storage.  
-%
-%We also investigate
-%that how much redundant data exists across images.
-
 \paragraph{Layer sharing}
-
-%\input{fig-layer-ref-cnt}
 
 In its simplest implementation Docker would not support layer sharing.
 %
@@ -24,53 +9,42 @@ Instead, every image would be a single flat archive.
 %
 In fact, some existing containerization frameworks
 ~\cite{singularity}~\cite{openvz} 
-\VT{cite singularity and
-openvz}\NZ{addressed} use flat images.
 %
-Our estimates show that without layer sharing our dataset would grow from 47TB
-to 85TB, resulting in \textbf{1.8$\times$} deduplication ratio.
-% 
+\VT{cite singularity and openvz}
+%
+\NZ{addressed}
+%
+\VT{No, not addressed, citation for singularity is still missing}
+%
+use flat images.
+%
+Our estimates show that without layer sharing Docker Hub dataset would grow
+from 47TB to 85TB, implying \textbf{1.8$\times$} deduplication ratio provided
+by the layer sharing technique.
+ 
 We further computed for each layer, how many times it is referenced by images.
 %
 Figure~\ref{fig:ref_count} shows that around 90\% of layers are referenced by
 only a single image, additional 5\% are referenced by 2 images, and less than
 1\% of the layers are shared by more than 25 images.
 %
-%Accordingly, we calculated the total storage space consumed before layer-level
-%content addressability was adopted, which was 84.75 TB.  Thus the redundant
-%ratio achieved by layer-level content addressability is around 1.8.
+Interestingly, there is one layer that is referenced by 184,171 images.  Our
+analysis revealed that this is an empty layer.
 %
-%Figure~\ref{} shows the absolute values, revealing that almost 1.5 million
-%images are only referenced once.  \acomment{Figure is missing} While there is
-%again a large spectrum of reference counts, the maximum is 33,428, the vast
-%majority of layers is not shared. 
+\VT{Explain the reason for empty layer.}
 %
-%This hints that the layer-based approach to improve storage efficiency is
-%barely utilized and there is room for improvement in how to construct more
-%sharable layers.
+\VT{I feel we might need to talk about 2 more "most referenced" layers.}
 %
-%\emph{These findings reveal that layer level content addressable store has not
-%been very successful and most of the layers that exists in Docker Hub are not
-%shared among images.
-%
-%Hence, there is a dire need of a better redundancy management.}
-%
-%
-Interestingly, there is one layer that is referenced by 184,171 images, which is an empty layer.
-%
-\VT{Our investigation showed  that these layers are~, Verify this
-sentence and extend with analysis.}\NZ{addressed}
+\VT{Use \% instead of probability in all Figures (both  \# and labels).
+We use \% in the text, so we MUST do it.}
 
-%\VT{Use \% instead of probability in all Figures (both  # and labels).}
-
-\paragraph{Compressibility}
 
 \input{fig-layer-size-compress-cdf}
 
+\paragraph{Compression}
+%
 Figure~\ref{fig:layer-size-cdf} presents compressed and uncompressed layer size
 distributions.
-%
-%Note that compressed layer sizes are measure right after layers are downloaded.
 %
 We find that 50\% of the layers are less than 1MB and 90\% of the layers are
 less than 64MB in compressed format.
@@ -78,67 +52,31 @@ less than 64MB in compressed format.
 If uncompressed, 50\% of the layers are smaller than 2 MB and 90\% of the
 layers are smaller than 170MB.
 %
-%\emph{Relatively small size of many layer allows to consider selective
-%	in-memory layer caching at the registry side.}
-%
-Moreover, the total compressed layer dataset grows from 47~TB to 167.2~TB after decompression, resulting in \textbf{3.6$\times$} compression ratio.
-% a shown in
-%Figure~\ref{fig:compress-ratio}.
-%
-%
-%
+Moreover, the total compressed layer dataset grows from 47~TB to 167~TB after decompression, resulting in \textbf{3.6$\times$} compression ratio.
 
 \paragraph{File-level deduplication}
-%As discussed in compression ratio analysis, we see that there is redundant
-%data in both layers and images.  We conducted simple form of deduplication to
-%Interestingly,
+%
 Next, we calculate deduplication ratio in terms of file count and capacity for
-the complete uncompressed dataset. %(Table~\ref{tbl:overall-redundant_ratio}).
-%the redundant file overhead of the uncompressed dataset 
+the complete uncompressed dataset.
 %
-We find that 99.42\% of the files have more than one copies. 
-%and these redundant copies
-%take up over 89\% of capacity.
+After removing redundant files, there are only 3.17\% of files left that occupy
+23.92~TB, resulting in deduplication ratios of \textbf{31.55$\times$} and
+\textbf{6.99$\times$} in terms of file count and capacity, respectively.
 %
-\VT{not clear what exactly takes 89\% of capacity}\NZ{addressed}
-%
-%After elimination of file duplicates, the percentage of such files decreases
-%from 99.42\% to 2.59\%.  
-%
-%\VT{huh? Shouldn't the percentage of duplicate files go to 0?}
-%
-After removing redundant files, there are only 3.17\% (23.92 TB) of files left. These remaining files take up to 14.32\% of total uncompressed dataset storage space.
-% while 96.83\% of
-%files () are redundant copies. out of 167.20 TB TB
-%
-Correspondingly, the deduplication ratio is \textbf{31.55$\times$} and \textbf{6.99$\times$} in terms of
-file count and capacity, respectively.
-%
-\VT{let's use $\times$ for dedup ratio, it's conventional}\NZ{addressed}.
-%
-% Table~\ref{tbl:overall-redundant_ratio} summaries the overall redundant file
-% overhead in terms of file count and capacity.
-%
-\textit{Finding 1: Majority of files in Docker registry are duplicates which
-occupy most of capacity, indicating that Docker Hub has severe redundancy
-problem.}
-
-%\input{tab-file-count-capacity-dedup}
-
-\VT{Move all figures to separate fig- files and tables to tab- files.}\NZ{addressed}
-
 \input{fig-file-repeat-cnt}
-
-We further analyzed the repeat count for for various files.
 %
-Figure~\ref{fig:file-repeat-cnt} shows the cumulative and probability
-distribution of file repeat count.  
+We further analyzed the repeat count for every file.
+%
+Figure~\ref{fig:file-repeat-cnt} shows the distributions of file repeat count.  
 %
 We see that over 99.42\% of files have more than one copy.
 %
-Around 50\% of files have 4 copies and 90\% of files have less or equal than 10
+Around 50\% of files have exactly 4 copies and 90\% of files have 10 or less
 copies. 
 %
-The file that has the maximum repeat count---\VT{SPECIFY}\NZ{addressed} 53,654,306---is an empty file.
+The file that has the maximum repeat count 53,654,306---is an empty file.
 %
 \VT{Do we know anything about those empty files}.
+%
+\VT{I believe we need to talk about over frequent files. Maybe in the text
+section.}.
