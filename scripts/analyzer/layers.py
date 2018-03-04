@@ -24,17 +24,17 @@ def create_layer_db():
     queue_layers(analyzed_layer_filename, layer_list_filename)
 
     print "create pool"
-    P = multiprocessing.Pool(num_worker_process)
+    #P = multiprocessing.Pool(num_worker_process)
     print "before map!"
     print len(layer_job_list)  # process_manifest
     print len(analyzed_layer_list)
     print "before map!"
-   # for i in layer_job_list:
-   #     if not i:
-   #         continue
-   #     process_layer(i)
-   #     break
-    P.map(process_layer, layer_job_list)
+    for i in layer_job_list:
+        if not i:
+            continue
+        process_layer(i)
+        #break
+    #P.map(process_layer, layer_job_list)
     print "after map"
 
     logging.info('done! all the layer job processes are finished')
@@ -82,7 +82,7 @@ def check_file_type(filename):
 
 
 def process_layer(layer_filename):
-    processname = multiprocessing.current_process().name
+    processname = 0#multiprocessing.current_process().name
     logging.debug("[%s] process layer_filename: %s", processname, layer_filename)
 
     layer_db_json_dir = dest_dir[0]['layer_db_json_dir']
@@ -198,15 +198,15 @@ def process_layer(layer_filename):
 
 def sum_layer_size(sub_dirs):
     sum = 0
-    for dir in sub_dirs:
-        sum = sum + dir['dir_size']
+    #for dir in sub_dirs:
+    sum = sum + sub_dirs['dir_size']
     return sum
 
 
 def sum_file_cnt(sub_dirs):
     sum = 0
-    for dir in sub_dirs:
-        sum = sum + dir['file_cnt']
+    #for dir in sub_dirs:
+    sum = sum + sub_dirs['file_cnt']
     return sum
 #
 #

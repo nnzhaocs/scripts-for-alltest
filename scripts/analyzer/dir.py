@@ -304,7 +304,7 @@ def load_files(layer_dir, layer_dir_level):
                     continue
 
                 if os.path.isfile(os.path.join(path, f)):
-                    s_dir_file = load_file(os.path.join(path, f), path)
+                    s_dir_file = load_file(os.path.join(path, f), layer_dir)
                     #s_dir_file.filename = os.path.join(path, s_dir_file.filename).replace(layer_dir, "")
                     if s_dir_file:
                         all_files.append(s_dir_file)
