@@ -5,31 +5,31 @@
 To understand the sources of high data redundancy among Docker images, we
 investigate deduplication for common file types.
 %
-We identify \VT{XXX - how many?} file types (e.g., JPG, C/C++ code, Java files)
-using the file type library~\VT{\cite{XXX}} and then group file types into 7
+We identify \VT{~133} file types (e.g., JPG, C/C++ code, Java files)
+using the file type library~\VT{\cite{pymagic}} and then group file types into 7
 classes by their usage scenarious:
 %
-1)~executables, libraries, and object files (EOL)
+1)~executables, libraries, and object files (EOL)(e.g., .o)
 %
 \VT{Maybe call them ``Exec.`` instead on the graph and everywhere?}
 %
-2)~archival,
+2)~archival (e.g., .gz),
 %
-2)~documents,
+2)~documents (e.g., .txt),
 %
-4)~source-code,
+4)~source-code (e.g., .c/.cpp),
 %
-5)~scripts,
+5)~scripts (e.g., .py),
 %
-6)~images,
+6)~images (e.g., PNG),
 %
-7)~database files. 
+7)~database files (e.g., .sqlite). 
 %
-\VT{I'd add extensions example in parenthesis for every class. E.g., document is not intuitive.}
-These classes consitute 98.4\% of the whole dataset.
+\VT{I'd add extensions example in parenthesis for every class. E.g., document is not intuitive.}\NZ{addressed}
+These classes consitute 88.23\% of the whole dataset.
 %
 \VT{Weird, ``Oths'' is ~30TB in the graph, so much more than 1.6\%. What's
-going on?}
+going on?}\NZ{addressed}
 
 
 Figure~\ref{fig:dedup-overall} illustrates the deduplication results for these
@@ -74,11 +74,16 @@ This would also explain the shared source code across different images.
 
 Docker Hub allows developers to automatically build images from
 source code in external public repositories and automatically push the built
-image to their Docker repositories, we believe that more open source code
-may be replicated into different images stored in Docker Hub registry.
+image to their Docker repositories, we believe that 
+more developers would replicate
+%more 
+open source codes
+%may be replicated 
+into different images stored in Docker Hub registry.
 %
 \VT{I don't understand the last sentence. ``more'' than what?.. And who can 
 replicate? don't use passive voice to make it clear.}
+\NZ{addressed}
 %
 \textit{To eliminate redundant open source codes in Docker registry in the
 future, we suggest that Docker Hub creates offical images for popular
@@ -93,6 +98,17 @@ occupy over half of the capacity (51.4\%).
 %
 \VT{can we same something where the duplicate archive files come from?.. (Similarly to
 Google Test example)}
+%
+To
+understand why there are so many redundant archival
+files, we manually inspected redundant archival files
+and found that most of archival files packages open
+source codes. For example, we found a redundant zip
+files called android-ndk-r12b.zip~\cite{NDK}. It packages the open
+source code–Android Native Development Kit (NDK)–
+that allows Android application developers to include
+native code in their Android application packages, compiled as JNI shared libraries~\cite{NDK}. android-ndk-r12b.zip is
+available for downloading from GitHub.
 %
 %This is mainly because EOL and archival file sizes are bigger than other type
 %group.

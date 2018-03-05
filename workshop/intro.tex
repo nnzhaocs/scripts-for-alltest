@@ -19,7 +19,7 @@ Both images and layers are stored in a Docker \emph{registry} and accessed by
 clients as needed.
 %
 Since layers are uniquely identified by a collision-resistant hash of
-their content, no duplicate layers are stored in the registry.
+their content (denoted as layer-level content addressable. ie., LLCAS), no duplicate layers are stored in the registry.
 
 Registries are growing rapidly.
 %
@@ -40,7 +40,7 @@ infrastructure and so far has remained largely unexplored.
 In this paper, we perform the first, in-depth, large-scale redundancy
 analysis of the images and layers stored in Docker Hub.
 %
-We download 47\,TB (167\,TB uncompressed) worth of Docker Hub images,
+We download 47~TB (167~TB uncompressed) worth of Docker Hub images,
 %
 \LR{In the abstract it says 47TB?}\NZ{addressed}
 %
@@ -100,27 +100,36 @@ to contain the same source code from external public repositories (e.g., GitHub~
 there are no official images containing this source code, users manually add it to their images,
 resulting in different layers which cannot be reused later.  
 
-Based on our findings, we propos a file-level content addressable storage model (FLCAS
-\LR{Can we come up with a more catchy acronym?}) for the Docker registry, which utilizes
-file-level deduplication to remove redundant files. 
+Based on our findings, 
+%we propose a file-level content addressable storage model (FLCAS
+\LR{Can we come up with a more catchy acronym?}) 
+%for the Docker registry, which utilizes
+%file-level deduplication to remove redundant files. 
 %
-We simulate FLCAS for 0.9 million layers and provide different suggestions to improve
-deduplication performance.
+we conduct a simulation-based deduplication analysis on 0.9 million layers 
+%to 
+%assess the feasibility of our design
+and provide different suggestions to improve deduplication
+performance and reduce the overhead on \textit{pull request}.
+%
+%We simulate FLCAS for 0.9 million layers and provide different suggestions to improve
+%deduplication performance.
 %
 \LR{Do we have some numbers on overhead/saved storage space that we can put here?
 If so, we should replace the two suggestions below by those numbers.}\NZ{We can just say we provide some hints for dedup implementation in registry by using a simple simulation.}
 %
-The simulation result show that (1)~processing layers in
-parallel can largely improve throughput. For example, 80\% of file-level deduplication time is
-less than 9.09 s per layer and by processing 60 layers in parallel, our one-node
-prototype can process about 3 layers per second.
+%The simulation result show that 
+%(1)~processing layers in
+%parallel can largely improve throughput. For example, 80\% of file-level deduplication time is
+%less than 9.09 s per layer and by processing 60 layers in parallel, our one-node
+%prototype can process about 3 layers per second.
 %
 \LR{That sounds like we actually ran the deduplication and not just simulated it?
 Did we perform more of an \emph{emulation}?}
 %
-(2) Fast compression methods can mitigate pull overhead caused by re-compression
-because files are required to be re-compressed as a compressed layer archival file to serve
-the incoming pull requests.
+%(2) Fast compression methods can mitigate pull overhead caused by re-compression
+%because files are required to be re-compressed as a compressed layer archival file to serve
+%the incoming pull requests.
 %
 
 

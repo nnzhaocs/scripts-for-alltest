@@ -10,6 +10,8 @@ deploying modern applications.
 %
 Containers are created from images which are stored in a Docker registry.
 %
+Image consists of a list of layers and layers are shared among images.
+%
 %Docker allows sharing of such images between users via a Docker registry.
 %
 Docker registries store a large amount of images and with the increasing
@@ -33,7 +35,7 @@ In this paper, we download and analyze over 47~TB of Docker images from
 Docker Hub and derive major trends and useful insights.
 %
 \LR{This is out of context, we haven't introduced layers yet. Can we put
-a better highlight?}\NZ{I suggest that we add the general analysis and dedup analysis. and shorten the FLCAS.}
+a better highlight?}\NZ{addressed}
 For example, we find that only 10\% of layers are referred to by more than one image.
 %
 We then evaluate the potential of file deduplication for the Docker registry.
@@ -41,11 +43,16 @@ We then evaluate the potential of file deduplication for the Docker registry.
 Our analysis reveals that only ~3\% of the files in unpacked images are
 unique.
 %
-Based on this finding, we present the design for a Docker registry, which
-performs file-level deduplication across the stored images.
+Based on this finding, 
+%we present the design for a Docker registry, which
+%performs file-level deduplication across the stored images.
 %
-We conduct a simulation-based analysis to assess the feasibility of our design
-and show that \LR{put 1 or 2 highlight results here}.\NZ{our one-node design is the major weakness of this paper}
+we conduct a simulation-based deduplication analysis 
+%to 
+%assess the feasibility of our design
+and provide different suggestions to improve deduplication
+performance and reduce the overhead on \textit{pull request}. 
+%show that \LR{put 1 or 2 highlight results here}.\NZ{our one-node design is the major weakness of this paper}
 
 %estimate performance, storage efficiency, and resource utilization
 
