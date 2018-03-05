@@ -24,17 +24,17 @@ def create_layer_db():
     queue_layers(analyzed_layer_filename, layer_list_filename)
 
     print "create pool"
-    #P = multiprocessing.Pool(num_worker_process)
+    P = multiprocessing.Pool(num_worker_process)
     print "before map!"
     print len(layer_job_list)  # process_manifest
     print len(analyzed_layer_list)
     print "before map!"
-    for i in layer_job_list:
-        if not i:
-            continue
-        process_layer(i)
+    #for i in layer_job_list:
+    #    if not i:
+    #        continue
+    #    process_layer(i)
         #break
-    #P.map(process_layer, layer_job_list)
+    P.map(process_layer, layer_job_list)
     print "after map"
 
     logging.info('done! all the layer job processes are finished')

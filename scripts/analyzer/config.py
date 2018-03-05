@@ -10,7 +10,7 @@ dest_dirname = "/home/nannan/dockerimages/layers" #"/home/nannan/2tb_hdd"
 
 """configurations for multithreading"""
 
-num_worker_process = 50
+num_worker_process = 30
 
 """contains all the global variables"""
 
