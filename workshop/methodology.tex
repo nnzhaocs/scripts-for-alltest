@@ -1,7 +1,7 @@
 \subsection{Methodology}
 \label{sec:methodology}
 
-\input{tab-dataset-summary.tex}
+%\input{tab-dataset-summary.tex}
 
 To analyze the benefits of data reduction techniques for Docker registry and
 identify the main sources of data redundancy, we downloaded a large number of
@@ -78,13 +78,13 @@ of 47~TB.
 %
 The downloading process took about 30 days.
 %
-Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
-dataset.
+%Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
+%dataset.
 %
 \LR{Maybe remove the table entirely, now that it only has a single row and all
-numbers are mentioned in the text above.}
+numbers are mentioned in the text above.}\NZ{addressed}
 %
 \VT{What about leaving the Table instead but remove the text?}
 %
-To store and analyze the data, we deployed an 8-node Spark~\VT{\cite{xxx}}
-cluster with HDFS~\VT{\cite{xxx}} for backend storage.
+To store and analyze the data, we deployed an 8-node Spark~\VT{\cite{spark}}
+cluster with HDFS~\VT{\cite{hdfs}} for backend storage.
