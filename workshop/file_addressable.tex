@@ -7,6 +7,7 @@
 %	}
 %
 In this section we propose a file-level content addressable storage model (FLCAS)
+based on file-level deduplication
 for Docker as an alternative to layer-level content addressable storage.
 %
 % and save space while maintaing good
@@ -14,31 +15,49 @@ for Docker as an alternative to layer-level content addressable storage.
 %a large volume of storage space.
 %
 While FLCAS can significantly reduce the number of redundant files in the Docker
-registry, it comes with several challenges, including
-decompression of layer archival files,
-calculation of file content digest, 
-searching for identical files, 
-storing unique files,
-and restoring layer archival files.
+registry, it comes with several challenges, 
+including file-level deduplication overhead and its impact on push or pull latencies.
+For example, after layers are pushed in registry, FLCAS decompresses the layer archival files,
+calculates the file content digests, searches whether the identical files are stored or not. 
+If not, FLCAS stores these unique files.
+%
+These above operations are either CPU intensive or I/O intensive, which would impact 
+the foreground push/pull requests.
+%
+Upon a pull request, FLCAS first restores the requested 
+layer archival files by fetching all its containing files and compressing them.
+%
+The overhead of restoring a layer would become a bottleneck of a pull request.
+%
+How to manage layer-to-file mapping to provide fast searching \& indexing performance 
+is also a challenging to FLCAS.
+%file-level deduplication not only includes calculation of file content digest, 
+%searching for identical files, and storing unique files, 
+%but also includes decompression of layer archival files and and restoring layer archival files.
+%decompression of layer archival files,
+%calculation of file content digest, 
+%searching for identical files, 
+%storing unique files,
+%and restoring layer archival files.
 %
 \LR{The challenges are not clear at this point. We need to first briefly describe the
 overall approach, i.e. layer is pushed, archive is decompressed, file digests are
 calculated, etc., and then say, what exactly is challenging/problematic about this
-approach.}
+approach.}\NZ{addressed}
 \LR{The challenges should also be connected back to their effect, i.e. they will
-affect push and pull latencies.}
+affect push and pull latencies.}\NZ{addressed}
 \LR{We should also add the layer reconstruction as another challenge.}
 \LR{Another challenge could be dealing with files that have same data but different
-metadata.}
+metadata.}\NZ{addressed}
 %
 
 To analyze the impact of file-level deduplication, we simulate a simple FLCAS on
 0.9 million layers and measure the performance for each step of the approach.
 %
 Based on this analysis, we identify which operation is likely to become the bottleneck
-and as a result increases \emph{push} and \emph{pull layer} request latencies.
+and as a result increases \texttt{push} and \texttt{pull} layer request latencies.
 \LR{Make sure commands are consistent throughout the paper. Usually, commands
-are displayed in a \texttt{texttt} block.}
+are displayed in a \texttt{texttt} block.} \NZ{addressed}
 %we explain how FLCAS supports \emph{push layer} and \emph{pull layer}
 %requests.
 %
@@ -75,48 +94,52 @@ run time'' paragraph, I would introduce Fig~\ref{fig:dedup-res} at the end of th
 right before ``Push layer latency'' and maybe explain the overal run time there. In the push and pull
 layer latency we can then focus on just the parts of the graph that are related to push and pull.
 This would be a more top-down presentation (which I feel often works better in papers).}
+%\NZ{addressed}
 
 \LR{I'm still not sure if we should use simulation or emulation?}
 To study the overhead of file-level deduplication, we setup a
 one-node Docker registry with 64~GB RAM and 32 Cores.  
 %
-We wrote around 600 lines of Python code to perform file-level deduplication
+We wrote around 600 lines of Python code to perform \emph{off-line} file-level deduplication
 operations on the layer dataset.
 %
 
 \LR{We can remove the following steps once we explained them better
-in 4.0}
-File-level deduplication mainly
-consists of the following steps: 
-layer decompression, 
-file content digest calculation,
-searching \& indexing,
-and storing unique files.
+in 4.0}\NZ{addressed}
 % 
+%File-level deduplication mainly
+%consists of the following steps: 
+%layer decompression, 
+%file content digest calculation,
+%searching \& indexing,
+%and storing unique files.
 %The unique files are stored in a \textit{file pool}.
 
 Our simulation follows the steps of FLACS as explained above:
 First, a layer from the layer dataset is read and copied
 to a RAM disk. The layer is then decompressed and 
-the digests for each individual file are computed.
-\LR{How is the digest computed?}
+the digests for each individual file are computed by using MD5 hash function~\cite{MD5}.
+\LR{How is the digest computed?}\NZ{addressed}
 %
 \LR{\emph{emph} should be used instead of \textit{textit} to
-emphasize certain words/parts in the text.}
+emphasize certain words/parts in the text.}\NZ{addressed}
 If the file is not \emph{stored},
-we record the \textit{file content address}, which is a
+we record the \emph{file content address}, which is a
 file digest linked to the files' location.
 %And we append a \textit{layer-to-file} 
 %mapping record to a mapping table. 
 %
 \LR{This part is confusing. What does ``layer digest to its containing file content
 digest mapping record'' mean? Why is it for each file in a layer and all layers?}
-For each file in a layer, 
-also for all layers, layer digest
-to its containing file content digest mapping record is also created and saved
-to a \textit{layer-to-file table}.
+\NZ{addressed}
+To map a layer to it's containing files, we create a \emph{layer-to-file} record
+%For each file in a layer, 
+%a layer digest
+%to its containing file content digest mapping record is also created 
+and save it
+to a \emph{layer-to-file table}.
 %
-The \textit{layer-to-file table} also
+The \emph{layer-to-file table} also
 records the file path within each layer associated with each file.
 %
 Note that we do not consider the latency of storing unique files in our simulation.
@@ -124,8 +147,14 @@ Note that we do not consider the latency of storing unique files in our simulati
 %Only unique files are maintained in RAM
 %disk while the redundant copies are removed.
 %
-We run FLACS for 0.9 Million layers in total and process 60 layers concurrently.
-\LR{What was the overall runtime for processing 0.9 million layers?}
+We run FLCAS for 0.9 Million layers in total and process 60 layers concurrently. 
+%
+Overall, it took 3.5 days to finish.
+%
+%
+%The overall runtime is about 3.5 days.
+
+\LR{What was the overall runtime for processing 0.9 million layers?}\NZ{addressed}
 %
 %\alicomment{How are we saving the location
 %of each file in the layer? It is not clear from the following sentences.}
@@ -150,7 +179,7 @@ Hence, no addition delay will be added to the pushing time.
 \paragraph{Pull layer latency} 
 
 For a \emph{pull layer} requests, the registry will first fetch 
-all its containing files by consulting the \textit{layer-to-file table}, 
+all its containing files by consulting the \emph{layer-to-file table}, 
 restore the layer archive file by compressing these files, and
 then send the compressed layer archive file to the clients.
 
@@ -162,6 +191,7 @@ compression time, and searching time and does not include network transfer
 time. 
 %
 \LR{Always add a protected space or a \textbackslash, between a number and its unit.}
+\NZ{addressed}
 We can see that around 55\% of the layers have a similar compression and archiving
 time ranging from from 0.04\,s to 0.15\,s and both operations contribute equally
 to pulling latency.
@@ -172,7 +202,8 @@ to pulling latency.
 After that, the times diverge and compression times increase faster with an
 80\textsuperscript{ts} percentile of 2.82\,s. Hence, compression time makes
 up the major portion of the pull latency and becomes a bottleneck.
-This is due to \LR{put reason here}.
+This is because that the layer size is big\LR{put reason here}
+\NZ{I think the layer size is the major reason}.
 %
 %We see that archiving time and compression contributes equally to pulling
 %latency when their run time are lower than 0.15 s while compression time almost
@@ -189,32 +220,32 @@ methods with a lower compression ratio are hence feasible.
 
 %and pulling requests for  
 %
+\LR{This should go under ``Push layer latency''}\NZ{dedup time won't affect the push latency. 
+	So we cannot discuss the following latencies in push layer paragraph.}
 Figure~\ref{fig:dedup-res} shows the breakdown of run time for each
 involved operation: decompression time, unpacking time, file content digest
 calculation time, and searching time.
-
-\LR{This should go under ``Push layer latency''}
 First, among all the operations, we see that searching time is the
 smallest. 
 %
-80\% of searching time is less than 0.004 s. 
+80\% of searching time is less than 0.004\,s. 
 %
 The mapping table
 maintains 0.98 million layer-to-file digest mapping records. 
 %
 \LR{Remove the following sentence? 1.7 million records is actually quite
-small so even a single-node DB with one index is enough.}
+small so even a single-node DB with one index is enough.}\NZ{addressed}
 %
-Consider that more
-than 1.7 million layers are stored in Docker hub and the number is still
-increasing, it's better to choose a fast distributed database to provide high
-searching performance and scalability.
+%Consider that more
+%than 1.7 million layers are stored in Docker hub and the number is still
+%increasing, it's better to choose a fast distributed database to provide high
+%searching performance and scalability.
 %
 %\lrcomment{How does our DB schema look and what are the search queries?}
 
 \LR{This should go under ``Push layer latency''}
 Second, we see that digest calculation time spreads over a large range started
-from 0.000005 s to 124.7 s. 
+from 0.000005 s to 124.7\,s. 
 %
 This is because digest calculation time mainly
 depends on the layer size., \ie the less and smaller files a layer
@@ -225,7 +256,7 @@ contains, the faster it is to compute all digests for the layer.
 %
 %While if the layer is bigger, the digest calculation overhead will be higher. 
 %
-80\% of digest calculation time is less than 4.21 s. 
+80\% of digest calculation time is less than 4.21\,s. 
 %
 Thus, we suggest that multiple-threading is needed to calculate the files'
 digests simultaneously; 
@@ -236,34 +267,35 @@ required to speed up digest calculation.
 \LR{This should go under ``Push layer latency''}
 \LR{This is pretty much equal to Archiving and Compression times. Does
 that mean in those cases, we're I/O bound?}
+\NZ{no, we use RAM disk for storing all layers both in decompressed/compressed format.
+decompresson/compression time depends on layer size, I think.}
 Third, the run time for decompression and unpacking have the same distribution
-during the lowest response time range started from 0.04 s to 0.15 s. 
+during the lowest response time range started from 0.04\,s to 0.15\,s. 
 %
-Around 60\% of decompression and unpacking time are less than 0.15 s. 
+Around 60\% of decompression and unpacking time are less than 0.15\,s. 
 %
 However, decompression has the highest time than that of unpacking. 
 %
-80\% of decompression is less than 0.55 s while 80\% of packing time is less than 0.21 s. 
+80\% of decompression is less than 0.55 s while 80\% of packing time is less than 0.21\,s. 
 
 \LR{This should go at the end of the first part of Section 4.1 and before ``Push layer
-latency''}
-Figure~\ref{fig:dedup-res} also shows the total time distribution for
+	latency''}\NZ{I like here}
+Figure~\ref{fig:dedup-res} shows the total time distribution for
 file-level deduplication which is the sum of run time for decompression, unpacking,
 digest calculation, and searching. 
 %
 We see that 80\% of file-level dedup time is
-less than 9.09 s per layer.
+less than 9.09\,s per layer.
 %
 %\lrcomment{Is that per layer or per file or per image?}
 %
 We also measured the throughput of 60 processes. 
 %
 Our one-node file-level
-deduplication prototype can process about 3 layers/s. 
+deduplication prototype can process about 3\,layers/s. 
 %
 We suggest to use more
 high powerful machines to improve throughput.
-
  
 %
 \subsection{Improving the performance of FLCAS}
@@ -284,8 +316,10 @@ peaks and troughs~\cite{dockerworkload}.
 \LR{This is confusing. From our previous description, it sounded like we're
 performing deduplication every time a layer gets pushed. What exactly does it mean
 to ``trigger it for cold layers'' and why do we need to do that? Explain better.}
-So file-level dedupilication can be triggered for removing the redundant files for cold
-layers only when the workload is low and storage utilization is high.
+\NZ{we did a off-line simulation. I mentioned in the first paragraph in performance analysis}
+%
+So file-level dedupilication can be triggered for removing the redundant files 
+only when the workload is low and storage utilization is high.
 %
 To further improve the performance of FLCAS, we also suggest to use main memory
 for temporarily storing and processing \textit{small} layers.
