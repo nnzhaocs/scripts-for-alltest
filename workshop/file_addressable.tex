@@ -72,7 +72,7 @@ the deduplication overhead.
 	\centering
 	\includegraphics[width=0.4\textwidth]{graphs/res-time.pdf}
 	\caption{Off-line file-level deduplication run time.
-	\LR{What is ``off-line''? Hasn't been introduced.}}
+	\LR{What is ``off-line''? Hasn't been introduced.}\NZ{addressed}}
 	\label{fig:dedup-res}
 \end{figure}
 
@@ -170,7 +170,7 @@ Overall, it took 3.5 days to finish.
 
 \paragraph{Push layer latency}
 
-FLACS does not affect the latency of \emph{push layer} requests
+FLCAS does not affect the latency of \emph{push layer} requests
 because before performing deduplication, the registry reliably stores
 a copy of the layer as is and then sends a response message to the user.
 %
@@ -279,7 +279,7 @@ However, decompression has the highest time than that of unpacking.
 80\% of decompression is less than 0.55 s while 80\% of packing time is less than 0.21\,s. 
 
 \LR{This should go at the end of the first part of Section 4.1 and before ``Push layer
-	latency''}\NZ{I like here}
+	latency''}
 Figure~\ref{fig:dedup-res} shows the total time distribution for
 file-level deduplication which is the sum of run time for decompression, unpacking,
 digest calculation, and searching. 
