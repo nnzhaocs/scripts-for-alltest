@@ -3,24 +3,18 @@
 
 \paragraph{Layer sharing}
 
-In its simplest implementation Docker would not support layer sharing.
+In its  straightforward implementation Docker would not support layer sharing.
 %
 Instead, every image would be a single flat archive.
 %
 In fact, some existing containerization frameworks
 ~\cite{singularity}~\cite{openvz} 
 %
-\VT{cite singularity and openvz}
-%
-\NZ{addressed}
-%
-\VT{No, not addressed, citation for singularity is still missing}
-%
 use flat images.
 %
 Our estimates show that without layer sharing Docker Hub dataset would grow
 from 47TB to 85TB, implying \textbf{1.8$\times$} deduplication ratio provided
-by the layer sharing technique.
+by the layer sharing.
  
 We further computed for each layer, how many times it is referenced by images.
 %
@@ -29,21 +23,30 @@ only a single image, additional 5\% are referenced by 2 images, and less than
 1\% of the layers are shared by more than 25 images.
 %
 Interestingly, there is one layer that is referenced by 184,171 images.  Our
-analysis revealed that this is an empty layer. 
+analysis revealed that this is an empty layer.
 %
-In addition, we found 7 layers that are referenced by 29,200 - 33,413 images.
-They are mainly related to ubuntu 14.04.2, dpkg, apt, and cowsay. 
+The presence of an empty layer in an image is explained
+by the fact that during the image build Docker creates a new layer
+for every \texttt{RUN <cmd>} instruction
+in the Dockerfile~\VT{~\cite{}}.
+%
+If the~\texttt{<cmd>}, which can be an arbitrary shell command,
+does not not modify any files in the file system,
+an empty layer is created.
+%
+\VT{Verify the explanation for empty layers.}
+
+The next 7 top-ranked layers by the reference count
+are included in 29,200--33,413 images.
+They are related to ubuntu, dpkg, apt, and cowsay.
+%
 \NZ{Some layer tarfiles are not easy to describe. AND. these above layers are not 
 	referred by official Ubuntu latest. Find an interesting thing: image name already
-	tells what software packages it contains.} 
+	tells what software packages it contains.}
 %
-\VT{Explain the reason for empty layer.}
+\VT{Exaplain wha tis cowsay?}
 %
-\VT{I feel we might need to talk about 2 more "most referenced" layers.}
-\NZ{addressed}
-%
-\VT{Use \% instead of probability in all Figures (both  \# and labels).
-We use \% in the text, so we MUST do it.}
+\VT{We need to know more about those layers. ``related to'' is too vague.}
 
 \input{fig-layer-size-compress-cdf}
 %
@@ -77,8 +80,8 @@ We use \% in the text, so we MUST do it.}
 Figure~\ref{fig:layer-size-cdf} presents compressed and uncompressed layer size
 distributions.
 %
-We find that 50\% of the layers are less than 1MB and 90\% of the layers are
-less than 64MB in compressed format.
+We found that 50\% of the layers are smaller than 1MB and 90\% of the layers are
+smaller than 64MB in compressed format.
 %
 If uncompressed, 50\% of the layers are smaller than 2 MB and 90\% of the
 layers are smaller than 170MB.
@@ -88,11 +91,11 @@ Moreover, the total compressed layer dataset grows from 47~TB to 167~TB after de
 \paragraph{File-level deduplication}
 %
 Next, we calculate deduplication ratio in terms of file count and capacity for
-the complete uncompressed dataset.
+the complete unpacked dataset.
 %
-After removing redundant files, there are only 3.17\% of files left that occupy
-23.92~TB, resulting in deduplication ratios of \textbf{31.55$\times$} and
-\textbf{6.99$\times$} in terms of file count and capacity, respectively.
+After removing redundant files, there are only 3.2\% of files left that occupy
+24~TB, resulting in deduplication ratios of \textbf{31.5$\times$} and
+\textbf{6.9$\times$} in terms of file count and capacity, respectively.
 %
 \input{fig-file-repeat-cnt}
 %
@@ -100,7 +103,7 @@ We further analyzed the repeat count for every file.
 %
 Figure~\ref{fig:file-repeat-cnt} shows the distributions of file repeat count.  
 %
-We see that over 99.42\% of files have more than one copy.
+We see that over 99.4\% of files have more than one copy.
 %
 Around 50\% of files have exactly 4 copies and 90\% of files have 10 or less
 copies. 
@@ -133,7 +136,5 @@ The file that has the maximum repeat count 53,654,306---is an empty file.
 %|68b329da9893e34099c7d8ad5cb9c940|sha256:0451f2d6384e92a09d11a17839df05e7177dfdd1d2f27a7c1fa915dac2df27ea|/home/user/thunderbird/im/app/profile/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}/chrome.manifest                                                                                      |3338145 |
 %|5f0b6ebc4bea10285ba2b8a6ce78b863|sha256:b44b5bf754e01df861797e04ef7ed79e2e374d9a9ac6bf338c94da57b504502b|/var/lib/yum/yumdb/a/11022c68e971dbfeaa906d125086652491b1fcbd-apr-util-1.5.2-6.el7-x86_64/var_infra                                                                                          |1043580 |
 %+--------------------------------+-----------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+
-
 %
-\VT{I believe we need to talk about over frequent files. Maybe in the text
-section.}.\NZ{addressed}
+We analyze other frequently repeated files in the next section.

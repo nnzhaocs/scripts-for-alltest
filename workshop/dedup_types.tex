@@ -5,9 +5,9 @@
 To understand the sources of high data redundancy among Docker images, we
 investigate deduplication for common file types.
 %
-We identify \VT{~133} file types (e.g., JPG, C/C++ code, Java files)
-using the file type library~\VT{\cite{pymagic}} and then group file types into 7
-classes by their usage scenarious:
+We identify 133 file types (e.g., JPG, C/C++ code, Java files)
+using the file type library~\cite{pymagic} and then group file types into 7
+classes by their high-level use cases:
 %
 1)~executables, libraries, and object files (EOL)(e.g., .o)
 %
@@ -25,23 +25,23 @@ classes by their usage scenarious:
 %
 7)~database files (e.g., .sqlite). 
 %
-\VT{I'd add extensions example in parenthesis for every class. E.g., document is not intuitive.}\NZ{addressed}
-These classes consitute 88.23\% of the whole dataset.
+\VT{Let's have more than one example per class}
 %
-\VT{Weird, ``Oths'' is ~30TB in the graph, so much more than 1.6\%. What's
-going on?}\NZ{addressed}
-
+These classes cover about 88\% of the whole dataset (by size);
+we group the remaining 12\% in the Others class.
+%
 
 Figure~\ref{fig:dedup-overall} illustrates the deduplication results for these
 classes.
 %
-The overall deduplication ratio is \textbf{6.99$\times$} and most type classes
-have a comparable ratio (see dots in Figure~\ref{fig:dedup-overall}.
+The overall deduplication ratio is \textbf{6.9$\times$} and 4 type classes
+have a comparable ratio (see dots in Figure~\ref{fig:dedup-overall}).
 %
-E.g., the deduplication ratio for EOL files is \textbf{7.14$\times$}.
+E.g., the deduplication ratio for EOL files is \textbf{7.1$\times$}.
 %
-However, source code, scripts, and documents exhibit significantly higher
-deduplication ratio--- \textbf{31.25$\times$} for source code,
+However, for the other 3 type classes  
+deduplication ratio is significantly
+higher---\textbf{31.25$\times$} for source code,
 \textbf{50$\times$} for scripts, and \textbf{12.5$\times$} for documents.
 %
 This indicates that Docker image builders are prone to frequently replicate
