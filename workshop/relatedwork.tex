@@ -1,37 +1,46 @@
 \section{Related work}
 \label{sec:related}
 
-%\nancomment{do we need a relatedwork?}\\
-%\vcomment{Absolutely!}
-%\textbf{Analysis on Docker}:
+%Due to its increasing popularity, Docker has recently received increased
+%attention from the research community.
 
-Due to its increasing popularity, Docker has recently received increased
-attention from the research community.
+Docker storage has started to recieve attentsion from the community~\cite{dockerssd}.
 %
-Slacker~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics.
-The authors used the results from their study to derive a benchmark to evaluate
-the push, pull, and run performance of Docker graph drivers based on the studied
-images. Compared to Slacker, our analysis focuses on the entire Docker Hub dataset.
+\VT{Let's cite here in the list all Docker storage papers.}
 %
-Cito \etal~\cite{analysisdockergithub} conducted an empirical study for characterizing
-the Docker ecosystem with a focus on prevalent quality issues, and the evolution of Docker 
-files based on a data set of 70,000 Docker files. However, their study did not focus
-on actual image data.
+Slacker~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics,
+but not for data redundancy.
+%The authors used the results from their study to derive a benchmark to evaluate
+%the push, pull, and run performance of Docker graph drivers based on the studied
+%images. Compared to Slacker, our analysis focuses on the entire Docker Hub dataset.
+%
+Cito \etal~\cite{analysisdockergithub} conducted an empirical study of 70,000
+Dockerfiles, focusing on image build process but not image contents.
+%of Docker ecosystem with a focus on prevalent quality issues, and the evolution of Docker 
+%files based on a data set of 70,000 Docker files.
+%However, their study did not focus on actual image data.
 %
 Shu \etal~~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
-images based on a dataset of 356,218 images and found there is a strong need for more
-automated and systematic methods of applying security updates to Docker images. While
-the amount of images is similar compared to our study, Shu \etal focused on a subset
-of 100,000 repositories and different image tags in these repositories.
-
-Dockerfinder~\cite{dockerfinder} is a microservice-based prototype that allows searching
-for images based on  multiple attributes, e.g., image name, image size, or supported software 
-distributions. It also crawls images from remote Docker registry but the authors do
-not provide a detailed description of their crawling mechanism.
+images based on a dataset of 356,218 images.
+% and found there is a strong need for more
+%automated and systematic methods of applying security updates to Docker images. While
+%the amount of images is similar compared to our study, Shu \etal focused on a subset
+%of 100,000 repositories and different image tags in these repositories.
 %
-Bhimani~\cite{dockerssd} \etal characterized the performance of persistent storage options
-for I/O intensive containerized applications with NVMe SSDs. Unlike our study, their analysis
-is focused on the execution of containers rather than on their storage at the registry side.
+%Dockerfinder~\cite{dockerfinder} is a microservice-based prototype that allows searching
+%for images based on  multiple attributes, e.g., image name, image size, or supported software 
+%distributions. It also crawls images from remote Docker registry but the authors do
+%not provide a detailed description of their crawling mechanism.
+%
+%Bhimani~\cite{dockerssd} \etal characterized the performance of persistent storage options
+%for I/O intensive containerized applications with NVMe SSDs.
+%
+\VT{need to reference our FAST 2018 paper}
+
+\VT{Add 1--2 sentence on dedup dataset studies}
+
+%Unlike our study, their analysis
+%is focused on the execution of containers rather than on their storage at the registry side.
 
 %\textbf{Analysis on file systems}:
 %File system contents have been widely studied in different operating system environments.
