@@ -55,8 +55,7 @@ Any changes made to files in the image will be reflected inside the writable
 layer via a copy-on-write mechanism~\cite{docker-driver-eval}.
 %
 This leaves layers unmodified throughout the lifetime of a container and
-enables layer sharing between multiple containers spawned from the same or
-different images.
+enables layer sharing across containers spawned from the same or different images.
 %
 %Docker supports multiple \emph{storage drivers} such as Aufs or Btrfs, which
 %efficiently combine read-only and writable layers in a single
@@ -79,7 +78,7 @@ The Docker registry is a platform for storing and sharing container images.
 It stores images in \emph{repositories}, each containing different versions of
 the same image. 
 %
-For each image Docker registry stores a \emph{manifest} that describes,
+For each image, Docker registry stores a \emph{manifest} that describes,
 among other things, which layers constitute the image.
 %
 %The manifest is a JSON file, which contains the runtime configuration for a
@@ -110,8 +109,6 @@ over the layers' uncompressed content and stored as compressed archival files.
 Identifying layers by their content allows the registry to store only one instance
 of a layer even if it is referenced by multiple images.
 %
-\LR{Is that actually done across the entire registry or only within a single
-user/repository? \NZ{entire registry}}
 %multiple users accidentally built identical layers.
 %
 However, if at least one file differs in two otherwise identical layers,
