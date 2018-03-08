@@ -31,16 +31,14 @@ Hub---a popular public registry---stores more than half a million public images.
 %Our goal is to collect statistics from a large amount of Docker images and
 %perform a large-scale characterization of Docker images.
 
-In this paper, we download and analyze over 47~TB of Docker images from
+In this paper, we analyze over 47~TB of Docker images from
 Docker Hub and derive major trends and useful insights.
 %
-\LR{This is out of context, we haven't introduced layers yet. Can we put
-a better highlight?}\NZ{addressed}
 For example, we find that only 10\% of layers are referred to by more than one image.
 %
 We then evaluate the potential of file deduplication for the Docker registry.
 %
-Our analysis reveals that only ~3\% of the files in unpacked images are
+Our analysis reveals that only~3\% of the files in unpacked images are
 unique.
 %
 Based on this finding, 

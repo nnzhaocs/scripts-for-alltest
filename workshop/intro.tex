@@ -42,8 +42,6 @@ analysis of the images and layers stored in Docker Hub.
 %
 We download 47~TB (167~TB uncompressed) worth of Docker Hub images,
 %
-\LR{In the abstract it says 47TB?}\NZ{addressed}
-%
 which contain over 5 billion files in total.
 %
 %We started our analysis
@@ -81,42 +79,48 @@ We make three major observations:
 \item Only 10\% of layers are referred to by more than one image, 
 meaning that layer-level content addressability is not enough to
 effectively reduce storage utilization in the registry.
+\DIM{Should we also provide the capacity \%?}
 %
 \item A large amount of files are shared across layers and images,
 resulting in only 3\% of unique files.
+\DIM{Should we also provide the capacity \%?}
 %
-\item \LR{This point is unclear. If the source code is duplicated, I would expect that to be the major
-source of redundancy, not the resulting executables? Isn't that also what we're saying in Section 3?}
-The majority of the file duplicates are executables and object files, which are
-mostly created by source code duplicates.\NZ{I did see a lot of executables/intermediate representations have the same filename with the source codes/scripts. 
-	For example, a.py and a.pyc. But i did not calculate the total number.
-	How about we replace with: }
-	We found source codes and scripts have a very high deduplication ratio (\textbf{$31.25\times$} for souce codes and \textbf{$50\times$} for scripts), which indicates that Docker developers are prone to replicate source codes or scripts (i.e., code reuse). Moreover, these source code duplicates and script duplicates would result in more executable duplicates and object file duplicates.
+%\item \LR{This point is unclear. If the source code is duplicated, I would expect that to be the major
+%source of redundancy, not the resulting executables? Isn't that also what we're saying in Section 3?}
+%The majority of the file duplicates are executables and object files, which are
+%mostly created by source code duplicates.\NZ{I did see a lot of executables/intermediate representations have the same filename with the source codes/scripts. 
+%	For example, a.py and a.pyc. But i did not calculate the total number.
+%	How about we replace with: }
+
+\item Source code and scripts have a high deduplication ratio
+(\textbf{$31.25\times$} for source codes and \textbf{$50\times$} for scripts),
+which can result in executable and object file duplicates.
+%indicates that Docker developers are prone to replicate source codes or scripts (i.e., code reuse). 
+%Moreover, these source code duplicates and script duplicates would result in more executable duplicates and object file duplicates.
 
 \end{compactitemize}
 
 As one reason for the large number of duplicate files, we found that different Docker image are prone
 to contain the same source code from external public repositories (e.g., GitHub~\cite{github}). As
 there are no official images containing this source code, users manually add it to their images,
-resulting in different layers which cannot be reused later.  
-
+resulting in different layers which cannot be reused.
+%
 Based on our findings, 
 %we propose a file-level content addressable storage model (FLCAS
-\LR{Can we come up with a more catchy acronym?}) 
 %for the Docker registry, which utilizes
 %file-level deduplication to remove redundant files. 
 %
 we conduct a simulation-based deduplication analysis on 0.9 million layers 
 %to 
 %assess the feasibility of our design
-and provide different suggestions to improve deduplication
+and provide suggestions on how to improve deduplication
 performance and reduce the overhead on \textit{pull request}.
 %
 %We simulate FLCAS for 0.9 million layers and provide different suggestions to improve
 %deduplication performance.
 %
-\LR{Do we have some numbers on overhead/saved storage space that we can put here?
-If so, we should replace the two suggestions below by those numbers.}\NZ{We can just say we provide some hints for dedup implementation in registry by using a simple simulation.}
+%\LR{Do we have some numbers on overhead/saved storage space that we can put here?
+%If so, we should replace the two suggestions below by those numbers.}\NZ{We can just say we provide some hints for dedup implementation in registry by using a simple simulation.}
 %
 %The simulation result show that 
 %(1)~processing layers in
@@ -124,8 +128,8 @@ If so, we should replace the two suggestions below by those numbers.}\NZ{We can 
 %less than 9.09 s per layer and by processing 60 layers in parallel, our one-node
 %prototype can process about 3 layers per second.
 %
-\LR{That sounds like we actually ran the deduplication and not just simulated it?
-Did we perform more of an \emph{emulation}?}
+%\LR{That sounds like we actually ran the deduplication and not just simulated it?
+%Did we perform more of an \emph{emulation}?}
 %
 %(2) Fast compression methods can mitigate pull overhead caused by re-compression
 %because files are required to be re-compressed as a compressed layer archival file to serve
