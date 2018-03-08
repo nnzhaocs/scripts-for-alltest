@@ -70,8 +70,7 @@ repositories, such as GitHub, and store them in containers.
 This would also explain the shared source code across different images.
 %
 \VT{give few more example in addition ot Google Test}
-
-
+%
 Docker Hub allows developers to automatically build images from
 source code in external public repositories and automatically push the built
 image to their Docker repositories, we believe that 
@@ -82,47 +81,49 @@ open source codes
 into different images stored in Docker Hub registry.
 %
 \VT{I don't understand the last sentence. ``more'' than what?.. And who can 
-replicate? don't use passive voice to make it clear.}
+replicate? don't use passive voice to make it clear.
+Also, last sentence is too long, please, split.}
 \NZ{addressed}
+\VT{not yet ;)}
 %
-\textit{To eliminate redundant open source codes in Docker registry in the
-future, we suggest that Docker Hub creates offical images for popular
-open source codebases so developers can directly pull the image as a
-read-only layer}.
+%\textit{To eliminate redundant open source codes in Docker registry in the
+%future, we suggest that Docker Hub creates offical images for popular
+%open source codebases so developers can directly pull the image as a
+%read-only layer}.
 
-Next, we see that EOL files, archival, and images have a similar deduplication
-(around \textbf{6.99$\times$}). 
+Next, we observe that redundant EOL and archival files occupy over half of the
+capacity (51.4\%). 
 %
-Compared with other type classes, the redundant EOL files and archival files
-occupy over half of the capacity (51.4\%). 
+To understand why there are so many redundant archival files, we manually
+inspected them and found that many archival files contain source codes.
 %
-\VT{can we same something where the duplicate archive files come from?.. (Similarly to
-Google Test example)}\NZ{addressed}
+\VT{``many'' is vague}
 %
-To
-understand why there are so many redundant archival
-files, we manually inspected redundant archival files
-and found that most of archival files packages open
-source codes. For example, we found a redundant zip
-files called android-ndk-r12b.zip~\cite{NDK}. It packages the open
-source code–Android Native Development Kit (NDK)–
-that allows Android application developers to include
-native code in their Android application packages, compiled as JNI shared libraries~\cite{NDK}. android-ndk-r12b.zip is
-available for downloading from GitHub.
+For example, we found a highly redundant zip file called
+android-ndk-r12b.zip~\cite{NDK}.
+%
+\VT{how many instances of this file were there?}
+%
+It packages Android Native Development Kit (NDK) that allows Android
+application developers to include native code in their Android application
+packages, compiled as JNI shared libraries~\cite{NDK}.
+%
+\VT{So, Android developers use Docker?..}
 %
 %This is mainly because EOL and archival file sizes are bigger than other type
 %group.
-% 
-Database related files have the lowest deduplication ratio (\textbf{4.2$\times$}),
-which contributes little to the overall savings.
+%
+ 
+%Database related files have the lowest deduplication ratio (\textbf{4.2$\times$}),
+%which contributes little to the overall savings.
 
-All common file types have a high deduplication ratio.  Especially, EOL and
-archival files contribute a lot to the overall savings.
+%All common file types have a high deduplication ratio.  Especially, EOL and
+%archival files contribute a lot to the overall savings.
 %
-Also, developers are likely to reuse code rather than create their own.
+%Also, developers are likely to reuse code rather than create their own.
 %
-\DIM{Ffrom the data we see there is high source code dedup, but this might be
-too much of a generic statement based on this data.}
+%\DIM{Ffrom the data we see there is high source code dedup, but this might be
+%too much of a generic statement based on this data.}
 
 %We see that 43.15\% of redundant files are documents, 
 %%
