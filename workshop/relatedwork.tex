@@ -5,8 +5,8 @@
 %attention from the research community.
 
 A number of studies investigated various dimensions of Docker storage
-performance~\cite{dockerssd,docker-driver-eval,slacker,improve-cow-container-drivers,
-exoclones,shifter}.
+performance~\cite{dockerssd,shifter,slacker,exoclones,docker-driver-eval,
+improve-cow-container-drivers}.
 %
 Harter \etal~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics
 but not for data redundancy.
@@ -41,22 +41,22 @@ of IBM Docker registry REST workload but not the dataset.
 %
 
 Data deduplication is a well
-explored and widely applied technique~\cite{2001-low_bandwidth_network_fs-sosp,
-2008-avoid_disk_bottleneck_data_domain_dedupfs-fast,
-2009-sparse_indexing_inline_dedup_using_sampling-fast,
-tarasov2014dmdedup,2012-idedup-fast}.
+explored and widely applied technique~\cite{2009-sparse_indexing_inline_dedup_using_sampling-fast,
+2001-low_bandwidth_network_fs-sosp,
+2012-idedup-fast,
+tarasov2014dmdedup,
+2008-avoid_disk_bottleneck_data_domain_dedupfs-fast}.
 %
 A number of studies characterized deduplication ratios of
-real-world datasets~\cite{2013-charact_dedup_effic_big_data-iiswc,
-2013-charact_increment_changes_data_protect-atc,
-2012-charact_backup_workloads-fast,
-2012-hpc_practical_dedup_study-sc,
-msst16dedup-study,
+real-world datasets~\cite{2009-dedup_effectiveness_on_vm_disk_images-systor,
 2012-data_reduction_in_primary_storage-systor,
-2009-dedup_effectiveness_on_vm_disk_images-systor},
-but to the best of our knowledge we are the first
-to analyze large-scale Docker registry dataset and
-propose to apply deduplication to it.
+2012-hpc_practical_dedup_study-sc,
+2013-charact_increment_changes_data_protect-atc,
+msst16dedup-study,
+2012-charact_backup_workloads-fast,
+2013-charact_dedup_effic_big_data-iiswc},
+but to the best of our knowledge we are the first to analyze a large-scale Docker
+registry dataset and propose to apply deduplication to it.
 
 
 %Unlike our study, their analysis
