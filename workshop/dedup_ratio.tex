@@ -28,21 +28,26 @@ analysis revealed that this is an empty layer.
 The presence of an empty layer in an image is explained
 by the fact that during the image build Docker creates a new layer
 for every \texttt{RUN <cmd>} instruction
-in the Dockerfile~\VT{~\cite{}}.
+in the Dockerfile~\VT{~\cite{Dockerfile}}
+\NZ{I dont have dockerfile. 
+	But I checked the config files. 
+	It's correct but I am not sure.}.
+%manifests/mikahassinen-docker-whale-latest-1500714692.32.json
 %
 If the~\texttt{<cmd>}, which can be an arbitrary shell command,
-does not not modify any files in the file system,
+does not modify any files in the file system,
 an empty layer is created.
 %
 \VT{Verify the explanation for empty layers.}
 
 The next 7 top-ranked layers by the reference count
 are included in 29,200--33,413 images.
-They are related to ubuntu, dpkg, apt, and cowsay.
+%They are related to ubuntu, dpkg, apt, and cowsay.
+Specifically, one layer contains a whole Ubuntu 14.04.2 LTS distribution; onel layer contains
 %
-\NZ{Some layer tarfiles are not easy to describe. AND. these above layers are not 
-	referred by official Ubuntu latest. Find an interesting thing: image name already
-	tells what software packages it contains.}
+%\NZ{Some layer tarfiles are not easy to describe. AND. these above layers are not 
+%	referred by official Ubuntu latest. Find an interesting thing: image name already
+%	tells what software packages it contains.}
 %
 \VT{Exaplain wha tis cowsay?}
 %
