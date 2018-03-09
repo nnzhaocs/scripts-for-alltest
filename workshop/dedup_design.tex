@@ -1,0 +1,64 @@
+%\NZ{The main goal of this section is to provide some hints for designer to implement a fast dedup system.
+%	We do not give any design in the workshop paper. We will keep performance analysis and simulation part, 
+%	just give some basic latencies for each involved operations for designer to think about how to improve their design and what will be the bottleneck.
+%	}
+%
+In this section we propose a file-level content addressable storage model (FLCAS)
+based on file-level deduplication
+for Docker as an alternative to layer-level content addressable storage.
+%
+% and save space while maintaing good
+%FLCAS, can significantly reduce the redundant files in docker registry and save
+%a large volume of storage space.
+%
+While FLCAS can significantly reduce the number of redundant files in the Docker
+registry, it comes with several challenges, 
+including file-level deduplication overhead and its impact on push or pull latencies.
+For example, after layers are pushed in registry, FLCAS decompresses the layer archival files,
+calculates the file content digests, searches whether the identical files are stored or not. 
+If not, FLCAS stores these unique files.
+%
+These above operations are either CPU intensive or I/O intensive, which would impact 
+the foreground push/pull requests.
+%
+Upon a pull request, FLCAS first restores the requested 
+layer archival files by fetching all its containing files and compressing them.
+%
+The overhead of restoring a layer would become a bottleneck of a pull request.
+%
+How to manage layer-to-file mapping to provide fast searching \& indexing performance 
+is also a challenging to FLCAS.
+%file-level deduplication not only includes calculation of file content digest, 
+%searching for identical files, and storing unique files, 
+%but also includes decompression of layer archival files and and restoring layer archival files.
+%decompression of layer archival files,
+%calculation of file content digest, 
+%searching for identical files, 
+%storing unique files,
+%and restoring layer archival files.
+%
+\LR{The challenges are not clear at this point. We need to first briefly describe the
+overall approach, i.e. layer is pushed, archive is decompressed, file digests are
+calculated, etc., and then say, what exactly is challenging/problematic about this
+approach.}\NZ{addressed}
+\LR{The challenges should also be connected back to their effect, i.e. they will
+affect push and pull latencies.}\NZ{addressed}
+\LR{We should also add the layer reconstruction as another challenge.}
+\LR{Another challenge could be dealing with files that have same data but different
+metadata.}\NZ{addressed}
+%
+
+To analyze the impact of file-level deduplication, we simulate a simple FLCAS on
+0.9 million layers and measure the performance for each step of the approach.
+%
+Based on this analysis, we identify which operation is likely to become the bottleneck
+and as a result increases \texttt{push} and \texttt{pull} layer request latencies.
+\LR{Make sure commands are consistent throughout the paper. Usually, commands
+are displayed in a \texttt{texttt} block.} \NZ{addressed}
+%we explain how FLCAS supports \emph{push layer} and \emph{pull layer}
+%requests.
+%
+We then provide different suggestions on how the Docker registry can mitigate
+the deduplication overhead.
+% and efficiently server push/pull requests.
+%
