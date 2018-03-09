@@ -117,7 +117,9 @@ in 4.0}\NZ{addressed}
 
 Our simulation follows the steps of FLACS as explained above:
 First, a layer from the layer dataset is read and copied
-to a RAM disk. The layer is then decompressed and 
+to a RAM disk. 
+Note that there is no foreground pull or push requests since the simulation is \emph{off-line}.
+ The layer is then decompressed and 
 the digests for each individual file are computed by using MD5 hash function~\cite{MD5}.
 \LR{How is the digest computed?}\NZ{addressed}
 %
@@ -170,12 +172,18 @@ Overall, it took 3.5 days to finish.
 
 \paragraph{Push layer latency}
 
+In our off-line simulation,
 FLCAS does not affect the latency of \emph{push layer} requests
 because before performing deduplication, the registry reliably stores
 a copy of the layer as is and then sends a response message to the user.
 %
 Hence, no addition delay will be added to the pushing time. 
 %
+However, 
+if there are intensive push requests while the registry is performing deduplication,
+FLCAS would impact foreground push requests because it incurs 
+ CPU, memory, and I/O overhead(similar to pull requests).
+ 
 \paragraph{Pull layer latency} 
 
 For a \emph{pull layer} requests, the registry will first fetch 
