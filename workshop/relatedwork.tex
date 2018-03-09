@@ -4,11 +4,11 @@
 %Due to its increasing popularity, Docker has recently received increased
 %attention from the research community.
 
-Docker storage has started to recieve attentsion from the community~\cite{dockerssd}.
+A number of studies investigated various dimensions of Docker storage
+performance~\cite{dockerssd,docker-driver-eval,slacker,improve-cow-container-drivers,
+exoclones,shifter}.
 %
-\VT{Let's cite here in the list all Docker storage papers.}
-%
-Slacker~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics,
+Harter \etal~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics
 but not for data redundancy.
 %The authors used the results from their study to derive a benchmark to evaluate
 %the push, pull, and run performance of Docker graph drivers based on the studied
@@ -20,8 +20,12 @@ Dockerfiles, focusing on image build process but not image contents.
 %files based on a data set of 70,000 Docker files.
 %However, their study did not focus on actual image data.
 %
-Shu \etal~~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
+Shu \etal~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
 images based on a dataset of 356,218 images.
+%
+Ali \etal~\cite{dockerworkload} performed a detailed analysis
+of IBM Docker registry REST workload but not the dataset.
+
 % and found there is a strong need for more
 %automated and systematic methods of applying security updates to Docker images. While
 %the amount of images is similar compared to our study, Shu \etal focused on a subset
@@ -35,9 +39,25 @@ images based on a dataset of 356,218 images.
 %Bhimani~\cite{dockerssd} \etal characterized the performance of persistent storage options
 %for I/O intensive containerized applications with NVMe SSDs.
 %
-\VT{need to reference our FAST 2018 paper}
 
-\VT{Add 1--2 sentence on dedup dataset studies}
+Data deduplication is a well
+explored and widely applied technique~\cite{2001-low_bandwidth_network_fs-sosp,
+2008-avoid_disk_bottleneck_data_domain_dedupfs-fast,
+2009-sparse_indexing_inline_dedup_using_sampling-fast,
+tarasov2014dmdedup,2012-idedup-fast}.
+%
+A number of studies characterized deduplication ratios of
+real-world datasets~\cite{2013-charact_dedup_effic_big_data-iiswc,
+2013-charact_increment_changes_data_protect-atc,
+2012-charact_backup_workloads-fast,
+2012-hpc_practical_dedup_study-sc,
+msst16dedup-study,
+2012-data_reduction_in_primary_storage-systor,
+2009-dedup_effectiveness_on_vm_disk_images-systor},
+but to the best of our knowledge we are the first
+to analyze large-scale Docker registry dataset and
+propose to apply deduplication to it.
+
 
 %Unlike our study, their analysis
 %is focused on the execution of containers rather than on their storage at the registry side.
