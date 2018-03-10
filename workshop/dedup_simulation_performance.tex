@@ -1,6 +1,19 @@
+\subsection{Evaluation}
 
-\subsection{Performance analysis}
+%% Vasily: Copied from prev. section. This might be the place where we briefly
+%% introduce the design
+\paragraph{Simulation}
+To analyze the impact of file-level deduplication, we simulate a simple FLCAS on
+0.9 million layers and measure the performance for each step of the approach.
 %
+Based on this analysis, we identify which operation is likely to become the bottleneck
+and as a result increases \texttt{push} and \texttt{pull} layer request latencies.
+
+We then provide different suggestions on how the Docker registry can mitigate
+the deduplication overhead.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \input{fig_dedup_res}
 
 
