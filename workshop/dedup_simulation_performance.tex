@@ -4,7 +4,7 @@
 issues, then briefly about simulation, then about performacnce evaluation results
 for pulls and pushes.}
 
-While FLCAS can significantly reduce the number of redundant files in the
+While \sysname\ can significantly reduce the number of redundant files in the
 Docker registry, it comes with potential performance degradation.
 %
 These above
@@ -15,7 +15,7 @@ a bottleneck of a pull request.
 
 \paragraph{Simulation}
 %
-To analyze the impact of file-level deduplication, we simulate a simple FLCAS on
+To analyze the impact of file-level deduplication, we simulate a simple \sysname\ on
 0.9 million layers and measure the performance for each step of the approach.
 %
 Based on this analysis, we identify which operation is likely to become the bottleneck
@@ -33,7 +33,7 @@ the deduplication overhead.
 %
 % since dedup process only starts periodically when the
 %workload is lower and only cold layers are evolved in dedup process (discussed
-%in Section~\ref{subsec:FLCAS}).
+%in Section~\ref{subsec:\sysname\}).
 %
 %\lrcomment{By latency, do you mean the time it takes to perform the dedup? I
 %wouldn't call that latency but rather run time or completion time.}
@@ -101,7 +101,7 @@ Note that we do not consider the latency of storing unique files in our simulati
 %Only unique files are maintained in RAM
 %disk while the redundant copies are removed.
 %
-We run FLCAS for 0.9 Million layers in total and process 60 layers concurrently. 
+We run \sysname\ for 0.9 Million layers in total and process 60 layers concurrently. 
 %
 Overall, it took 3.5 days to finish.
 %
@@ -125,7 +125,7 @@ Overall, it took 3.5 days to finish.
 \paragraph{Push layer latency}
 
 In our off-line simulation,
-FLCAS does not affect the latency of \emph{push layer} requests
+\sysname\ does not affect the latency of \emph{push layer} requests
 because before performing deduplication, the registry reliably stores
 a copy of the layer as is and then sends a response message to the user.
 %
@@ -133,7 +133,7 @@ Hence, no addition delay will be added to the pushing time.
 %
 However, 
 if there are intensive push requests while the registry is performing deduplication,
-FLCAS would impact foreground push requests because it incurs 
+\sysname\ would impact foreground push requests because it incurs 
 CPU, memory, and I/O overhead(similar to pull requests).
 
 \paragraph{Pull layer latency} 

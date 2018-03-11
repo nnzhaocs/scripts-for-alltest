@@ -1,5 +1,5 @@
 
-\subsection{Improving the performance of FLCAS}
+\subsection{Improving the performance of \sysname\}
 
 Based on our simulation results, we propose two optimizations
 to speed up pull requests when file-level deduplication is used
@@ -22,7 +22,7 @@ to ``trigger it for cold layers'' and why do we need to do that? Explain better.
 So file-level dedupilication can be triggered for removing the redundant files 
 only when the workload is low and storage utilization is high.
 %
-To further improve the performance of FLCAS, we also suggest to use main memory
+To further improve the performance of \sysname\, we also suggest to use main memory
 for temporarily storing and processing \textit{small} layers.
 %
 According to our findings (see~\S\ref{sec:dedup_ratio}), the majority of layers~(87.3\%)
@@ -74,8 +74,8 @@ downloaded and are already available locally.
 %predicting those or are we relying on some workload patterns? We should make
 %that clear.}
 
-%high while start file-level dedup \paragraph{FLCAS model}
-%Figure~\ref{fig:file-dedup-model} shows an example of FLCAS.
+%high while start file-level dedup \paragraph{\sysname\ model}
+%Figure~\ref{fig:file-dedup-model} shows an example of \sysname\.
 %
 %\vcomment{An example?..}
 %
@@ -84,7 +84,7 @@ downloaded and are already available locally.
 %
 
 %\paragraph{Caching hot layers to improve performance}
-%\label{subsec:FLCAS}
+%\label{subsec:\sysname\}
 %
 %\begin{figure}
 %	\centering
