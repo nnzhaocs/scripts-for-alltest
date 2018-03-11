@@ -99,21 +99,33 @@ Also, last sentence is too long, please, split.}
 Next, we observe that redundant EOL and archival files occupy over half of the
 capacity (51.4\%). 
 %
-To understand why there are so many redundant archival files, we manually
-inspected them and found that many archival files contain source codes.
+To understand why there are so many redundant archival files, 
+%we manually
+%inspected them and found that many archival files contain source codes.
 %
-\VT{``many'' is vague}
+\VT{``many'' is vague}\NZ{addressed}
+we analyzed top-5 popular redundant archival files.
+For example, we found that \texttt{NEWS.Debian.gz} has 521,611 copies,
+which stores important news about changes in a package.
+Besides, \texttt{pwunconv.8.gz} that are used to create password has 358,374 copies.
+There are two files that have around 86,733 copies respectively:
+\texttt{ubuntu\_dists\_trusty\_universe\_Sources.gz} and
+\texttt{ubuntu\_dists\_trusty\_universe\_binary-\\amd64\_Packages.gz}, which
+contains the name, version, size, the description, and the dependencies of each package.
 %
-For example, we found a highly redundant zip file called
-android-ndk-r12b.zip~\cite{NDK}.
+The rest file \texttt{gcc.log.xz} which belongs to GNU C++ compiler
+ has 13,384 copies
 %
-\VT{how many instances of this file were there?}
+%For example, we found a highly redundant zip file called
+%android-ndk-r12b.zip~\cite{NDK}.
 %
-It packages Android Native Development Kit (NDK) that allows Android
-application developers to include native code in their Android application
-packages, compiled as JNI shared libraries~\cite{NDK}.
+\VT{how many instances of this file were there?}\NZ{addressed}
 %
-\VT{So, Android developers use Docker?..}
+%It packages Android Native Development Kit (NDK) that allows Android
+%application developers to include native code in their Android application
+%packages, compiled as JNI shared libraries~\cite{NDK}.
+%
+\VT{So, Android developers use Docker?..}\NZ{addressed}
 %
 %This is mainly because EOL and archival file sizes are bigger than other type
 %group.
