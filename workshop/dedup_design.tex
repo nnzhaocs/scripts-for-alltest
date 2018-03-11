@@ -37,6 +37,9 @@ metatada, and fingerprint of every file in the layer;
 %
 \textbf{6)}~removes the layer's tarball from the staging area.
 
+We believe that off-line deduplication is appropriate because it allows
+keep push latencies percieved by  Docker client low.
+%
 Layer recipies are identified by layer's digests (see
 Section~\ref{sec:background}) and files are identified by their fingeprints.
 %
@@ -47,55 +50,24 @@ For example, if a file system is used as a backend storage, \sysname\ creates a
 single file for layer reciepy (named by the fingerprint) and a single file for
 actual in-layer file (named by the fingerprint).
 
-\VT{Maybe discuss performance implications here. But maybe do it later. Will see.}
 
 \paragraph{Pull}
-
-FLCAS decompresses the layer archival files,
-calculates the file content digests, searches whether the identical files are stored or not. 
-
-If not, FLCAS stores these unique files.
-
 %
-Upon a pull request, FLCAS first restores the requested 
-layer archival files by fetching all its containing files and compressing them.
+Pulling the layer cannot be postponed to the off-line process as the client is
+actively waiting for the layer. 
 %
-How to manage layer-to-file mapping to provide fast searching \& indexing performance 
-is also a challenging to FLCAS.
-
-\LR{The challenges are not clear at this point. We need to first briefly describe the
-overall approach, i.e. layer is pushed, archive is decompressed, file digests are
-calculated, etc., and then say, what exactly is challenging/problematic about this
-approach.}
-
-\LR{We should also add the layer reconstruction as another challenge.}
-
-\LR{Another challenge could be dealing with files that have same data but different
-metadata.}\NZ{addressed}
-
-%file-level deduplication not only includes calculation of file content digest, 
-%searching for identical files, and storing unique files, 
-%but also includes decompression of layer archival files and and restoring layer archival files.
-%decompression of layer archival files,
-%calculation of file content digest, 
-%searching for identical files, 
-%storing unique files,
-%and restoring layer archival files.
+\sysname\ performs the following actions \emph{inline} during the pull request:
 %
-
-te
-%%%%% Overhead discussion
-
-While FLCAS can significantly reduce the number of redundant files in the Docker
-registry, it comes with several challenges, 
-including file-level deduplication overhead and its impact on push or pull latencies.
-
-These above operations are either CPU intensive or I/O intensive, which would impact 
-the foreground push/pull requests.
-
-The overhead of restoring a layer would become a bottleneck of a pull request.
-
-\LR{The challenges should also be connected back to their effect, i.e. they will
-affect push and pull latencies.}\NZ{addressed}
-
+\textbf{1)}~if layer is still in the staging area, \sysname\ services the layer
+directly form there;
+%
+\textbf{2)}~otherwise, \sysname finds Docker the layer recipe by the layer
+digest provided by the client;
+%
+\textbf{2)}~prepares a directory structure for the layer based on the layer
+recipe;
+%
+\textbf{3)}~packs and compresses the layer's  directory tree into a tarball
+%
+\textbf{4)}~sends the layer tarball back to the client and discards the tarball.
 

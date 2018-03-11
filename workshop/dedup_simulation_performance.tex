@@ -1,8 +1,20 @@
-\subsection{Evaluation}
+\subsection{Performace Evaluation}
 
-%% Vasily: Copied from prev. section. This might be the place where we briefly
-%% introduce the design
+\VT{ think in this section we can first qualitatively talk about potential performance
+issues, then briefly about simulation, then about performacnce evaluation results
+for pulls and pushes.}
+
+While FLCAS can significantly reduce the number of redundant files in the
+Docker registry, it comes with potential performance degradation.
+%
+These above
+operations are either CPU intensive or I/O intensive, which would impact the
+foreground push/pull requests.  The overhead of restoring a layer would become
+a bottleneck of a pull request.
+
+
 \paragraph{Simulation}
+%
 To analyze the impact of file-level deduplication, we simulate a simple FLCAS on
 0.9 million layers and measure the performance for each step of the approach.
 %
