@@ -4,66 +4,23 @@ Due to their tight isolation, low overhead, and efficient packaging of the
 execution environment, Docker containers have become a prominent solution for
 deploying modern applications.
 %
-%Containers are created from images that preserve software dependencies,
-%environment configuration, and other parameters that affect the application's
-%runtime.
-%
 Containers are created from images which are stored in a Docker registry.
 %
-Image consists of a list of layers and layers are shared among images.
-%
-%Docker allows sharing of such images between users via a Docker registry.
+An image consists of a list of layers which can be shared among images.
 %
 Docker registries store a large amount of images and with the increasing
-popularity of Docker, they continue to grow. For example, Docker
-Hub---a popular public registry---stores more than half a million public images.
+popularity of Docker, they continue to grow. For example, Docker Hub---a
+popular public registry---stores more than half a million public images.
 %
-%As the amount of images stored in public and private Docker registries
-%increases it becomes important to study images' characteristics.
+In this paper, we analyze over 167TB of uncompressed Docker images and evaluate
+the potential of file-level deduplication in the Docker registry.
 %
-%Investigating the storage-centric properties of Docker images can reveal useful
-%insights about containerized applications and thereby prompt improvements in
-%Docker design.
+Our analysis reveals that only~3\% of the files in unpacked images are unique.
 %
-%The massive Docker Hub dataset offers a unique opportunity for such an
-%endeavor.
+Existing layer sharing mechanism is not capable of eliminating this massive
+data redundancy.
 %
-%Our goal is to collect statistics from a large amount of Docker images and
-%perform a large-scale characterization of Docker images.
+We then present the design of \sysname---Docker registry with deduplication
+support---and conduct simulation-based analysis of performance implications.
 
-In this paper, we analyze over 47~TB of Docker images from
-Docker Hub and derive major trends and useful insights.
-%
-For example, we find that only 10\% of layers are referred to by more than one image.
-%
-We then evaluate the potential of file deduplication for the Docker registry.
-%
-Our analysis reveals that only~3\% of the files in unpacked images are
-unique.
-%
-Based on this finding, 
-%we present the design for a Docker registry, which
-%performs file-level deduplication across the stored images.
-%
-we conduct a simulation-based deduplication analysis 
-%to 
-%assess the feasibility of our design
-and provide different suggestions to improve deduplication
-performance and reduce the overhead on \textit{pull request}. 
-%show that \LR{put 1 or 2 highlight results here}.\NZ{our one-node design is the major weakness of this paper}
-
-%estimate performance, storage efficiency, and resource utilization
-
-%
-%Furthermore, we applied chunk-level deduplication method on the 5TB unique
-%files and reduced the storage consumption to 1TB.
-%
-%Characterize them using multiple metrics, \eg image size distribution, layer
-%size, the number of layers per image, and the amount of layers shared among
-%images.
-%
-%For example, we find that small layers only have low compression ratios,
-%suggesting that storing these layers uncompressed can help save computation
-%while not sacrificing storage.
-%
 \end{abstract}
