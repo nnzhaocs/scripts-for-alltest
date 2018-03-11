@@ -1,18 +1,57 @@
 \subsection{Design}
 \label{sec:design}
 
-%In this section we propose a file-level content addressable storage model (FLCAS)
-%based on file-level deduplication
-%for Docker as an alternative to layer-level content addressable storage.
+We designed \sysname\ so that the interface between the Docker clients and the
+registry remains the unchanged.
 %
-%and save space while maintaing good
-%FLCAS, can significantly reduce the redundant files in docker registry and save
-%a large volume of storage space.
+As such, no modifications are needed in the Docker clients.
 %
+Below we describe the actions that \sysname\ takes during the layer pushes and
+pulls.
+%
+For the sake of this paper, we explain only the main steps omitting smaller
+details.
 
-%%%%%% Design explanation
+\paragraph{Push}
+%
+\sysname\ does not unpack the layer immedieately after receiving it from a
+client.
+%
+Instead, \sysname\ saves the layer's compressed tarball in a persistent
+\emph{staging area}.
+%
+A separate \emph{off-line} deduplication process iterates over the layers in
+the staging area and performs the following actions for every layer:
+%
+\textbf{1)}~uncompresses and unpacks the layer's tarball into individual files;
+%
+\textbf{2)}~computes a \emph{fingerprint} for every file in the layer;
+%
+\textbf{3)}~checks all file fingerprints against the \emph{file index} to
+identify if identical files are already stored in \sysname;
+%
+\textbf{4)}~stores non-deduplicated files in \sysname's storage system;
+%
+\textbf{5)}~creates and stores a \emph{layer recipe} that includes the path,
+metatada, and fingerprint of every file in the layer;
+%
+\textbf{6)}~removes the layer's tarball from the staging area.
 
-For example, after layers are pushed in registry, FLCAS decompresses the layer archival files,
+Layer recipies are identified by layer's digests (see
+Section~\ref{sec:background}) and files are identified by their fingeprints.
+%
+These identifiers are used by the underlying storage to store and retrieve
+corresponding objects.
+%
+For example, if a file system is used as a backend storage, \sysname\ creates a
+single file for layer reciepy (named by the fingerprint) and a single file for
+actual in-layer file (named by the fingerprint).
+
+\VT{Maybe discuss performance implications here. But maybe do it later. Will see.}
+
+\paragraph{Pull}
+
+FLCAS decompresses the layer archival files,
 calculates the file content digests, searches whether the identical files are stored or not. 
 
 If not, FLCAS stores these unique files.
@@ -44,7 +83,7 @@ metadata.}\NZ{addressed}
 %and restoring layer archival files.
 %
 
-
+te
 %%%%% Overhead discussion
 
 While FLCAS can significantly reduce the number of redundant files in the Docker
