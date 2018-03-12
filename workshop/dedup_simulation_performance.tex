@@ -179,8 +179,9 @@ Looking at the breakdown of the deduplication time in Figure~\ref{fig:dedup-res}
 we make several observations:
 %
 \LR{Better to show the 90th percentile, that's a more commonly used value.}
+\NZ{addressed}
 First, we see that searching times are the smallest among all operations
-and introduce negligible overhead with 80\% of search  time being less than
+and introduce negligible overhead with 90\% of search time being less than
 0.004\,s. 
 %
 %The mapping table maintains 0.98 million layer-to-file digest mapping records. 
@@ -197,6 +198,7 @@ from 0.000005\,s to 124.7\,s.
 %
 \LR{Shouldn't the distribution of those times then also be similar to the
 layer size distribution?}
+\NZ{it depends on layer size, file size, and the number of files}
 This is because the time mainly depends on the layer size, \ie the fewer and smaller
 files a layer contains, the faster it is to compute all digests for the layer.
 %
@@ -206,6 +208,7 @@ files a layer contains, the faster it is to compute all digests for the layer.
 %While if the layer is bigger, the digest calculation overhead will be higher. 
 %
 \LR{Again, better to show the 90th percentile.}
+\NZ{90\% of digest calculation time is less than 27.1\,s.}
 80\% of digest calculation time is less than 4.21\,s. 
 %
 %Thus, we suggest that multiple-threading is needed to calculate the files'
@@ -223,10 +226,14 @@ However, after that, the times diverge and compression times increase faster com
 to unpacking times.
 %
 \LR{Again, better to show the 90th percentile.}
-80\% of decompression is less than 0.55 s while 80\% of packing time is less than 0.21\,s.
+\NZ{addressed}
+90\% of decompression is less than 0.95 s while 90\% of packing time is less than 0.35\,s.
 
 \LR{We need to draw some conclusions here.}
-
+\NZ{Overall, we see that file digest calculation contributes a lot to the overall deduplication
+latency especially when the layer size is big. 
+Moreover, we see that the deduplication latency increases as the layer size grows.
+}
 \paragraph{Pull layer latency} 
 
 For a \emph{pull layer} requests, \sysname\ will first fetch 
@@ -252,6 +259,7 @@ to pulling latency.
 %While compression has the highest run time 80\% of compression time is less than 2.82~s. 
 %
 \LR{Again, better to show the 90th percentile.}
+\NZ{90\% of the compression time is less than 8\,s.}
 After that, the times diverge and compression times increase faster with an
 80\textsuperscript{ts} percentile of 2.82\,s.
 %
@@ -269,6 +277,7 @@ of layer sizes (see Figure~\ref{fig:layer-size-cdf}).
 
 \LR{Should we move that to 4.3?}
 %
+\NZ{Can we use it as conclusion}
 To reduce latency, we suggest that fast compression methods should be applied to reduce
 compression times. As deduplication provides significant storage savings, faster compression
 methods with a lower compression ratio are hence feasible.
