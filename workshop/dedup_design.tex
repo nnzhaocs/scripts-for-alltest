@@ -24,7 +24,7 @@ Instead, it reliably saves the layer's compressed tarball in a persistent
 \emph{staging area}.
 %
 A separate \emph{off-line} deduplication process iterates over the layers in
-the staging area and performs the following actions for every layer:
+the staging area and performs the following steps for every layer:
 %
 \begin{compactenumerate}
   \item uncompress and unpack the layer's tarball into individual files;
@@ -55,14 +55,14 @@ every in-layer file (named by the fingerprint).
 
 
 \paragraph{Pull}
-
-When a layer is pulled, \sysname\ has to \emph{reconstruct| the layer based
+%
+When a layer is pulled, \sysname\ has to \emph{reconstruct} the layer based
 on the layer and file recipes.
 %
 A pull request cannot be postponed to an off-line process because the
 pulling client is actively waiting for the layer.
 %
-\sysname\ performs the following actions \emph{inline} during the pull request:
+\sysname\ performs the following steps \emph{inline} during the pull request:
 %
 \begin{compactenumerate}
   \item check if the requested layer is still in the staging area and if so,
