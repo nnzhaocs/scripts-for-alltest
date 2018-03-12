@@ -121,3 +121,22 @@ Specifically, two files
 are two MIT Kerberos runtime libraries for \texttt{dpkg}.
 Another two file \texttt{license} and \texttt{.npmignore} are related to \texttt{npm} package manager.
 The rest file \texttt{dependency\_links.txt} contains a list of dependency URLs for Python.
+
+\paragraph{Deduplication ratio growth with layer dataset size}
+
+\begin{figure} 
+	\centering
+	\includegraphics[width=0.25\textwidth]{graphs/dedup-ratio-grow} 
+	\caption{The growth of deduplication ratio.
+	} 
+	\label{fig:dedup-ratio-growth} 
+\end{figure}
+
+Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth with layer dataset size. x-axis shows 4 random samples of given sizes from our whole dataset. We see that deduplication ratio increases with layer dataset size.
+%
+For example, deduplication ratio
+in terms of file count increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while the deduplication ratio in terms of capacity increases from \textbf{1.9$\times$} to \textbf{6.9$\times$}  
+as the layer dataset grows from 1000 to 1.7 million.
+% 
+As the number of images stored in Docker registry
+is increasing dramatically, file-level deduplication can save significant storage space.
