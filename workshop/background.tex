@@ -75,8 +75,8 @@ enables layer sharing across containers spawned from the same or different image
 %
 The Docker registry is a platform for storing and sharing container images.
 %
-It stores images in \emph{repositories}, each containing different versions of
-the same image. 
+It stores images in \emph{repositories}, each containing different versions (\emph{tags}) of
+the same image, identified as $<repo-name:tag>$. 
 %
 For each image, Docker registry stores a \emph{manifest} that describes,
 among other things, which layers constitute the image.
@@ -113,3 +113,6 @@ of a layer even if it is referenced by multiple images.
 %
 However, if at least one file differs in two otherwise identical layers,
 the two layers are treated as different and stored separately.
+%
+
+
