@@ -8,7 +8,7 @@ In its  straightforward implementation Docker would not support layer sharing.
 Instead, every image would be a single flat archive.
 %
 In fact, some existing containerization frameworks
-~\cite{singularity}~\cite{openvz} 
+~\cite{openvz}~\cite{singularity}
 %
 use flat images.
 %
@@ -16,49 +16,46 @@ Our estimates show that without layer sharing Docker Hub dataset would grow
 from 47TB to 85TB, implying \textbf{1.8$\times$} deduplication ratio provided
 by the layer sharing.
  
-We further computed for each layer, how many times it is referenced by images.
+We further computed how many times each layer is referenced by images.
 %
 Figure~\ref{fig:ref_count} shows that around 90\% of layers are referenced by
-only a single image, additional 5\% are referenced by 2 images, and less than
+a single image, an additional 5\% are referenced by 2 images, and less than
 1\% of the layers are shared by more than 25 images.
 %
 Interestingly, there is one layer that is referenced by 184,171 images.  Our
 analysis revealed that this is an empty layer.
 %
 The presence of an empty layer in an image is explained
-by the fact that during the image build Docker creates a new layer
+by the fact that during the image build, Docker creates a new layer
 for every layering \texttt{RUN <cmd>} instruction
-in the Dockerfile~\VT{~\cite{Dockerfile}}
-\NZ{I dont have dockerfile. 
-	But I checked the config files and dockerfile website. 
-	It's correct.}.
+in the Dockerfile~\cite{Dockerfile}.
+%\NZ{I dont have dockerfile. 
+%	But I checked the config files and dockerfile website. 
+%	It's correct.}.
 %manifests/mikahassinen-docker-whale-latest-1500714692.32.json
 %
 If the~\texttt{<cmd>}, which can be an arbitrary shell command,
 does not modify any files in the file system,
 an empty layer is created.
 %
-\VT{Verify the explanation for empty layers.}
-\NZ{correct}
+%\VT{Verify the explanation for empty layers.}
+%\NZ{correct}
 
 The next 5 top-ranked layers by the reference count
 are included in 29,200--33,413 images.
 %They are related to ubuntu, dpkg, apt, and cowsay.
 Specifically, one layer contains a whole \texttt{Ubuntu 14.04.2 LTS} distribution; 
 one layer contains a \texttt{sources.list} file for \texttt{apt};
-one layer contains binaries and libraries needed for \texttt{dpkg};
-The rest two layers are related to cowsay -- a program that can generates ASCII pictures of a cow with a message~\cite{cowsay}:
+one layer contains binaries and libraries needed for \texttt{dpkg}.
+The other two layers are related to cowsay -- a program that can generates ASCII pictures of a cow with a message~\cite{cowsay}:
 one layer contains a whole installation package for \texttt{cowsay 3.03} 
-while another layer only contains the binaries for cowsay.
+while the other layer only contains the binaries for cowsay.
  
 %
 %\NZ{Some layer tarfiles are not easy to describe. AND. these above layers are not 
 %	referred by official Ubuntu latest. Find an interesting thing: image name already
 %	tells what software packages it contains.}
 %
-\VT{Exaplain wha tis cowsay?}
-%
-\VT{We need to know more about those layers. ``related to'' is too vague.}\NZ{addressed}
 
 \input{fig-layer-size-compress-cdf}
 %
@@ -110,17 +107,17 @@ copies.
 The file that has the maximum repeat count 53,654,306---is an empty file.
 %Other hot redundant files are 
 %
-\VT{Do we know anything about those empty files}.\NZ{addressed}
+%\VT{Do we know anything about those empty files}.\NZ{addressed}
 Around 4\% of empty files are \texttt{\_\_init\_\_.py}, which make Python treat the 
-directories as containing packages and usually just are empty files. 
+directories as containing packages and are usually empty files. 
 Other frequent empty files include empty \texttt{lock} files, \texttt{.gitkeep}, etc.
 
 We also analyze 5 frequently repeated files which repeat 3,338,145 -- 11,847,356 times.
 Specifically, two files 
 \texttt{libkrb5-3:amd64.postrm} and \texttt{libkrb5-3:amd64.postinst}
 are two MIT Kerberos runtime libraries for \texttt{dpkg}.
-Another two file \texttt{license} and \texttt{.npmignore} are related to \texttt{npm} package manager.
-The rest file \texttt{dependency\_links.txt} contains a list of dependency URLs for Python.
+Another two files \texttt{license} and \texttt{.npmignore} are related to \texttt{npm} package manager.
+The last file \texttt{dependency\_links.txt} contains a list of dependency URLs for Python.
 
 \paragraph{Deduplication ratio growth with layer dataset size}
 
@@ -132,11 +129,11 @@ The rest file \texttt{dependency\_links.txt} contains a list of dependency URLs 
 	\label{fig:dedup-ratio-growth} 
 \end{figure}
 
-Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth with layer dataset size. x-axis shows 4 random samples of given sizes from our whole dataset. We see that deduplication ratio increases with layer dataset size.
+Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth over the layer dataset size. The x-axis values correspond to the size of 4 random samples from our whole dataset. We see that deduplication ratio increases with the layer dataset size.
 %
 For example, deduplication ratio
 in terms of file count increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while the deduplication ratio in terms of capacity increases from \textbf{1.9$\times$} to \textbf{6.9$\times$}  
 as the layer dataset grows from 1000 to 1.7 million.
 % 
-As the number of images stored in Docker registry
-is increasing dramatically, file-level deduplication can save significant storage space.
+As the number of images stored in the Docker registry increases dramatically,
+file-level deduplication can provide significant storage space savings.
