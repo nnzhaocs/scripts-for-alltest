@@ -81,7 +81,7 @@ are part of
 the deduplication process and together make up the Dedup time.
 %
 \VT{@Nannan, in Figure ~\ref{fig:dedup-res} can you reorder the lines in the
-legend so that the Searching goes after Digest calculation?}
+legend so that the Searching goes after Digest calculation?}\NZ{addressed}
 %
 Searching, Archiving, and Compression
 simulate the additional processing for a \texttt{pull}
@@ -122,7 +122,7 @@ Looking at the breakdown of the deduplication time in
 Figure~\ref{fig:dedup-res}, we make several observations.
 %
 First, the searching time is the smallest among all operations with 90\% of the
-searches completing in less than 4ms and the median of \VT{XXX}ms.
+searches completing in less than 4ms and the median of \VT{3.9}ms.
 %
 %The mapping table maintains 0.98 million layer-to-file digest mapping records. 
 %
@@ -145,7 +145,7 @@ Second, the calculation of digests spans a wide range from 5$\mu$s to almost
 %While if the layer is bigger, the digest calculation overhead will be higher. 
 %
 90\% of digest calculation times are less than 27s while 50\% are
-less than \VT{XXX}s.
+less than \VT{0.05}s.
 %
 The diversity in the timing is caused by a high variety of layer sizes both in
 terms of storage space and file counts.
@@ -161,7 +161,7 @@ distribution for approximately 60\% of the layers and is less than 150ms.
 %
 %Around 60\% of decompression and unpacking time are less than 0.15\,s. 
 %
-However, after that, the times diverge and compression times increase faster
+However, after that, the times diverge and NZ{de}compression times increase faster
 compared to unpacking times.
 %
 \VT{do we have some theory why?}
@@ -173,8 +173,8 @@ than 350ms.
 %overall deduplication latency especially when the layer size is big.  Moreover,
 %we see that the deduplication latency increases as the layer size grows.
 %
-Overall, we see that 90\% of file-level deduplication time is less than \VT{XXX}s
-per layer, while the average processing time for a single layer is \VT{XXX}.
+Overall, we see that 90\% of file-level deduplication time is less than \VT{35}s
+per layer, while the average processing time for a single layer is \VT{13.5}s.
 %
 This means that our single-node deployment can process about 3 layers/s on average.
 %
