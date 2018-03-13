@@ -14,15 +14,15 @@ in a container image to simplify and automate application deployment~\cite{slack
 \input{fig-docker-architecture.tex}
 %
 As shown in Figure~\ref{fig-docker-architecture}, a typical
-Docker setup consists of three main components: 1)~\emph{client},
-2)~\emph{host}, and 3)~\emph{registry}.
-%
+Docker setup consists of three main components: \emph{client},
+\emph{host}, and \emph{registry}.
+
 Users interact with Docker using the Docker client which, in turn,
 sends commands to the Docker host.
 %
-Both client and host can run on the same machine.
+The client can be colocated on the host machine.
 %
-Docker host runs a daemon process that implements the core logic of Docker and
+The Docker host runs a daemon process that implements the core logic of Docker and
 is responsible for \emph{running} containers from locally available
 images.
 %
@@ -76,9 +76,9 @@ enables layer sharing across containers spawned from the same or different image
 The Docker registry is a platform for storing and sharing container images.
 %
 It stores images in \emph{repositories}, each containing different versions (\emph{tags}) of
-the same image, identified as $<repo-name:tag>$. 
+the same image, identified as \texttt{<repo-name:tag>}.
 %
-For each image, Docker registry stores a \emph{manifest} that describes,
+For each image, the Docker registry stores a \emph{manifest} that describes,
 among other things, which layers constitute the image.
 %
 %The manifest is a JSON file, which contains the runtime configuration for a
