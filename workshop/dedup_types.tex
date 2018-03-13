@@ -5,25 +5,25 @@
 To understand the sources of high data redundancy among Docker images, we
 investigate deduplication for common file types.
 %
-We identify 133 file types (e.g., JPG, C/C++ code, Java files)
+We identify 133 file types (e.g., JPG, C/C++, and Java files)
 using the file type library~\cite{pymagic} and then group file types into 7
 classes by their high-level use cases:
 %
-1)~executables, libraries, and object files (EOL) (e.g., .o, .pyc)
+1)~executable, object, and library files (EOL) (such as .o or .pyc)
 %
 %\VT{Maybe call them ``Exec.`` instead on the graph and everywhere?}
 %
-2)~archival (e.g., .gz, .tar),
+2)~archival (such as .gz or .tar),
 %
-2)~documents (e.g., .txt, .tex),
+2)~documents (such as .txt or .tex),
 %
-4)~source code (e.g., .c/.cpp),
+4)~source code (such as .c or .java),
 %
-5)~scripts (e.g., .py, .js),
+5)~scripts (such as .py or .js),
 %
-6)~images (e.g., PNG, EPS),
+6)~images (such as .png or .eps), and
 %
-7)~database files (e.g., .sqlite, .frm). 
+7)~database files (such as .sqlite or .frm). 
 %
 These classes cover about 88\% of the whole dataset (by capacity);
 we group the remaining 12\% in the Others class.
@@ -33,17 +33,17 @@ Figure~\ref{fig:dedup-overall} illustrates the deduplication results for these
 classes.
 %
 The overall deduplication ratio is \textbf{6.9$\times$} and 4 type classes
-have a comparable ratio (see dots in Figure~\ref{fig:dedup-overall}).
+have a comparable ratio (indicated by the dots in the figure).
 %
-E.g., the deduplication ratio for EOL files is \textbf{7.1$\times$}.
+For example, the deduplication ratio for EOL files is \textbf{7.1$\times$}.
 %
-However, for the other 3 type classes  
+However, for the other 3 type classes, the
 deduplication ratio is significantly
 higher---\textbf{31.25$\times$} for source code,
 \textbf{50$\times$} for scripts, and \textbf{12.5$\times$} for documents.
 %
-This indicates that Docker image builders are prone to frequently replicate
-source code, scripts, and documents.
+This indicates that users are prone to frequently replicate
+source code, scripts, and documents in their images.
 %
 %Moreover, the source code and script duplicates generate additional executables
 %and object files that are identical.
@@ -51,7 +51,7 @@ source code, scripts, and documents.
 We found that redundant C/C++ source code takes up over 77\% of the capacity
 occupied by source code.
 %
-Looking closer we found, for example, that Google Test~\cite{googletest}---a
+Looking closer we found that, for example, Google Test~\cite{googletest}---a
 cross-platform C++ test framework available on GitHub~\cite{github}---is
 frequently replicated.
 %
@@ -59,7 +59,8 @@ Interestingly, we found there are multiple Docker repositories related to
 Google Test while there is no official repository for Google Test.
 %
 We suspect that many developers replicate open source code from external public
-repositories, such as GitHub, and store them in containers.
+repositories, such as GitHub, and store it in container images but do not
+specifically encapsulate it in a separate layer.
 %
 This would also explain the shared source code across different images.
 %
@@ -93,7 +94,7 @@ xnu-chroot-environment~\cite{xnu-chroot-environment} among others.
 %read-only layer}.
 
 Next, we observe that redundant EOL and archival files occupy over half of the
-capacity (51.4\%). 
+capacity (51.4\%) \LR{capacity of what?}.
 %
 %To understand why there are so many redundant archival files, 
 %we manually
@@ -110,7 +111,7 @@ There are two files that have around 86,733 copies respectively:
 \texttt{ubuntu\_dists\_trusty\_universe\_binary-\\amd64\_Packages.gz}, which
 contains the name, version, size, the description, and the dependencies of each package.
 %
-The last file, \texttt{gcc.log.xz} has 13,384 copies and belongs to GNU C++ compiler.
+The last file, \texttt{gcc.log.xz} has 13,384 copies and belongs to the GNU C++ compiler.
 %
 %For example, we found a highly redundant zip file called
 %android-ndk-r12b.zip~\cite{NDK}.
