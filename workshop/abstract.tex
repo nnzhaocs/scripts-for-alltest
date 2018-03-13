@@ -4,23 +4,22 @@ Due to their tight isolation, low overhead, and efficient packaging of the
 execution environment, Docker containers have become a prominent solution for
 deploying modern applications.
 %
-Containers are created from images which are stored in a Docker registry.
+Containers are created from \emph{images} which are stored in a Docker \emph{registry}.
 %
-An image consists of a list of layers which can be shared among images.
+An image consists of a list of \emph{layers} which can be shared among images.
 %
 Docker registries store a large amount of images and with the increasing
 popularity of Docker, they continue to grow. For example, Docker Hub---a
 popular public registry---stores more than half a million public images.
 %
-In this paper, we analyze over 167TB of uncompressed Docker images and evaluate
+In this paper, we analyze over 167\,TB of uncompressed Docker images and evaluate
 the potential of file-level deduplication in the Docker registry.
 %
-Our analysis reveals that only~3\% of the files in unpacked images are unique.
+Our analysis reveals that only~3\% of the files in images are unique
+and existing layer sharing mechanism is not sufficient to eliminating this
+large amount of redundancy.
 %
-Existing layer sharing mechanism is not capable of eliminating this massive
-data redundancy.
-%
-We then present the design of \sysname---Docker registry with deduplication
-support---and conduct simulation-based analysis of performance implications.
+We then present the design of \sysname---a Docker registry with deduplication
+support---and conduct a simulation-based analysis of its performance implications.
 
 \end{abstract}
