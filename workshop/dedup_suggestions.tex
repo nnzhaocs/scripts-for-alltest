@@ -1,168 +1,71 @@
-\subsection{Improving the performance of \sysname}
+\subsection{Enhancements}
 
-\NZ{Can we use it as conclusion}
-To reduce latency, we suggest that fast compression methods should be applied to reduce
-compression times. As deduplication provides significant storage savings, faster compression
-methods with a lower compression ratio are hence feasible.
+We now propose additional optimizations that can help to speed \sysname\ up:
 
-Based on our simulation results, we propose two optimizations
-to speed up pull requests when file-level deduplication is used
-in a registry.
-
-\paragraph{Deduplicating when workload is light}
-
-As shown above, file-level deduplication comes with some performance overhead.
+\begin{compactenumerate}
 %
-However, the registries often experience fluctuationg workloads with
-peaks and troughs~\cite{dockerworkload}.
+\item
 %
-%Also, 80\% of the time, registry serves only 100 or less requests.
+As the majority of the pull time is caused by compression, we propose to cache
+hot layers as precompressed tar files in the staging area.
 %
-\LR{This is confusing. From our previous description, it sounded like we're
-performing deduplication every time a layer gets pushed. What exactly does it mean
-to ``trigger it for cold layers'' and why do we need to do that? Explain better.}
-\NZ{we did a off-line simulation. I mentioned in the first paragraph in performance analysis}
+%We observe that only a small proportion of images and layers are frequently
+%requested and majority of images and layers are \textit{cold}.
 %
-So file-level dedupilication can be triggered for removing the redundant files 
-only when the workload is low and storage utilization is high.
+%Figure~\ref{fig:pull-cnt} shows the total number of pulls from the time an
+%image/layer has been stored in Docker Hub until May 30, 2017.
 %
-To further improve the performance of \sysname\, we also suggest to use main memory
-for temporarily storing and processing \textit{small} layers.
+According to our statistics, only 10\% of the images were pulled
+from the Docker Hub more than 360 times from \VT{XXX}
+until May 30, 2017.
 %
-According to our findings (see~\S\ref{sec:dedup_ratio}), the majority of layers~(87.3\%)
-are smaller than 50\,MB and hence can be stored and processed in RAM to speed up
-deduplication. 
-
-\input{fig_pull_cnt}
-
-\paragraph{Caching hot layers}
-
-To further reduce overhead, we propose to cache the hot/recently requested layers as
-gzip compressed tar files.
+This suggests the existence of both cold and hot images and layers.
 %
-We observe that only a small proportion of images
-and layers are frequently requested and majority of images and layers are
-\textit{cold}.
+\VT{Nannan, can we instead compute that XXX\% of pulls
+wen to YYY\% of images?}
 %
-Figure~\ref{fig:pull-cnt} shows the total
-number of pulls from the time an image/layer has been stored in Docker Hub until
-May 30, 2017.
 %
-We see that only 20\% and 10\% of images are pulled more than 100 and
-360 times respectively.
+%translates to only 10\% of layers being pulled more than 660 times (at most).
 %
-Similarly, only 20\% and 10\% of layers are pulled
-more than 217 and 660 times.
+%Note that we calculate the layer pull count shown in Figure~\ref{fig:pull-cnt}
+%by aggregating the pull count of all images, which refer to this layer.
 %
-Note that we calculate the layer pull count shown in
-Figure~\ref{fig:pull-cnt} by aggregating the pull count of
-all images, which refer to this layer.
+%Note that the image pull counts are crawled from Docker Hub website.
 %
-%Note that the image pull counts are crawled
-%from Docker Hub website.
-%
-Actual layer pull counts should be less because pulling an image does not
-necessarily pull all its containing layers if some layer have been previously
-downloaded and are already available locally.
+%Actual layer pull counts should be less because pulling an image does not
+%necessarily pull all its containing layers if some layer have been previously
+%downloaded and are already available locally.
 %
 
+\item
 %
-%\lrcomment{How does this compare to pulling without dedup? What's the overhead
-%added?}
+As deduplication provides significant storage savings, \sysname\ can use faster
+but less effective compression methods than \VT{gzip}.
+%
+\VT{cite a few}
 
+\item
+%
+%Deduplicating when workload is light As shown above, file-level deduplication
+%comes with some performance overhead.
+%
+The registries often experience fluctuation in load with peaks and
+troughs~\cite{dockerworkload}.
+%
+Thus, file-level dedupilication can be triggered
+when the load is low to prevent interference with 
+client pulls and pushes.
+%
+%To further improve the performance of \sysname\, we also suggest to use main
+%memory for temporarily storing and processing \textit{small} layers.
+%
+%According to our findings (see~\S\ref{sec:dedup_ratio}), the majority of
+%layers~(87.3\%) are smaller than 50\,MB and hence can be stored and processed
+%in RAM to speed up deduplication. 
+%
+\end{compactenumerate}
 
-%
-%\vcomment{What are the units for  $\sigma_{wl}$ and  $\sigma_{su}$?}
-%
-%\lrcomment{Do you mean it only runs through low workload periods? How are we
-%predicting those or are we relying on some workload patterns? We should make
-%that clear.}
-
-%high while start file-level dedup \paragraph{\sysname\ model}
-%Figure~\ref{fig:file-dedup-model} shows an example of \sysname\.
-%
-%\vcomment{An example?..}
-%
-%\lrcomment{This explanation should come before the caching and light workloads
-%paragraphs.}
-%
-
-%\paragraph{Caching hot layers to improve performance}
-%\label{subsec:\sysname\}
-%
-%\begin{figure}
-%	\centering
-%	\includegraphics[width=0.3\textwidth]{graphs/graph_compression_layers.pdf}
-%	\caption{File-level content addressable model.
-%	\vcomment{1) Do not see ``cache'' word on the figure. 2) Font is too small in the middle section. 3) We need to describe how we depict layers vs. files. 4) There are pull requests both from the top and the bottom . I think we should just remove the part below the File pool.}
-%	}
-%	\label{fig:file-dedup-model}
-%\end{figure}
-
-%
-%\vcomment{Who is ``it''?}\nancomment{addressed}
-%
-%
-%\vcomment{Who are ``they''? Avoid using ``it'' and ``they''. Use actual nouns instead.}
-%
- %a digest generated by a cryptographic hash function (such as ) 
-%
-%\vcomment{Let's use ``deduplication'' instead of ``dedup'' everywhere (because
-%the letter one is informal)}
-
-%\subsection{Trade-off discussion}
-
-%
-
-%\vcomment{I think there are two reasons for the cache 1) reduce push latency
-%and 2) reduce pull latency. The text above talks only about reducing pull
-%latencies.  We also need to talk about pushes.  Furthermore, the current
-%discussion of pull counts does not really justify read (pull) cache.  For the
-%read (pull) cache to be efficient there should be many pulls that access the
-%same layers. E.g., that XXX\% of pulls go to the few YYY popular layers.
-%Can we say that?}
-%%
-%\vcomment{somewhere we will need to talk about eviction policy, how to
-%size the caching layer, and, finally, what happens if the cache is full.}
-% 
-
-%\subsection{Using RAM to load \&. process layers}
-%
-%To improve performance, we use RAM to temporarily store \textit{small} layers
-%and directly process them in RAM.  Specially, we first load small layers in a
-%RAM disk and perform decompression, unpacking, file content digest calculation
-%in RAM, and remove them from RAM after completion.   According to our findings
-%that majority (87.3\%) of layers that are less than 50M as shown in
-%Figure~\ref{fig:image-layer-size}. So majority of layers can be stored and
-%processed in RAM to speed up file-level dedup. 
-%%layers that are less than 50M are stored and processed in RAM while the rest
-%%layers are stored and processed in SSDs.
-%%
-%\lrcomment{This should still be part of 7.1 as it explains the strategy and not
-%the prototype/simulations.}
-%%
-%\lrcomment{How are small layers defined? Where is the threshold?}
-%
-%majority (xxx) of layers'dedup times are less than xxx.
-%during peak workload, which means that we start file-level dedup whenever it receives a layer. 
-%To simulate the high intensive workload, we first sent a sequential of layer pushing requests to registry and stored, then we measure the file-level dedup  
-%, archiving time, and compression time.
-%Second, compare the latency for each operation, we see that xxxx
-%\paragraph{Latency breakdown}
-%We calculated the latency for each operation for all layers as shown as Table~\ref{tbl:latency_breakdown}.
-%Figure~\ref{xxx} shows the compression time across 
-
-%\begin{figure}[!t]
-%	\centering
-%	\subfigure[CDF of repositories by pull count]{\label{fig_pull_cnt_total}
-%		\includegraphics[width=0.23\textwidth]{graphs/pull_cnt.pdf}%
-%	}
-%	\subfigure[Histogram of repositories by pull count]{\label{fig_pull_cnt_count}
-%		\includegraphics[width=0.22\textwidth]{graphs/count_pull_cnt.pdf}
-%	}
-%	\caption{Repository popularity distribution}
-%	\label{fig-pop}
-%\end{figure}
+%\input{fig_pull_cnt}
 
 %=======================================
 %|             OLD VERSION              |
