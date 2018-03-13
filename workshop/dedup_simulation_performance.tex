@@ -1,8 +1,8 @@
 \subsection{Performance Evaluation}
 
 While \sysname\ can effectively eliminate redundant files in the
-Docker registry, it introduces overheads which can reduce registry's
-performance.
+Docker registry, it introduces overheads which can reduce the
+registry's performance.
 %
 %The overheads can be classified in two categories: 1)~\emph{background
 %overhead} caused by the computation and I/O that is performed during layer
@@ -26,9 +26,9 @@ we conducted a preliminary simulation of \sysname.
 %
 %
 Our simulation
-approximates several steps of \sysname\ described in Section~\ref{sec:design}.
+approximates several \sysname's steps described in Section~\ref{sec:design}.
 %
-First, a layer from our dataset is read and copied to a RAM disk. 
+First, a layer from our dataset is copied to a RAM disk. 
 %
 %
 %Note that there is no foreground pull or push requests since the simulation is \emph{off-line}.
@@ -83,7 +83,8 @@ the deduplication process and together make up the Dedup time.
 \VT{@Nannan, in Figure ~\ref{fig:dedup-res} can you reorder the lines in the
 legend so that the Searching goes after Digest calculation?}
 %
-Archiving and Compression simulate the additional processing for a \texttt{pull}
+Searching, Archiving, and Compression
+simulate the additional processing for a \texttt{pull}
 request and form the Pulling time.
 %
 
@@ -101,92 +102,88 @@ request and form the Pulling time.
 %better performance than clunky MapReduce-based DB.}
 %
 
-\paragraph{Push layer latency}
+\paragraph{Push}
 
-We see that 80\% of file-level deduplication time is less than 9.09\,s per layer
-and our single-node deployment can process approximately 3 layers/s.
+\sysname\ does not directly impact the latency of \texttt{push} requests because
+deduplication is performed asynchronously, \ie the registry reliably stores a
+copy of the layer as-is and then sends a response to the client.
 %
-In a large-scale registry deployment, this throughput can be improved
-as more node are available to perform deduplication.
+The appropriate performance metric for push is the time it takes to deduplicate
+a single layer.
 %
-%We suggest to use more high powerful machines to improve throughput.
+%Next, we look at the effects on \texttt{push} and \texttt{pull} latencies in
+%more detail.
 %
-Next, we look at the effects on \texttt{push} and \texttt{pull}
-latencies in more detail.
-
-
-\sysname\ does not affect the latency of
-\texttt{push} requests because deduplication is performed asynchronously, \ie
-the registry reliably stores a copy of the layer as is and then sends a
-response message to the user.
+%However, if there are intensive push requests while the registry is performing
+%deduplication, \sysname\ can still impact push latencies because it incurs
+%CPU, memory, and I/O overhead. %(similar to pull requests).
 %
-However, if there are intensive push requests while the registry is performing
-deduplication, \sysname\ can still impact push latencies because it incurs CPU,
-memory, and I/O overhead. %(similar to pull requests).
-
-%Figure~\ref{fig:dedup-res} shows the breakdown of run time for each
-%involved operation: decompression time, unpacking time, file content digest
-%calculation time, and searching time.
+Looking at the breakdown of the deduplication time in
+Figure~\ref{fig:dedup-res}, we make several observations.
 %
-Looking at the breakdown of the deduplication time in Figure~\ref{fig:dedup-res},
-we make several observations:
-%
-\LR{Better to show the 90th percentile, that's a more commonly used value.}
-\NZ{addressed}
-First, we see that searching times are the smallest among all operations
-and introduce negligible overhead with 90\% of search time being less than
-0.004\,s. 
+First, the searching time is the smallest among all operations with 90\% of the
+searches completing in less than 4ms and the median of \VT{XXX}ms.
 %
 %The mapping table maintains 0.98 million layer-to-file digest mapping records. 
 %
-%\LR{Remove the following sentence? 1.7 million records is actually quite
-%	small so even a single-node DB with one index is enough.}\NZ{addressed}
-%Consider that more
-%than 1.7 million layers are stored in Docker hub and the number is still
-%increasing, it's better to choose a fast distributed database to provide high
-%searching performance and scalability.
+%\LR{Remove the following sentence? 1.7 million records is actually quite small
+%so even a single-node DB with one index is enough.}\NZ{addressed} Consider
+%that more than 1.7 million layers are stored in Docker hub and the number is
+%still increasing, it's better to choose a fast distributed database to provide
+%high searching performance and scalability.
 %
-Second, we see that digest calculation times cover a wide range
-from 0.000005\,s to 124.7\,s.
+Second, the calculation of digests spans a wide range from 5$\mu$s to almost
+125s.
 %
-\LR{Shouldn't the distribution of those times then also be similar to the
-layer size distribution?}
-\NZ{it depends on layer size, file size, and the number of files}
-This is because the time mainly depends on the layer size, \ie the fewer and smaller
-files a layer contains, the faster it is to compute all digests for the layer.
+%This is because the time mainly depends on the layer size, \ie the fewer and
+%smaller files a layer contains, the faster it is to compute all digests for
+%the layer.
 %
-%Typically, smaller layers contain a smaller number
-%of smaller files, which takes much less time to calculate their digests.
+%Typically, smaller layers contain a smaller number of smaller files, which
+%takes much less time to calculate their digests.
 %
 %While if the layer is bigger, the digest calculation overhead will be higher. 
 %
-\LR{Again, better to show the 90th percentile.}
-\NZ{90\% of digest calculation time is less than 27.1\,s.}
-80\% of digest calculation time is less than 4.21\,s. 
+90\% of digest calculation times are less than 27s while 50\% are
+less than \VT{XXX}s.
+%
+The diversity in the timing is caused by a high variety of layer sizes both in
+terms of storage space and file counts.
 %
 %Thus, we suggest that multiple-threading is needed to calculate the files'
 %digests simultaneously; 
 %
-%Fast CPUs as well as more powerful computing nodes are
-%required to speed up digest calculation.
+%Fast CPUs as well as more powerful computing nodes are required to speed up
+%digest calculation.
 %
-Third, the run time for decompression and unpacking follows the same distribution
-for around 60\% of the layers and is less than 0.15\,s.
+Third, the run time for decompression and unpacking follows identical
+distribution for approximately 60\% of the layers and is less than 150ms.
 %
 %Around 60\% of decompression and unpacking time are less than 0.15\,s. 
 %
-However, after that, the times diverge and compression times increase faster compared
-to unpacking times.
+However, after that, the times diverge and compression times increase faster
+compared to unpacking times.
 %
-\LR{Again, better to show the 90th percentile.}
-\NZ{addressed}
-90\% of decompression is less than 0.95 s while 90\% of packing time is less than 0.35\,s.
+\VT{do we have some theory why?}
+%
+90\% of decompressions take less than 950ms while 90\% of packing time is less
+than 350ms.
 
-\LR{We need to draw some conclusions here.}
-\NZ{Overall, we see that file digest calculation contributes a lot to the overall deduplication
-latency especially when the layer size is big. 
-Moreover, we see that the deduplication latency increases as the layer size grows.
-}
+%Overall, we see that file digest calculation contributes a lot to the
+%overall deduplication latency especially when the layer size is big.  Moreover,
+%we see that the deduplication latency increases as the layer size grows.
+%
+Overall, we see that 90\% of file-level deduplication time is less than \VT{XXX}s
+per layer, while the average processing time for a single layer is \VT{XXX}.
+%
+This means that our single-node deployment can process about 3 layers/s on average.
+%
+In future we will work on further improving \sysname's deduplication throughput.
+%
+%In a large-scale registry deployment, this throughput can be improved
+%as more node are available to perform deduplication.
+%
+
 \paragraph{Pull layer latency} 
 
 For a \emph{pull layer} requests, \sysname\ will first fetch 
