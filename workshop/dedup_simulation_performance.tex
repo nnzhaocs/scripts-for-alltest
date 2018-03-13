@@ -184,55 +184,30 @@ In future we will work on further improving \sysname's deduplication throughput.
 %as more node are available to perform deduplication.
 %
 
-\paragraph{Pull layer latency} 
+\paragraph{Pull} 
 
-For a \emph{pull layer} requests, \sysname\ will first fetch 
-all its containing files by consulting the \emph{layer-to-file table}, 
-restore the layer archive file and then send the compressed archive back
-to the clients.
-
-Figure~\ref{fig:dedup-res} shows the latency distributions for the compression
-and archiving steps.
-%
-%Note that the \emph{pull layer} latency is the sum of archiving time,
-%compression time, and searching time and does not include network transfer
-%time.
-%
-%\LR{Always add a protected space or a \textbackslash, between a number and its unit.}
-%\NZ{addressed}
-%
-We can see that around 55\% of the layers have a similar compression and archiving
-time ranging from from 0.04\,s to 0.15\,s and both operations contribute equally
+From Figure~\ref{fig:dedup-res}
+we can see that around 55\% of the layers have close compression and archiving
+times ranging from from 40ms to 150ms and both operations contribute equally
 to pulling latency.
+%
 %60\% of compression and archiving time are less than 0.15 s.
 %
 %While compression has the highest run time 80\% of compression time is less than 2.82~s. 
 %
-\LR{Again, better to show the 90th percentile.}
-\NZ{90\% of the compression time is less than 8\,s.}
+%\LR{Again, better to show the 90th percentile.}
+%\NZ{90\% of the compression time is less than 8\,s.}
 After that, the times diverge and compression times increase faster with an
-80\textsuperscript{ts} percentile of 2.82\,s.
-%
-Hence, compression time makes up the major portion of the pull latency and becomes a
-bottleneck.
+90\textsuperscript{th} percentile of 8s.
 %
 This is because compression times increase for larger layers and follow the distribution
 of layer sizes (see Figure~\ref{fig:layer-size-cdf}).
-%\LR{put reason here}
-%\NZ{I think the layer size is the major reason}.
+%
+%80\textsuperscript{th} percentile of 2.82\,s.
+%
+Compression time makes up the major portion of the pull latency and becomes a
+bottleneck.
 %
 %We see that archiving time and compression contributes equally to pulling
 %latency when their run time are lower than 0.15 s while compression time almost
 %equals to pulling latency when the compression time is greater than 0.15 s. 
-
-\LR{Should we move that to 4.3?}
-%
-\NZ{Can we use it as conclusion}
-To reduce latency, we suggest that fast compression methods should be applied to reduce
-compression times. As deduplication provides significant storage savings, faster compression
-methods with a lower compression ratio are hence feasible.
-
-%\alicomment{Separately mention pull layer requests}
-%
-
-%\paragraph{File-level deduplication run time}
