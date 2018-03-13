@@ -11,7 +11,7 @@ market by 2020~\cite{container-grow-by2020}.
 Docker combines process containerization with efficient and effective packaging
 of complete runtime environments in so called {\em images}.
 %
-Images are composed of shareable and {\em content addressable layers}.
+Images are composed of shareable and content addressable {\em layers}.
 %
 A layer is a set of files, which are compressed in a single archive.
 %
@@ -35,12 +35,12 @@ We expect this trend to continue as containers gain more popularity.
 This massive image dataset presents challenges to the registry storage
 infrastructure and so far has remained largely unexplored.
 
-In this paper, we perform the first, large-scale redundancy
+In this paper, we perform the first large-scale redundancy
 analysis of the images and layers stored in Docker Hub.
 %
-We downloaded 47TB (167TB uncompressed) worth of Docker Hub images,
+We downloaded 47\,TB (167\,TB uncompressed) worth of Docker Hub images,
 %
-which contain over 5 billion files in total.
+which in total contain over 5 billion files.
 %
 Surprisingly, we found that only around 3\% of the files are unique
 while others are redundant copies. This suggests that current layer
@@ -54,22 +54,26 @@ contain the same source code from external public repositories
 %As there are no official images containing this source code, users manually add
 %it to their images, resulting in different layers which cannot be reused.
 
-Given our findings, we propose a file-level content addressable storage
-model---\sysname---for the Docker registry.
+Given our findings, we propose \sysname, a file-level content addressable storage
+model for the Docker registry.
 %
 \sysname\ unpacks layer tarballs into individual files and deduplicates them.
 %
 When a Docker client requests a layer, \sysname\ dynamically reconstructs the
 layer from its constituent files.
 %
-To assess the feasibility of our design, we conducted a simulation-based
+To assess the feasibility of our design, we conduct a simulation-based
 evaluation of \sysname. 
 %
 The simulation results show that \sysname\ improves deduplication
 ratio from 1.8$\times$ provided by layer sharing to 6.9$\times$
 provided by file-level deduplication.
 %
-\VT{Here we need to add 1-2 *most interesting* performance-related findings.}
+While \sysname\ comes with some overhead when retrieving layers from the registry
+due to the additional decompression and reconstruction of layers, we find that for
+layers less than 10\,MB (around 60\% of all layers) the overhead is less than 1\,s.
+For larger layers, we propose several optimizations to reduce overhead.
+%\VT{Here we need to add 1-2 *most interesting* performance-related findings.}
 
 %
 %The simulation result show that 
