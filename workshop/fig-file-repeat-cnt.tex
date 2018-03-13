@@ -1,10 +1,36 @@
-\begin{figure} \centering
-	\includegraphics[width=0.45\textwidth]{graphs/File_repeat_count.eps}
-	\caption{File repeat count distribution.
-	%
-	\VT{No need for Y2}
-	%
-	\VT{Still need to use \% on the axis}
-	%
-	} \label{fig:file-repeat-cnt}
+%\begin{figure} \centering
+%	\includegraphics[width=0.45\textwidth]{graphs/File_repeat_count.eps}
+%	\caption{File repeat count distribution.
+%	%
+%	\VT{No need for Y2}
+%	%
+%	\VT{Still need to use \% on the axis}\NZ{addressed both}
+%	%
+%	} \label{fig:file-repeat-cnt}
+%\end{figure}
+
+\begin{figure}[t]
+	\centering
+	\begin{minipage}{0.235\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/File_repeat_count.eps}
+		\caption{File repeat count distribution.
+		}
+		\label{fig:ref_count}
+	\end{minipage}
+	\begin{minipage}{0.225\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/dedup-ratio-grow} 
+		\caption{The growth of deduplication ratio.
+		} 
+		\label{fig:layer-size-cdf}
+	\end{minipage}
 \end{figure}
+
+%\begin{figure} 
+%	\centering
+%	\includegraphics[width=0.25\textwidth]{graphs/dedup-ratio-grow} 
+%	\caption{The growth of deduplication ratio.
+%	} 
+%	\label{fig:dedup-ratio-growth} 
+%\end{figure}
