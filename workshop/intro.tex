@@ -65,13 +65,13 @@ layer from its constituent files.
 To assess the feasibility of our design, we conduct a simulation-based
 evaluation of \sysname. 
 %
-The simulation results show that \sysname\ improves deduplication
-ratio from 1.8$\times$ provided by layer sharing to 6.9$\times$
-provided by file-level deduplication.
+The simulation results show that \sysname\ improves the deduplication
+ratio from 1.8$\times$, provided by layer sharing, to 6.9$\times$.
+%provided by file-level deduplication.
 %
 While \sysname\ comes with some overhead 
 %when retrieving layers from the registry
-caused by the need to dynamically construct and reconstruct layers, we found,
+caused by the need to decompress and reconstruct layers, we found,
 for example, that for
 layers less than 10\,MB (around 60\% of all layers) the overhead of
 retrieving a layer is less than 1\,s.
