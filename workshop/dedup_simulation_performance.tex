@@ -178,7 +178,8 @@ than 350ms.
 Overall, we see that 90\% of file-level deduplication time is less than 35\,s
 per layer, while the average processing time for a single layer is 13.5\,s.
 %
-This means that our single-node deployment can process about 3\,layers/s on average.
+This means that our single-node deployment can process about 4.4\,layers/s on average
+(using 60 threads).
 %
 In future we will work on further improving \sysname's deduplication throughput.
 %
@@ -209,6 +210,9 @@ of layer sizes (see Figure~\ref{fig:layer-size-cdf}).
 %
 Compression time makes up the major portion of the pull latency and is a
 bottleneck.
+%
+Overall, the average pull time is 2.3\,s.
+
 %
 %We see that archiving time and compression contributes equally to pulling
 %latency when their run time are lower than 0.15 s while compression time almost
