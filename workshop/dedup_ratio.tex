@@ -22,7 +22,7 @@ Further analysis reveals that this is an empty layer.
 %
 The presence of an empty layer in an image can be explained
 by the fact that during the image build, Docker creates a new layer
-for every layering \texttt{RUN <cmd>} instruction
+for every \texttt{RUN <cmd>} instruction
 in the Dockerfile~\cite{Dockerfile}.
 %\NZ{I dont have dockerfile. 
 %	But I checked the config files and dockerfile website. 
@@ -37,7 +37,7 @@ an empty layer is created.
 %\NZ{correct}
 
 The next 5 top-ranked layers by reference count
-are included in 29,200--33,413 images.
+are included in 29,200 -- 33,413 images.
 %They are related to ubuntu, dpkg, apt, and cowsay.
 Specifically, one layer contains a whole \texttt{Ubuntu 14.04.2 LTS} distribution,
 one layer contains a \texttt{sources.list} file for \texttt{apt},
@@ -75,17 +75,17 @@ ratio provided by layer sharing.
 Figure~\ref{fig:layer-size-cdf} presents compressed and uncompressed layer size
 distributions.
 %
-We found that 50\% of the layers are smaller than 1MB and 90\% of the layers are
+We found that 50\% of the layers are smaller than 1\,MB and 90\% of the layers are
 smaller than 64\,MB in compressed format.
 %
-If uncompressed, 50\% of the layers are smaller than 2 MB and 90\% of the
+If uncompressed, 50\% of the layers are smaller than 2\,MB and 90\% of the
 layers are smaller than 170\,MB.
 %
 Moreover, the total compressed layer dataset grows from 47\,TB to 167\,TB after
 decompression, resulting in a compression ratio of \textbf{3.6$\times$}.
 %
-Compression is complementary to layer sharing and, therefore, the registry's
-existing implementation reduces the dataset size by \textbf{3.6$\times$1.8 = 6.5$\times$}.
+Compression is complementary to layer sharing and therefore, the current registry
+reduces the dataset size by a factor of \textbf{3.6$\times$1.8 = 6.5}.
 
 
 \paragraph{File-level deduplication}
@@ -95,14 +95,14 @@ existing implementation reduces the dataset size by \textbf{3.6$\times$1.8 = 6.5
 %\NZ{addressed}
 %
 Next, we calculate the deduplication ratio in terms of file count and capacity for
-the complete unpacked dataset.
+the complete dataset.
 %
 After removing redundant files, there are only 3.2\% of files left that in total occupy
 24\,TB, resulting in deduplication ratios of \textbf{31.5$\times$} and
 \textbf{6.9$\times$} in terms of file count and capacity, respectively.
 %
-With compression applied, storage space savings provided by
-file-level deduplication is \textbf{6.9$\times$1.8 = 12.4$\times$}.
+With compression applied, file-level deduplication can hence reduce storage utilization
+by a factor of \textbf{6.9$\times$3.6 = 24.8}.
 %
 \input{fig-file-repeat-cnt}
 
@@ -115,27 +115,27 @@ We observe that over 99.4\% of files have more than one copy.
 Around 50\% of files have exactly 4 copies and 90\% of files have 10 or less
 copies. 
 %
-The file that has the maximum repeat count 53,654,306---is an empty file.
+The file that has the maximum repeat count of 53,654,306 is an empty file.
 %Other hot redundant files are 
 %
 %\VT{Do we know anything about those empty files}.\NZ{addressed}
-Around 4\% of empty files are \texttt{\_\_init\_\_.py}, which make Python treat the 
-directories as containing packages and are usually empty files. 
+Around 4\% of empty files are \texttt{\_\_init\_\_.py}, which make Python treat a
+directory as containing packages and are usually empty.
 Other frequent empty files include
 \texttt{lock} or \texttt{.gitkeep} files.
 
 We also analyze 5 frequently repeated files which repeat 3,338,145 -- 11,847,356 times.
 Specifically, two files 
 \texttt{libkrb5-3:amd64.postrm} and \texttt{libkrb5-3:amd64.postinst}
-are two Kerberos runtime libraries for \texttt{dpkg}.
-Another two files, \texttt{license} and \texttt{.npmignore}, are related to the \texttt{npm} package manager.
-The last file, \texttt{dependency\_links.txt}, contains a list of dependency URLs for Python.
+are two Ker\-ber\-os runtime libraries for \texttt{dpkg}.
+Another two files are related to the \texttt{npm} package manager (\texttt{license} and \texttt{.npmignore})
+and the last file, \texttt{dependency\_links.txt}, contains a list of dependency URLs for Python.
 
 This shows that there is a high file-level redundancy in Docker images
 which cannot be addressed by the existing layer sharing mechanism. Hence,
 there is a large potential for file deduplication in the Docker registry.
 
-\paragraph{Deduplication ratio growth with layer dataset size}
+\paragraph{Deduplication ratio growth}
 
 %\begin{figure} 
 %	\centering
@@ -149,16 +149,17 @@ for an increasing number of files stored in the registry (see Figure~\ref{fig:de
 %
 %Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth over the layer dataset size.
 %
-The X-axis values correspond to the size of 4 random samples drawn from the whole dataset and the size of whole dataset.
+The x-axis values correspond to the sizes of 4 random samples drawn from the whole dataset and the size of the
+whole dataset.
 
 We see that the deduplication ratio increases almost linearly with the layer dataset size.
 %
 In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while
 in terms of capacity, it increases from \textbf{1.9$\times$} to
-\textbf{6.9$\times$} as the layer dataset grows from 1000 to 1.7 million.
+\textbf{6.9$\times$} as the layer dataset grows from 1000 to 1.7 million layers.
 %
 This confirms the high potential for file-level deduplication in large-scale
-deployments of the Docker registry.
+Docker registry deployments.
 %
 %As the number of images stored in the Docker registry increases dramatically,
 %file-level deduplication can provide significant storage space savings.
