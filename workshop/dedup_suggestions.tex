@@ -1,6 +1,6 @@
 \subsection{Enhancements}
 
-We now propose additional optimizations that can help to speed \sysname\ up:
+We propose additional optimizations that can help to speed up \sysname:
 
 \begin{compactenumerate}
 %
@@ -15,14 +15,15 @@ hot layers as precompressed tar files in the staging area.
 %Figure~\ref{fig:pull-cnt} shows the total number of pulls from the time an
 %image/layer has been stored in Docker Hub until May 30, 2017.
 %
-According to our statistics, only 10\% of the images were pulled
-from the Docker Hub more than 360 times from \VT{the time that the image is first pulled to Docker Hub}
-until May 30, 2017.
+According to our statistics, only 10\% of all images were pulled
+from Docker Hub more than 360 times from the time the image was first pushed to Docker Hub
+until May 30, 2017. Moreover, we found that 90\% of pulls
+went to only 0.25\% of images based on image pull counts.
 %
 This suggests the existence of both cold and hot images and layers.
 %
-\VT{Nannan, can we instead compute that 90\% of pulls
-wen to 0.25\% of images?}
+%\VT{Nannan, can we instead compute that 90\% of pulls
+%wen to 0.25\% of images?}
 %
 %
 %translates to only 10\% of layers being pulled more than 660 times (at most).
@@ -40,9 +41,9 @@ wen to 0.25\% of images?}
 \item
 %
 As deduplication provides significant storage savings, \sysname\ can use faster
-but less effective compression methods than \VT{gzip}.
+but less effective local compression methods than gzip~\cite{lz4}.
 %
-\VT{cite a few}
+%\VT{cite a few}
 
 \item
 %
@@ -52,9 +53,9 @@ but less effective compression methods than \VT{gzip}.
 The registries often experience fluctuation in load with peaks and
 troughs~\cite{dockerworkload}.
 %
-Thus, file-level dedupilication can be triggered
+Thus, file-level deduplication can be triggered
 when the load is low to prevent interference with 
-client pulls and pushes.
+client \texttt{pull} and \texttt{push} requests.
 %
 %To further improve the performance of \sysname\, we also suggest to use main
 %memory for temporarily storing and processing \textit{small} layers.

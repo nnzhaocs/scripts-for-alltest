@@ -15,16 +15,16 @@ but not for data redundancy.
 %images. Compared to Slacker, our analysis focuses on the entire Docker Hub dataset.
 %
 Cito \etal~\cite{analysisdockergithub} conducted an empirical study of 70,000
-Dockerfiles, focusing on image build process but not image contents.
+Dockerfiles, focusing on the image build process but not image contents.
 %of Docker ecosystem with a focus on prevalent quality issues, and the evolution of Docker 
 %files based on a data set of 70,000 Docker files.
 %However, their study did not focus on actual image data.
 %
 Shu \etal~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
-images based on a dataset of 356,218 images.
+images based on 356,218 images.
 %
-Ali \etal~\cite{dockerworkload} performed a detailed analysis
-of IBM Docker registry REST workload but not the dataset.
+Anwar \etal~\cite{dockerworkload} performed a detailed analysis
+of an IBM Docker registry workload but not the dataset.
 
 % and found there is a strong need for more
 %automated and systematic methods of applying security updates to Docker images. While
@@ -54,9 +54,10 @@ real-world datasets~\cite{2009-dedup_effectiveness_on_vm_disk_images-systor,
 2013-charact_increment_changes_data_protect-atc,
 msst16dedup-study,
 2012-charact_backup_workloads-fast,
-2013-charact_dedup_effic_big_data-iiswc},
-but to the best of our knowledge we are the first to analyze a large-scale Docker
-registry dataset and propose to apply deduplication to it.
+2013-charact_dedup_effic_big_data-iiswc}
+but to the best of our knowledge, we are the first to analyze a large-scale Docker
+registry dataset for its deduplication properties.
+%and propose to apply deduplication to it.
 
 
 %Unlike our study, their analysis
