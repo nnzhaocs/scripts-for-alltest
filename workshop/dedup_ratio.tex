@@ -86,8 +86,9 @@ decompression, resulting in a compression ratio of \textbf{3.6$\times$}.
 
 \paragraph{File-level deduplication}
 %
-\LR{Somewhere here we should mention that we only computed the dedup ratio
-for uncompressed data but we expect it to be similar for compressed data.}
+%\LR{Somewhere here we should mention that we only computed the dedup ratio
+%for uncompressed data but we expect it to be similar for compressed data.}
+%\NZ{addressed}
 %
 Next, we calculate the deduplication ratio in terms of file count and capacity for
 the complete unpacked dataset.
@@ -141,7 +142,7 @@ for an increasing number of files stored in the registry (see Figure~\ref{fig:de
 %
 %Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth over the layer dataset size.
 %
-The x-axis values correspond to the size of 4 random samples drawn from the whole dataset.
+The x-axis values correspond to the size of 4 random samples drawn from the whole dataset and the size of whole dataset.
 
 We see that the deduplication ratio increases almost linearly with the layer dataset size.
 %

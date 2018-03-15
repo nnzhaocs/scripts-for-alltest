@@ -16,20 +16,22 @@ capacity-wise deduplication ratio of 6.9$\times$.
 We proceeded with a simulation-based evaluation of the impact of deduplication
 on Docker registry performance.
 %
-\VT{After Section 4 is ready, we might add here one interesting finding from
-simulation.}
+We found that restoring large layers from registry would slow down the pull performance due to compression overhead. To speed up Simmer, we propose multiple optimization suggestions.
+%
+%\VT{After Section 4 is ready, we might add here one interesting finding from
+%simulation.}\NZ{addressed}
 %
 Our findings justify and lay way for integrating deduplication in Docker
 registry.
 
-\paragraph{Future work}
-%
-In future we plan to investigate the effectiveness of sub-file deduplication of
-Docker images.
-%
-We also want to extend our analysis to the images tagged other than with the
-\emph{latest} tag.
-%
-Finally, we plan to proceed with complete implementation of deduplication in
-Docker registry.
+%\paragraph{Future work}
+%%
+%In future we plan to investigate the effectiveness of sub-file deduplication of
+%Docker images.
+%%
+%We also want to extend our analysis to the images tagged other than with the
+%\emph{latest} tag.
+%%
+%Finally, we plan to proceed with complete implementation of deduplication in
+%Docker registry.
 
