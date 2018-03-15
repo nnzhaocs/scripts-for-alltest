@@ -16,12 +16,13 @@ registry deployments.
 Docker Hub does not provide an API to retrieve all repository names.
 Hence, we crawled the registry's website to obtain a list of all available
 repositories, and then downloaded the \emph{latest} version of an image and its
-corresponding layers for each repository over a period of 30 days.
+corresponding layers for each repository.
+% over a period of 30 days.
 %
 We plan to extend our analysis to other image tags in the future.
 %
 We downloaded 355,319 images, resulting in 1,792,609 compressed layers
-and 5,278,465,130 files, with a total dataset size of 47\,TB.
+and 5,278,465,130 files, with a total compressed dataset size of 47\,TB.
 %
 %
 To store and analyze the data, we deployed an 8-node Spark~\cite{spark}
