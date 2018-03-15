@@ -1,7 +1,7 @@
 \subsection{Performance Evaluation}
 
 While \sysname\ can effectively eliminate redundant files in the
-Docker registry, it introduces overheads which can reduce the
+Docker registry, it introduces overhead which can reduce the
 registry's performance.
 %
 %The overheads can be classified in two categories: 1)~\emph{background
@@ -14,7 +14,7 @@ registry's performance.
 \paragraph{Simulation}
 %
 To analyze the impact of file-level deduplication on performance,
-we conducted a preliminary simulation of \sysname.
+we conduct a preliminary simulation-based study of \sysname.
 %
 %Based on the simulation results, we estimated the overhead of \sysname\ on
 %\texttt{push} and \texttt{pull} layer request latencies.
@@ -26,7 +26,7 @@ we conducted a preliminary simulation of \sysname.
 %
 %
 Our simulation
-approximates several \sysname's steps described in Section~\ref{sec:design}.
+approximates several of \sysname's steps as described in Section~\ref{sec:design}.
 %
 First, a layer from our dataset is copied to a RAM disk. 
 %
@@ -54,22 +54,22 @@ file's fingerprint in the index.
 At this point our simulation does not include
 the latency of storing unique files.
 %
-To simulate layer's reconstruction during the \texttt{pull},
-we archive and compress corresponding files.
+To simulate the layer reconstruction during a \texttt{pull} request,
+we archive and compress the corresponding files.
 %
 %Only unique files are maintained in RAM
 %disk while the redundant copies are removed.
 %
 
-We implemented the simulation in 600 lines of Python code
-and setup a one-node Docker registry on a machine with 32~cores and 64\,GB of RAM.
+The simulator is implemented in 600 lines of Python code
+and our setup is a one-node Docker registry on a machine with 32~cores and 64\,GB of RAM.
 %
-To speed up the experiments and fit the required data in the RAM
-we used 50\% of all layers and excluded the ones larger than 50\,MB.
+To speed up the experiments and fit the required data in RAM
+we use 50\% of all layers and exclude the ones larger than 50\,MB.
 %
-We processed 60 layers in parallel using 60 threads.
+We process 60 layers in parallel using 60 threads.
 %
-The overall runtime of the simulation was 3.5 days.
+The entire simulation took 3.5 days to finish.
 %
 %The overall runtime is about 3.5 days.
 
@@ -84,7 +84,7 @@ the deduplication process and together make up the Dedup time.
 %legend so that the Searching goes after Digest calculation?}\NZ{addressed}
 %
 Searching, Archiving, and Compression
-simulate the additional processing for a \texttt{pull}
+simulate the processing for a \texttt{pull}
 request and form the Pulling time.
 %
 
@@ -109,7 +109,7 @@ deduplication is performed asynchronously.
 %ie the registry reliably stores a
 %copy of the layer as-is and then sends a response to the client.
 %
-The appropriate performance metric for push is the time it takes to deduplicate
+The appropriate performance metric for \texttt{push} is the time it takes to deduplicate
 a single layer.
 %
 %Next, we look at the effects on \texttt{push} and \texttt{pull} latencies in
@@ -121,9 +121,9 @@ a single layer.
 %
 Looking at the breakdown of the deduplication time in
 Figure~\ref{fig:dedup-res}, we make several observations.
-%
+
 First, the searching time is the smallest among all operations with 90\% of the
-searches completing in less than 4\,ms and the median of 3.9\,ms.
+searches completing in less than 4\,ms and a median of 3.9\,ms.
 %
 %The mapping table maintains 0.98 million layer-to-file digest mapping records. 
 %
@@ -133,7 +133,7 @@ searches completing in less than 4\,ms and the median of 3.9\,ms.
 %still increasing, it's better to choose a fast distributed database to provide
 %high searching performance and scalability.
 %
-Second, the calculation of digests spans a wide range from 5$\mu$s to almost
+Second, the calculation of digests spans a wide range from 5\,$\mu$s to almost
 125\,s.
 %
 %This is because the time mainly depends on the layer size, \ie the fewer and
@@ -157,8 +157,8 @@ terms of storage space and file counts.
 %Fast CPUs as well as more powerful computing nodes are required to speed up
 %digest calculation.
 %
-Third, the run time for decompression and unpacking follows identical
-distribution for approximately 60\% of the layers and is less than 150\,ms.
+Third, the run time for decompression and unpacking follows an identical
+distribution for around 60\% of the layers and is less than 150\,ms.
 %
 %Around 60\% of decompression and unpacking time are less than 0.15\,s. 
 %
@@ -181,7 +181,7 @@ per layer, while the average processing time for a single layer is 13.5\,s.
 This means that our single-node deployment can process about 4.4\,layers/s on average
 (using 60 threads).
 %
-In future we will work on further improving \sysname's deduplication throughput.
+In the future we will work on further improving \sysname's deduplication throughput.
 %
 %In a large-scale registry deployment, this throughput can be improved
 %as more node are available to perform deduplication.
@@ -190,7 +190,7 @@ In future we will work on further improving \sysname's deduplication throughput.
 \paragraph{Pull} 
 
 From Figure~\ref{fig:dedup-res}
-we can see that around 55\% of the layers have close compression and archiving
+we can see that 55\% of the layers have close compression and archiving
 times ranging from from 40\,ms to 150\,ms and both operations contribute equally
 to pulling latency.
 %
