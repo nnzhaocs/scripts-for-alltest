@@ -1,6 +1,6 @@
 \subsection{Enhancements}
 
-We now propose additional optimizations that can help to speed \sysname\ up:
+We propose additional optimizations that can help to speed \sysname\ up:
 
 \begin{compactenumerate}
 %
@@ -16,7 +16,7 @@ hot layers as precompressed tar files in the staging area.
 %image/layer has been stored in Docker Hub until May 30, 2017.
 %
 According to our statistics, only 10\% of the images were pulled
-from the Docker Hub more than 360 times from the time when the image is first pulled to Docker Hub
+from the Docker Hub more than 360 times from the time when the image is first pushed to Docker Hub
 until May 30, 2017. Moreover, we calculated that 90\% of pulls
 went to only 0.25\% of images based on image pull counts.
 %
@@ -41,7 +41,7 @@ This suggests the existence of both cold and hot images and layers.
 \item
 %
 As deduplication provides significant storage savings, \sysname\ can use faster
-but less effective compression methods than gzip~\cite{lz4}.
+but less effective local compression methods than gzip~\cite{lz4}.
 %
 %\VT{cite a few}
 
@@ -53,7 +53,7 @@ but less effective compression methods than gzip~\cite{lz4}.
 The registries often experience fluctuation in load with peaks and
 troughs~\cite{dockerworkload}.
 %
-Thus, file-level dedupilication can be triggered
+Thus, file-level deduplication can be triggered
 when the load is low to prevent interference with 
 client pulls and pushes.
 %

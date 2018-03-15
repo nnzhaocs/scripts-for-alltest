@@ -51,7 +51,7 @@ file's fingerprint in the index.
 %The \emph{layer-to-file table} also
 %records the file path within each layer associated with each file.
 %
-Note that at this point our simulation does not include
+At this point our simulation does not include
 the latency of storing unique files.
 %
 To simulate layer's reconstruction during the \texttt{pull},
@@ -62,14 +62,14 @@ we archive and compress corresponding files.
 %
 
 We implemented the simulation in 600 lines of Python code
-and setup a one-node Docker registry on a machine with 32~cores and 64GB of RAM.
+and setup a one-node Docker registry on a machine with 32~cores and 64\,GB of RAM.
 %
 To speed up the experiments and fit the required data in the RAM
-we used 50\% of all layers and excluded the ones larger than 50MB.
+we used 50\% of all layers and excluded the ones larger than 50\,MB.
 %
 We processed 60 layers in parallel using 60 threads.
 %
-The overall runtime of the simulation was roughly 3.5 days.
+The overall runtime of the simulation was 3.5 days.
 %
 %The overall runtime is about 3.5 days.
 
@@ -105,8 +105,9 @@ request and form the Pulling time.
 \paragraph{Push}
 
 \sysname\ does not directly impact the latency of \texttt{push} requests because
-deduplication is performed asynchronously, \ie the registry reliably stores a
-copy of the layer as-is and then sends a response to the client.
+deduplication is performed asynchronously.
+%ie the registry reliably stores a
+%copy of the layer as-is and then sends a response to the client.
 %
 The appropriate performance metric for push is the time it takes to deduplicate
 a single layer.
@@ -122,7 +123,7 @@ Looking at the breakdown of the deduplication time in
 Figure~\ref{fig:dedup-res}, we make several observations.
 %
 First, the searching time is the smallest among all operations with 90\% of the
-searches completing in less than 4ms and the median of 3.9ms.
+searches completing in less than 4\,ms and the median of 3.9\,ms.
 %
 %The mapping table maintains 0.98 million layer-to-file digest mapping records. 
 %
@@ -133,7 +134,7 @@ searches completing in less than 4ms and the median of 3.9ms.
 %high searching performance and scalability.
 %
 Second, the calculation of digests spans a wide range from 5$\mu$s to almost
-125s.
+125\,s.
 %
 %This is because the time mainly depends on the layer size, \ie the fewer and
 %smaller files a layer contains, the faster it is to compute all digests for
@@ -144,8 +145,8 @@ Second, the calculation of digests spans a wide range from 5$\mu$s to almost
 %
 %While if the layer is bigger, the digest calculation overhead will be higher. 
 %
-90\% of digest calculation times are less than 27s while 50\% are
-less than 0.05s.
+90\% of digest calculation times are less than 27\,s while 50\% are
+less than 0.05\,s.
 %
 The diversity in the timing is caused by a high variety of layer sizes both in
 terms of storage space and file counts.
@@ -157,7 +158,7 @@ terms of storage space and file counts.
 %digest calculation.
 %
 Third, the run time for decompression and unpacking follows identical
-distribution for approximately 60\% of the layers and is less than 150ms.
+distribution for approximately 60\% of the layers and is less than 150\,ms.
 %
 %Around 60\% of decompression and unpacking time are less than 0.15\,s. 
 %
@@ -167,17 +168,17 @@ compared to unpacking times.
 %\VT{do we have some theory why?}
 %\NZ{decompressing the layers with bigger uncompressed size takes longer time.}
 %
-90\% of decompressions take less than 950ms while 90\% of packing time is less
+90\% of decompressions take less than 950\,ms while 90\% of packing time is less
 than 350ms.
 
 %Overall, we see that file digest calculation contributes a lot to the
 %overall deduplication latency especially when the layer size is big.  Moreover,
 %we see that the deduplication latency increases as the layer size grows.
 %
-Overall, we see that 90\% of file-level deduplication time is less than 35s
-per layer, while the average processing time for a single layer is 13.5s.
+Overall, we see that 90\% of file-level deduplication time is less than 35\,s
+per layer, while the average processing time for a single layer is 13.5\,s.
 %
-This means that our single-node deployment can process about 3 layers/s on average.
+This means that our single-node deployment can process about 3\,layers/s on average.
 %
 In future we will work on further improving \sysname's deduplication throughput.
 %
@@ -189,7 +190,7 @@ In future we will work on further improving \sysname's deduplication throughput.
 
 From Figure~\ref{fig:dedup-res}
 we can see that around 55\% of the layers have close compression and archiving
-times ranging from from 40ms to 150ms and both operations contribute equally
+times ranging from from 40\,ms to 150\,ms and both operations contribute equally
 to pulling latency.
 %
 %60\% of compression and archiving time are less than 0.15 s.
@@ -199,14 +200,14 @@ to pulling latency.
 %\LR{Again, better to show the 90th percentile.}
 %\NZ{90\% of the compression time is less than 8\,s.}
 After that, the times diverge and compression times increase faster with an
-90\textsuperscript{th} percentile of 8s.
+90\textsuperscript{th} percentile of 8\,s.
 %
 This is because compression times increase for larger layers and follow the distribution
 of layer sizes (see Figure~\ref{fig:layer-size-cdf}).
 %
 %80\textsuperscript{th} percentile of 2.82\,s.
 %
-Compression time makes up the major portion of the pull latency and becomes a
+Compression time makes up the major portion of the pull latency and is a
 bottleneck.
 %
 %We see that archiving time and compression contributes equally to pulling
