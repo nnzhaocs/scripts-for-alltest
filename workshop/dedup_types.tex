@@ -56,17 +56,17 @@ cross-platform C++ test framework available on GitHub~\cite{github}---is
 frequently replicated.
 %
 Interestingly, we found there are multiple Docker repositories related to
-Google Test while there is no official repository for Google Test.
+Google Test but there is no \emph{official} repository for Google Test.
 %
-We suspect that many developers replicate open source code from external public
+We think that many developers replicate open source code from external public
 repositories, such as GitHub, and store it in container images but do not
 specifically encapsulate it in a separate layer.
 %
-This would also explain the shared source code across different images.
+%This would also explain the shared source code across different images.
 %
 %\VT{give few more example in addition ot Google Test}\NZ{addressed}
 % 
-In addition to Google Test, we also found source code of
+In addition to Google Test, we also found many replicas of the source code of
 go-ethereum~\cite{go-ethereum}, Android Native Development Kit (NDK)~\cite{NDK},
 xnu-chroot-environment~\cite{xnu-chroot-environment} among others.
 %
@@ -103,15 +103,16 @@ capacity (51.4\%).
 %inspected them and found that many archival files contain source codes.
 %
 %\VT{``many'' is vague}\NZ{addressed}
-Additionally, we analyze the top-5 most frequent archival files.
+We analyze the top-5 most frequent archival files.
 We found that \texttt{NEWS.Debian.gz}, which stores news
-about package changes has 521,611 copies.
-Additionally, \texttt{pwunconv.8.gz}, which is used to create passwords
+about package changes, has 521,611 copies and
+\texttt{pwunconv.8.gz}, which is used to create passwords
 has 358,374 copies.
-There are two files that have around 86,733 copies respectively:
+There are two files that have around 87,000 copies:
 \texttt{ubuntu\_dists\_trusty\_universe\_Sources.gz} and
 \texttt{ubuntu\_dists\_trusty\_universe\_binary-\\amd64\_Packages.gz}, which
-contains the name, version, size, the description, and the dependencies of each package.
+contain the name, version, size, the description, and the dependencies of the
+installed packages.
 %
 The last file, \texttt{gcc.log.xz} has 13,384 copies and belongs to the GNU C++ compiler.
 %
