@@ -13,13 +13,13 @@ popularity of Docker, they continue to grow. For example, Docker Hub---a
 popular public registry---stores more than half a million public images.
 %
 In this paper, we analyze over 167\,TB of uncompressed Docker images and evaluate
-the potential of file-level deduplication in the Docker registry.
+the potential of file-level deduplication in the registry.
 %
 Our analysis reveals that only~3\% of the files in images are unique
-and existing layer sharing mechanism is not sufficient to eliminate this
+and Docker's existing layer sharing mechanism is not sufficient to eliminate this
 profound redundancy.
 %
-We then present the design of \sysname---a Docker registry with deduplication
+We then present the design of \sysname---a Docker registry with file deduplication
 support---and conduct a simulation-based analysis of its performance implications.
 
 \end{abstract}
