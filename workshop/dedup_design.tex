@@ -1,7 +1,7 @@
 \subsection{Design}
 \label{sec:design}
 
-\sysname\ performs file-level deduplication for a Docker registry.
+%\sysname\ performs file-level deduplication for a Docker registry.
 %
 We designed \sysname\ so that the interface between the Docker clients and the
 registry remains unchanged.
@@ -33,7 +33,7 @@ the staging area and performs the following steps for every layer:
 	identify if identical files are already stored in \sysname;
   \item store non-deduplicated files in \sysname's storage;
   \item create and store a \emph{layer recipe} that includes the path,
-	metatada, and fingerprint of every file in the layer;
+	metadata, and fingerprint of every file in the layer;
   \item remove the layer's tarball from the staging area.
 \end{compactenumerate}
 
@@ -46,7 +46,7 @@ the staging area and performs the following steps for every layer:
 Layer recipes are identified by layer digests (see Section~\ref{sec:background})
 and files are identified by their fingerprints.
 %
-These identifiers are used to store and retrieve corresponding objects in the
+These identifiers are used to address corresponding objects in the
 underlying storage.
 %
 For example, if a file system is used as a backend storage, \sysname\ creates a
@@ -57,7 +57,7 @@ every in-layer file (named by the fingerprint).
 \paragraph{Pull}
 %
 When a layer is pulled, \sysname\ has to \emph{reconstruct} the layer based
-on the layer and file recipes.
+on the layer recipe.
 %
 A pull request cannot be postponed to an off-line process because the
 pulling client is actively waiting for the layer.
