@@ -32,35 +32,38 @@ we group the remaining 12\% in the Others class.
 Figure~\ref{fig:dedup-overall} illustrates the deduplication results for these
 classes.
 %
-The overall deduplication ratio is \textbf{6.9$\times$} and 4 type classes
-have a comparable ratio (indicated by the dots in the figure).
+The overall deduplication ratio is \textbf{6.9$\times$} and 4 classes
+have a comparable ratio (indicated by the dots).
 %
 For example, the deduplication ratio for EOL files is \textbf{7.1$\times$}.
 %
-However, for the other 3 type classes, the
+However, for the other 3 classes, the
 deduplication ratio is significantly
 higher---\textbf{31.25$\times$} for source code,
 \textbf{50$\times$} for scripts, and \textbf{12.5$\times$} for documents.
 %
-This indicates that users are prone to frequently replicate
+This indicates that users frequently replicate
 source code, scripts, and documents in their images.
 %
 %Moreover, the source code and script duplicates generate additional executables
 %and object files that are identical.
 
 We found that redundant C/C++ source code takes up over 77\% of the capacity
-occupied by source code.
+occupied by source code files.
 %
 Looking closer we found that, for example, Google Test~\cite{googletest}---a
 cross-platform C++ test framework available on GitHub~\cite{github}---is
 frequently replicated.
 %
 Interestingly, we found there are multiple Docker repositories related to
-Google Test but there is no \emph{official} repository for Google Test.
+Google Test but there is no single \emph{official} repository.
 %
 We think that many developers replicate open source code from external public
 repositories, such as GitHub, and store it in container images but do not
-specifically encapsulate it in a separate layer.
+specifically encapsulate it in a separate layer. Source code also frequently
+changes so if different versions are put into a layer in different images,
+a large file base may overlap while few files are different. This can also result
+in different layers with high redundancy.
 %
 %This would also explain the shared source code across different images.
 %
@@ -111,8 +114,9 @@ has 358,374 copies.
 There are two files that have around 87,000 copies:
 \texttt{ubuntu\_dists\_trusty\_universe\_Sources.gz} and
 \texttt{ubuntu\_dists\_trusty\_universe\_binary-\\amd64\_Packages.gz}, which
-contain the name, version, size, the description, and the dependencies of the
-installed packages.
+contain metadata of the installed packages for the distributions.
+%the name, version, size, the description, and the dependencies of the
+%installed packages.
 %
 The last file, \texttt{gcc.log.xz} has 13,384 copies and belongs to the GNU C++ compiler.
 %
