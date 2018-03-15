@@ -43,7 +43,7 @@ Each Docker layer contains a subset of the files in the image and often represen
 specific component/dependency of the image, \eg a shared library.
 %
 Layers can be shared between two or more images if
-the images depend on the same component. 
+the images depend on the same layer.
 %
 Image layers are read-only.
 %
@@ -51,8 +51,8 @@ When users start a container, Docker creates a new
 \emph{writable layer} on top of the underlying read-only layers
 (Figure~\ref{fig-docker-architecture}).
 %
-%Any changes made to files in the image will be reflected inside the writable
-%layer via a copy-on-write mechanism~\cite{docker-driver-eval}.
+Any changes made to files in the image will be reflected inside the writable
+layer via a copy-on-write mechanism.
 %%
 %This leaves layers unmodified throughout the lifetime of a container and
 %enables layer sharing across containers spawned from the same or different images.
@@ -86,7 +86,7 @@ among other things, which layers constitute the image.
 %of layers which make up the image.
 %
 Layers are identified via a digest that is computed as a hash (SHA-256)
-over the layers' uncompressed content and stored as compressed archival files.
+over the uncompressed content of the layer and stored as compressed archival files.
 %
 %Image layers are stored as compressed archival files and image
 %manifests as JSON files.
