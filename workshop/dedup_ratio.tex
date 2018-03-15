@@ -11,14 +11,14 @@ Compared to other existing containerization frameworks~\cite{openvz}~\cite{singu
 Docker supports the sharing of layers among different images.
 %
 To analyze the effectiveness of this approach, we compute how many times
-each layer is reference by images.
+each layer is referenced by images.
 
 Figure~\ref{fig:ref_count} shows that around 90\% of layers are referenced by
 a single image, an additional 5\% are referenced by 2 images, and less than
 1\% of the layers are shared by more than 25 images.
 %
-Interestingly, there is one layer that is referenced by 184,171 images.  Looking at
-this layer reveals that this is an empty layer.
+Interestingly, there is one layer that is referenced by 184,171 images.
+Further analysis reveals that this is an empty layer.
 %
 The presence of an empty layer in an image can be explained
 by the fact that during the image build, Docker creates a new layer
@@ -83,6 +83,10 @@ layers are smaller than 170\,MB.
 %
 Moreover, the total compressed layer dataset grows from 47\,TB to 167\,TB after
 decompression, resulting in a compression ratio of \textbf{3.6$\times$}.
+%
+Compression is complementary to layer sharing and, therefore, the registry's
+existing implementation reduces the dataset size by \textbf{3.6$\times$1.8 = 6.5$\times$}.
+
 
 \paragraph{File-level deduplication}
 %
@@ -96,6 +100,9 @@ the complete unpacked dataset.
 After removing redundant files, there are only 3.2\% of files left that in total occupy
 24\,TB, resulting in deduplication ratios of \textbf{31.5$\times$} and
 \textbf{6.9$\times$} in terms of file count and capacity, respectively.
+%
+With compression applied, storage space savings provided by
+file-level deduplication is \textbf{6.9$\times$1.8 = 12.4$\times$}.
 %
 \input{fig-file-repeat-cnt}
 
@@ -114,7 +121,7 @@ The file that has the maximum repeat count 53,654,306---is an empty file.
 %\VT{Do we know anything about those empty files}.\NZ{addressed}
 Around 4\% of empty files are \texttt{\_\_init\_\_.py}, which make Python treat the 
 directories as containing packages and are usually empty files. 
-Other frequent empty files include commonly empty files such as
+Other frequent empty files include
 \texttt{lock} or \texttt{.gitkeep} files.
 
 We also analyze 5 frequently repeated files which repeat 3,338,145 -- 11,847,356 times.
@@ -137,12 +144,12 @@ there is a large potential for file deduplication in the Docker registry.
 %	\label{fig:dedup-ratio-growth} 
 %\end{figure}
 
-To further study the potential of file-level deduplication, we analyse the deduplication
+To further study the potential of file-level deduplication, we analyze the deduplication
 for an increasing number of files stored in the registry (see Figure~\ref{fig:dedup-ratio-growth}).
 %
 %Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth over the layer dataset size.
 %
-The x-axis values correspond to the size of 4 random samples drawn from the whole dataset and the size of whole dataset.
+The X-axis values correspond to the size of 4 random samples drawn from the whole dataset and the size of whole dataset.
 
 We see that the deduplication ratio increases almost linearly with the layer dataset size.
 %
@@ -150,7 +157,8 @@ In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\
 in terms of capacity, it increases from \textbf{1.9$\times$} to
 \textbf{6.9$\times$} as the layer dataset grows from 1000 to 1.7 million.
 %
-This confirms the potential and need for file-level deduplication.
+This confirms the high potential for file-level deduplication in large-scale
+deployments of the Docker registry.
 %
 %As the number of images stored in the Docker registry increases dramatically,
 %file-level deduplication can provide significant storage space savings.
