@@ -27,7 +27,7 @@ A separate \emph{off-line} deduplication process iterates over the layers in
 the staging area and performs the following steps for every layer:
 %
 \begin{compactenumerate}
-  \item uncompress and unpack the layer's tarball into individual files;
+  \item decompress and unpack the layer's tarball into individual files;
   \item compute a \emph{fingerprint} for every file in the layer;
   \item check all file fingerprints against the \emph{file index} to
 	identify if identical files are already stored in \sysname;
