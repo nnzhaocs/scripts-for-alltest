@@ -1,37 +1,34 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Data deduplication has proved itself as a highly effective technique for
+Data deduplication has proven itself as a highly effective technique for
 eliminating data redundancy.
 %
 In spite of being successfully applied to numerous real datasets, deduplication
-bypassed such a promising area as Docker images.
+bypassed the promising area of Docker images.
 %
-In this paper, we start to fix this striking omission.
+In this paper, we propose to fix this striking omission.
 %
-We analyzed over 1.7 million real-world Docker layers and identified that
+We analyzed over 1.7 million real-world Docker image layers and identified that
 file-level deduplication can eliminate 96.8\% of the files resulting in
-capacity-wise deduplication ratio of 6.9$\times$.
+a capacity-wise deduplication ratio of 6.9$\times$.
 %
 We proceeded with a simulation-based evaluation of the impact of deduplication
-on Docker registry performance.
+on the Docker registry performance.
 %
-We found that restoring large layers from registry would slow down the pull performance due to compression overhead. To speed up Simmer, we propose several optimizations.
+We found that restoring large layers from registry can slow down \texttt{pull}
+performance due to compression overhead. To speed up \sysname, we suggested several
+optimizations.
 %
 %\VT{After Section 4 is ready, we might add here one interesting finding from
 %simulation.}\NZ{addressed}
 %
-Our findings justify and lay way for integrating deduplication in Docker
-registry.
+Our findings justify and lay way for integrating deduplication in the Docker registry.
 
-%\paragraph{Future work}
-%%
-%In future we plan to investigate the effectiveness of sub-file deduplication of
-%Docker images.
-%%
-%We also want to extend our analysis to the images tagged other than with the
-%\emph{latest} tag.
-%%
-%Finally, we plan to proceed with complete implementation of deduplication in
-%Docker registry.
+\paragraph{Future work}
+%
+In the future, we plan to investigate the effectiveness of sub-file deduplication for
+Docker images and to extend our analysis to more image tags rather than just the \texttt{latest} tag.
+%
+We also plan to proceed with a complete implementation of \sysname.
 
