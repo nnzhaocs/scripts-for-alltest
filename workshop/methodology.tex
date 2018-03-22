@@ -1,23 +1,33 @@
 \subsection{Methodology}
 \label{sec:methodology}
 
-\input{tab-dataset-summary.tex}
+%\input{tab-dataset-summary.tex}
 
-To analyze the benefits of data reduction techniques for Docker registry and
-identify the main sources of data redundancy, we downloaded a large number of
-Docker images.
+To analyze the benefits of different data reduction techniques for the Docker registry,
+we downloaded a large number of Docker images.
 %
-We chose the Docker Hub~\cite{docker-hub} registry as a source of the images
-because it is highly popular among developers and contains many public
-repositories.
+We chose the Docker Hub registry~\cite{docker-hub} as our source of images
+due to its popularity and its significant number
+of public repositories.
 %
-Due to Docker Hub's popularity and diversity
-we believe our findings are broadly applicable.
+We expect that because of these reasons, our findings are applicable to other
+registry deployments.
 
 Docker Hub does not provide an API to retrieve all repository names.
-Hence, we crawled the registry to obtain a list of all available repositories
-and then downloaded the \emph{latest} image and the corresponding layers for
-each repository.
+Hence, we crawled the registry's website to obtain a list of all available
+repositories, and then downloaded the \emph{latest} version of an image and its
+corresponding layers for each repository.
+% over a period of 30 days.
+%
+We plan to extend our analysis to other image tags in the future.
+%
+We downloaded 355,319 images, resulting in 1,792,609 compressed layers
+and 5,278,465,130 files, with a total compressed dataset size of 47\,TB.
+%
+%
+To store and analyze the data, we deployed an 8-node Spark~\cite{spark}
+cluster with HDFS~\cite{hdfs} as the backend storage.
+
 %
 %Specifically, there are two steps: i)~crawl Docker Hub web pages to list all
 %repositories; ii)~download the \textit{latest} image (and referenced layers)
@@ -28,7 +38,9 @@ each repository.
 %(2)~downloading only the ``latest'' version can shorten our downloading
 %process since the latest images already took about 30 days to download.
 %
-We plan to extend our analysis to other image versions in the future.
+%
+%\VT{make sure we introduce the concept of ``tag'' in earlier section}
+%\NZ{addressed}
 %
 %\paragraph{Web crawler}
 %
@@ -72,19 +84,15 @@ We plan to extend our analysis to other image versions in the future.
 %%
 %Layers are transferred as gzip compressed tar archives.
 
-Overall, we downloaded 355,319 images, which consist of a total of 1,792,609
-compressed layers and 5,278,465,130 files, resulting in a total dataset
-of 47~TB.
+%Specifically, we downloaded 355,319 images,
+%resulting in 1,792,609 compressed layers and 5,278,465,130 files,
+%with a total dataset capacity of 47~TB.
 %
-The downloading process took about 30 days.
+%Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
+%dataset.
 %
-Table~\ref{tab-dataset-summary} summarizes the properties of the downloaded
-dataset.
+%\LR{Maybe remove the table entirely, now that it only has a single row and all
+%numbers are mentioned in the text above.}\NZ{addressed}
 %
-\LR{Maybe remove the table entirely, now that it only has a single row and all
-numbers are mentioned in the text above.}
+%\VT{What about leaving the Table instead but remove the text?}
 %
-\VT{What about leaving the Table instead but remove the text?}
-%
-To store and analyze the data, we deployed an 8-node Spark~\VT{\cite{xxx}}
-cluster with HDFS~\VT{\cite{xxx}} for backend storage.

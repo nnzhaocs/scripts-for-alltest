@@ -1,0 +1,17 @@
+\section{Registry with deduplication support}
+\label{sec:file_adressable}
+
+%Our analysis in Section~\ref{sec:redundant_files} suggests that adding the
+%support of file-level deduplication to Docker registry can significantly reduce
+%its storage capacity requirements, especially in large-scale deployments.
+%
+In this section, we first describe a high-level design of \emph{\sysname}---
+a Docker registry that supports file-level deduplication.
+We then proceed with a simulation-based evaluation of the expected performance
+implications.
+
+\input{dedup_design}
+
+\input{dedup_simulation_performance}
+
+\input{dedup_suggestions}

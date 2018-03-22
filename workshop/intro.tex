@@ -1,17 +1,17 @@
 \section{Introduction}
 
 \emph{Containers}~\cite{process-containers-linux} have recently gained
-significant traction due to their low overhead and fast deployment and
+significant traction due to their low overhead, fast deployment, and
 the rise of container management frameworks such as Docker~\cite{docker}.
 %
 Polls suggest that 87\% of enterprises are at various stages of adopting
-containers, and they are expected to constitute a \$2.5 billion
+containers, and they are expected to constitute a \$2.7 billion
 market by 2020~\cite{container-grow-by2020}.
 
 Docker combines process containerization with efficient and effective packaging
 of complete runtime environments in so called {\em images}.
 %
-Images are composed of shareable and {\em content addressable layers}.
+Images are composed of shareable and content addressable {\em layers}.
 %
 A layer is a set of files, which are compressed in a single archive.
 %
@@ -19,7 +19,7 @@ Both images and layers are stored in a Docker \emph{registry} and accessed by
 clients as needed.
 %
 Since layers are uniquely identified by a collision-resistant hash of
-their content (denoted as layer-level content addressable. ie., LLCAS), no duplicate layers are stored in the registry.
+their content, no duplicate layers are stored in the registry.
 
 Registries are growing rapidly.
 %
@@ -32,91 +32,53 @@ of images in Docker Hub with an average creation rate of 1,241 repositories per 
 %
 We expect this trend to continue as containers gain more popularity.
 %
-%(as shown in Figure~\ref{fig_image_growth}.
-%
 This massive image dataset presents challenges to the registry storage
 infrastructure and so far has remained largely unexplored.
 
-In this paper, we perform the first, in-depth, large-scale redundancy
+In this paper, we perform the first large-scale redundancy
 analysis of the images and layers stored in Docker Hub.
 %
-We download 47~TB (167~TB uncompressed) worth of Docker Hub images,
+We downloaded 47\,TB (167\,TB uncompressed) worth of Docker Hub images,
 %
-\LR{In the abstract it says 47TB?}\NZ{addressed}
+which in total contain over 5 billion files.
 %
-which contain over 5 billion files in total.
+Surprisingly, we found that only around 3\% of the files are unique
+while others are redundant copies. This suggests that current layer
+sharing cannot efficiently remove data duplicates.
 %
-%We started our analysis
-%with collecting all the metadata over xxx images and  conducted the first
-%comprehensive characterization of the image dataset (or union file systems). This analysis is particularly useful as no prior work exists on union file
-%systems~\cite{xxx} and dataset used and created exclusively for Docker,
-%which are different from either analysis on EX4 linux file system~\cite{xxx} or
-%Windows file system~\cite{xxx}.
-%%
-%%We not only present the distribution for each metric but also pointed out the
-%%challenges faced by Docker engine designer and registry designer based on
-%%global knowledge (or analysis) of metadata. 
-%We also provide useful insights (parameters or metrics)
-%for the developers to better
-%understand the file systems used by Docker container. 
+We further analyzed the reasons for the high number of redundant files
+and found, for example, that different Docker images often
+contain the same source code from external public repositories
+(e.g., GitHub~\cite{github}).
 %
-%%Unfortunately, it's unknown whether  this coarse-grain layer-level content
-%%addressable storage (LLCAS) can efficiently reduce duplicates, and how much
-%%redundant data is stored in layer, image, and registry because there is no
-%%prior research on registry dataset analysis.
-%
-%We continued with the deduplication analysis of the dataset.
-%
-Surprisingly, we find that only around 3\% of the files are unique
-while others are redundant copies. This suggests that current layer-level content
-addressable storage cannot efficiently reduce duplicates.
-%
-To analyze what are the redundant files and why there are so many,
-we conduct a comprehensive redundancy analysis on the entire dataset.
-%
-We make three major observations:
-%
-\begin{compactitemize}
-%
-\item Only 10\% of layers are referred to by more than one image, 
-meaning that layer-level content addressability is not enough to
-effectively reduce storage utilization in the registry.
-%
-\item A large amount of files are shared across layers and images,
-resulting in only 3\% of unique files.
-%
-\item \LR{This point is unclear. If the source code is duplicated, I would expect that to be the major
-source of redundancy, not the resulting executables? Isn't that also what we're saying in Section 3?}
-The majority of the file duplicates are executables and object files, which are
-mostly created by source code duplicates.\NZ{I did see a lot of executables/intermediate representations have the same filename with the source codes/scripts. 
-	For example, a.py and a.pyc. But i did not calculate the total number.
-	How about we replace with: }
-	We found source codes and scripts have a very high deduplication ratio (\textbf{$31.25\times$} for souce codes and \textbf{$50\times$} for scripts), which indicates that Docker developers are prone to replicate source codes or scripts (i.e., code reuse). Moreover, these source code duplicates and script duplicates would result in more executable duplicates and object file duplicates.
+%As there are no official images containing this source code, users manually add
+%it to their images, resulting in different layers which cannot be reused.
 
-\end{compactitemize}
+Given our findings, we propose \sysname, a file-level content addressable storage
+model for the Docker registry.
+%
+\sysname\ unpacks layer tarballs into individual files and deduplicates them.
+%
+When a Docker client requests a layer, \sysname\ dynamically reconstructs the
+layer from its constituent files.
+%
+To assess the feasibility of our design, we conduct a simulation-based
+evaluation of \sysname. 
+%
+The simulation results show that \sysname\ improves the deduplication
+ratio from 1.8$\times$, provided by layer sharing, to 6.9$\times$.
+%provided by file-level deduplication.
+%
+While \sysname\ comes with some overhead 
+%when retrieving layers from the registry
+caused by the need to decompress and reconstruct layers, we found,
+for example, that for
+layers less than 10\,MB (around 60\% of all layers) the overhead of
+retrieving a layer is less than 1\,s.
+%
+For larger layers, we propose several optimizations to reduce overhead.
+%\VT{Here we need to add 1-2 *most interesting* performance-related findings.}
 
-As one reason for the large number of duplicate files, we found that different Docker image are prone
-to contain the same source code from external public repositories (e.g., GitHub~\cite{github}). As
-there are no official images containing this source code, users manually add it to their images,
-resulting in different layers which cannot be reused later.  
-
-Based on our findings, 
-%we propose a file-level content addressable storage model (FLCAS
-\LR{Can we come up with a more catchy acronym?}) 
-%for the Docker registry, which utilizes
-%file-level deduplication to remove redundant files. 
-%
-we conduct a simulation-based deduplication analysis on 0.9 million layers 
-%to 
-%assess the feasibility of our design
-and provide different suggestions to improve deduplication
-performance and reduce the overhead on \textit{pull request}.
-%
-%We simulate FLCAS for 0.9 million layers and provide different suggestions to improve
-%deduplication performance.
-%
-\LR{Do we have some numbers on overhead/saved storage space that we can put here?
-If so, we should replace the two suggestions below by those numbers.}\NZ{We can just say we provide some hints for dedup implementation in registry by using a simple simulation.}
 %
 %The simulation result show that 
 %(1)~processing layers in
@@ -124,13 +86,33 @@ If so, we should replace the two suggestions below by those numbers.}\NZ{We can 
 %less than 9.09 s per layer and by processing 60 layers in parallel, our one-node
 %prototype can process about 3 layers per second.
 %
-\LR{That sounds like we actually ran the deduplication and not just simulated it?
-Did we perform more of an \emph{emulation}?}
+%\LR{That sounds like we actually ran the deduplication and not just simulated it?
+%Did we perform more of an \emph{emulation}?}
 %
 %(2) Fast compression methods can mitigate pull overhead caused by re-compression
 %because files are required to be re-compressed as a compressed layer archival file to serve
 %the incoming pull requests.
 %
+
+%
+%We make three major observations:
+%
+%\begin{compactitemize}
+%
+%\item Only 10\% of layers are referred to by more than one image, 
+%meaning that layer-level content addressability is not enough to
+%effectively reduce storage utilization in the registry.
+%\DIM{Should we also provide the capacity \%?}
+%
+%\item A large amount of files are shared across layers and images,
+%resulting in only 3\% of unique files.
+%\DIM{Should we also provide the capacity \%?}
+%
+%\item Source code and scripts have a high deduplication ratio
+%(\textbf{$31.25\times$} for source codes and \textbf{$50\times$} for scripts),
+%which can result in executable and object file duplicates.
+%
+%\end{compactitemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

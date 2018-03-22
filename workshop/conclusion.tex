@@ -1,40 +1,34 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this paper, we carried out the first comprehensive analysis of the container images
-stored in Docker Hub.
+Data deduplication has proven itself as a highly effective technique for
+eliminating data redundancy.
 %
-We presented a methodology to exhaustively crawl and efficiently download Docker Hub
-images. Using this approach, we downloaded a total of 346,243 images and 1,763,354 layers
-resulting in 51 TB of data and
-%through 8.8\% layers and 9.2\% images cannot be analyzed due to extracting errors. 
-117 million files.
+In spite of being successfully applied to numerous real datasets, deduplication
+bypassed the promising area of Docker images.
 %
-Based on this dataset, we carried out a detailed study of a variety of storage
-metrics on both layers and images. Metrics included layer and image sizes, compressibility,
-and popularity. Our findings reveal that there is room for optimizing how images
-are stored and used. For example, we observed that compression may not always be beneficial for small
-layers as it can affect pull latencies. Additionally, layers are rarely shared between
-images which increases storage utilization. We plan to investigate such improvements
-in the future.
+In this paper, we propose to fix this striking omission.
+%
+We analyzed over 1.7 million real-world Docker image layers and identified that
+file-level deduplication can eliminate 96.8\% of the files resulting in
+a capacity-wise deduplication ratio of 6.9$\times$.
+%
+We proceeded with a simulation-based evaluation of the impact of deduplication
+on the Docker registry performance.
+%
+We found that restoring large layers from registry can slow down \texttt{pull}
+performance due to compression overhead. To speed up \sysname, we suggested several
+optimizations.
+%
+%\VT{After Section 4 is ready, we might add here one interesting finding from
+%simulation.}\NZ{addressed}
+%
+Our findings justify and lay way for integrating deduplication in the Docker registry.
 
 \paragraph{Future work}
 %
-\VT{sub-file dedup}
+In the future, we plan to investigate the effectiveness of sub-file deduplication for
+Docker images and to extend our analysis to more image tags rather than just the \texttt{latest} tag.
 %
-\VT{non-latest images and lineage}
-%
-\VT{complete implementation}
+We also plan to proceed with a complete implementation of \sysname.
 
-
-%Our interesting observation is that there are a number of layers' compression ratio are quite
-%low. Given that compression is computationally expensive and often slow down the \textit{pull}
-%process, it can be beneficial to store small layers uncompressed in the registry to reduce pull
-%latencies. 
-%
-%We analyzed the file count and directory count distribution for both layers and images. We 
-%find that majority of images and layers has a moderate number of directories and files, with 
-%less images and layers have extremely large or small number of directories and files.
-%
-%We also analyzed the layer count distribution for images. Majority of images has a moderate 
-%number of layers. And very less layers are shared among different images.   

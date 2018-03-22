@@ -44,7 +44,7 @@
 \newcommand{\NZ}[1]{\noindent\textcolor{blue}{\bf $\blacksquare$ Nannan: #1}}
 \newcommand{\VT}[1]{\noindent\textcolor{orange}{\bf $\blacksquare$ Vasily: #1}}
 \newcommand{\AB}[1]{\noindent\textcolor{red}{\bf $\blacksquare$ ARB: #1}}
-\newcommand{\LR}[1]{\noindent\textcolor{olive}{\bf $\blacksquare$ Lukas: #1}}
+\newcommand{\LR}[1]{\noindent\textcolor{cyan}{\bf $\blacksquare$ Lukas: #1}}
 \newcommand{\DIM}[1]{\noindent\textcolor{olive}{\bf $\blacksquare$ Dimitris: #1}}
 \newcommand{\alicomment}[1]{\noindent\textcolor{green}{\bf $\blacksquare$ Ali: #1}}
 
@@ -54,6 +54,8 @@
 \newcommand{\etal}{et al.~}
 \newcommand{\vs}{vs.\ }
 \newcommand{\cf}{cf.~}
+
+\newcommand{\sysname}{Slimmer}
 
  % lukas: a more compact itemize/enumerate environment to save space and better looks
 \newenvironment{compactitemize}{%
@@ -69,20 +71,27 @@
 %\date{}
 
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
-\title{Registry-diet: Store Less, Weight-Loss Secrets for Docker Registry}
+\title{
+	%Registry Diet: Weight Loss Secrets for Docker Registry\\
+%Weight Loss Secrets for Docker Registry\\
+Slimmer: Weight Loss Secrets for Docker Registries
+%\\
+%Applying Deduplication to Docker Registry\\
+%Why and How to Apply Deduplication to Docker Registry
+}
 
-%for single author (just remove % characters)
+
 \author{
-%{\rm Your N.\ Here}\\
-%Your Institution
-%\and
-%{\rm Second Name}\\
-%Second Institution
-% copy the following lines to add more authors
-% \and
-% {\rm Name}\\
-%Name Institution
-} % end author
+	{\rm Nannan Zhao$^{1}$,
+		Vasily Tarasov$^{2}$,
+		Ali Anwar$^{1}$},
+	{\rm Lukas Rupprecht$^{2}$, 
+		 Dimitrios Skourtis$^{2}$,}\\
+	{\rm Amit S. Warke$^{2}$,
+		Mohamed Mohamed$^{2}$, 
+		Dean Hildebrand$^{2}$\thanks{Now at Google.}, and Ali R. Butt$^{1}$}\\
+	{{$^1$}{Virginia Tech}, {$^{2}$}{IBM Research---Almaden}}
+}
 
 \maketitle
 
@@ -98,7 +107,7 @@
 \input{dedup_analysis}
 %\input{redundant_files}
 %\input{redundant_images}
-\input{file_addressable}
+\input{design-and-eval}
 %\input{char}
 \input{relatedwork}
 \input{conclusion}

@@ -3,47 +3,58 @@
 
 \paragraph{Layer sharing}
 
-In its simplest implementation Docker would not support layer sharing.
+%In its  straightforward implementation Docker would not support layer sharing.
 %
-Instead, every image would be a single flat archive.
+%Instead, every image would be a single flat archive.
 %
-In fact, some existing containerization frameworks
-~\cite{singularity}~\cite{openvz} 
+Compared to other existing containerization frameworks~\cite{openvz}~\cite{singularity},
+Docker supports the sharing of layers among different images.
 %
-\VT{cite singularity and openvz}
-%
-\NZ{addressed}
-%
-\VT{No, not addressed, citation for singularity is still missing}
-%
-use flat images.
-%
-Our estimates show that without layer sharing Docker Hub dataset would grow
-from 47TB to 85TB, implying \textbf{1.8$\times$} deduplication ratio provided
-by the layer sharing technique.
- 
-We further computed for each layer, how many times it is referenced by images.
-%
+To analyze the effectiveness of this approach, we compute how many times
+each layer is referenced by images.
+
 Figure~\ref{fig:ref_count} shows that around 90\% of layers are referenced by
-only a single image, additional 5\% are referenced by 2 images, and less than
+a single image, an additional 5\% are referenced by 2 images, and less than
 1\% of the layers are shared by more than 25 images.
 %
-Interestingly, there is one layer that is referenced by 184,171 images.  Our
-analysis revealed that this is an empty layer. 
+Interestingly, there is one layer that is referenced by 184,171 images.
+Further analysis reveals that this is an empty layer.
 %
-In addition, we found 7 layers that are referenced by 29,200 - 33,413 images.
-They are mainly related to ubuntu 14.04.2, dpkg, apt, and cowsay. 
-\NZ{Some layer tarfiles are not easy to describe. AND. these above layers are not 
-	referred by official Ubuntu latest. Find an interesting thing: image name already
-	tells what software packages it contains.} 
+The presence of an empty layer in an image can be explained
+by the fact that during the image build, Docker creates a new layer
+for every \texttt{RUN <cmd>} instruction
+in the Dockerfile~\cite{Dockerfile}.
+%\NZ{I dont have dockerfile. 
+%	But I checked the config files and dockerfile website. 
+%	It's correct.}.
+%manifests/mikahassinen-docker-whale-latest-1500714692.32.json
 %
-\VT{Explain the reason for empty layer.}
+If the~\texttt{<cmd>}, which can be an arbitrary shell command,
+does not modify any files in the file system,
+an empty layer is created.
 %
-\VT{I feel we might need to talk about 2 more "most referenced" layers.}
-\NZ{addressed}
+%\VT{Verify the explanation for empty layers.}
+%\NZ{correct}
+
+The next 5 top-ranked layers by reference count
+are included in 29,200 -- 33,413 images.
+%They are related to ubuntu, dpkg, apt, and cowsay.
+Specifically, one layer contains a whole \texttt{Ubuntu 14.04.2 LTS} distribution,
+one layer contains a \texttt{sources.list} file for \texttt{apt},
+and one layer contains binaries and libraries needed for \texttt{dpkg}.
+The other two layers are related to cowsay, a program that can generate ASCII pictures of a cow with a message~\cite{cowsay}.
+One layer contains a whole installation package for \texttt{cowsay 3.03} 
+while the other layer only contains the binaries for cowsay.
+
+From the above data we can estimate that without layer sharing, the Docker Hub
+dataset would grow from 47\,TB to 85\,TB, implying a \textbf{1.8$\times$} deduplication
+ratio provided by layer sharing.
+ 
 %
-\VT{Use \% instead of probability in all Figures (both  \# and labels).
-We use \% in the text, so we MUST do it.}
+%\NZ{Some layer tarfiles are not easy to describe. AND. these above layers are not 
+%	referred by official Ubuntu latest. Find an interesting thing: image name already
+%	tells what software packages it contains.}
+%
 
 \input{fig-layer-size-compress-cdf}
 %
@@ -58,82 +69,97 @@ We use \% in the text, so we MUST do it.}
 %|sha256:c57b6bcc83e3e88fb3748ea3f0cb13d77c4e2ffa7b9a8ded3d636f17d2d83759|31503           | cowsay 3.03 installasion package
 %|sha256:8978f6879e2f86eb7a063e70f7d89feecde9950c40fc68f1f53d00b3c8ce9b52|31179           | same cowsay but different git info
 %|sha256:00bf65475aba8f1077fa9629f088a5f531d645faeccb6acd7a8626c7d896a4c4|29200           | (looks like linux distribution)
-%|sha256:386a066cd84a33a04d560c42bef66d1dd64ebfc76de78550e5fd0f8d57778bca|6103            |
-%|sha256:3690ec4760f95690944da86dc4496148a63d85c9e3100669a318110092f6862f|4678            |
-%|sha256:5c90d4a2d1a8dfffd05ff2dd659923f0ca2d843b5e45d030e17abbcd06a11b5b|4635            |
-%|sha256:6d827a3ef358f4fa21ef8251f95492e667da826653fd43641cef5a877dc03a70|4496            |
-%|sha256:627beaf3eaaff1c0bc3311d60fb933c17ad04fe377e1043d9593646d8ae3bfe1|4025            |
-%|sha256:e110a4a1794126ef308a49f2d65785af2f25538f06700721aad8283b81fdfa58|4001            |
-%|sha256:357ea8c3d80bc25792e010facfc98aee5972ebc47e290eb0d5aea3671a901cab|3952            |
-%|sha256:6a5a5368e0c2d3e5909184fa28ddfd56072e7ff3ee9a945876f7eee5896ef5bb|3927            |
-%|sha256:75ea8418708338e40dce9179cfe97fd116831f1601be50fef48ea6011653c986|3895            |
-%|sha256:75a822cd7888e394c49828b951061402d31745f596b1f502758570f2d0ee79e2|3793            |
-%|sha256:f94adccdbb9cec09b3e64ec31aab2b07cbc020fe8f9151418ca6b7ede22273c0|3717            |
-%|sha256:693502eb7dfbc6b94964ae66ebc72d3e32facd981c72995b09794f1e87bac184|3701            |
-%+-----------------------------------------------------------------------+----------------+
 
 \paragraph{Compression}
 %
 Figure~\ref{fig:layer-size-cdf} presents compressed and uncompressed layer size
 distributions.
 %
-We find that 50\% of the layers are less than 1MB and 90\% of the layers are
-less than 64MB in compressed format.
+We found that 50\% of the layers are smaller than 1\,MB and 90\% of the layers are
+smaller than 64\,MB in compressed format.
 %
-If uncompressed, 50\% of the layers are smaller than 2 MB and 90\% of the
-layers are smaller than 170MB.
+If uncompressed, 50\% of the layers are smaller than 2\,MB and 90\% of the
+layers are smaller than 170\,MB.
 %
-Moreover, the total compressed layer dataset grows from 47~TB to 167~TB after decompression, resulting in \textbf{3.6$\times$} compression ratio.
+Moreover, the total compressed layer dataset grows from 47\,TB to 167\,TB after
+decompression, resulting in a compression ratio of \textbf{3.6$\times$}.
+%
+Compression is complementary to layer sharing and therefore, the current registry
+reduces the dataset size by a factor of \textbf{3.6$\times$1.8 = 6.5}.
+
 
 \paragraph{File-level deduplication}
 %
-Next, we calculate deduplication ratio in terms of file count and capacity for
-the complete uncompressed dataset.
+%\LR{Somewhere here we should mention that we only computed the dedup ratio
+%for uncompressed data but we expect it to be similar for compressed data.}
+%\NZ{addressed}
 %
-After removing redundant files, there are only 3.17\% of files left that occupy
-23.92~TB, resulting in deduplication ratios of \textbf{31.55$\times$} and
-\textbf{6.99$\times$} in terms of file count and capacity, respectively.
+Next, we calculate the deduplication ratio in terms of file count and capacity for
+the complete dataset.
+%
+After removing redundant files, there are only 3.2\% of files left that in total occupy
+24\,TB, resulting in deduplication ratios of \textbf{31.5$\times$} and
+\textbf{6.9$\times$} in terms of file count and capacity, respectively.
+%
+With compression applied, file-level deduplication can hence reduce storage utilization
+by a factor of \textbf{6.9$\times$3.6 = 24.8}.
 %
 \input{fig-file-repeat-cnt}
+
+We further analyze the repeat count for every file (see Figure~\ref{fig:file-repeat-cnt}).
 %
-We further analyzed the repeat count for every file.
+%Figure~\ref{fig:file-repeat-cnt} shows the distributions of file repeat count.  
 %
-Figure~\ref{fig:file-repeat-cnt} shows the distributions of file repeat count.  
-%
-We see that over 99.42\% of files have more than one copy.
+We observe that over 99.4\% of files have more than one copy.
 %
 Around 50\% of files have exactly 4 copies and 90\% of files have 10 or less
 copies. 
 %
-The file that has the maximum repeat count 53,654,306---is an empty file.
+The file that has the maximum repeat count of 53,654,306 is an empty file.
 %Other hot redundant files are 
 %
-\VT{Do we know anything about those empty files}.
-%
-%+--------------------------------+-----------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+
-%|digest                          |layer_id                                                               |filename                                                                                                                                                                                     |cnt     |
-%+--------------------------------+-----------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+
-%|f17bc447f73ec83315f7f8dc93b6cacc|sha256:e565b48e468b8268b79f5acd948f439c8adb3e7569bd0fe98a36969f21cce444|/var/lib/pgsql/9.4/data/global/12020                                                                                                                                                         |1449606 |
-%|dad0227408777290e6c56afc03cf6e12|sha256:630d91187d804d8955f61e2eaaca3b86b3528bb5e0e04ed85899e4c3ac4e52ba|/home/sonnyyu/openwrt/build_dir/host/Python-2.7.9/build/temp.linux-x86_64-2.7/libffi/src/.deps/closures.Plo                                                                                  |2281336 |
-%|5d0e769df33e016b3c52a0971e8d258c|sha256:3290581a406e23b2408e96d9bdfc90a166c52ab3fdbee54558fd81a4ddc707d1|/var/lib/dpkg/info/libcdparanoia0:amd64.postinst                                                                                                                                             |11400218|
-%|261e20913bc39df517150fceaba151f0|sha256:c8ffe071cfe64d504c748fc0adf6d671e151a6eabf296fdeac1053f92329e678|/home/nitrous/.meteor/packages/meteor-tool/.1.3.2_4.10vjklo++os.linux.x86_64+web.browser+web.cordova/mt-os.linux.x86_64/dev_bundle/lib/node_modules/es5-ext/test/array/from/is-implemented.js|1637504 |
-%|dfdc3bad88b6e98080891d6323e2f58e|sha256:a51f04d08d9e31eff9af1199e84b65a0de5b4b52562865d4416b54e5d78359ef|/var/lib/dpkg/info/libapr1:amd64.postrm                                                                                                                                                      |11847356|
-%|82703a69f6d7411dde679954c2fd9dca|sha256:88757bf641feaf9dddc24cb36bfaa1313d5383cabfba3fbdb563d336c5e08d28|/root/.cache/bazel/_bazel_root/5071e8dca1385fb776f72b33971bf157/external/org_nodejs/lib/node_modules/npm/node_modules/abbrev/LICENSE                                                         |2282821 |
-%|d41d8cd98f00b204e9800998ecf8427e|sha256:2c99ada006cadc59f4ba632001eeccbae99d1abf595a60d7664277512f1a184e|/dev/console                                                                                                                                                                                 |53654306|
-%|b326b5062b2f0e69046810717534cb09|sha256:11963ae6f06e896f2de4d962084dbdceca77d2eb84e7b5a5a224e30d5c155fd9|/scala-2.10.4/spark-1.1.0/sql/hive/src/test/resources/golden/udf_array_contains-2-42d966b28e61a465d638bffc20ac7247                                                                           |2544960 |
-%|4f71fccac43c73545ddd9cd772f37598|sha256:3503cb5b337972f68ee1d69af6a1803b49d56a83a95b64decd6a5e3d623134b7|/opt/android-sdk-linux/extras/google/m2repository/com/google/android/gms/play-services/maven-metadata.xml.sha1                                                                               |1206464 |
-%|48175cc56e52e020bf178616c0977374|sha256:a68f8a85f06f3e1c710a15bb6d52099aa5338ec672a6f357301e3ee5b8653086|/usr/share/X11/locale/C/Compose                                                                                                                                                              |1058204 |
-%|95a7bb7a8d0ee402edde95bb78ef95c7|sha256:24f69cee721888f6f5b10472b491dbb246c18c46f182a4badd76f11221a49d56|/var/lib/yum/yumdb/c/f98fd9769b78589640ee14d09b188769c7ccb1c6-cpp-4.8.5-4.el7-x86_64/ts_install_langs                                                                                        |1401766 |
-%|64ea5bb4f123b7654073a859495b2d8e|sha256:42d0c3569725e3f55cdd98ac2d621c68287c721e1e78f1c3c4ab0f0feff094aa|/var/lib/dpkg/info/libasound2:amd64.triggers                                                                                                                                                 |3314642 |
-%|3d10912d07e7bc8cd7d2faea51adb2d8|sha256:aef9443692fdb4d8667145ccb68fe2252f9c741ff39975004dedcc895b06517f|/usr/src/app/node_modules/exports-loader/.npmignore                                                                                                                                          |1640346 |
-%|4c8c72b927c3b6d985e7183dbe70e5e4|sha256:1b89013147ea4e4b7820c85fe3c131187ef7671bbdf993964a3c53c3a848d415|/usr/share/lintian/overrides/libasn1-8-heimdal                                                                                                                                               |1118076 |
-%|a12ebca0510a773644101a99a867d210|sha256:06cc1ee2359e4ceb90f832c8c86c06dd82705ed7eefe0a62948c4cb6225c7969|/home/edison/build_edison/tmp/work/core2-32-poky-linux/iotkit-agent/1.7.0-r0/git/node_modules/request/node_modules/har-validator/node_modules/chalk/license                                  |4594610 |
-%|3e26748d703fee21584741aff003a2cf|sha256:c8ffe071cfe64d504c748fc0adf6d671e151a6eabf296fdeac1053f92329e678|/home/nitrous/.meteor/packages/meteor-tool/.1.3.2_4.10vjklo++os.linux.x86_64+web.browser+web.cordova/mt-os.linux.x86_64/dev_bundle/lib/node_modules/es5-ext/test/array/from/index.js         |1455875 |
-%|f932bf346a38dc8820bde606a033564b|sha256:e0aee64a8d0ec763bb1e006edd0c937099a4f8221f893f582f29527a22a17e2a|/usr/share/doc/libasn1-8-heimdal/copyright                                                                                                                                                   |1114589 |
-%|68b329da9893e34099c7d8ad5cb9c940|sha256:0451f2d6384e92a09d11a17839df05e7177dfdd1d2f27a7c1fa915dac2df27ea|/home/user/thunderbird/im/app/profile/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}/chrome.manifest                                                                                      |3338145 |
-%|5f0b6ebc4bea10285ba2b8a6ce78b863|sha256:b44b5bf754e01df861797e04ef7ed79e2e374d9a9ac6bf338c94da57b504502b|/var/lib/yum/yumdb/a/11022c68e971dbfeaa906d125086652491b1fcbd-apr-util-1.5.2-6.el7-x86_64/var_infra                                                                                          |1043580 |
-%+--------------------------------+-----------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+
+%\VT{Do we know anything about those empty files}.\NZ{addressed}
+Around 4\% of empty files are \texttt{\_\_init\_\_.py}, which make Python treat a
+directory as containing packages and are usually empty.
+Other frequent empty files include
+\texttt{lock} or \texttt{.gitkeep} files.
 
+We also analyze 5 frequently repeated files which repeat 3,338,145 -- 11,847,356 times.
+Specifically, two files 
+\texttt{libkrb5-3:amd64.postrm} and \texttt{libkrb5-3:amd64.postinst}
+are two Ker\-ber\-os runtime libraries for \texttt{dpkg}.
+Another two files are related to the \texttt{npm} package manager (\texttt{license} and \texttt{.npmignore})
+and the last file, \texttt{dependency\_links.txt}, contains a list of dependency URLs for Python.
+
+This shows that there is a high file-level redundancy in Docker images
+which cannot be addressed by the existing layer sharing mechanism. Hence,
+there is a large potential for file deduplication in the Docker registry.
+
+\paragraph{Deduplication ratio growth}
+
+%\begin{figure} 
+%	\centering
+%	\includegraphics[width=0.25\textwidth]{graphs/dedup-ratio-grow} 
+%	\caption{The growth of deduplication ratio.} 
+%	\label{fig:dedup-ratio-growth} 
+%\end{figure}
+
+To further study the potential of file-level deduplication, we analyze the deduplication
+for an increasing number of files stored in the registry (see Figure~\ref{fig:dedup-ratio-growth}).
 %
-\VT{I believe we need to talk about over frequent files. Maybe in the text
-section.}.\NZ{addressed}
+%Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth over the layer dataset size.
+%
+The x-axis values correspond to the sizes of 4 random samples drawn from the whole dataset and the size of the
+whole dataset.
+
+We see that the deduplication ratio increases almost linearly with the layer dataset size.
+%
+In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while
+in terms of capacity, it increases from \textbf{1.9$\times$} to
+\textbf{6.9$\times$} as the layer dataset grows from 1000 to 1.7 million layers.
+%
+This confirms the high potential for file-level deduplication in large-scale
+Docker registry deployments.
+%
+%As the number of images stored in the Docker registry increases dramatically,
+%file-level deduplication can provide significant storage space savings.

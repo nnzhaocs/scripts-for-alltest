@@ -14,15 +14,15 @@ in a container image to simplify and automate application deployment~\cite{slack
 \input{fig-docker-architecture.tex}
 %
 As shown in Figure~\ref{fig-docker-architecture}, a typical
-Docker setup consists of three main components: 1)~\emph{client},
-2)~\emph{host}, and 3)~\emph{registry}.
-%
+Docker setup consists of three main components: \emph{client},
+\emph{host}, and \emph{registry}.
+
 Users interact with Docker using the Docker client which, in turn,
 sends commands to the Docker host.
 %
-Both client and host can run on the same machine.
+The client can be co-located on the host machine.
 %
-Docker host runs a daemon process that implements the core logic of Docker and
+The Docker host runs a daemon process that implements the core logic of Docker and
 is responsible for \emph{running} containers from locally available
 images.
 %
@@ -43,8 +43,8 @@ Each Docker layer contains a subset of the files in the image and often represen
 specific component/dependency of the image, \eg a shared library.
 %
 Layers can be shared between two or more images if
-the images depend on the same component.
-
+the images depend on the same layer.
+%
 Image layers are read-only.
 %
 When users start a container, Docker creates a new
@@ -52,11 +52,10 @@ When users start a container, Docker creates a new
 (Figure~\ref{fig-docker-architecture}).
 %
 Any changes made to files in the image will be reflected inside the writable
-layer via a copy-on-write mechanism~\cite{docker-driver-eval}.
-%
-This leaves layers unmodified throughout the lifetime of a container and
-enables layer sharing between multiple containers spawned from the same or
-different images.
+layer via a copy-on-write mechanism.
+%%
+%This leaves layers unmodified throughout the lifetime of a container and
+%enables layer sharing across containers spawned from the same or different images.
 %
 %Docker supports multiple \emph{storage drivers} such as Aufs or Btrfs, which
 %efficiently combine read-only and writable layers in a single
@@ -74,12 +73,12 @@ different images.
 
 \paragraph{Registry}
 %
-The Docker registry is a platform for storing and sharing container images.
+The Docker registry is a platform for storing and distributing container images.
 %
-It stores images in \emph{repositories}, each containing different versions of
-the same image. 
+It stores images in \emph{repositories}, each containing different versions (\emph{tags}) of
+the same image, identified as \texttt{<repo-name:tag>}.
 %
-For each image Docker registry stores a \emph{manifest} that describes,
+For each image, the Docker registry stores a \emph{manifest} that describes,
 among other things, which layers constitute the image.
 %
 %The manifest is a JSON file, which contains the runtime configuration for a
@@ -87,7 +86,7 @@ among other things, which layers constitute the image.
 %of layers which make up the image.
 %
 Layers are identified via a digest that is computed as a hash (SHA-256)
-over the layers' uncompressed content and stored as compressed archival files.
+over the uncompressed content of the layer and stored as compressed archival files.
 %
 %Image layers are stored as compressed archival files and image
 %manifests as JSON files.
@@ -103,16 +102,17 @@ over the layers' uncompressed content and stored as compressed archival files.
 %``$\langle username\rangle/\langle repository name \rangle$", while the
 %official repositories, which are directly provided by Docker Inc. and partners
 %are called ``$\langle repository name \rangle$".
-
+%
 %Modern Docker registry identifies and addresses a layer with a digest that is
 %computed based on the uncompressed layer's content (e.g., SHA-256).
 %
 Identifying layers by their content allows the registry to store only one instance
 of a layer even if it is referenced by multiple images.
 %
-\LR{Is that actually done across the entire registry or only within a single
-user/repository? \NZ{entire registry}}
 %multiple users accidentally built identical layers.
 %
-However, if at least one file differs in two otherwise identical layers,
-the two layers are treated as different and stored separately.
+%However, if at least one file differs in two otherwise identical layers,
+%the two layers are treated as different and stored separately.
+%
+
+

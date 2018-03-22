@@ -13,6 +13,12 @@
 	      NOTE =	"\url{https://tinyurl.com/ya358jbn}",
 }
 
+@MISC{lz4,
+	TITLE =	{{Extremely Fast Compression algorithm}},
+	NOTE =	"\url{https://github.com/lz4/lz4}",
+}
+
+
 
 @MISC{kernel-doc-cgroups,
 	  TITLE =	{{Control Group v2}},
@@ -32,6 +38,21 @@
 @MISC{googletest,
 	TITLE =	"Google test",
 	NOTE =	"\url{https://github.com/google/googletest}",
+}
+
+@MISC{go-ethereum,
+	TITLE =	"go-ethereum",
+	NOTE =	"\url{https://github.com/ethereum/go-ethereum}",
+}
+
+@MISC{xnu-chroot-environment,
+	TITLE =	"xnu-chroot-environment",
+	NOTE =	"\url{https://github.com/winocm/xnu-chroot-environment}",
+}
+
+@MISC{PostgreSQL,
+	TITLE =	"go-ethereum",
+	NOTE =	"\url{https://github.com/postgres/postgres}",
 }
 
 @MISC{krakentools,
@@ -69,10 +90,21 @@
 	NOTE =	"\url{https://github.com/GNOME/gvfs}",
 }
 
+@MISC{spark,
+	TITLE =	"spark",
+	NOTE =	"\url{https://spark.apache.org/}",
+}
+
+@MISC{hdfs,
+	TITLE =	"hdfs",
+	NOTE =	"\url{https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html}",
+}
+
 @MISC{yum,
 	TITLE =	"YUM",
 	NOTE =	"\url{https://www.centos.org/docs/5/html/yum/}",
 }
+
 
 @MISC{matplotlib,
 	TITLE =	"matplot lib",
@@ -85,13 +117,11 @@
 	booktitle = {USENIX FAST'18},
 }
 
-@rfc{MD5,
-	author = {Rivest, R.},
-	title = {The MD5 Message-Digest Algorithm},
-	year = {1992},
-	publisher = {RFC Editor},
-	address = {United States},
-} 
+@article{MD5,
+  title={The MD5 message-digest algorithm},
+  author={Rivest, Ronald},
+  year={1992}
+}
 
 @ARTICLE{login-container-storage-options,
 	  TITLE =	{{Storage Options for Software Containers}},
@@ -209,6 +239,11 @@
 	NOTE =	"\url{http://man7.org/linux/man-pages/man7/namespaces.7.html}",
 }
 
+@MISC{Dockerfile,
+	TITLE =	"{Dockerfile}",
+	NOTE =	"\url{https://docs.docker.com/engine/reference/builder/}",
+}
+
 @MISC{singularity,
 	TITLE =	"{singularity}",
 	NOTE =	"\url{http://singularity.lbl.gov/}",
@@ -227,6 +262,11 @@
 @MISC{cgroups,
 	TITLE =	"{cgroups - Linux control groups}",
 	NOTE =	"\url{http://man7.org/linux/man-pages/man7/cgroups.7.html}",
+}
+
+@MISC{cowsay,
+	TITLE =	"{cowsay}",
+	NOTE =	"\url{https://github.com/piuccio/cowsay}",
 }
 
 @inproceedings {slacker,
@@ -318,4 +358,108 @@
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {File systems, generative model, longitudinal study},
-} 
+}
+
+@INPROCEEDINGS{improve-cow-container-drivers,
+	 TITLE =        {{Improving Copy-on-Write Performance in Container Storage Drivers}},
+	  AUTHOR =       "Frank Zhao and Kevin Xu and Randy Shain",
+	   BOOKTITLE =            "SNIA SDC'16",
+}
+
+@INPROCEEDINGS{exoclones,
+	  TITLE =       {{Exo-clones: Better Container Runtime Image Management Across the Clouds}},
+	    AUTHOR =      "Richard P. Spillane and Wenguang Wang and Luke Lu and Maxime Austruy and Rawlinson Rivera and Christos Karamanolis",
+	      BOOKTITLE =   "USENIX HotStorage'16",
+}
+
+@INPROCEEDINGS {shifter,
+	  TITLE =       {{Shifter: Containers for {HPC}}},
+	    AUTHOR =      "Richard Shane Canon and Doug Jacobsen",
+	      BOOKTITLE =   "Cray User Group'16", 
+}
+
+@inproceedings{2001-low_bandwidth_network_fs-sosp,
+	  title =        "A Low-bandwidth Network File System",                                              
+	    author =       "A. Muthitacharoen and B. Chen and D. Mazieres",
+	      booktitle =    "ACM SOSP'01",
+}
+
+@inproceedings{2008-avoid_disk_bottleneck_data_domain_dedupfs-fast,
+	  title =        "Avoiding the Disk Bottleneck in the {Data Domain}                                  
+		                    Deduplication File System",
+	    author =       "B. Zhu and K. Li and H. Patterson",
+	      booktitle =    "USENIX FAST '08",
+}
+
+@inproceedings{2009-sparse_indexing_inline_dedup_using_sampling-fast,
+	  title =        "Sparse Indexing: Large Scale, Inline Deduplication Using                           
+		                    Sampling and Locality",
+	    author =       "M. Lillibridge and K. Eshghi and D. Bhagwat and
+		                      V. Deolalikar and G. Trezise and P. Camble",
+	      booktitle =    "USENIX FAST '09",
+}
+
+@inproceedings{tarasov2014dmdedup,
+	  title={Dmdedup: Device mapper target for data deduplication},
+	    author={Tarasov, Vasily and Jain, Deepak and Kuenning, Geoff and Mandal, Sonam and Palanisami, Karthikeyani and Shilane, Philip and Trehan, Sagar and Zadok, Erez},
+	      booktitle={Ottawa Linux Symposium'14},
+}
+
+@inproceedings{2013-charact_dedup_effic_big_data-iiswc,
+	  title =        "Characterizing the Efficiency of Data Deduplication for
+		                    Big Data Storage Management",
+    author =       "R. Zhou and M. Liu and T. Li",
+      booktitle =    "IEEE IISWC'13",
+}
+
+@inproceedings{2013-charact_increment_changes_data_protect-atc,
+	  title =        "Characterization of Incremental Data Changes for Efficient Data Protection",
+	    author =       "H. Shim and P. Shilane and W. Hsu",
+	      booktitle =    "USENIX ATC'13",
+}
+
+@inproceedings{2012-charact_backup_workloads-fast,
+	  title =        "Characteristics of Backup Workloads in Production Systems",
+	    author =       "G. Wallace and F. Douglis and H. Qian and P. Shilane and
+		                      S. Smaldone and M. Chamness and W. Hsu",
+	      booktitle =    "USENIX FAST'12",
+}
+
+@inproceedings{2012-idedup-fast,
+	  title =        "{iDedup}: Latency-aware, inline data deduplication for
+		                    primary storage",
+	    author =       "K. Srinivasan and T. Bisson and G. Goodson and
+		                      K. Voruganti",
+	      booktitle =    "USENIX FAST'12",
+}
+
+@inproceedings{2012-hpc_practical_dedup_study-sc,
+	  title =        "A Study on Data Deduplication in {HPC} Storage Systems",
+	    author =       "D. Meister and J. Kaiser and A. Brinkmann and T. Cortes
+		                      and M. Kuhn and J. Kunkel",
+	      booktitle =    "ACM/IEEE SC'12",
+}
+
+@INPROCEEDINGS{msst16dedup-study,
+	  AUTHOR =       "Zhen Sun and Geoff Kuenning and Sonam Mandal and Philip
+		                    Shilane and Vasily Tarasov and Nong Xiao and Erez Zadok",                          
+				      TITLE =        "A Long-Term User-Centric Analysis of Deduplication
+				                        Patterns",
+  BOOKTITLE =    "IEEE MSST'16",
+}
+
+
+@inproceedings{2012-data_reduction_in_primary_storage-systor,
+	  title =        "Insights for Data Reduction in Primary Storage: A
+		                    Practical Analysis",
+	    author =       "M. Lu and D. Chambliss and J. Glider and
+		                      C. Constantinescu",
+	      booktitle =    "ACM SYSTOR'12",
+}
+
+@inproceedings{2009-dedup_effectiveness_on_vm_disk_images-systor,
+	  title =        "The Effectiveness of Deduplication on Virtual Machine Disk                         
+		                    Images",
+	    author =       "K. Jin and E. Miller",
+	      booktitle =   "ACM SYSTOR'09",
+}

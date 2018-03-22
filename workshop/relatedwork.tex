@@ -1,37 +1,67 @@
 \section{Related work}
 \label{sec:related}
 
-%\nancomment{do we need a relatedwork?}\\
-%\vcomment{Absolutely!}
-%\textbf{Analysis on Docker}:
+%Due to its increasing popularity, Docker has recently received increased
+%attention from the research community.
 
-Due to its increasing popularity, Docker has recently received increased
-attention from the research community.
+A number of studies investigated various dimensions of Docker storage
+performance~\cite{dockerssd,shifter,slacker,exoclones,docker-driver-eval,
+improve-cow-container-drivers}.
 %
-Slacker~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics.
-The authors used the results from their study to derive a benchmark to evaluate
-the push, pull, and run performance of Docker graph drivers based on the studied
-images. Compared to Slacker, our analysis focuses on the entire Docker Hub dataset.
+Harter \etal~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics
+but not for data redundancy.
+%The authors used the results from their study to derive a benchmark to evaluate
+%the push, pull, and run performance of Docker graph drivers based on the studied
+%images. Compared to Slacker, our analysis focuses on the entire Docker Hub dataset.
 %
-Cito \etal~\cite{analysisdockergithub} conducted an empirical study for characterizing
-the Docker ecosystem with a focus on prevalent quality issues, and the evolution of Docker 
-files based on a data set of 70,000 Docker files. However, their study did not focus
-on actual image data.
+Cito \etal~\cite{analysisdockergithub} conducted an empirical study of 70,000
+Dockerfiles, focusing on the image build process but not image contents.
+%of Docker ecosystem with a focus on prevalent quality issues, and the evolution of Docker 
+%files based on a data set of 70,000 Docker files.
+%However, their study did not focus on actual image data.
 %
-Shu \etal~~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
-images based on a dataset of 356,218 images and found there is a strong need for more
-automated and systematic methods of applying security updates to Docker images. While
-the amount of images is similar compared to our study, Shu \etal focused on a subset
-of 100,000 repositories and different image tags in these repositories.
+Shu \etal~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
+images based on 356,218 images.
+%
+Anwar \etal~\cite{dockerworkload} performed a detailed analysis
+of an IBM Docker registry workload but not the dataset.
 
-Dockerfinder~\cite{dockerfinder} is a microservice-based prototype that allows searching
-for images based on  multiple attributes, e.g., image name, image size, or supported software 
-distributions. It also crawls images from remote Docker registry but the authors do
-not provide a detailed description of their crawling mechanism.
+% and found there is a strong need for more
+%automated and systematic methods of applying security updates to Docker images. While
+%the amount of images is similar compared to our study, Shu \etal focused on a subset
+%of 100,000 repositories and different image tags in these repositories.
 %
-Bhimani~\cite{dockerssd} \etal characterized the performance of persistent storage options
-for I/O intensive containerized applications with NVMe SSDs. Unlike our study, their analysis
-is focused on the execution of containers rather than on their storage at the registry side.
+%Dockerfinder~\cite{dockerfinder} is a microservice-based prototype that allows searching
+%for images based on  multiple attributes, e.g., image name, image size, or supported software 
+%distributions. It also crawls images from remote Docker registry but the authors do
+%not provide a detailed description of their crawling mechanism.
+%
+%Bhimani~\cite{dockerssd} \etal characterized the performance of persistent storage options
+%for I/O intensive containerized applications with NVMe SSDs.
+%
+
+Data deduplication is a well
+explored and widely applied technique~\cite{2009-sparse_indexing_inline_dedup_using_sampling-fast,
+2001-low_bandwidth_network_fs-sosp,
+2012-idedup-fast,
+tarasov2014dmdedup,
+2008-avoid_disk_bottleneck_data_domain_dedupfs-fast}.
+%
+A number of studies characterized deduplication ratios of
+real-world datasets~\cite{2009-dedup_effectiveness_on_vm_disk_images-systor,
+2012-data_reduction_in_primary_storage-systor,
+2012-hpc_practical_dedup_study-sc,
+2013-charact_increment_changes_data_protect-atc,
+msst16dedup-study,
+2012-charact_backup_workloads-fast,
+2013-charact_dedup_effic_big_data-iiswc}
+but to the best of our knowledge, we are the first to analyze a large-scale Docker
+registry dataset for its deduplication properties.
+%and propose to apply deduplication to it.
+
+
+%Unlike our study, their analysis
+%is focused on the execution of containers rather than on their storage at the registry side.
 
 %\textbf{Analysis on file systems}:
 %File system contents have been widely studied in different operating system environments.
