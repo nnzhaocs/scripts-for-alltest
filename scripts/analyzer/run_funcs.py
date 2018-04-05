@@ -67,3 +67,4 @@ def run_testdecompression():
 
     elapsed = time.time() - start
     logging.info('test compression ==> %f', (elapsed / 3600))
+

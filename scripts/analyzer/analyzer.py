@@ -45,6 +45,18 @@ def parseArg():
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
+    parser.add_argument(
+        '-U', '--findfiles',
+        help="find files from layers and store to a dir",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
+    parser.add_argument(
+        '-T', '--testdecompression',
+        help="test different compression methods",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
     return parser.parse_args()
 
 
@@ -67,6 +79,12 @@ def main():
 
     if args.listdirfiles:
         run_listdirfiles()
+
+    if args.findfiles:
+        run_findfiles()
+
+    if args.testdecompression:
+        run_testdecompression()
 
 
 if __name__ == '__main__':
