@@ -49,3 +49,21 @@ def run_listdirfiles():
 
     elapsed = time.time() - start
     logging.info('created job list files, consumed time ==> %f', (elapsed / 3600))
+
+
+def run_findfiles():
+    start = time.time()
+
+    find_files()
+
+    elapsed = time.time() - start
+    logging.info('find files, consumed time ==> %f', (elapsed / 3600))
+
+
+def run_testdecompression():
+    start = time.time()
+
+    test_decompression()
+
+    elapsed = time.time() - start
+    logging.info('test compression ==> %f', (elapsed / 3600))

@@ -35,6 +35,23 @@ manifest_map_dir_filename = "manifest_map_dir.json"
 #image_pop_filename = ''
 #image_growth_filename = ''
 
+"""configurations for finding files and testing"""
+
+layer_dirs = ['/home/nannan/dockerimages/layers/layers_hot1',
+              '/home/nannan/dockerimages/layers/layers_hot2']
+
+output_dir = ['/home/nannan/dockerimages/layers/unique_files']
+
+compression_methods = ['gzip', 'lz4', 'archival']
+
+find_file_lst_absfilename = ''
+
+layer_dict_fname = '/home/nannan/dockerimages/layers/layer_dict.json'
+
+construct_layer_info_or_not = False # True
+
+testing_layer_lst_absfilename = ''
+
 # ===============================================
 
 me = magic.Magic()
