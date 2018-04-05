@@ -40,15 +40,15 @@ manifest_map_dir_filename = "manifest_map_dir.json"
 layer_dirs = ['/home/nannan/dockerimages/layers/layers_hot1',
               '/home/nannan/dockerimages/layers/layers_hot2']
 
-output_dir = ['/home/nannan/dockerimages/layers/unique_files']
+output_dir = '/home/nannan/dockerimages/layers/unique_files/'
 
 compression_methods = ['gzip', 'lz4', 'archival']
 
-find_file_lst_absfilename = ''
+find_file_lst_absfilename = 'popimg_uniq_rand_file_data.csv'
 
 layer_dict_fname = '/home/nannan/dockerimages/layers/layer_dict.json'
 
-construct_layer_info_or_not = False # True
+construct_layer_info_or_not =  True
 
 testing_layer_lst_absfilename = ''
 

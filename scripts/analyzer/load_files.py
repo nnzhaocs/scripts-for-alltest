@@ -4,17 +4,17 @@ from dir import *
 from layers import check_file_type
 
 
-def load_dirs(layer_filename, file_lst, output_dir):
-    filetype = check_file_type(layer_filename)
+def load_dirs(layer_absfilename, file_lst, output_dir, cnt):
+    filetype = check_file_type(layer_absfilename)
 
     ret = False
-
+    layer_filename = os.path.basename(layer_absfilename)
     """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
     extracting to extracting_dir/<layer_id>
     load all the subdirs in this layer-id dir
     Then clean the layer-id dir """
 
-    layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_filename)
+    layer_file = layer_absfilename #os.path.join(dest_dir[0]['layer_dir'], layer_filename)
 
     extracting_dir = dest_dir[0]['extracting_dir']
     layer_dir = os.path.join(extracting_dir, layer_filename)
@@ -82,14 +82,15 @@ def load_dirs(layer_filename, file_lst, output_dir):
             clear_dir(layer_dir)
             return ret
 
-    ret = load_files(layer_dir, file_lst, output_dir)
-    if not ret:
-        clear_dir(layer_dir)
-        return ret
+    ret = load_files(layer_dir, file_lst, output_dir, cnt)
+    #if not ret:
+    clear_dir(layer_dir)
+    return ret
 
 
-def mv_files(src_absfname, src_dir):
-    cmd = 'mv %s  %s' % (src_absfname, src_dir)
+def mv_files(src_absfname, src_dir, cnt):
+    cmd = 'mv %s  %s' % (src_absfname, os.path.join(src_dir,
+	os.path.basename(src_absfname)+'-'+str(cnt)))
     logging.debug('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
@@ -100,16 +101,17 @@ def mv_files(src_absfname, src_dir):
     return True
 
 
-def load_files(layer_dir, file_lst, output_dir):
+def load_files(layer_dir, file_lst, output_dir, cnt):
     start = time.time()
-
+    
     for fname in file_lst:
+	cnt = cnt*1000 + 1
         file_name = fname.split('/',1)[1]
         if os.path.isfile(os.path.join(layer_dir, file_name)):
-            mv_files(os.path.join(layer_dir, file_name), output_dir)
+            mv_files(os.path.join(layer_dir, file_name), output_dir, cnt)
 
 
     elapsed = time.time() - start
-    logging.info('process layer_id:%s : file digest calculation for layer, ==> %f s', layer_dir, elapsed)
+    logging.info('process layer_id:%s : file move for layer, ==> %f s', layer_dir, elapsed)
 
     return True
