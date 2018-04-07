@@ -39,9 +39,9 @@ def compress_tarball_lz4(abs_tar_file_name, abs_gzip_filename): #.gz #.lz4
 
 def compress_tarball_with_method(tarball_fname, outputname, method):
     if method == 'gzip':
-        compress_tarball_gzip(tarball_fname, outputname)
+        return compress_tarball_gzip(tarball_fname, outputname)
     elif method == 'lz4':
-        compress_tarball_lz4(tarball_fname, outputname)
+        return compress_tarball_lz4(tarball_fname, outputname)
     else:
         logging.error('###################%s: unknown compression method ###################',
                       method)
@@ -57,7 +57,7 @@ def decompress_tarball_with_method(tarball_fname, outputname, method):
                       method)
 
 
-def load_dirs(layer_filename, filetype):
+def load_dirs(layer_absfilename, filetype):
     # sub_dirs = {}
 
     """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
@@ -67,11 +67,13 @@ def load_dirs(layer_filename, filetype):
     uncompressed_archival_size = -1
     compressed_archival_size = -1
 
-    layer_file = os.path.join(dest_dir[0]['layer_dir'], layer_filename)
+    layer_filename = os.path.basename(layer_absfilename)
+    layer_file = layer_absfilename  #os.path.join(dest_dir[0]['layer_dir'], layer_filename)
 
     extracting_dir = dest_dir[0]['extracting_dir']
     layer_dir = os.path.join(extracting_dir, layer_filename)
-    mk_dir(layer_dir)
+    if start_status_compressed == True:
+    	mk_dir(layer_dir)
 
     cp_layer_tarball_name = os.path.join(extracting_dir, layer_filename + '-cp.tar.gzip')
     abs_archival_file_name = os.path.join(extracting_dir, layer_filename + '-archival.tar')
@@ -86,14 +88,15 @@ def load_dirs(layer_filename, filetype):
     """
 
     logging.debug('cp tarball to ==========> %s', layer_dir)
-    if not cp_file(layer_file, cp_layer_tarball_name):
-        clear_dir(layer_dir)
-        return -1, -1
+    if start_status_compressed == True or start_status_compressed == False:
+        if not cp_file(layer_file, cp_layer_tarball_name):
+            clear_dir(layer_dir)
+            return -1, -1
 
-    if not os.path.isfile(cp_layer_tarball_name):
-        logging.warn('cp layer tarball file %s is invalid', cp_layer_tarball_name)
-        clear_dir(layer_dir)
-        return -1, -1
+        if not os.path.isfile(cp_layer_tarball_name):
+            logging.warn('cp layer tarball file %s is invalid', cp_layer_tarball_name)
+            clear_dir(layer_dir)
+            return -1, -1
 
     if filetype == 'gzip':
         logging.debug('STAT Extracting gzip file ==========> %s' % layer_file)
@@ -125,6 +128,13 @@ def load_dirs(layer_filename, filetype):
                 clear_dir(layer_dir)
                 return -1, -1
 
+            if filetype == 'tar':
+                #clear_dir(layer_dir)
+                return compressed_archival_size, -1
+            elif filetype == 'gzip':
+                #clear_dir(layer_dir)
+                return compressed_archival_size, uncompressed_archival_size
+
     elif filetype == 'tar':
         logging.debug('STAT Extracting tar file ==========> %s' % layer_file)
         if start_status_compressed == True:
@@ -137,6 +147,12 @@ def load_dirs(layer_filename, filetype):
                 clear_dir(layer_dir)
                 return -1, -1
 
+            if filetype == 'tar':
+                #clear_dir(layer_dir)
+                return compressed_archival_size, -1
+            elif filetype == 'gzip':
+                #clear_dir(layer_dir)
+                return compressed_archival_size, uncompressed_archival_size
 
     if start_status_compressed == False:
 
@@ -147,15 +163,15 @@ def load_dirs(layer_filename, filetype):
 
         if method == 'lz4':
             """compress tar with lz4 and remove it"""
-            compressed_fname = cp_layer_tarball_name + '.lz4'
+            compressed_fname = abs_archival_file_name + '.lz4'
             if not compress_tarball_with_method(abs_archival_file_name, compressed_fname, 'lz4'):
                 clear_dir(layer_dir)
                 return -1, -1
 
-        if method == 'gzip'
+        if method == 'gzip':
             """compress tar and remove it"""
-            compressed_fname = cp_layer_tarball_name + '.gz'
-            if not compress_tarball_with_method(cp_layer_tarball_name, compressed_fname, 'gzip'):
+            compressed_fname = abs_archival_file_name + '.gz'
+            if not compress_tarball_with_method(abs_archival_file_name, compressed_fname, 'gzip'):
                 clear_dir(layer_dir)
                 return -1, -1
 
@@ -171,9 +187,9 @@ def load_dirs(layer_filename, filetype):
             clear_dir(layer_dir)
             return -1, -1
 
-    if filetype == 'tar':
-        clear_dir(layer_dir)
-        return compressed_archival_size, -1
-    elif filetype == 'gzip':
-        clear_dir(layer_dir)
-        return compressed_archival_size, uncompressed_archival_size
+        if filetype == 'tar':
+            clear_dir(layer_dir)
+            return compressed_archival_size, -1
+        elif filetype == 'gzip':
+            clear_dir(layer_dir)
+            return compressed_archival_size, uncompressed_archival_size

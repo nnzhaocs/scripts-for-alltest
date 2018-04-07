@@ -1,23 +1,24 @@
 
 from config import *
 from decompression_methods import *
+from layers import check_file_type
 
 def test_decompression():
     layer_dict = load_layer_dict()
     layer_fnames = load_testing_layer_lst(layer_dict)
 
     print "create pool"
-    P = multiprocessing.Pool(num_worker_process)
+    #P = multiprocessing.Pool(num_worker_process)
     print "before map!"
     print len(layer_fnames)  # process_manifest
     # print len(analyzed_layer_list)
     print "before map!"
-    #for i in layer_job_list:
-    #    if not i:
-    #        continue
-    #    process_layer(i)
-        #break
-    P.map(process_layer, layer_fnames)
+    for i in layer_fnames:
+        if not i:
+            continue
+        process_layer(i)
+        break
+    #P.map(process_layer, layer_fnames)
     print "after map"
 
     logging.info('done! all the layer job processes are finished')
@@ -63,7 +64,7 @@ def process_layer(layer_filename):
         return False
 
     logging.info('sha256:' + layer_filename.split("-")[1])
-
+    """
     if ('sha256:' + layer_filename.split("-")[1]) in analyzed_layer_list:
         print "Layer Already Analyzed!"
         is_layer_analyzed = True
@@ -73,7 +74,7 @@ def process_layer(layer_filename):
 
     if is_layer_analyzed:
         return
-
+    """
     if not os.path.isfile(os.path.join(dest_dir[0]['layer_dir'], layer_filename)):
         logging.info('file %s is not valid', layer_filename)
         return False
@@ -86,15 +87,15 @@ def process_layer(layer_filename):
         print "This is a tar file"
         archival_size = os.lstat(os.path.join(dest_dir[0]['layer_dir'], layer_filename)).st_size
         logging.debug("archival_size %d B, name: %s", archival_size, layer_filename)
-        compressed_archival_size, -1 = load_dirs(layer_filename, filetype)
+        compressed_archival_size,  = load_dirs(layer_filename, filetype)
         elapsed = time.time() - start
         logging.info('process layer_id:%s : total time, consumed time ==> %f s; compress size: %d',
                      layer_filename, elapsed, compressed_archival_size)
     elif filetype == 'gzip':
         print "This is a gzip file"
         # compressed_archival_size = os.lstat(os.path.join(dest_dir[0]['layer_dir'], layer_filename)).st_size
-        logging.debug("compressed_size_with_method_gzip %d B, name: %s", compressed_size_with_method_gzip, layer_filename)
         compressed_archival_size, archival_size = load_dirs(layer_filename, filetype)
+	logging.debug("compressed_size %d B, archival size %d B name: %s", compressed_archival_size, archival_size, layer_filename)
         elapsed = time.time() - start
         logging.info('process layer_id:%s : total time, consumed time ==> %f s; compress size: %d',
                      layer_filename, elapsed, compressed_archival_size)
@@ -102,16 +103,16 @@ def process_layer(layer_filename):
         logging.info('################### The layer tarball type is neither tar or gzip! layer file name %s ###################', layer_filename)
         return
 
-    if not sub_dirs:
-        """"write to bad layer_tarball"""
-        with open("bad_nonanalyzed_layer_list-%s.out" % processname, 'a+') as f:
-            f.write(layer_filename+'\n')
-        logging.debug('################### The layer tarball has problems! layer file name %s ###################', layer_filename)
-        return
-
+    #if not sub_dirs:
+    #    """"write to bad layer_tarball"""
+    #    with open("bad_nonanalyzed_layer_list-%s.out" % processname, 'a+') as f:
+    #        f.write(layer_filename+'\n')
+    #    logging.debug('################### The layer tarball has problems! layer file name %s ###################', layer_filename)
+    #    return
+    """ 
     if archival_size == -1 or compressed_archival_size == -1:
         return
-
+   
     # depths = [sub_dir['dir_depth'] for sub_dir in sub_dirs if sub_dir]
     # dir_depth = {
     #     'dir_max_depth': max(depths),
@@ -135,7 +136,7 @@ def process_layer(layer_filename):
         # 'repeats': 0,
         # 'file_cnt': sum_file_cnt(sub_dirs)
     }
-
+    
     abslayer_filename = os.path.join(layer_db_json_dir, layer_filename+'.json')
     logging.info('write to layer json file: %s', abslayer_filename)
     with open(abslayer_filename, 'w+') as f_out:
@@ -146,4 +147,4 @@ def process_layer(layer_filename):
     with open("analyzed_layer_filename-%s.out" % processname, 'a+') as f:
         f.write(layer_filename + '\n')
 
-
+    """
