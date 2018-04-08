@@ -11,16 +11,17 @@ Multi-processing
 
 """
 
-manager = multiprocessing.Manager()
-layer_dict = manager.dict()
-
 def find_files():
+    manager = multiprocessing.Manager()
+    layer_dict = manager.dict()
+    extracting_dir_size = manager.Value('i', 50)
+
     if not construct_layer_info_or_not:
         construct_layer_info()
     else:
         with open(layer_dict_fname) as f:
             tmp_dict = json.load(f)
-        for layer_id, layer_fname in layer_dict.items():
+        for layer_id, layer_fname in tmp_dict.items():
             layer_dict[layer_id] = layer_fname
 
     layer_file_dict = find_layer_filename()
@@ -40,34 +41,40 @@ def find_files():
     print "create pool"
     P = multiprocessing.Pool(num_worker_process)
     print "before map!"
-    print len(layer_fnames)  # process_manifest
+    print len(layer_file_dict.items())  # process_manifest
     # print len(analyzed_layer_list)
     print "before map!"
-    # for i in layer_job_list:
+
+    func = partial(load_dirs, layer_dict, extracting_dir_size)
+    #for i in layer_file_dict.items():
     #    if not i:
     #        continue
-    #    process_layer(i)
-    # break
-    func = partial(load_dirs, layer_dict)
-
+    #    if func(i):
+    #	    break
+    #print layer_dict
     P.map(func, layer_file_dict.items())
     print "after map"
 
     logging.info('done! all the layer job processes are finished')
 
 
-def load_dirs(layer_dict, dict_item):
+def load_dirs(layer_dict, extracting_dir_size, dict_item):
     processname = multiprocessing.current_process().name
     layer_id, file_lst = dict_item
-    logging.debug("[%s] process layer_filename: %s", processname, layer_absfilename)
-
+    logging.debug("[%s] process layer_filename: %s", processname, layer_id)
+    #print layer_dict
+    #return False
     ret = False
 
     try:
         layer_absfilename = layer_dict[layer_id]
+	#print layer_absfilename
     except:
+	#pass
         print("Cannot find layer_id in this machine's layer directories ################ ", layer_id)
-
+	return ret
+    #print layer_absfilename
+    #return False
     filetype = check_file_type(layer_absfilename)
 
     layer_filename = os.path.basename(layer_absfilename)
@@ -83,7 +90,8 @@ def load_dirs(layer_dict, dict_item):
     mk_dir(layer_dir)
 
     output_dir_layer_dir = os.path.join(output_dir, layer_filename)
-
+    #print output_dir_layer_dir
+    #return ret
     cp_layer_tarball_name = os.path.join(extracting_dir, layer_filename + '-cp.tar.gzip')
 
     """
@@ -94,6 +102,9 @@ def load_dirs(layer_dict, dict_item):
     """
 
     logging.debug('cp tarball to ==========> %s', layer_dir)
+    while extracting_dir_size < 0:
+	print("NO space left: %d", extracting_dir_size)
+
     if not cp_file(layer_file, cp_layer_tarball_name):
         clear_dir(layer_dir)
         return ret
@@ -165,12 +176,12 @@ def mv_files(src_absfname, des_dir):
     return True
 
 
-def load_files(layer_dir, file_lst, output_dir, cnt):
+def load_files(layer_dir, file_lst, output_dir):
     start = time.time()
 
     for fname in file_lst:
         file_name = fname.split('/',1)[1]
-        dirname = fname.dirname(fname)
+        dirname = os.path.dirname(fname)
         dir_name = dirname.split('/',1)[1]
         if os.path.isfile(os.path.join(layer_dir, file_name)):
             file_dirname = os.path.join(output_dir, dir_name)
