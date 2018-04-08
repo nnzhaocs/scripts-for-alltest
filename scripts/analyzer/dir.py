@@ -119,7 +119,7 @@ def decompress_tarball_gunzip(cp_layer_tarball_name, layer_dir_filename):
 
 
 def mk_dir(layer_dir):
-    cmd1 = 'mkdir %s' % layer_dir
+    cmd1 = 'mkdir -p %s' % layer_dir
     logging.debug('The shell command: %s', cmd1)
     try:
         subprocess.check_output(cmd1, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)

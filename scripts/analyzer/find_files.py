@@ -1,37 +1,192 @@
 
 from config import *
 #from dir.py import *
-from load_files import *
-"""TODO
+# from load_files import *
+# from config import *
+from dir import *
+from layers import check_file_type
+
+""" TODO
 Multi-processing
 
 """
 
+manager = multiprocessing.Manager()
+layer_dict = manager.dict()
 
 def find_files():
     if not construct_layer_info_or_not:
-        layer_dict = construct_layer_info()
+        construct_layer_info()
     else:
         with open(layer_dict_fname) as f:
-            layer_dict = json.load(f)
+            tmp_dict = json.load(f)
+        for layer_id, layer_fname in layer_dict.items():
+            layer_dict[layer_id] = layer_fname
 
     layer_file_dict = find_layer_filename()
-    cnt = 0
-    for layer_id, file_lst in layer_file_dict.items():
-	cnt = cnt + 1
-	try: 
-            layer_fname = layer_dict[layer_id]
-        except:
-	    print("Cannot find layer_id in this machine's layer directories ################ ", layer_id)
-	    continue
+    # cnt = 0
+    # layer_id, file_lst = zip(*layer_file_dict.items())
+    # for layer_id, file_lst in layer_file_dict.items():
+	# cnt = cnt + 1
+	# try:
+     #        layer_fname = layer_dict[layer_id]
+     #    except:
+	#     print("Cannot find layer_id in this machine's layer directories ################ ", layer_id)
+	#     continue
 
         #"""decompress the layer to extracting dir"""
-        load_dirs(layer_fname, file_lst, output_dir, cnt)
+        # load_dirs(layer_fname, file_lst, output_dir, cnt)
         #"""get the files"""
+    print "create pool"
+    P = multiprocessing.Pool(num_worker_process)
+    print "before map!"
+    print len(layer_fnames)  # process_manifest
+    # print len(analyzed_layer_list)
+    print "before map!"
+    # for i in layer_job_list:
+    #    if not i:
+    #        continue
+    #    process_layer(i)
+    # break
+    func = partial(load_dirs, layer_dict)
+
+    P.map(func, layer_file_dict.items())
+    print "after map"
+
+    logging.info('done! all the layer job processes are finished')
+
+
+def load_dirs(layer_dict, dict_item):
+    processname = multiprocessing.current_process().name
+    layer_id, file_lst = dict_item
+    logging.debug("[%s] process layer_filename: %s", processname, layer_absfilename)
+
+    ret = False
+
+    try:
+        layer_absfilename = layer_dict[layer_id]
+    except:
+        print("Cannot find layer_id in this machine's layer directories ################ ", layer_id)
+
+    filetype = check_file_type(layer_absfilename)
+
+    layer_filename = os.path.basename(layer_absfilename)
+    """ load the layer file in layer file dest_dir['layer_dir']/<layer_id>
+    extracting to extracting_dir/<layer_id>
+    load all the subdirs in this layer-id dir
+    Then clean the layer-id dir """
+
+    layer_file = layer_absfilename #os.path.join(dest_dir[0]['layer_dir'], layer_filename)
+
+    extracting_dir = dest_dir[0]['extracting_dir']
+    layer_dir = os.path.join(extracting_dir, layer_filename)
+    mk_dir(layer_dir)
+
+    output_dir_layer_dir = os.path.join(output_dir, layer_filename)
+
+    cp_layer_tarball_name = os.path.join(extracting_dir, layer_filename + '-cp.tar.gzip')
+
+    """
+    extracting_dir:
+                    layer_dir: layer_filename
+                    cp_layer_tarball_name: layer_filename-cp.tar.zip
+                    abs_zip_file_name: layer_filename-uncompressed-archival.tar
+    """
+
+    logging.debug('cp tarball to ==========> %s', layer_dir)
+    if not cp_file(layer_file, cp_layer_tarball_name):
+        clear_dir(layer_dir)
+        return ret
+
+    if not os.path.isfile(cp_layer_tarball_name):
+        logging.warn('cp layer tarball file %s is invalid', cp_layer_tarball_name)
+        clear_dir(layer_dir)
+        return ret
+
+    if filetype == 'gzip':
+        logging.debug('STAT Extracting gzip file ==========> %s' % layer_file)
+        abs_zip_file_name = os.path.join(extracting_dir, layer_filename + '-uncompressed-archival.tar')
+        if not decompress_tarball_gunzip(cp_layer_tarball_name, abs_zip_file_name): # gunzip decompression
+            clear_dir(layer_dir)
+            return ret
+
+        if os.path.isfile(abs_zip_file_name):
+            uncompressed_archival_size = os.lstat(abs_zip_file_name).st_size
+            logging.debug("uncompressed_archival_size %d B, name: %s", uncompressed_archival_size, layer_file)
+        else:
+            logging.debug("uncompressed_archival_wrong!!! name: %s", layer_file)
+            clear_dir(layer_dir)
+            return ret
+
+        if not extract_tarball(abs_zip_file_name, layer_dir):
+            clear_dir(layer_dir)
+            return ret
+
+        if not os.path.isdir(layer_dir):
+            logging.warn('layer dir %s is invalid', layer_dir)
+            clear_dir(layer_dir)
+            return ret
+
+        if not remove_file(cp_layer_tarball_name):
+            clear_dir(layer_dir)
+            return ret
+
+    elif filetype == 'tar':
+        logging.debug('STAT Extracting tar file ==========> %s' % layer_file)
+
+        if not extract_tarball(cp_layer_tarball_name, layer_dir):
+            clear_dir(layer_dir)
+            return ret
+
+        if not os.path.isdir(layer_dir):
+            logging.warn('layer dir %s is invalid', layer_dir)
+            clear_dir(layer_dir)
+            return ret
+
+        if not remove_file(cp_layer_tarball_name):
+            clear_dir(layer_dir)
+            return ret
+
+    ret = load_files(layer_dir, file_lst, output_dir_layer_dir)
+    #if not ret:
+    clear_dir(layer_dir)
+    return ret
+
+
+def mv_files(src_absfname, des_dir):
+    cmd = 'mv %s  %s' % (src_absfname, des_dir)
+    logging.debug('The shell command: %s', cmd)
+    try:
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
+    except subprocess.CalledProcessError as e:
+        logging.debug('###################%s: %s###################',
+                      src_absfname, e.output)
+        return False
+    return True
+
+
+def load_files(layer_dir, file_lst, output_dir, cnt):
+    start = time.time()
+
+    for fname in file_lst:
+        file_name = fname.split('/',1)[1]
+        dirname = fname.dirname(fname)
+        dir_name = dirname.split('/',1)[1]
+        if os.path.isfile(os.path.join(layer_dir, file_name)):
+            file_dirname = os.path.join(output_dir, dir_name)
+            if not os.path.isdir(file_dirname):
+                mk_dir(file_dirname)
+
+            mv_files(os.path.join(layer_dir, file_name), file_dirname)
+
+    elapsed = time.time() - start
+    logging.info('process layer_id:%s : file move for layer, ==> %f s', layer_dir, elapsed)
+
+    return True
 
 
 def construct_layer_info():
-    layer_dict = {}
+    # layer_dict = {}
     for dir in layer_dirs:
         for path, subdirs, files in os.walk(dir):
             for f in files:
@@ -42,7 +197,7 @@ def construct_layer_info():
     with open(layer_dict_fname, 'w+') as f_out:
         json.dump(layer_dict, f_out)
 
-    #return layer_dict
+    return layer_dict
 
 
 def find_layer_filename():
