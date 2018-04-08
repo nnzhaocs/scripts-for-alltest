@@ -4,6 +4,7 @@ from layers import *
 from jobdivider import *
 from list_dir_files import *
 from find_files import *
+from test_decompression_methods import *
 
 def run_createimagedb():
     start = time.time()
