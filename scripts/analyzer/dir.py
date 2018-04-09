@@ -45,6 +45,36 @@ def compress_tarball_gzip(abs_tar_file_name, abs_gzip_filename): #.gz
     return True
 
 
+def mv_files(src_absfname, des_dir):
+    cmd = 'mv %s  %s' % (src_absfname, des_dir)
+    logging.debug('The shell command: %s', cmd)
+    try:
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
+    except subprocess.CalledProcessError as e:
+        logging.debug('###################%s: %s###################',
+                      src_absfname, e.output)
+        return False
+    return True
+
+
+def clear_extracting_dir(extracting_dir):
+    """clear the content"""
+    if not os.path.isdir(extracting_dir):
+        logging.error('###################%s is not valid###################', layer_dir)
+        return False
+
+    cmd4 = 'rm -rf %s' % (extracting_dir+'/*')
+    logging.debug('The shell command: %s', cmd4)
+    try:
+        subprocess.check_output(cmd4, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
+    except subprocess.CalledProcessError as e:
+        logging.error('###################%s: exit code: %s; %s###################',
+                      dir, e.returncode, e.output)
+        return False
+
+    return True
+
+
 def clear_dir(layer_dir):
     """ delete the dir """
     if not os.path.isdir(layer_dir):
