@@ -46,16 +46,16 @@ def find_files():
     print "before map!"
 
     func = partial(load_dirs, layer_dict, extracting_dir_size)
-    cnt = 0
-    for i in layer_file_dict.items():
-       if not i:
-           continue
-       if func(i):
-           cnt = cnt + 1
-           if cnt == 4:
-                break
+    #cnt = 0
+    #for i in layer_file_dict.items():
+    #   if not i:
+    #       continue
+    #   if func(i):
+    #       cnt = cnt + 1
+    #       if cnt == 4:
+    #            break
     #print layer_dict
-    # P.map(func, layer_file_dict.items())
+    P.map(func, layer_file_dict.items())
     print "after map"
 
     logging.info('done! all the layer job processes are finished')
@@ -112,18 +112,17 @@ def load_dirs(layer_dict, extracting_dir_size, dict_item):
 
     while (extracting_dir_size.value - layer_compressed_size) <= 0:
         print("NO space left: %d", extracting_dir_size.value)
+	# Wait for 5 seconds
+	time.sleep(50)
+
+    extracting_dir_size.value = extracting_dir_size.value - layer_compressed_size
+    sum_size = sum_size + layer_compressed_size
 
     if not cp_file(layer_file, cp_layer_tarball_name):
         clear_dir(layer_dir)
         return ret
     
-    logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value/1024/1024/1024, sum_size/1024/1024/1024)
-
-    extracting_dir_size.value = extracting_dir_size.value - layer_compressed_size
-    sum_size = sum_size + layer_compressed_size
-
-    logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value/1024/1024/1024, sum_size/1024/1024/1024)
-
+    #logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value/1024/1024/1024, sum_size/1024/1024/1024)
 
     if not os.path.isfile(cp_layer_tarball_name):
         logging.warn('cp layer tarball file %s is invalid', cp_layer_tarball_name)
@@ -134,9 +133,15 @@ def load_dirs(layer_dict, extracting_dir_size, dict_item):
     if filetype == 'gzip':
         logging.debug('STAT Extracting gzip file ==========> %s' % layer_file)
         abs_zip_file_name = os.path.join(extracting_dir, layer_filename + '-uncompressed-archival.tar')
-
         while extracting_dir_size.value - layer_compressed_size * 4 <= 0: #### make a guess
             print("NO space left: %d", extracting_dir_size.value)
+	    time.sleep(50)
+
+        #size = os.lstat(abs_zip_file_name).st_size
+
+        extracting_dir_size.value = extracting_dir_size.value - layer_compressed_size * 4
+        sum_size = sum_size + layer_compressed_size * 4                                          
+
 
         if not decompress_tarball_gunzip(cp_layer_tarball_name, abs_zip_file_name): # gunzip decompression
             clear_dir(layer_dir)
@@ -145,8 +150,8 @@ def load_dirs(layer_dict, extracting_dir_size, dict_item):
 
         size = os.lstat(abs_zip_file_name).st_size
 
-        extracting_dir_size.value = extracting_dir_size.value - size
-        sum_size = sum_size + size
+        extracting_dir_size.value = extracting_dir_size.value - size + layer_compressed_size * 4
+        sum_size = sum_size + size - layer_compressed_size * 4
 
         if os.path.isfile(abs_zip_file_name):
             uncompressed_archival_size = os.lstat(abs_zip_file_name).st_size
@@ -159,17 +164,17 @@ def load_dirs(layer_dict, extracting_dir_size, dict_item):
 
         while extracting_dir_size.value - size <= 0: #### archival == unpacking
             print("NO space left: %d", extracting_dir_size.value)
+	    time.sleep(50)
 
-        if not extract_tarball(abs_zip_file_name, layer_dir):
+        extracting_dir_size.value = extracting_dir_size.value - size
+        sum_size = sum_size + size                                          
+
+	if not extract_tarball(abs_zip_file_name, layer_dir):
             clear_dir(layer_dir)
             extracting_dir_size.value = extracting_dir_size.value + sum_size
             return ret
-
-        extracting_dir_size.value = extracting_dir_size.value - size
-        sum_size = sum_size + size
-
-        logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024,
-                      sum_size / 1024 / 1024 / 1024)
+        
+        #logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024, sum_size / 1024 / 1024 / 1024)
 
         if not os.path.isdir(layer_dir):
             logging.warn('layer dir %s is invalid', layer_dir)
@@ -185,25 +190,24 @@ def load_dirs(layer_dict, extracting_dir_size, dict_item):
         extracting_dir_size.value = extracting_dir_size.value + layer_compressed_size
         sum_size = sum_size - layer_compressed_size
 
-        logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024,
-                      sum_size / 1024 / 1024 / 1024)
+        #logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024, sum_size / 1024 / 1024 / 1024)
 
     elif filetype == 'tar':
         logging.debug('STAT Extracting tar file ==========> %s' % layer_file)
 
         while extracting_dir_size.value - layer_compressed_size <= 0: #### archival == unpacking
             print("NO space left: %d", extracting_dir_size.value)
+	    time.sleep(50)
 
-        if not extract_tarball(cp_layer_tarball_name, layer_dir):
+        extracting_dir_size.value = extracting_dir_size.value - layer_compressed_size
+        sum_size = sum_size + layer_compressed_size                                          
+
+	if not extract_tarball(cp_layer_tarball_name, layer_dir):
             clear_dir(layer_dir)
             extracting_dir_size.value = extracting_dir_size.value + sum_size
             return ret
 
-        extracting_dir_size.value = extracting_dir_size.value - layer_compressed_size
-        sum_size = sum_size + layer_compressed_size
-
-        logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024,
-                      sum_size / 1024 / 1024 / 1024)
+        #logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024,  sum_size / 1024 / 1024 / 1024)
 
         if not os.path.isdir(layer_dir):
             logging.warn('layer dir %s is invalid', layer_dir)
@@ -219,8 +223,7 @@ def load_dirs(layer_dict, extracting_dir_size, dict_item):
         extracting_dir_size.value = extracting_dir_size.value + layer_compressed_size
         sum_size = sum_size + layer_compressed_size
 
-        logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024,
-                      sum_size / 1024 / 1024 / 1024)
+        #logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024, sum_size / 1024 / 1024 / 1024)
 
     ret = load_files(layer_dir, file_lst, output_dir_layer_dir)
     #if not ret:
@@ -229,7 +232,7 @@ def load_dirs(layer_dict, extracting_dir_size, dict_item):
     extracting_dir_size.value = extracting_dir_size.value + sum_size
     sum_size = 0
 
-    logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value/1024/1024/1024, sum_size/1024/1024/1024)
+    #logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value/1024/1024/1024, sum_size/1024/1024/1024)
     return ret
 
 
