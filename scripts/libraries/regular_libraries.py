@@ -2,7 +2,8 @@
 """imports all the regular libraries"""
 
 import os, sys, time, logging, traceback
-
+reload(sys)  
+sys.setdefaultencoding('utf8')
 import argparse, optparse
 
 import json
