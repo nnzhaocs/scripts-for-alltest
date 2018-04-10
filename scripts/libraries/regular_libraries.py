@@ -32,3 +32,10 @@ import statistics
 import subprocess
 # from collections import OrderedDict
 # from collections import defaultdict
+import operator
+from pipes import quote
+
+def split_list(datalist, list_elem_num):
+
+    sublists = [datalist[x:x+list_elem_num] for x in range(0, len(datalist), list_elem_num)]
+    return sublists
