@@ -11,13 +11,14 @@ TODO
 Multi-processing
 
 """
-import operator
+#import operator
 
 class LayerFile:
-    f_lst = []
+    #f_lst = []
     def __init__(self, layer_id, size):
         self.layer_id = layer_id
         self.size = size
+	self.f_lst = []
 
 
 def find_files():
@@ -44,6 +45,15 @@ def find_files():
             layer_dict[layer_id] = layer_fname
 
     layer_file_dict = find_layer_filename()
+    #len1 = 0
+    #for layer_id in layer_file_dict.keys():
+    #    print layer_file_dict[layer_id].layer_id
+    #    print layer_file_dict[layer_id].size
+    #    print layer_file_dict[layer_id].f_lst[0]
+    #    len1 = len1 + len(layer_file_dict[layer_id].f_lst)
+    #print len1
+    #    #break
+    #return
 
     logging.info('Initializing the job lists....')
 
@@ -57,20 +67,31 @@ def find_files():
         else:
             layerfile_lst_bigger_2g.append(layerfile)
 
+    #print layerfile_lst_less_50m[0].size
+    #print layerfile_lst_less_1g[0].size
+    #print layerfile_lst_less_2g[0].size
+    #print layerfile_lst_bigger_2g[0].size
+
+    #return
+    """
     err_lst_less_50m = process_layerfile_list(layerfile_lst_less_50m, 'layerfile_lst_less_50m', layer_dict, extracting_dir_size, pnum_less_50m)
     while err_lst_less_50m:
         pnum_less_50m = pnum_less_50m - 5
         if pnum_less_50m <= 0:
             pnum_less_50m = 5
+	logging.info('processing error list....')
         err_lst_less_50m = process_layerfile_list(err_lst_less_50m, 'layerfile_lst_less_50m', layer_dict, extracting_dir_size, pnum_less_50m)
-
+    return
+    """
     err_lst_less_1g = process_layerfile_list(layerfile_lst_less_1g, 'layerfile_lst_less_1g', layer_dict, extracting_dir_size, pnum_less_1g)
+    #return
     while err_lst_less_1g:
         pnum_less_1g = pnum_less_1g - 5
         if pnum_less_1g <= 0:
             pnum_less_1g = 4
+	logging.info('processing error list....')
         err_lst_less_1g = process_layerfile_list(err_lst_less_1g, 'layerfile_lst_less_1g', layer_dict, extracting_dir_size, pnum_less_1g)
-
+    return
     err_lst_less_2g = process_layerfile_list(layerfile_lst_less_2g, 'layerfile_lst_less_2g', layer_dict, extracting_dir_size, pnum_less_2g)
     while err_lst_less_2g:
         pnum_less_2g = pnum_less_2g - 5
@@ -108,11 +129,22 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
 
     sublists = split_list(layerfile_lst, num)
 
+    logging.info( "create pool to decompress and unpack layer tarfiles ....")
+    P_unpack = multiprocessing.Pool(num)
+    logging.info( "create pool to mv layer files ....")
+    P_mv = multiprocessing.Pool(60)
+
     for sublist in sublists:
-        logging.info( "create pool to decompress and unpack layer tarfiles ....")
-        P = multiprocessing.Pool(num)
+	ret_lst = []
+        
         logging.info("map pool to decompress and unpack layer tarfiles ....")
-        ret_lst = P.map(func, sublist)
+        ret_lst = P_unpack.map(func, sublist)
+	#for i in sublist:
+	#    cnt = cnt + 1
+	#    if cnt > 4:
+	#	break
+	#    ret_lst.append(func(i))
+	
         logging.info("finished decompressing and unpacking layer tarfiles!")
 
         lf_lst = []
@@ -124,16 +156,20 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
             elif ret['errors'] == 'NoSpaceLeft':
                 error_ret.append(ret['layerfile'])
                 """take care of bad list: ONLY FOR NOSPACELEFT"""
+        #print lf_lst
 
-        logging.info( "create pool to mv layer files ....")
-        P = multiprocessing.Pool(60)
         logging.info("map pool to mv layer files ....")
-        P.map(load_file, lf_lst)
+        P_mv.map(load_files, lf_lst)
+	#for i in lf_lst:
+	#    load_files(i)
         logging.info("finished mv-ing layer tarfiles!")
 
         clear_extracting_dir(dest_dir[0]['extracting_dir'])
 
         extracting_dir_size.value = 50 * 1000 * 1000 * 1000
+    
+    P_unpack.close()
+    P_mv.close()
 
     return error_ret
 
@@ -347,11 +383,11 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
 
             tup = (os.path.join(layer_dir, file_name), file_dirname)
             tup_lst.append(tup)
-
+    #print tup_lst
     ret = {
         'finished_or_not': True,
-        'lf_lst': file_lst,
-        'layerfile': tup_lst, # layer_absfname, des_dirname
+        'lf_lst': tup_lst, #file_lst,
+        'layerfile': layerfile, #tup_lst, # layer_absfname, des_dirname
         # 'layer_dir': layer_dir,
         'errors': None
     }
@@ -367,10 +403,12 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
 
 def load_files(layerfile_tup):
     start = time.time()
-
+    #print layerfile_tup
     src_absfname = layerfile_tup[0]
     dest_dir = layerfile_tup[1]
-
+    if not os.path.isdir(dest_dir):
+	mk_dir(dest_dir)
+    #print src_absfname, dest_dir
     mv_files(src_absfname, dest_dir)
 
     # for fname in file_lst:
@@ -416,10 +454,11 @@ def find_layer_filename():
         for line in f:
             line = line.rstrip('\n')
             layer_id = line.split(',', 2)[0] # split by \t ???????
-            size     = line.split(',', 2)[1]
+            size     = int(line.split(',', 2)[1])
             filename = line.split(',', 2)[2] # split by \t ???????
             if layer_id not in layer_file_ldict:
                 layer_file_ldict[layer_id] = LayerFile(layer_id, size)
-            layer_file_ldict[layer_id].f_lst.append(filename)
+            layer_file = layer_file_ldict[layer_id]
+	    layer_file.f_lst.append(filename)
 
     return layer_file_ldict

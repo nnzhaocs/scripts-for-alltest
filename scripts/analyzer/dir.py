@@ -63,7 +63,7 @@ def clear_extracting_dir(extracting_dir):
         logging.error('###################%s is not valid###################', layer_dir)
         return False
 
-    cmd4 = 'rm -rf %s' % (extracting_dir+'/*')
+    cmd4 = 'rm -rf %s' % (extracting_dir+'*')
     logging.debug('The shell command: %s', cmd4)
     try:
         subprocess.check_output(cmd4, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
@@ -149,7 +149,8 @@ def decompress_tarball_gunzip(cp_layer_tarball_name, layer_dir_filename):
 
 
 def mk_dir(layer_dir):
-    cmd1 = 'mkdir -p %s' % layer_dir
+    #command = 'ls -l {}'.format(quote(filename))
+    cmd1 = 'mkdir -pv {}'.format(quote(layer_dir))
     logging.debug('The shell command: %s', cmd1)
     try:
         subprocess.check_output(cmd1, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
