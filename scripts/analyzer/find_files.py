@@ -73,7 +73,7 @@ def find_files():
     #print layerfile_lst_bigger_2g[0].size
 
     #return
-    """
+    
     err_lst_less_50m = process_layerfile_list(layerfile_lst_less_50m, 'layerfile_lst_less_50m', layer_dict, extracting_dir_size, pnum_less_50m)
     while err_lst_less_50m:
         pnum_less_50m = pnum_less_50m - 5
@@ -81,8 +81,8 @@ def find_files():
             pnum_less_50m = 5
 	logging.info('processing error list....')
         err_lst_less_50m = process_layerfile_list(err_lst_less_50m, 'layerfile_lst_less_50m', layer_dict, extracting_dir_size, pnum_less_50m)
-    return
-    """
+    #return
+    
     err_lst_less_1g = process_layerfile_list(layerfile_lst_less_1g, 'layerfile_lst_less_1g', layer_dict, extracting_dir_size, pnum_less_1g)
     #return
     while err_lst_less_1g:
@@ -91,7 +91,7 @@ def find_files():
             pnum_less_1g = 4
 	logging.info('processing error list....')
         err_lst_less_1g = process_layerfile_list(err_lst_less_1g, 'layerfile_lst_less_1g', layer_dict, extracting_dir_size, pnum_less_1g)
-    return
+    #return
     err_lst_less_2g = process_layerfile_list(layerfile_lst_less_2g, 'layerfile_lst_less_2g', layer_dict, extracting_dir_size, pnum_less_2g)
     while err_lst_less_2g:
         pnum_less_2g = pnum_less_2g - 5
@@ -167,9 +167,12 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
         clear_extracting_dir(dest_dir[0]['extracting_dir'])
 
         extracting_dir_size.value = 50 * 1000 * 1000 * 1000
-    
+    logging.info("start close pool")
     P_unpack.close()
     P_mv.close()
+    logging.info("start joinning workers....")
+    P_unpack.join()
+    P_mv.join()
 
     return error_ret
 
@@ -181,7 +184,7 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
     file_lst = layerfile.f_lst
     # size = layerfile.size
 
-    logging.debug("[%s] process layer_filename: %s", processname, layer_id)
+    logging.info("[%s] process layer_filename: %s", processname, layer_id)
     #print layer_dict
     #return False
     ret = {

@@ -18,7 +18,7 @@ def parseArg():
         '-D', '--debug',
         help="Print lots of debugging statements",
         action="store_const", dest="loglevel", const=logging.DEBUG,
-        default=logging.INFO,
+        default=logging.DEBUG,#.INFO,
     )
 
     parser.add_argument(
