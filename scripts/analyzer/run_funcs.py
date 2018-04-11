@@ -58,7 +58,7 @@ def run_findfiles():
     find_files()
 
     elapsed = time.time() - start
-    logging.info('find files, consumed time ==> %f', (elapsed / 3600))
+    logging.debug('find files, consumed time ==> %f', (elapsed / 3600))
 
 
 def run_testdecompression():

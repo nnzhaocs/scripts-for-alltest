@@ -44,6 +44,8 @@ output_dir = '/home/nannan/dockerimages/layers/unique_files/'
 
 compression_methods = ['gzip', 'lz4', 'archival']
 
+# layer_id, size, filename
+
 find_file_lst_absfilename = 'popimg_uniq_rand_file_data.csv'
 
 layer_dict_fname = '/home/nannan/dockerimages/layers/layer_dict.json'

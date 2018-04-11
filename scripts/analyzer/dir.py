@@ -12,10 +12,10 @@ TODO:
 
 def archival_tarfile(abs_zip_file_name, layer_dir):
     """ first archive this dir """
-    start = time.time()
+    # start = time.time()
 
     cmd = 'tar -cf %s %s' % (abs_zip_file_name, layer_dir)
-    logging.debug('The shell command: %s', cmd)
+    logging.info('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -23,8 +23,8 @@ def archival_tarfile(abs_zip_file_name, layer_dir):
                       abs_zip_file_name, e.returncode, e.output)
         return False
 
-    elapsed = time.time() - start
-    logging.info('process layer_id:%s : tar archival directory, consumed time ==> %f s', abs_zip_file_name, elapsed)
+    # elapsed = time.time() - start
+    # logging.info('process layer_id:%s : tar archival directory, consumed time ==> %f s', abs_zip_file_name, elapsed)
     return True
 
 
@@ -32,7 +32,7 @@ def compress_tarball_gzip(abs_tar_file_name, abs_gzip_filename): #.gz
     start = time.time()
 
     cmd = 'gzip -f %s' % (abs_tar_file_name)
-    logging.debug('The shell command: %s', cmd)
+    logging.info('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -47,7 +47,7 @@ def compress_tarball_gzip(abs_tar_file_name, abs_gzip_filename): #.gz
 
 def mv_files(src_absfname, des_dir):
     cmd = 'mv %s  %s' % (src_absfname, des_dir)
-    logging.debug('The shell command: %s', cmd)
+    logging.info('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -64,7 +64,7 @@ def clear_extracting_dir(extracting_dir):
         return False
 
     cmd4 = 'rm -rf %s' % (extracting_dir+'*')
-    logging.debug('The shell command: %s', cmd4)
+    logging.info('The shell command: %s', cmd4)
     try:
         subprocess.check_output(cmd4, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -82,7 +82,7 @@ def clear_dir(layer_dir):
         return False
 
     cmd4 = 'rm -rf %s' % (layer_dir+'*')
-    logging.debug('The shell command: %s', cmd4)
+    logging.info('The shell command: %s', cmd4)
     try:
         subprocess.check_output(cmd4, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -99,7 +99,7 @@ def remove_file(absfilename):
         return False
 
     cmd4 = 'rm -rf %s' % absfilename
-    logging.debug('The shell command: %s', cmd4)
+    logging.info('The shell command: %s', cmd4)
     try:
         subprocess.check_output(cmd4, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -111,9 +111,9 @@ def remove_file(absfilename):
 
 
 def extract_tarball(layer_dir_filename, layer_dir):
-    start = time.time()
+    # start = time.time()
     cmd = 'tar -pxf %s -C %s' % (layer_dir_filename, layer_dir)
-    logging.debug('The shell command: %s', cmd)
+    logging.info('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -125,16 +125,16 @@ def extract_tarball(layer_dir_filename, layer_dir):
                           layer_dir_filename, e.returncode, e.output)
             #return False
 
-    elapsed = time.time() - start
-    logging.info('process layer_id:%s : tar extract tarball, consumed time ==> %f s', layer_dir_filename, elapsed)
-    logging.debug('FINISHED! to ==========> %s', layer_dir)
+    # elapsed = time.time() - start
+    # logging.info('process layer_id:%s : tar extract tarball, consumed time ==> %f s', layer_dir_filename, elapsed)
+    logging.info('FINISHED! to ==========> %s', layer_dir)
     return True
 
 
 def decompress_tarball_gunzip(cp_layer_tarball_name, layer_dir_filename):
-    start = time.time()
+    # start = time.time()
     cmd = 'gunzip -c %s > %s' % (cp_layer_tarball_name, layer_dir_filename)
-    logging.debug('The shell command: %s', cmd)
+    logging.info('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -143,15 +143,15 @@ def decompress_tarball_gunzip(cp_layer_tarball_name, layer_dir_filename):
         return False
 
     elapsed = time.time() - start
-    logging.info('process layer_id:%s : gunzip decompress tarball, consumed time ==> %f s', cp_layer_tarball_name, elapsed)
-    logging.debug('FINISHED! to ==========> %s', layer_dir_filename)
+    # logging.info('process layer_id:%s : gunzip decompress tarball, consumed time ==> %f s', cp_layer_tarball_name, elapsed)
+    logging.info('FINISHED! to ==========> %s', layer_dir_filename)
     return True
 
 
 def mk_dir(layer_dir):
     #command = 'ls -l {}'.format(quote(filename))
     cmd1 = 'mkdir -pv {}'.format(quote(layer_dir))
-    logging.debug('The shell command: %s', cmd1)
+    logging.info('The shell command: %s', cmd1)
     try:
         subprocess.check_output(cmd1, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -163,7 +163,7 @@ def mk_dir(layer_dir):
 
 def cp_file(layer_file, cp_layer_tarball_name):
     cmd = 'cp %s  %s' % (layer_file, cp_layer_tarball_name)
-    logging.debug('The shell command: %s', cmd)
+    logging.info('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:

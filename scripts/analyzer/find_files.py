@@ -79,7 +79,7 @@ def find_files():
         pnum_less_50m = pnum_less_50m - 5
         if pnum_less_50m <= 0:
             pnum_less_50m = 5
-	logging.info('processing error list....')
+	logging.debug('processing error list < 50m....')
         err_lst_less_50m = process_layerfile_list(err_lst_less_50m, 'layerfile_lst_less_50m', layer_dict, extracting_dir_size, pnum_less_50m)
     #return
     
@@ -89,10 +89,11 @@ def find_files():
         pnum_less_1g = pnum_less_1g - 5
         if pnum_less_1g <= 0:
             pnum_less_1g = 4
-	logging.info('processing error list....')
+	logging.debug('processing error list < 1g....')
         err_lst_less_1g = process_layerfile_list(err_lst_less_1g, 'layerfile_lst_less_1g', layer_dict, extracting_dir_size, pnum_less_1g)
     #return
     err_lst_less_2g = process_layerfile_list(layerfile_lst_less_2g, 'layerfile_lst_less_2g', layer_dict, extracting_dir_size, pnum_less_2g)
+    logging.debug('processing error list < 2g....')
     while err_lst_less_2g:
         pnum_less_2g = pnum_less_2g - 5
         if pnum_less_2g <= 0:
@@ -100,13 +101,14 @@ def find_files():
         err_lst_less_2g = process_layerfile_list(err_lst_less_2g, 'layerfile_lst_less_2g', layer_dict, extracting_dir_size, pnum_less_2g)
 
     err_lst_bigger_2g = process_layerfile_list(layerfile_lst_bigger_2g, 'layerfile_lst_bigger_2g', layer_dict, extracting_dir_size, pnum_bigger_2g)
+    logging.debug('processing error list > 5g....')
     while err_lst_bigger_2g:
         pnum_bigger_2g = pnum_bigger_2g - 1
         if pnum_bigger_2g <= 0:
             pnum_bigger_2g = 2
         err_lst_bigger_2g = process_layerfile_list(err_lst_bigger_2g, 'layerfile_lst_bigger_2g', layer_dict, extracting_dir_size, pnum_bigger_2g)
 
-    logging.info('done! all the layer job processes are finished')
+    logging.debug('done! all the layer job processes are finished')
 
 
 def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_size, num):
@@ -116,36 +118,30 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
 
     func = partial(load_dirs, layer_dict, extracting_dir_size)
 
-    logging.info("layerfile_lst size: %d ....", len(layerfile_lst))
-    #cnt = 0
-    #for i in layer_file_dict.items():
-    #   if not i:
-    #       continue
-    #   if func(i):
-    #       cnt = cnt + 1
-    #       if cnt == 4:
-    #            break
-    #print layer_dict
+    logging.debug("layerfile_lst size: %d ....", len(layerfile_lst))
 
     sublists = split_list(layerfile_lst, num)
 
-    logging.info( "create pool to decompress and unpack layer tarfiles ....")
+    logging.debug( "create pool to decompress and unpack layer tarfiles ....")
     P_unpack = multiprocessing.Pool(num)
-    logging.info( "create pool to mv layer files ....")
+    logging.debug( "create pool to mv layer files ....")
     P_mv = multiprocessing.Pool(60)
 
     for sublist in sublists:
 	ret_lst = []
         
-        logging.info("map pool to decompress and unpack layer tarfiles ....")
+        logging.debug("map pool to decompress and unpack layer tarfiles ....")
+        start = time.time()
         ret_lst = P_unpack.map(func, sublist)
 	#for i in sublist:
 	#    cnt = cnt + 1
 	#    if cnt > 4:
 	#	break
 	#    ret_lst.append(func(i))
+        elapsed = time.time() - start
+        logging.debug('decompress and unpacking: throughput ==> %f /s', len(sublist) / elapsed)
 	
-        logging.info("finished decompressing and unpacking layer tarfiles!")
+        # logging.debug("finished decompressing and unpacking layer tarfiles!")
 
         lf_lst = []
 
@@ -158,19 +154,22 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
                 """take care of bad list: ONLY FOR NOSPACELEFT"""
         #print lf_lst
 
-        logging.info("map pool to mv layer files ....")
+        logging.debug("map pool to mv layer files ....")
+        start = time.time()
         P_mv.map(load_files, lf_lst)
 	#for i in lf_lst:
 	#    load_files(i)
-        logging.info("finished mv-ing layer tarfiles!")
+        elapsed = time.time() - start
+        logging.debug('mv files: throughput ==> %f /s', len(lf_lst) / elapsed)
+     #    logging.debug("finished mv-ing layer tarfiles!")
 
         clear_extracting_dir(dest_dir[0]['extracting_dir'])
 
         extracting_dir_size.value = 50 * 1000 * 1000 * 1000
-    logging.info("start close pool")
+    logging.debug("start close pool")
     P_unpack.close()
     P_mv.close()
-    logging.info("start joinning workers....")
+    logging.debug("start joinning workers....")
     P_unpack.join()
     P_mv.join()
 
@@ -200,7 +199,7 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
         #print layer_absfilename
     except:
         #pass
-        print("Cannot find layer_id in this machine's layer directories ################ ", layer_id)
+        logging.debug("Cannot find layer_id in this machine's layer directories ################ ", layer_id)
         ret['errors'] = 'NoneLayerFound'
         return ret
     #print layer_absfilename
@@ -233,14 +232,14 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
                     abs_zip_file_name: layer_filename-uncompressed-archival.tar
     """
 
-    logging.debug('cp tarball to ==========> %s', layer_dir)
+    logging.info('cp tarball to ==========> %s', layer_dir)
 
     sum_size = 0
 
     layer_compressed_size = os.lstat(layer_file).st_size
 
     if (extracting_dir_size.value - layer_compressed_size) <= 0:
-        print("NO space left: %d", extracting_dir_size.value)
+        logging.debug("NO space left: %d", extracting_dir_size.value)
         ret['errors'] = 'NoSpaceLeft'
         return ret
 	# # Wait for 5 seconds
@@ -265,10 +264,10 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
         return ret
 
     if filetype == 'gzip':
-        logging.debug('STAT Extracting gzip file ==========> %s' % layer_file)
+        logging.info('STAT Extracting gzip file ==========> %s' % layer_file)
         abs_zip_file_name = os.path.join(extracting_dir, layer_filename + '-uncompressed-archival.tar')
         if extracting_dir_size.value - layer_compressed_size * 4 <= 0: #### make a guess
-            print("NO space left: %d", extracting_dir_size.value)
+            logging.debug("NO space left: %d", extracting_dir_size.value)
             ret['errors'] = 'NoSpaceLeft'
             return ret
 	    # time.sleep(50)
@@ -292,7 +291,7 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
 
         if os.path.isfile(abs_zip_file_name):
             # uncompressed_archival_size = os.lstat(abs_zip_file_name).st_size
-            logging.debug("uncompressed_archival_size %d B, name: %s", size, layer_file)
+            logging.info("uncompressed_archival_size %d B, name: %s", size, layer_file)
         else:
             logging.debug("uncompressed_archival_wrong!!! name: %s", layer_file)
             clear_dir(layer_dir)
@@ -301,7 +300,7 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
             return ret
 
         if extracting_dir_size.value - size <= 0: #### archival == unpacking
-            print("NO space left: %d", extracting_dir_size.value)
+            logging.debug("NO space left: %d", extracting_dir_size.value)
             ret['errors'] = 'NoSpaceLeft'
             return ret
 	    # time.sleep(50)
@@ -336,7 +335,7 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
         #logging.debug('SPACE LEFT ==========> %d: sum_size:%d', extracting_dir_size.value / 1024 / 1024 / 1024, sum_size / 1024 / 1024 / 1024)
 
     elif filetype == 'tar':
-        logging.debug('STAT Extracting tar file ==========> %s' % layer_file)
+        logging.info('STAT Extracting tar file ==========> %s' % layer_file)
 
         if extracting_dir_size.value - layer_compressed_size <= 0: #### archival == unpacking
             print("NO space left: %d", extracting_dir_size.value)
@@ -433,7 +432,7 @@ def load_files(layerfile_tup):
 
 def construct_layer_info():
     layer_dict = {}
-    logging.info('construct layer info: a mapping between layer_id and layer_absfname....')
+    logging.debug('construct layer info: a mapping between layer_id and layer_absfname....')
 
     for dir in layer_dirs:
         for path, subdirs, files in os.walk(dir):
@@ -450,7 +449,7 @@ def construct_layer_info():
 
 def find_layer_filename():
 
-    logging.info('construct layer filename dict: a dict contains layer_id, layer_size, and layer_flst....')
+    logging.debug('construct layer filename dict: a dict contains layer_id, layer_size, and layer_flst....')
 
     layer_file_ldict = {}
     with open(find_file_lst_absfilename) as f:
