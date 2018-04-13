@@ -129,8 +129,12 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
 
     for sublist in sublists:
 	ret_lst = []
-        
+        sum_size = 0
         logging.debug("map pool to decompress and unpack layer tarfiles ....")
+
+        for layerfile in sublist:
+            sum_size = layerfile.size + sum_size
+
         start = time.time()
         ret_lst = P_unpack.map(func, sublist)
 	#for i in sublist:
@@ -140,11 +144,12 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
 	#    ret_lst.append(func(i))
         elapsed = time.time() - start
         logging.info('decompress and unpacking: throughput ==> %f /s', len(sublist) / elapsed)
+        logging.info('decompress and unpacking: throughput ==> %f MB /s', sum_size / 1024 / 1024 / elapsed)
 	
         # logging.debug("finished decompressing and unpacking layer tarfiles!")
 
         lf_lst = []
-
+	sum_size = 0
         for ret in ret_lst:
             if not ret['errors'] and ret['finished_or_not']:
                 lf_lst.extend(ret['lf_lst'])
@@ -154,6 +159,11 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
                 """take care of bad list: ONLY FOR NOSPACELEFT"""
         #print lf_lst
 
+	for tup in lf_lst:
+	    src_absfname = tup[0]
+	    size = os.lstat(src_absfname).st_size
+	    sum_size = sum_size + size
+
         logging.debug("map pool to mv layer files ....")
         start = time.time()
         P_mv.map(load_files, lf_lst)
@@ -161,6 +171,7 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
 	#    load_files(i)
         elapsed = time.time() - start
         logging.info('mv files: throughput ==> %f /s', len(lf_lst) / elapsed)
+        logging.info('mv files: throughput ==> %f MB /s', sum_size / 1024 / 1024 / elapsed)
      #    logging.debug("finished mv-ing layer tarfiles!")
 
         clear_extracting_dir(dest_dir[0]['extracting_dir'])
@@ -340,6 +351,7 @@ def load_dirs(layer_dict, extracting_dir_size, layerfile):
         if extracting_dir_size.value - layer_compressed_size <= 0: #### archival == unpacking
             logging.warn("NO space left: %d", extracting_dir_size.value)
             ret['errors'] = 'NoSpaceLeft'
+            return ret
 	    # time.sleep(50)
 
         extracting_dir_size.value = extracting_dir_size.value - layer_compressed_size
