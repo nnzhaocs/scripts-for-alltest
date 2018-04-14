@@ -46,7 +46,7 @@ def compress_tarball_gzip(abs_tar_file_name, abs_gzip_filename): #.gz
 
 
 def mv_files(src_absfname, des_dir):
-    cmd = 'mv %s  %s' % (src_absfname, des_dir)
+    cmd = 'mv {}'.format(quote(src_absfname)) + ' ' + '{}'.format(quote(des_dir))
     logging.debug('The shell command: %s', cmd)
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)

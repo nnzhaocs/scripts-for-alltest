@@ -144,7 +144,7 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
 	#    ret_lst.append(func(i))
         elapsed = time.time() - start
         logging.info('decompress and unpacking: throughput ==> %f /s', len(sublist) / elapsed)
-        logging.info('decompress and unpacking: throughput ==> %f MB /s', sum_size / 1024 / 1024 / elapsed)
+        logging.info('decompress and unpacking: throughput ==> %f KB /s', sum_size /1024/ elapsed)
 	
         # logging.debug("finished decompressing and unpacking layer tarfiles!")
 
@@ -171,7 +171,7 @@ def process_layerfile_list(layerfile_lst, lst_type, layer_dict, extracting_dir_s
 	#    load_files(i)
         elapsed = time.time() - start
         logging.info('mv files: throughput ==> %f /s', len(lf_lst) / elapsed)
-        logging.info('mv files: throughput ==> %f MB /s', sum_size / 1024 / 1024 / elapsed)
+        logging.info('mv files: throughput ==> %f KB /s', sum_size /1024/ elapsed)
      #    logging.debug("finished mv-ing layer tarfiles!")
 
         clear_extracting_dir(dest_dir[0]['extracting_dir'])
