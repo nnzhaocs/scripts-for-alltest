@@ -57,6 +57,12 @@ def parseArg():
         action="store_true",  # dest="loglevel", const=logging.INFO,
     )
 
+    parser.add_argument(
+        '-X', '--testxorvsmd5',
+        help="test xor vs md5",
+        action="store_true",  # dest="loglevel", const=logging.INFO,
+    )
+
     return parser.parse_args()
 
 
@@ -85,6 +91,9 @@ def main():
 
     if args.testdecompression:
         run_testdecompression()
+
+    if args.testxorvsmd5:
+        run_xorvsmd5()
 
 
 if __name__ == '__main__':

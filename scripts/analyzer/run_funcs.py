@@ -5,6 +5,7 @@ from jobdivider import *
 from list_dir_files import *
 from find_files import *
 from test_decompression_methods import *
+from xor_vs_md5 import *
 
 def run_createimagedb():
     start = time.time()
@@ -68,4 +69,14 @@ def run_testdecompression():
 
     elapsed = time.time() - start
     logging.info('test compression ==> %f', (elapsed / 3600))
+
+
+def run_xorvsmd5():
+    start = time.time()
+
+    xor_vs_md5()
+
+    elapsed = time.time() - start
+    logging.info('test compression ==> %f', (elapsed / 3600))
+
 
