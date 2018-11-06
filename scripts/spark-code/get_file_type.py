@@ -1,4 +1,7 @@
 
+#from analysis_library import *
+
+import re
 
 def filter_whole_types(tstrs):
     # ELF and excutable,

@@ -130,7 +130,7 @@ def extract_dir_file_digests(layer_id, dirs):
 
 def extract_file_digests(absfilename_list, spark):
 
-    extractfiles = udf(extract_dir_file_digests, ArrayType(StructType([
+    extractfiles = F.udf(extract_dir_file_digests, ArrayType(StructType([
                     # StructField('layer_filename', StringType(), True),
                     StructField('layer_id', StringType(), True),
                     StructField('filename', StringType(), True),
@@ -154,7 +154,7 @@ def extract_file_digests(absfilename_list, spark):
         new_df = new_df.withColumn('filename', F.col('fs.filename'))
         new_df = new_df.withColumn('digest', F.col('fs.digest'))
 
-        new_df = new_df.select('layer_filename', 'layer_id', 'filename', 'digest')
+        new_df = new_df.select('layer_id', 'filename', 'digest')
         new_df.coalesce(400).write.save(output_absfilename3, mode='append')
         break
         print("===========================>finished one sublist!!!!!!!!!")

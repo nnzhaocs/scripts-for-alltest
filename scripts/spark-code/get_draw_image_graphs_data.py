@@ -26,7 +26,13 @@ def main():
     #save_file_size(spark, sc)
     #save_file_repeat_cnt(spark, sc)
     # calculate_capacity(spark, sc)
-    save_image_info(spark, sc)
+    #save_image_info(spark, sc)
+    find_layer(spark, sc)
+
+
+def find_layer(spark, sc):
+    image_layer_mapping = spark.read.parquet(image_layer_mapping_shared_pull_cnt).dropDuplicates(['layer_id'])
+    image_layer_mapping.filter("shared_image_cnt == 184171").show(20, False)
 
 
 def save_image_info(spark, sc):
@@ -43,7 +49,7 @@ def save_image_info(spark, sc):
     """
     image_layer_mapping = spark.read.parquet(image_layer_mapping_shared_pull_cnt).dropDuplicates(['layer_id'])
     #image_layer_mapping.select('layer_pull_cnt').write.csv(draw_layer_pull_cnt)
-    
+     
     image_layer_mapping.select('shared_image_cnt').write.csv(draw_layer_shared_cnt)
     """
     fd = image_layer_mapping.groupby('image_realname').agg(F.sum('shared_or_not').alias('shared_cnt'),

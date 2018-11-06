@@ -68,12 +68,12 @@ def jsonToDF(json):
 tmpfilename = os.path.join(LOCAL_DIR, 'tmp_files.txt')
 jsonfilename = os.path.join(LOCAL_DIR, 'all_files.txt')
 
-absfilenames = spark.read.text(jsonfilename).collect()
+absfilenames = spark.read.text(tmpfilename).collect()
 print(absfilenames)
-dataframes = map(lambda r: spark.read.json(r[0]).select("layer_id"), absfilenames)
-metricsData = dataframes.take(5)#reduce(lambda df1, df2: df1.unionAll(df2), dataframes).take(5)
+dataframes = map(lambda r: spark.read.json(r[0]), absfilenames)
+metricsData = reduce(lambda df1, df2: df1.unionAll(df2), dataframes)
 
-metricsData.show()
+#metricsData.show()
 
 #dir_filelist = sc.wholeTextFiles(dir)#.collect()#.values()
 #print(dir_filelist)

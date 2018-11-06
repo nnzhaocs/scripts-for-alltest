@@ -7,7 +7,7 @@ unique_file_layer_mapping = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'unique_f
 layer_dup_ratio = os.path.join(REDUNDANT_LAYER_ANALYSIS_DIR, 'layer_dup_ratio.parquet')
 test_layers = os.path.join('/local/layer.json.lst_total')
 res_list = '/local/operation_time.csv'
-
+total_res_time = '/redundant_layer_analysis/total.layer_ids.ops.times_nonempty-1'
 res_5_list = '/local/opertation_time_5.csv'
 
 list_elem_num = 60
@@ -16,9 +16,11 @@ list_elem_num = 60
 def main():
 
     sc, spark = init_spark_cluster()
+    #get_res_layer_id(spark, sc)
+    get_layer_res_size(spark, sc)
     #save_unique_file_layer_mapping(spark, sc)
     #save_layer_file_cnt(spark, sc)
-    find_file_digest_in_layer(spark, sc)
+    #find_file_digest_in_layer(spark, sc)
     #save_layer_redundant_info(spark, sc)
     #save_indexing_files_layer(spark, sc)
     #save_layer_uniq_shared_size(spark, sc)
@@ -30,6 +32,29 @@ def main():
     #parse_res_time(spark, sc)
     #save_specifi_layer_dup_ratio(spark, sc)
 
+def get_res_layer_id(spark, sc):
+    df = spark.read.csv(total_res_time).select('_c0')
+    func0 = F.udf(lambda s: 'sha256:'+re.split(';', s)[0])
+    func1 = F.udf(lambda s: re.split(';', s)[1])
+    func2 = F.udf(lambda s: re.split(';', s)[2])
+    df = df.withColumn('layer_id', func0('_c0'))
+    df = df.withColumn('ops', func1('_c0'))
+    df = df.withColumn('latency', func2('_c0'))
+
+    df.write.parquet('/redundant_layer_analysis/res_layer_ids.parquet')
+
+def get_layer_res_size(spark, sc):
+    df = spark.read.parquet(layer_basic_info1, layer_basic_info2, layer_basic_info3).select(
+        'layer_id', 'archival_size', 'compressed_size')
+    #df.show()
+    res_df = spark.read.parquet('/redundant_layer_analysis/res_layer_ids.parquet').select('layer_id', 'ops', 'latency')
+    new_df = res_df.join(df, ['layer_id'], 'inner')
+    new_df.filter("ops = 'decompress'").write.csv('/redundant_layer_analysis/res_layer_id_decompress.csv')
+    new_df.filter("ops = 'extract'").write.csv('/redundant_layer_analysis/res_layer_id_extract.csv')
+    new_df.filter("ops = 'compress'").write.csv('/redundant_layer_analysis/res_layer_id_compress.csv')
+    new_df.filter("ops = 'digest'").write.csv('/redundant_layer_analysis/res_layer_id_digest.csv')
+    new_df.filter("ops = 'archival'").write.csv('/redundant_layer_analysis/res_layer_id_archival.csv')
+    
 
 def parse_res_time(spark, sc):
     """
