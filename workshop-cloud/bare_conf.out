@@ -1,0 +1,13 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Background}{}% 2
+\BOOKMARK [1][-]{section.3}{Deduplication analysis}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Methodology}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Data reduction analysis}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{Deduplication by file types}{section.3}% 6
+\BOOKMARK [1][-]{section.4}{Registry with deduplication support}{}% 7
+\BOOKMARK [2][-]{subsection.4.1}{Design}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.2}{Performance evaluation}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.3}{Enhancements}{section.4}% 10
+\BOOKMARK [1][-]{section.5}{Related work}{}% 11
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 12
+\BOOKMARK [1][-]{section*.14}{References}{}% 13
