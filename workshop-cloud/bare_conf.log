@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  1 MAR 2019 23:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  1 MAR 2019 23:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -407,35 +407,35 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 File: graphs/shared-cnt-cdf.pdf Graphic file (type pdf)
 <use graphs/shared-cnt-cdf.pdf>
 Package pdftex.def Info: graphs/shared-cnt-cdf.pdf  used on input line 5.
-(pdftex.def)             Requested size: 121.41637pt x 74.1851pt.
+(pdftex.def)             Requested size: 172.00073pt x 105.09297pt.
 <graphs/layer-size-cdf.pdf, id=152, 311.92635pt x 204.05836pt>
 File: graphs/layer-size-cdf.pdf Graphic file (type pdf)
 <use graphs/layer-size-cdf.pdf>
 Package pdftex.def Info: graphs/layer-size-cdf.pdf  used on input line 11.
-(pdftex.def)             Requested size: 111.29642pt x 72.80707pt.
+(pdftex.def)             Requested size: 161.8885pt x 105.90544pt.
 )
 <graphs/file-cnt-cdf.pdf, id=154, 316.95554pt x 206.06787pt>
 File: graphs/file-cnt-cdf.pdf Graphic file (type pdf)
 <use graphs/file-cnt-cdf.pdf>
 Package pdftex.def Info: graphs/file-cnt-cdf.pdf  used on input line 94.
-(pdftex.def)             Requested size: 116.35252pt x 75.64648pt.
+(pdftex.def)             Requested size: 166.94463pt x 108.53625pt.
 <graphs/image-size-cdf.pdf, id=155, 338.90013pt x 207.5735pt>
 File: graphs/image-size-cdf.pdf Graphic file (type pdf)
 <use graphs/image-size-cdf.pdf>
 Package pdftex.def Info: graphs/image-size-cdf.pdf  used on input line 100.
-(pdftex.def)             Requested size: 116.35252pt x 71.26453pt.
+(pdftex.def)             Requested size: 166.94463pt x 102.25351pt.
  (./fig-file-repeat-cnt.tex
 <graphs/File_repeat_count-eps.pdf, id=158, 335.74274pt x 191.20212pt>
 File: graphs/File_repeat_count-eps.pdf Graphic file (type pdf)
 <use graphs/File_repeat_count-eps.pdf>
 Package pdftex.def Info: graphs/File_repeat_count-eps.pdf  used on input line 1
 6.
-(pdftex.def)             Requested size: 126.47249pt x 72.02446pt.
+(pdftex.def)             Requested size: 177.06458pt x 100.83774pt.
 <graphs/dedup-ratio-grow.pdf, id=159, 274.29378pt x 196.53024pt>
 File: graphs/dedup-ratio-grow.pdf Graphic file (type pdf)
 <use graphs/dedup-ratio-grow.pdf>
 Package pdftex.def Info: graphs/dedup-ratio-grow.pdf  used on input line 25.
-(pdftex.def)             Requested size: 101.17645pt x 72.49313pt.
+(pdftex.def)             Requested size: 177.06458pt x 126.87048pt.
 )
 Underfull \hbox (badness 2020) in paragraph at lines 163--169
 []\OT1/ptm/m/n/10 We also an-a-lyze 5 fre-quently re-peated files which
@@ -458,22 +458,22 @@ Underfull \hbox (badness 10000) in paragraph at lines 163--169
  []
 
 [3 <./graphs/shared-cnt-cdf.pdf> <./graphs/layer-size-cdf.pdf> <./graphs/file-c
-nt-cdf.pdf> <./graphs/image-size-cdf.pdf> <./graphs/File_repeat_count-eps.pdf> 
-<./graphs/dedup-ratio-grow.pdf>]
-<graphs/layer-dup-ratio-cdf.pdf, id=227, 285.72876pt x 202.50055pt>
+nt-cdf.pdf> <./graphs/image-size-cdf.pdf>]
+<graphs/layer-dup-ratio-cdf.pdf, id=187, 285.72876pt x 202.50055pt>
 File: graphs/layer-dup-ratio-cdf.pdf Graphic file (type pdf)
 <use graphs/layer-dup-ratio-cdf.pdf>
 Package pdftex.def Info: graphs/layer-dup-ratio-cdf.pdf  used on input line 210
 .
-(pdftex.def)             Requested size: 111.29642pt x 78.876pt.
-<graphs/image-dup-ratio-pdf.pdf, id=228, 288.74002pt x 204.75899pt>
+(pdftex.def)             Requested size: 161.8885pt x 114.73436pt.
+<graphs/image-dup-ratio-pdf.pdf, id=188, 288.74002pt x 204.75899pt>
 File: graphs/image-dup-ratio-pdf.pdf Graphic file (type pdf)
 <use graphs/image-dup-ratio-pdf.pdf>
 Package pdftex.def Info: graphs/image-dup-ratio-pdf.pdf  used on input line 213
 .
-(pdftex.def)             Requested size: 111.29642pt x 78.92462pt.
-) (./dedup_types.tex (./fig-dedup-overall.tex
-<graphs/dedup-overall.pdf, id=231, 520.99342pt x 191.26056pt>
+(pdftex.def)             Requested size: 161.8885pt x 114.80171pt.
+) (./dedup_types.tex
+(./fig-dedup-overall.tex
+<graphs/dedup-overall.pdf, id=191, 520.99342pt x 191.26056pt>
 File: graphs/dedup-overall.pdf Graphic file (type pdf)
 <use graphs/dedup-overall.pdf>
 Package pdftex.def Info: graphs/dedup-overall.pdf  used on input line 3.
@@ -483,7 +483,9 @@ Overfull \hbox (9.03374pt too wide) in paragraph at lines 3--13
  [][] 
  []
 
-)
+) [4 <./graphs/File_repeat_count-eps.pdf> <./graphs/dedup-ratio-grow.pdf> <./gr
+aphs/layer-dup-ratio-cdf.pdf> <./graphs/image-dup-ratio-pdf.pdf> <./graphs/dedu
+p-overall.pdf>]
 Underfull \hbox (badness 1377) in paragraph at lines 51--98
 []\OT1/ptm/m/n/10 We found that re-dun-dant C/C++ source code takes
  []
@@ -509,10 +511,9 @@ Underfull \hbox (badness 1888) in paragraph at lines 99--137
 \OT1/ptm/m/n/10 in-stalled pack-ages for the dis-tri-bu-tions. The last file,
  []
 
-)) (./design-and-eval.tex [4 <./graphs/layer-dup-ratio-cdf.pdf> <./graphs/image
--dup-ratio-pdf.pdf> <./graphs/dedup-overall.pdf>] (./dedup_design.tex)
+)) (./design-and-eval.tex (./dedup_design.tex)
 (./dedup_simulation_performance.tex (./fig_dedup_res.tex
-<graphs/res-time.pdf, id=263, 469.20695pt x 198.78868pt>
+<graphs/res-time.pdf, id=259, 469.20695pt x 198.78868pt>
 File: graphs/res-time.pdf Graphic file (type pdf)
 <use graphs/res-time.pdf>
 Package pdftex.def Info: graphs/res-time.pdf  used on input line 3.
@@ -522,14 +523,14 @@ Overfull \hbox (9.03374pt too wide) in paragraph at lines 3--4
  [][] 
  []
 
-) [5 <./graphs/res-time.pdf>]) (./dedup_suggestions.tex
-<graphs/pull-cnt.pdf, id=296, 520.32895pt x 215.34955pt>
+) [5]) (./dedup_suggestions.tex
+<graphs/pull-cnt.pdf, id=287, 520.32895pt x 215.34955pt>
 File: graphs/pull-cnt.pdf Graphic file (type pdf)
 <use graphs/pull-cnt.pdf>
 Package pdftex.def Info: graphs/pull-cnt.pdf  used on input line 5.
 (pdftex.def)             Requested size: 202.3529pt x 83.74939pt.
-)) (./relatedwork.tex)
-(./conclusion.tex [6 <./graphs/pull-cnt.pdf>]) (./bare_conf.bbl
+ [6 <./graphs/res-time.pdf> <./graphs/pull-cnt.pdf>])) (./relatedwork.tex) (./c
+onclusion.tex) (./bare_conf.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 50--51
 []\OT1/ptm/m/n/9 ``hdfs,'' [][]$https : / / hadoop . apache . org / docs / r1 .
  2 . 1 / hdfs[]design .
@@ -547,12 +548,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 78--80
 nocm /
  []
 
-
+[7]
 Underfull \hbox (badness 1735) in paragraph at lines 139--142
 []\OT1/ptm/m/n/9 M. Lil-lib-ridge, K. Es-hghi, D. Bhag-wat, V. De-o-la-likar,
  []
 
-[7])
+)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -565,9 +566,7 @@ Before submitting the final camera ready copy, remember to:
  process uses the appropriate paper size.
 
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 196.
-[8
-
-]
+[8]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 196.
  (./bare_conf.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 196.
@@ -579,11 +578,11 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 196.
 Here is how much of TeX's memory you used:
  6941 strings out of 492649
  105472 string characters out of 6129622
- 204680 words of memory out of 5000000
+ 203680 words of memory out of 5000000
  10579 multiletter control sequences out of 15000+600000
  45459 words of font info for 96 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 28i,9n,35p,494b,456s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 28i,9n,35p,494b,454s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
 xlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
@@ -592,7 +591,7 @@ live/2018/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/201
 st/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/
 type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/urw/
 times/utmri8a.pfb>
-Output written on bare_conf.pdf (8 pages, 338581 bytes).
+Output written on bare_conf.pdf (8 pages, 338649 bytes).
 PDF statistics:
  447 PDF objects out of 1000 (max. 8388607)
  371 compressed objects within 4 object streams
