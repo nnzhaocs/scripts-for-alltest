@@ -1,0 +1,17 @@
+\begin{abstract}
+
+We did a deduplication analysis on around 50TB compressed image dataset and found that we can save about half of the storage space by doing file-level deduplication after decompressing all the images. However, deduplication affacts Docker registry’s performance especially for pulling performance because restoring layers require fetching files and compressing them into layers. To reduce deduplication restoring overhead(i.e., decompress/compression and additonal networking and I/O), we propose a novel architecture that intergrates compressed file-friendly deduplication and container user-friendly caching. 
+
+\end{abstract}
+
+%we predict  
+%Overall,  
+%to model the deduplication for estimating the deduplication effect on performance and storage savings, especially in terms of deduplication rate and deduplication overhead. We propose to use Markov decision process to find optimal solution that can maximize the storage saving and minimizing the cost in terms of performance degradation. Our solution will largely reduce the amount of redundant data in container storage systems and outperform the state-of-art deduplication techniques without any performance overhead.
+
+%and evaluate
+%the potential of file-level deduplication in the registry.
+%
+%Our analysis reveals that 
+%
+%We then present the design of \sysname---a Docker registry with file deduplication
+%support---and conduct a simulation-based analysis of its performance implications.
