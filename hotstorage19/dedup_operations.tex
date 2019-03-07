@@ -1,0 +1,139 @@
+\subsection{Operations}
+
+\paragraph{Architecture}
+
+\sysname~ is composed of five main components(see Figure~\ref{onshareddir}):
+a modified Docker client,
+layer buffer,
+file cache,
+registries,
+backend storage system that implements deduplication.
+The modified Docker client sends put or pull layer/manifest requests.
+After it sends the pull layer requests.
+it receives multiple partial layers and decompresses them together as a whole uncompressed layer, then verifies the
+integrity of the uncompress layer by calculating the digest of the uncompress layer.
+Layer buffer is used to buffer all the put layer requests and 
+cache prefetched layers for later use.
+Layer buffer can be implemented on distributed in-memory store,~\eg Plusma.
+File cache is a flash cache that implements file-level deduplication which stores unique files that belong to a certain amount of layers.
+File cache is implemented on distributed log structured store, \eg CORFU.
+The unique files after removing duplicate files are flash-friendly workload because
+the files can be appended as a log and there is no modification to these files, meaning that there is
+no small write.
+Backend storage system with deduplication feature stores the layers and does deduplication.
+Many modern storage system withs deduplication feature can be used as our backend storage system.
+However, the only requirement is that the storage systems can recognize compressed layer file and decompress them before running deduplication.
+And the storage systems also can restore partial compressed layer file in parallel can send them back to clients. 
+Note that there is no consistency issue between either layer buffer, file cache or backend storage because layers won't be changed in the future.
+
+At a high-level, registries act like a distributed cache which sits close to clients to provide fast performance. 
+Layer buffer caches hot layers for active users.
+To improve the capacity limitation of main memory cache, we 
+utilize flash fast random read access and store unique files on a distributed flash-based store.  
+
+\paragraph{Workflow}
+%
+The registry API is almost the same as original registry.
+The user simply pushes and pulles image to registry. 
+
+\textbf{Push.}
+After receiving a layer from the client, 
+\sysname~first buffers the layer in layer buffer. 
+Meantime, \sysname will also submitted this layer to the backend storage system.
+Our layer buffer and file cache use write through policies 
+and since there is no modification to the layer and files, so there is no data consistency issue between
+cache and backend storage system.
+Storing a layer in layer buffer might trigger cold layer eviction.
+The cold layer will first be evicted to file cache and deduplicated.
+A deduplication process performs the following steps for every victim layer that is evicted from layer buffer.
+\begin{compactenumerate}
+	\item decompress and unpack the layer's tarball into individual files;
+	\item compute a \emph{fingerprint} for every file in the layer;
+	\item check all file fingerprints against the \emph{file index} to
+	identify if identical files are already stored in the file cache;
+	\item store non-deduplicated files in \sysname's file cache and update the 
+	\emph{file index} with file \emph{fingerprint} and file location along with its host address;
+	\item create and store a \emph{layer recipe} that includes the file path,
+	metadata, fingerprint of every file in the layer;
+	\item remove the layer's tarball from the layer buffer.
+\end{compactenumerate}
+Layer recipes are identified by layer digests and files are identified by their fingerprints.
+%
+These identifiers are used to address corresponding objects in the
+underlying flash storage.
+Usually, the underlying distributed flash-based stores such as CORFU transparently spread data among
+different servers and upper level applications are unaware of data host address. 
+We modified CORFU's read and write interfaces so that the file locations and 
+its host addresses are exposed to our ~\sysname.
+ The metadata generated during the above deduplication process
+ are stored on redis~\ref{xxx}.
+ Similar to layer buffer, storing unique files in file cache might also trigger cold file eviction.
+ Since the backend storage system already stores the backup of the layers, we can simply remove
+ the victim files from file cache.
+ The cache replacement is governed by the user-based cache algorithms
+presents in Section~\ref{xxx}. 
+%\sysname\ handles push requests asynchronously.
+%\sysname 
+%does not immediately unpack the layer.
+%Instead, it reliably stores the layer's compressed tarball in a persistent
+%\emph{staging area}.
+%A separate \emph{off-line} deduplication process iterates over the layers in
+%the staging area and performs the following steps for every layer:
+%%
+%\begin{compactenumerate}
+%	\item decompress and unpack the layer's tarball into individual files;
+%	\item compute a \emph{fingerprint} for every file in the layer;
+%	\item check all file fingerprints against the \emph{file index} to
+%	identify if identical files are already stored in \sysname;
+%	\item store non-deduplicated files in \sysname's storage;
+%	\item create and store a \emph{layer recipe} that includes the path,
+%	metadata, and fingerprint of every file in the layer;
+%	\item remove the layer's tarball from the staging area.
+%\end{compactenumerate}
+
+%The advantage of off-line deduplication is that it keeps push
+%latencies perceived by the Docker clients low.
+%
+%The background deduplication process can be scheduled during the periods of low
+%load on the registry.
+%
+%Layer recipes are identified by layer digests (see Section~\ref{sec:background})
+%and files are identified by their fingerprints.
+%%
+%These identifiers are used to address corresponding objects in the
+%underlying storage.
+%
+%For example, if a file system is used as a backend storage, \sysname\ creates a
+%single file for every layer recipe (named by the digest) and a single file for
+%every in-layer file (named by the fingerprint).
+
+\paragraph{Pull}
+%
+A pull layer request that finds its desired layer in layer buffer 
+is a hit in layer buffer. 
+Otherwise, if it finds its containing files in file cache, that is
+a hit in file cache.
+%When a layer is pulled by the client, if \sysname\ 
+Then, \sysname~has to \emph{reconstruct} the layer based
+on the layer recipe.
+%
+%A pull request cannot be postponed to an off-line process as the
+%pulling client is actively waiting for the layer.
+%
+\sysname\ performs the following steps \emph{inline} for restoring a layer from file cache:
+%
+\begin{compactenumerate}
+	%\item check if the requested layer is still in the staging area and if so,
+	%service it directly from there;
+	\item find the layer recipe by the layer digest
+	provided by the client;
+	\item get a server list that contains subsets of this layer's files 
+	by iterating each file \emph{fingerprint} in the layer recipe and getting its corresponding host address
+	through \emph{file indexing}.
+	\item forward the pull layer request and layer recipe to each server in the server list.
+	\item initiate a restoring process on each server in the server list. 
+	\item the restoring process first prepares a directory structure for the layer based on the layer recipe;
+	\item the restoring process fetches the locally available files for the layer and put into the directory tree, 
+	\item the restoring process packs and compresses the layer's directory tree into a temporary tarball;
+	\item the restoring process sends the layer tarball back to the client and then discard the layer tarball.
+\end{compactenumerate}
