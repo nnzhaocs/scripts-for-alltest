@@ -5,18 +5,27 @@
 %support of file-level deduplication to Docker registry can significantly reduce
 %its storage capacity requirements, especially in large-scale deployments.
 %
-In this section, we first describe a high-level design of \emph{\sysname}---
-a Docker registry that supports file-level deduplication.
-We then proceed with a simulation-based evaluation of the expected performance
-implications.
+%In this section, we first describe a high-level design of \emph{\sysname}---
+%a Docker registry that supports file-level deduplication.
+%We then proceed with a simulation-based evaluation of the expected performance
+%implications.
 
-Integrated Caching and Deduplication
+%Integrated Caching and Deduplication
 
-Cache-assisted Inline deduplication system
+%Cache-assisted Inline deduplication system
 
+Our goal is to improve the restoring performance when we apply deduplication on registries' backend storage systems.
+Modern container registries such like Google container registry~\cite{googleregistry} use cloud storage as backend Docker image storage systems. Users can push and pull Docker images to their repositories stored on Cloud storage. To enable fast and high-availability access, container registries use regional private repositories across the world, and users can store images close to their compute instances and get fast response time. For example, IBM container registry setup spans five regions~\cite{anwarfast}. 
+There are many on-cloud global deduplication software for reducing cloud storage costs. For example, StorReduce sits between user application and cloud storage, transparently deduplicating data inline.
+Intuitively, all the above deduplication techniques can be used to remove the redundant data from Docker image storage system.  
+However, Docker image dataset is different from the common data stream. They are compressed archival files.
+To remove the redundant files from compressed layer files, the deduplication methods should recognize the compression formats and decompress them before running the data through the block-level or file-level deduplication. Otherwise, the deduplication ratio would be very low since compressed files have very low deduplication ratio. 
 
+In this section, we present the detailed design of \sysname.
 
 \input{dedup_design}
+
+\input{dedup_operations}
 
 \input{dedup_simulation_performance}
 
