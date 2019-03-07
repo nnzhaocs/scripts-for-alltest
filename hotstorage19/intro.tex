@@ -1,60 +1,40 @@
 \section{Introduction}
 
-\input{fig-nodedupvsdedup}
+
 Due to their tight isolation, low overhead, and efficient packaging of the execution environment, 
-Docker containers have become a prominent solution for deploying modern applications.
-Containers are created from \emph{images} which are stored in a Docker \emph{registry}. 
-An image consists of a list of \emph{layers} which can be shared among images.
-Docker registries store a large amount of images and with the increasing popularity of Docker, 
-they continue to grow. 
-For example, Docker Hub---a popular public registry---stores more than half a million public images.
-In this paper, we first analyze over 167\,TB of uncompressed Docker images.
-We found only~7\% of the files are unique.
-Container images are similar with VM images in the sense that they all serve as OS snapshots. 
-Different users might choose similar OS and run similar applications, which incurs a considerable redundancy across different container images.
-However, the massive amount of redundant files in the uncompressed image dataset means that 
-Docker's existing layer sharing mechanism is not sufficient to eliminate this profound redundancy. 
+Docker~\cite{docker} containers have become a prominent solution for deploying modern applications.
+Containers are running instances of Docker \emph{images}. An image comprises a set of \emph{layers} and is stored in a Docker \emph{registry}. Each layer is a set of files that are compressed in a single archive. As layers are the building blocks of images, they can be shared among multiple images. Having said that, a layer is uniquely identified by a collision-resistant hash of its content, called \emph{digest}, and therefore no duplicate layers are stored in the registry.
 
-Deduplication technique is a good solution to remove the redundancy from container image storage system. 
-However, current deduplication techniques cannot be directly applied on container image storage system 
-because container images are stored as a number of gzip compressed tar files, known as layers. 
-Gzip compressed files have very less deduplication ratio. 
-We can decompress the layers before applying deduplication on Docker registries
-However, restoring layers by assembling files or chunks incurs a considerable additional overhead on pull time
-while container service requires high startup speed, which puts a tight constraint on image pull time. 
+Docker registries store a large amount of images and with the increasing popularity of Docker, registries continue to grow. 
+For example, Docker Hub~\cite{docker-hub}---a popular public registry---stores more than two million public repositories that host one or more images. The number of public repositories grow by one million repositories annually. 
+Moreover, the cost of storing 60\,TB of Docker images is around~\$7,000 dollars per month on Google cloud storage~\cite{?}.
+The one million annual growth in number of repositories amounts to about 130\,TB, costing around~\$15,000 a month.
 
-Therefore, in this paper, 
-we propose a low restore latency, adaptive deduplication framework for Docker registries.
-%
-First, to improve pull performance, we design a user behaviour-oriented cooperative cache
-to adaptively host a certain amount of active users' layers for speeding up active users' pull time
-and also to selectively store few popular \textit{shared} files for fastening layer restoring process.
-% 
-Second, to further improve registry performance, we design an elastic deduplication model by combining 
-local deduplication and global deduplication methods.
-  
-The idea of user behavior-oriented cooperative cache is that,
-instead of only focusing on layer-level access pattern, we consider user behaviours in cache replacement
-because user behaviour is more predictable than layer access pattern and 
-users are the ones who issue the layer/manifest pulls/pushes.
-Our cache replacement policy is an adaptive heuristic, top-down decision making process driven by user behaviors.
-During cache eviction, we first evicts the least recently active users along with the repositories belong to them.
-Next, we remove the least recently accessed layer candidates exclusively referenced by these victim repositories to make room for new users' layers. 
-For the incoming new users, we prefetch a number of their repositories along with their containing layers based on
-their access probabilities.
+In our analysis of over 167\,TB of uncompressed Docker images, we found that only~7\% of the files are unique. Since many Docker images share many underlying layers, this considerable file-level redundancy across different images is not mitigated by Docker's existing layer sharing mechanism.
 
-After an inactive users' layers are evicted from cache, it will be first sent to a local deduplication pool where it will be 
-decompressed and the files that have already been stored locally will be removed. 
-In this case, restoring these layers won't incur inter-registry file transfer.
-If these users stay inactive for a long time,
-we will migrate their locally \textit{deduped} layers from local deduplication storage pool to global deduplication pool 
-where their containing files that have already been stored globally in the distributed Docker registry system will be removed. 
-The \textit{size ratio} between local deduplication pool and global deduplication pool can be elastic based on 
-system performance, deduplication ratio, and designers' demand.
-Beside, our cache also collaborates with our elastic deduplication pools to store the popular files that are shared among many layers
-to speedup restoring performance.
+Deduplication is a fitting solution to eliminate redundancy in the storage system of container management platforms. 
+However, existing deduplication techniques cannot be directly applied to the image storage system 
+because images are stored as a collection of gzip compressed tar files, called layers. 
+And gzip compressed files have very less deduplication ratio. 
+One option is to decompress the layers before applying deduplication on Docker registries.
+However, restoring layers by assembling files or chunks incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time.  
+
+Therefore, in this paper, we propose a low restore latency, adaptive deduplication framework for Docker registries. 
+To improve layer pull performance, we design a user behavior-oriented cooperative cache that adaptively stores a certain amount of active users' layers, in a layer buffer, to speed up active users' pull time. The cache also selectively stores a few popular \textit{shared} and \textit{deduplicated} files, in a file cache, to accelerate the layer restoring process. 
+
+The idea behind the user behavior-oriented cooperative cache is that, instead of only focusing on layer-level access pattern, we consider the user behavior in cache replacement because users' behavior is more predictable than layer access pattern. Moreover, users are the ones who issue the layer/manifest pulls and pushes.  
+Our cache replacement policy is an adaptive heuristic, top-down decision making process driven by users' behavior.
+During cache eviction, we evict the least recently accessed layer from layer candidates exclusively referenced by the least recently active users and their repositories to make room for new users' layers. 
+After an inactive user's layer is evicted from the layer buffer, based on our algorithm, it can either be deleted or hosted in the file cache. In the latter, the layer will undergo offline decompression and file-level deduplication.
+For the incoming new users, we prefetch a number of their repositories along with their containing layers based on their access probabilities.
+
+\input{fig-nodedupvsdedup}
 
 The organization of this paper is as follows:
+We explain relevant Docker details in Section~\ref{sec:background} and our methodology in
+%%Section~\ref{sec:methodology}. We present dataset characterization in
+%%Section~\ref{sec:results}, describe related work in Section~\ref{sec:related},
+%%and conclude in Section~\ref{sec:conclusion}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                            %
