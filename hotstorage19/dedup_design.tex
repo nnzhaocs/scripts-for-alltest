@@ -16,47 +16,50 @@
 %details.
 
 \sysname~seamlessly integrates the management of cache, deduplication on backend storage, and Docker registries,
-and redesign the key workflows required for each functionality. 
-Traditionally, caches are placed as close to the client as possible, known as proxy caches, or web/HTTP cache for temporary storing 
-frequently used data to reduce server lag. 
+and also redesign the key workflows required for each functionality. 
+Traditionally, caches are placed as close to the requesting client as possible, such caches are known as proxy caches, or web/HTTP caches for the short-lived storage of 
+frequently requested/accessed data to reduce the server's lag. 
 They are typically implemented in an regional ISP or within a corporate network.
 Deduplication methods are implemented on remote backend storage servers, and
-transparently remove the duplicates from the incoming data stream and restore the data for read requests. 
+transparently remove duplicates from the incoming data stream and restore the data for read requests. 
 Docker registry is a web server that serves docker pull and docker push requests.
-Although docker registry is a layer-level content addressable storage system holding all the images,
-it delegates storage to drivers which interact with either local file system or remote cloud storage like S3, Microsoft Azure, OpenStack Swift, and Aliyun OSS.
-Intuitively, registries can be used as a proxy cache hold frequently requested layers to speedup performance 
-while backend cloud storage can use deduplication to save space.
-However, there are serveral unique problems about intergration of caching and deduplication to the unique workload: layers.
+Although Docker registry is a layer-level content addressable storage system holding all the images,
+it delegates storage to drivers which interact with either a local file system or a remote cloud storage like S3, Microsoft Azure, OpenStack Swift, and Aliyun OSS.
+Intuitively, registries can be deployed as a proxy cache to host frequently requested layers to speedup image pulls and improve performance 
+while the backend cloud storage can leverage deduplication to save storage space.
+However, there are several unique problems concerning the integration of caching and deduplication to the unique Docker registries workload: layers. 
 
-First, for caching layers, pull layer requests are difficult to predict because of layer reuse time is 
-very long. We observed that on average around half of layers' reuse time is longer than 4 hours which means 
-that if we keep a layer in cache, we might need to wait hours to get a hit.
-This is because when user pulls from registry, it only pull the layers that are not stored locally. 
-And consider that users might deploy their applications on different machines, so it's not easy to predict 
-when the user will access which layers.
-Ali Awar et.al proposed a prefetching method~\cite{anwarfast}: if there is a put layer request and subsequent get manifest request, later there will be a 
-get layer request.
-However, based on our trace analysis, only half of pull layer requests have a precedent put layer request within the trace collecting period, which means that
-after user pushes a layer to the repository, it takes few days or weeks even months for the user to make a pull requests.
-Second, for deduplicating compressed layers, the layers should first be decompressed then deduplicated while for restoring a layer, the layer's
-containing files should be fetched from multiple servers and compressed together, which cause a considerable overhead for pull layer requests.
+First, for caching layers, pull layer requests are difficult to predict because layer reuse time is very long. 
+We observed that, on average, around half of layers' reuse time is longer than 4 hours which means 
+that if we cache a layer, we might need to wait hours to get a hit on that layer.
+This is because when a user pulls an image from registry, the Docker daemon on the requesting host will only pull the layers that are not stored locally. 
+Moreover, we have to consider that users might deploy their applications on different machines, so it's not easy to predict 
+when a user will access which layers.
+Anwar et. al, proposed a prefetching method~\cite{anwarfast}: when there is a put layer request directly followed by a get manifest request, a get layer request will most probably follow.
+However, based on our trace analysis, only half of pull layer requests have a precedent put layer request within the trace collecting period. Besides,
+after a user pushes a layer to the repository, it takes a few days, weeks, or even months for a user to make a pull requests.
+Second, for deduplicating compressed layers, the layers should first be decompressed then the uncompressed data undergoes a file-level deduplication. While for restoring a layer, the layer's
+containing files should all be fetched from wherever they reside, as they are likely to be scattered across multiple servers, and compressed together, which causes a considerable overhead on pull layer requests performance.
 
-To address these issues, we propose a new user behavior based layer buffer and 
-file cache to cache layers along with the unique files after decompression and deduplication.
-This design considers user behaviors, such as if the users will be active later, when deciding which layer needs to be evicted from cache.
-Based on our observation, user behaviours are easier to predict as shown in Figure~\ref{reusetime}.
+To meet this challenge, we propose a new design featuring a user behavior based cache comprising a \emph{layer buffer} and a
+\emph{file cache} to cache layers and cache unique files after decompression and deduplication, respectively.
+This design considers user behavior, including when a user will be active later, which is decisive for layer evictions from the cache.
+Based on our observation, user behavior is easier to predict as shown in Figure~\ref{reusetime}.
 The layer buffer stores all the newly pushed layers in memory. 
-Although memory access is much faster, the size of memory is limited and considering that layer size is around few megabyte on average.
-A small main memory cache cannot accommodate many active users' layers.
-Hence, we couple main memory cache and flash cache to provide separate caching for layers and unique files.
-When a user is inactive, we first evict its layers from layer buffer to file cache: we decompress the compressed layer, and compare its containing files
-with the files that are already stored in file cache, remove the duplicate files, then store the unique files on flash storage.
-In this case, flash cache can accommodate more layers than naively storing layers.
-When use requests layer from file cache, the request will be separately forwarded all the servers that store its containing files, and 
-compress individually and send partially layers back to user. Here, we change the Docker client interface so that when Docker client receives all partial compressed layers,
-it can decompress them. Sending partially layers in parallel eliminates the network latency caused by fetching files from different servers and making a whole compressed layer.
-Moreover, compressing partially layers in parallel largely mitigates compression latency caused by compressing a whole big layer since the compressing time depends on the size of uncompressed files.
+Although accessing memory is very fast, the size of main memory is limited. 
+Considering layer sizes around a few megabyte on average, a small main memory cache cannot accommodate many active users' layers.
+
+To address this issue, we couple main memory cache and flash memory cache to provide separate caching for layers and unique files, respectively.
+When handling cache evictions, we first evict inactive users' layers from the layer buffer to the file cache after performing 
+the following operations: decompressing each evicted layer and comparing its containing files with the files that are already 
+stored in the file cache, eliminating duplicate files, that is, only storing the unique files on flash storage.
+Consequently, the flash memory cache is facilitating the logical accommodation of more layers when compared to only naively caching layers.
+When a user requests a layer not present in the layer buffer, the request is forwarded to the file cache. 
+More specifically, the request will be separately forwarded to all the servers that store its containing files. 
+The servers compress the files individually and send partial layers back to the user. 
+Here, we change the Docker client interface such that when it receives all the compressed parts of the layer, it can decompress them. 
+Forwarding partial layers from servers in parallel eliminates the network latency caused by fetching files from different servers and assembling them into a whole compressed layer.
+Furthermore, compressing partial layers in parallel considerably mitigates the compression latency caused by compressing a whole layer since compression time depends on the size of the uncompressed files.
 
     
 
