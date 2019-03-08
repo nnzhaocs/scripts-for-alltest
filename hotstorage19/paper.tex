@@ -38,6 +38,9 @@
 	urlcolor=blue
 }
 
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{algorithmic}
+
 \newlength{\gapspace}
 \newcommand{\gap}[1][0cm]{\setlength{\gapspace}{#1}\vspace{.5\gapspace}\textbf{\color{red}[...]}\vspace{.5\gapspace}\xspace}
 
@@ -55,7 +58,7 @@
 \newcommand{\vs}{vs.\ }
 \newcommand{\cf}{cf.~}
 
-\newcommand{\sysname}{Slimmer}
+\newcommand{\sysname}{Sift}
 
  % lukas: a more compact itemize/enumerate environment to save space and better looks
 \newenvironment{compactitemize}{%
@@ -74,7 +77,7 @@
 \title{
 	%Registry Diet: Weight Loss Secrets for Docker Registry\\
 %Weight Loss Secrets for Docker Registry\\
-Slimmer: Weight Loss Secrets for Docker Registries
+\sysname: Fast and Lightweight Docker Registries
 %\\
 %Applying Deduplication to Docker Registry\\
 %Why and How to Apply Deduplication to Docker Registry

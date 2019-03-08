@@ -1,2 +1,77 @@
-\subsection{Algorithms}
+\subsection{User-based LRU}
 
+%\begin{algorithm}
+%	\scriptsize 
+%	\caption{Adaptive redundancy policy transition.}
+%	\label{alg:ARPT}
+%	\KwIn{
+%		$\sigma$: cluster wear variance,
+%		$\sigma_{ARPT}$: wear variance threshold,
+%		$\ell_{hot}$: object popularity threshold}
+%	\begin{algorithmic}[1]
+%		\REQUIRE $\sigma > \sigma_{ARPT}$
+%		\ENSURE $\sigma <= \sigma_{c_{ARPT}}$
+%		\STATE $//$ \textit{Step 1, Screen candidates from each server}
+%		\label{alg:ARPT-step1}
+%		\FOR{each object $obj_{i}$ that is in flash cluster}
+%		\IF{obj$_{-}$popularity($obj_{i}$) $>=$ $\ell_{hot}$ \&\& \textit{$obj_{i}$ is neither in REP nor late-REP state}}
+%		\STATE $//$Convert its'redundancy scheme to late-REP
+%		\STATE Convert$_{-}$object$_{-}$state($obj_{i}$, late-REP)
+%		\ENDIF
+%		\IF{obj$_{-}$popularity($obj_{i}$) $<$ $\ell_{hot}$ \&\& \textit{$obj_{i}$ is neither in EC nor late-EC state}}	
+%		\STATE $//$Convert its'redundancy scheme to late-EC
+%		\STATE Convert $_{-}$object$_{-}$state($obj_{i}$, late-EC)
+%		\ENDIF
+%		\ENDFOR
+%		\label{alg:ARPT-step1-end}
+%		\label{alg:ARPT:step2}
+%		\STATE $//$ \textit{Step 2, Rearrange candidates among nodes}
+%		
+%		\WHILE{$\sigma > \sigma_{ARPT}$}
+%		%\label{alg:HSO:computer}
+%		\STATE $X(x_{1}, x_{2}, x_{3})$ $\rhd$ extract servers with MIN erasure counts
+%		\STATE $Y(y_{1}, y_{2}, y_{3}, y{4}, y{5}, y{6})$ $\rhd$ extract servers with MAX erasure counts
+%		%			\WHILE{$\Delta E_{k} =  E_{x} - E_{y} > 0$}
+%		\STATE $obj_{i}$ $\rhd$ Get$_{-}$hottest$_{-}$candidate (from step 1)
+%		\STATE $obj_{j}$ $\rhd$ Get$_{-}$coldes$_{-}$candidate (from step 1)
+%		\STATE Map$_{-}$object$_{-}$to($obj_{i}$, X)
+%		\STATE Map$_{-}$object$_{-}$to($obj_{j}$, Y)
+%		
+%		\STATE  $\sigma$ $\rhd$ Estimate wear variance  
+%		%			\ENDWHILE
+%		%			\STATE k$--$
+%		\ENDWHILE
+%		\label{alg:ARPT-step2-end}
+%	\end{algorithmic}
+%\end{algorithm}
+
+\begin{algorithm}
+	%\scriptsize 
+	\caption{User-based cache replacement algorithm.}
+	\label{alg:cache}
+	\SetAlgoLined
+	\KwIn{
+		$S_{thresh}$: Threshold for cache to trigger eviction and it indicates a cache pressure.
+	}
+	\While{cache\_size $<$ $S_{thresh}$}{
+		$last\_usr \gets UsrLRU.last\_item()$\\
+		\For{layer in reversed(LayerLRU.items())}{
+			\If{layer exclusively belongs to last\_usr}{
+				%{\scriptsize $/*$\textit{If layer is not shared with other users, layer is deleted}}\\
+				\textbf{del} $LayerLRU[layer]$\\			
+				$cache\_size -= sizeof(layer)$
+		}
+	}
+	\textbf{del} $UsrLRU[last\_usr]$
+	}
+\end{algorithm}
+
+%while cache_size < CSthresh do{
+%	last_usr <-UsrLRU.last_item()
+%	for layer in reversed(layerLRU.items()):
+%		if layer in Usrmap[last_usr]:
+%			if len(layermap[layer]) == 1:
+%				del layerlRU[layer]
+%				cache_size -= sizeof(layer)
+%	del usrlru[last_usr]
+%}
