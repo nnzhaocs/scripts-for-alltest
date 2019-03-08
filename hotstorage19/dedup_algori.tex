@@ -1,77 +1,37 @@
-\subsection{User-based LRU}
+\subsection{User-based cache algorithm}
 
-%\begin{algorithm}
-%	\scriptsize 
-%	\caption{Adaptive redundancy policy transition.}
-%	\label{alg:ARPT}
-%	\KwIn{
-%		$\sigma$: cluster wear variance,
-%		$\sigma_{ARPT}$: wear variance threshold,
-%		$\ell_{hot}$: object popularity threshold}
-%	\begin{algorithmic}[1]
-%		\REQUIRE $\sigma > \sigma_{ARPT}$
-%		\ENSURE $\sigma <= \sigma_{c_{ARPT}}$
-%		\STATE $//$ \textit{Step 1, Screen candidates from each server}
-%		\label{alg:ARPT-step1}
-%		\FOR{each object $obj_{i}$ that is in flash cluster}
-%		\IF{obj$_{-}$popularity($obj_{i}$) $>=$ $\ell_{hot}$ \&\& \textit{$obj_{i}$ is neither in REP nor late-REP state}}
-%		\STATE $//$Convert its'redundancy scheme to late-REP
-%		\STATE Convert$_{-}$object$_{-}$state($obj_{i}$, late-REP)
-%		\ENDIF
-%		\IF{obj$_{-}$popularity($obj_{i}$) $<$ $\ell_{hot}$ \&\& \textit{$obj_{i}$ is neither in EC nor late-EC state}}	
-%		\STATE $//$Convert its'redundancy scheme to late-EC
-%		\STATE Convert $_{-}$object$_{-}$state($obj_{i}$, late-EC)
-%		\ENDIF
-%		\ENDFOR
-%		\label{alg:ARPT-step1-end}
-%		\label{alg:ARPT:step2}
-%		\STATE $//$ \textit{Step 2, Rearrange candidates among nodes}
-%		
-%		\WHILE{$\sigma > \sigma_{ARPT}$}
-%		%\label{alg:HSO:computer}
-%		\STATE $X(x_{1}, x_{2}, x_{3})$ $\rhd$ extract servers with MIN erasure counts
-%		\STATE $Y(y_{1}, y_{2}, y_{3}, y{4}, y{5}, y{6})$ $\rhd$ extract servers with MAX erasure counts
-%		%			\WHILE{$\Delta E_{k} =  E_{x} - E_{y} > 0$}
-%		\STATE $obj_{i}$ $\rhd$ Get$_{-}$hottest$_{-}$candidate (from step 1)
-%		\STATE $obj_{j}$ $\rhd$ Get$_{-}$coldes$_{-}$candidate (from step 1)
-%		\STATE Map$_{-}$object$_{-}$to($obj_{i}$, X)
-%		\STATE Map$_{-}$object$_{-}$to($obj_{j}$, Y)
-%		
-%		\STATE  $\sigma$ $\rhd$ Estimate wear variance  
-%		%			\ENDWHILE
-%		%			\STATE k$--$
-%		\ENDWHILE
-%		\label{alg:ARPT-step2-end}
-%	\end{algorithmic}
-%\end{algorithm}
+\subsubsection{Observations}
 
-\begin{algorithm}
-	%\scriptsize 
-	\caption{User-based cache replacement algorithm.}
-	\label{alg:cache}
-	\SetAlgoLined
-	\KwIn{
-		$S_{thresh}$: Threshold for cache to trigger eviction and it indicates a cache pressure.
-	}
-	\While{cache\_size $<$ $S_{thresh}$}{
-		$last\_usr \gets UsrLRU.last\_item()$\\
-		\For{layer in reversed(LayerLRU.items())}{
-			\If{layer exclusively belongs to last\_usr}{
-				%{\scriptsize $/*$\textit{If layer is not shared with other users, layer is deleted}}\\
-				\textbf{del} $LayerLRU[layer]$\\			
-				$cache\_size -= sizeof(layer)$
-		}
-	}
-	\textbf{del} $UsrLRU[last\_usr]$
-	}
-\end{algorithm}
+%\paragraph{Layers that belong to the same repo have different popularity}
 
-%while cache_size < CSthresh do{
-%	last_usr <-UsrLRU.last_item()
-%	for layer in reversed(layerLRU.items()):
-%		if layer in Usrmap[last_usr]:
-%			if len(layermap[layer]) == 1:
-%				del layerlRU[layer]
-%				cache_size -= sizeof(layer)
-%	del usrlru[last_usr]
-%}
+\paragraph{Layer reuse time varies a lot}
+
+\paragraph{User active time is predictable}
+
+\input{cache_algori.tex}
+
+We use our observations of user access pattern to guide our cache replacement
+since user active time is more predictable based on Section~\ref{xxx}.
+In~\cref{sec:design}, the incoming PUT layer requests are first buffered in layer buffer and later evicted to file cache.
+If there is PULL layer request miss in both layer buffer and file cache, 
+\sysname~will fetch the layer from backend storage system and store it in layer buffer.
+Correspondingly, cache pressure happens in both file cache and layer buffer caused by shortage of free space.
+Layer buffer or file cache will simply evict or delete some layers or files and reclaim space.
+Since our layer buffer and file cache both share the same cache replacement algorithm, we only present
+how our user-based cache replacement algorithm work for layer buffer as shown in Algorithm~\ref{alg:cache}.
+
+Free space in layer buffer is too low if ($free\_buffer$ $<$ $S_{thresh}$). 
+\sysname~will reduce the buffer space being used by the inactive users. 
+\sysname~maintains two LRU lists: a LRU list of active users \emph{UsrLRU} and
+a LRU list of recently accessed layers \emph{LayerLRU} respectively.
+At first, \sysname~will select the least active user from \emph{UsrLRU}.
+Next, \sysname~will reversely iterate \emph{UsrLRU} til it finds a layer that exclusively owned by the inactive user, 
+then evict the layer from layer buffer. 
+ Note that layers are shared among different active users.
+ \sysname~stops eviction til there is enough free space in layer buffer.
+ 
+%iteratively removes the least active users along with the least recently accessed layers 
+% that exclusively owned by these users from the two LRU lists and evict the layers from layer buffer.
+%, then   
+
+
