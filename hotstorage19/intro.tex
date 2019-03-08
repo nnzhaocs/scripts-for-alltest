@@ -7,7 +7,7 @@ Containers are running instances of Docker \emph{images}. An image comprises a s
 
 Docker registries store a large amount of images and with the increasing popularity of Docker, registries continue to grow. 
 For example, Docker Hub~\cite{docker-hub}---a popular public registry---stores more than two million public repositories that host one or more images. The number of public repositories grow by one million repositories annually. 
-Moreover, the cost of storing 60\,TB of Docker images is around~\$7,000 dollars per month on Google cloud storage~\cite{?}.
+Moreover, the cost of storing 60\,TB of Docker images is around~\$7,000 dollars per month on Google cloud storage~\cite{GoogleCloudStoragePricing}.
 The one million annual growth in number of repositories amounts to about 130\,TB, costing around~\$15,000 a month.
 
 In our analysis of over 167\,TB of uncompressed Docker images, we found that only~7\% of the files are unique. Since many Docker images share many underlying layers, this considerable file-level redundancy across different images is not mitigated by Docker's existing layer sharing mechanism.
@@ -31,7 +31,7 @@ For the incoming new users, we prefetch a number of their repositories along wit
 \input{fig-nodedupvsdedup}
 
 The organization of this paper is as follows:
-We explain relevant Docker details in Section~\ref{sec:background} and our methodology in
+%We explain relevant Docker details in Section~\ref{sec:background} and our methodology in
 %%Section~\ref{sec:methodology}. We present dataset characterization in
 %%Section~\ref{sec:results}, describe related work in Section~\ref{sec:related},
 %%and conclude in Section~\ref{sec:conclusion}.
