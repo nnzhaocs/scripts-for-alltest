@@ -1,40 +1,50 @@
 \section{Introduction}
-
-
-Due to their tight isolation, low overhead, and efficient packaging of the execution environment, 
-Docker~\cite{docker} containers have become a prominent solution for deploying modern applications.
-Containers are running instances of Docker \emph{images}. An image comprises a set of \emph{layers} and is stored in a Docker \emph{registry}. Each layer is a set of files that are compressed in a single archive. As layers are the building blocks of images, they can be shared among multiple images. Having said that, a layer is uniquely identified by a collision-resistant hash of its content, called \emph{digest}, and therefore no duplicate layers are stored in the registry.
+ 
+Docker~\cite{docker} containers have become a prominent solution for deploying modern applications because to their tight isolation, low overhead, and efficient packaging of the execution environment.
+Containers are running instances of Docker \emph{images}. An image comprises a set of \emph{layers} and is stored in a Docker \emph{registry}. Each layer is a set of files that are compressed in a single archive. As layers are the building blocks of images, they can be shared among multiple images. A layer is uniquely identified by a collision-resistant hash of its content, called \emph{digest}, and therefore no duplicate layers are stored in the registry.
 
 Docker registries store a large amount of images and with the increasing popularity of Docker, registries continue to grow. 
-For example, Docker Hub~\cite{docker-hub}---a popular public registry---stores more than two million public repositories that host one or more images. The number of public repositories grow by one million repositories annually. 
-Moreover, the cost of storing 60\,TB of Docker images is around~\$7,000 dollars per month on Google cloud storage~\cite{GoogleCloudStoragePricing}.
-The one million annual growth in number of repositories amounts to about 130\,TB, costing around~\$15,000 a month.
+For example, Docker Hub~\cite{docker-hub}---a popular public registry---stores more than 2 million public repositories that host one or more images. 
+The number of public repositories grow by 1 million annually. 
+Moreover, the cost of storing 60\,TB worth of Docker images is around~\$7,000 dollars per month on Google cloud storage~\cite{GoogleCloudStoragePricing}.
+Then, the 1 million annual growth in the number of repositories amounts to about 130\,TB, costing around~\$15,000 a month.
 
-In our analysis of over 167\,TB of uncompressed Docker images, we found that only~7\% of the files are unique. Since many Docker images share many underlying layers, this considerable file-level redundancy across different images is not mitigated by Docker's existing layer sharing mechanism.
+In our analysis of over 167\,TB of uncompressed Docker images, we found that only~3\% of the files are unique. Since many Docker images share many underlying layers, this considerable file-level redundancy across different images is not mitigated by Docker's existing layer sharing mechanism.
 
 Deduplication is a fitting solution to eliminate redundancy in the storage system of container management platforms. 
 However, existing deduplication techniques cannot be directly applied to the image storage system 
-because images are stored as a collection of gzip compressed tar files, called layers. 
-And gzip compressed files have very less deduplication ratio. 
-One option is to decompress the layers before applying deduplication on Docker registries.
-However, restoring layers by assembling files or chunks incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time.  
+because of the unique characteristics of the Docker ecosystem. Images are stored as a collection of gzip compressed tar files, called layers. 
+In contrast to uncompressed files, gzip compressed files have a lower deduplication ratio. 
+A solution would be to decompress the layers before applying deduplication on Docker registries.
+However, restoring layers by assembling files incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time.  
 
-Therefore, in this paper, we propose a low restore latency, adaptive deduplication framework for Docker registries. 
-To improve layer pull performance, we design a user behavior based cooperative cache that adaptively stores a certain amount of active users' layers, in a layer buffer, to speed up active users' pull time. The cache also selectively stores a few popular \textit{shared} and \textit{deduplicated} files, in a file cache, to accelerate the layer restoring process. 
+Therefore, in this paper, we propose a low restore latency %adaptive%
+ deduplication framework for Docker registries. 
+Moreover, to improve layer pull performance, we design a user behavior based cache. 
+The cache adaptively stores a certain amount of active users' layers, in a layer buffer, to speed up active users' pull time. 
+The cache also selectively stores a few popular \textit{shared} and \textit{deduplicated} files, in a file cache, to accelerate the layer restoring process. 
 
-The idea behind the user behavior based cache is that, instead of only focusing on layer-level access pattern, we consider the user behavior in cache replacement because users' behavior is more predictable than layer access pattern. Moreover, users are the ones who issue the layer/manifest pulls and pushes.  
-Our cache replacement policy is an adaptive heuristic, top-down decision making process driven by users' behavior.
-During cache eviction, we evict the least recently accessed layer from layer candidates exclusively referenced by the least recently active users and their repositories to make room for new users' layers. 
-After an inactive user's layer is evicted from the layer buffer, based on our algorithm, it can either be deleted or hosted in the file cache. In the latter, the layer will undergo offline decompression and file-level deduplication.
+The rationale behind the user behavior based cache is that, instead of only focusing on layer-level access pattern, 
+we consider the user behavior for cache replacement because users' behavior is more predictable than layer access pattern. 
+Moreover, users are the ones who issue the layer/manifest pulls and pushes.  
+For this reason, our cache replacement policy is an adaptive heuristic, top-down decision making process driven by users' behavior.
+During cache eviction, we evict the least recently accessed layer from a set of candidate layers exclusively referenced by the least recently active users to make room for new users' layers. 
+After an inactive user's layer is evicted from the layer buffer, based on our algorithm, it can either be discarded or hosted in the file cache. For the latter, the layer will undergo offline decompression and file-level deduplication.
 For the incoming new users, we prefetch a number of their repositories along with their containing layers based on their access probabilities.
+
+We evaluate our proposed design, \sysname, 
+by conducted a preliminary simulation-based study . The study aims to explore the feasibility/benefits of deduplication and quantify the overhead it introduces.
+\HA{add preliminary results}.  
 
 \input{fig-nodedupvsdedup}
 
-The organization of this paper is as follows:
-%We explain relevant Docker details in Section~\ref{sec:background} and our methodology in
-%%Section~\ref{sec:methodology}. We present dataset characterization in
-%%Section~\ref{sec:results}, describe related work in Section~\ref{sec:related},
-%%and conclude in Section~\ref{sec:conclusion}.
+\HA{need to mention Figure~\ref{fig:without-dedup} and Figure~\ref{fig:with-dedup}}
+
+The organization of this paper as follows: 
+We explain current deduplication practices in production registries and relevant Docker details in Section~\ref{sec:background} and observations in Section~\ref{sec:observation}. 
+We present deduplication analysis in
+Section~\ref{sec:dedup-analysis}, and~\sysname design in Sectio~\ref{sec:\sysname}. lastly, we describe related work in Section~\ref{sec:related},
+and conclude in Section~\ref{sec:conclusion}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                            %

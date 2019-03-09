@@ -1,0 +1,230 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand*\HyPL@Entry[1]{}
+\citation{docker}
+\citation{docker-hub}
+\citation{GoogleCloudStoragePricing}
+\citation{GoogleContainerRegistry}
+\citation{dockerworkload}
+\HyPL@Entry{0<</S/D>>}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces PULL a layer from Registry without dedup.}}{1}{figure.1}}
+\newlabel{fig:ref_count}{{1}{1}{PULL a layer from Registry without dedup}{figure.1}{}}
+\newlabel{fig:ref_count@cref}{{[figure][1][]1}{1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces PULL a layer from Registry with dedup.}}{1}{figure.2}}
+\newlabel{fig:nodedup-vs-dedup}{{2}{1}{PULL a layer from Registry with dedup}{figure.2}{}}
+\newlabel{fig:nodedup-vs-dedup@cref}{{[figure][2][]2}{1}}
+\citation{storreduce_purestorage}
+\citation{docker}
+\citation{slacker}
+\citation{docker-hub}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Docker ecosystem. }}{2}{figure.3}}
+\newlabel{fig-docker-architecture}{{3}{2}{Docker ecosystem}{figure.3}{}}
+\newlabel{fig-docker-architecture@cref}{{[figure][3][]3}{2}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background}{2}{section.2}}
+\newlabel{sec:background}{{2}{2}{Background}{section.2}{}}
+\newlabel{sec:background@cref}{{[section][2][]2}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Docker, Docker registry, and Registry backend storage systems}{2}{subsection.2.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Cloud Storage and Deduplication}{2}{subsection.2.2}}
+\citation{pooranian2018rare}
+\citation{StorReduce_google}
+\citation{?}
+\citation{?}
+\citation{?}
+\citation{?}
+\citation{?}
+\citation{docker-hub}
+\citation{GoogleCloudStoragePricing}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Web/Proxy cache}{3}{subsection.2.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Apply traditional deduplication approaches to registries?}{3}{subsection.2.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Use-cases of Slimmer}{3}{subsection.2.5}}
+\@writefile{toc}{\contentsline {paragraph}{Production registries.}{3}{section*.1}}
+\@writefile{toc}{\contentsline {paragraph}{Private registries.}{3}{section*.2}}
+\@writefile{toc}{\contentsline {paragraph}{Enable deduplication technique handle versatile data streams without performance degradation.}{3}{section*.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Observations and Motivation}{3}{section.3}}
+\newlabel{sec:background}{{3}{3}{Observations and Motivation}{section.3}{}}
+\newlabel{sec:background@cref}{{[section][3][]3}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Need for Deduplication}{3}{subsection.3.1}}
+\@writefile{toc}{\contentsline {paragraph}{Deduplication statistics.}{3}{section*.4}}
+\@writefile{toc}{\contentsline {paragraph}{Deduplication ratio growth.}{3}{section*.5}}
+\citation{dockerworkload}
+\citation{docker-hub}
+\citation{spark}
+\citation{hdfs}
+\citation{openvz}
+\citation{singularity}
+\citation{Dockerfile}
+\citation{cowsay}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces File repeat count distribution. }}{4}{figure.4}}
+\newlabel{fig:file-repeat-cnt}{{4}{4}{File repeat count distribution}{figure.4}{}}
+\newlabel{fig:file-repeat-cnt@cref}{{[figure][4][]4}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Deduplication ratio growth. }}{4}{figure.5}}
+\newlabel{fig:dedup-ratio-growth}{{5}{4}{Deduplication ratio growth}{figure.5}{}}
+\newlabel{fig:dedup-ratio-growth@cref}{{[figure][5][]5}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Popularity of layers, repos, and users.}}{4}{figure.6}}
+\newlabel{fig:sknewss}{{6}{4}{Popularity of layers, repos, and users}{figure.6}{}}
+\newlabel{fig:sknewss@cref}{{[figure][6][]6}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces CDF of reuse time for layers, repos, and users.}}{4}{figure.7}}
+\newlabel{fig:reusetime}{{7}{4}{CDF of reuse time for layers, repos, and users}{figure.7}{}}
+\newlabel{fig:reusetime@cref}{{[figure][7][]7}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Need for User behavior based cache management}{4}{subsection.3.2}}
+\@writefile{toc}{\contentsline {paragraph}{Requests to layers are heavily skewed but layer reuse time is very long.}{4}{section*.6}}
+\@writefile{toc}{\contentsline {paragraph}{User active time is predictable.}{4}{section*.7}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Deduplication analysis}{4}{section.4}}
+\newlabel{sec:redundant_files}{{4}{4}{Deduplication analysis}{section.4}{}}
+\newlabel{sec:redundant_files@cref}{{[section][4][]4}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Methodology}{4}{subsection.4.1}}
+\newlabel{sec:methodology}{{4.1}{4}{Methodology}{subsection.4.1}{}}
+\newlabel{sec:methodology@cref}{{[subsection][1][4]4.1}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Data reduction analysis}{4}{subsection.4.2}}
+\newlabel{sec:dedup_ratio}{{4.2}{4}{Data reduction analysis}{subsection.4.2}{}}
+\newlabel{sec:dedup_ratio@cref}{{[subsection][2][4]4.2}{4}}
+\@writefile{toc}{\contentsline {paragraph}{Layer sharing.}{4}{section*.8}}
+\citation{pymagic}
+\citation{googletest}
+\citation{github}
+\citation{go-ethereum}
+\citation{NDK}
+\citation{xnu-chroot-environment}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces CDF of layer reference count.}}{5}{figure.8}}
+\newlabel{fig:ref_count}{{8}{5}{CDF of layer reference count}{figure.8}{}}
+\newlabel{fig:ref_count@cref}{{[figure][8][]8}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces CDF of compress. and uncompress. layer size.}}{5}{figure.9}}
+\newlabel{fig:layer-size-cdf}{{9}{5}{CDF of compress. and uncompress. layer size}{figure.9}{}}
+\newlabel{fig:layer-size-cdf@cref}{{[figure][9][]9}{5}}
+\@writefile{toc}{\contentsline {paragraph}{Compression.}{5}{section*.9}}
+\@writefile{toc}{\contentsline {paragraph}{File-level deduplication.}{5}{section*.10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Deduplication ratio for seven file classes---EOL, archival, documents, source code, database, scripts, images---and other files. Light bars indicate the original storage utilization while dark bars represent the capacity after removing redundant files. Dots shows the corresponding deduplication ratio. }}{5}{figure.10}}
+\newlabel{fig:dedup-overall}{{10}{5}{Deduplication ratio for seven file classes---EOL, archival, documents, source code, database, scripts, images---and other files. Light bars indicate the original storage utilization while dark bars represent the capacity after removing redundant files. Dots shows the corresponding deduplication ratio}{figure.10}{}}
+\newlabel{fig:dedup-overall@cref}{{[figure][10][]10}{5}}
+\@writefile{toc}{\contentsline {paragraph}{Deduplication ratio growth.}{5}{section*.11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Deduplication by file types}{5}{subsection.4.3}}
+\citation{dockerworkload}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Sift\nobreakspace  {}Design}{6}{section.5}}
+\newlabel{sec:slimmer}{{5}{6}{\sysname ~Design}{section.5}{}}
+\newlabel{sec:slimmer@cref}{{[section][5][]5}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Integrating deduplication, caching, and Docker registries}{6}{subsection.5.1}}
+\newlabel{sec:design}{{5.1}{6}{Integrating deduplication, caching, and Docker registries}{subsection.5.1}{}}
+\newlabel{sec:design@cref}{{[subsection][1][5]5.1}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Architecture of Sift.}}{6}{figure.11}}
+\newlabel{fig:sys-overview}{{11}{6}{Architecture of \sysname }{figure.11}{}}
+\newlabel{fig:sys-overview@cref}{{[figure][11][]11}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Design challenges}{6}{subsection.5.2}}
+\citation{dockerworkload}
+\citation{redis}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Design}{7}{subsection.5.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Operations}{7}{subsection.5.4}}
+\newlabel{sec:design_operations}{{5.4}{7}{Operations}{subsection.5.4}{}}
+\newlabel{sec:design_operations@cref}{{[subsection][4][5]5.4}{7}}
+\citation{gfs}
+\citation{hdfs}
+\citation{s3}
+\citation{swift}
+\citation{MD5}
+\@writefile{toc}{\contentsline {paragraph}{Pull.}{8}{section*.12}}
+\@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces User-based cache replacement algorithm.}}{8}{algocf.1}}
+\newlabel{alg:cache}{{1}{8}{User-based Cache Algorithm}{algocf.1}{}}
+\newlabel{alg:cache@cref}{{[algorithm][1][]1}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}User-based Cache Algorithm}{8}{subsection.5.5}}
+\newlabel{sec:design_cache_algori}{{5.5}{8}{User-based Cache Algorithm}{subsection.5.5}{}}
+\newlabel{sec:design_cache_algori@cref}{{[subsection][5][5]5.5}{8}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Preliminary evaluation}{8}{section.6}}
+\@writefile{toc}{\contentsline {paragraph}{Hit ratios.}{8}{section*.13}}
+\@writefile{toc}{\contentsline {paragraph}{Hit ratios with prefetching.}{8}{section*.14}}
+\@writefile{toc}{\contentsline {paragraph}{Restoring performance breakdown.}{8}{section*.15}}
+\citation{lz4}
+\citation{dockerworkload}
+\citation{dockerssd}
+\citation{shifter}
+\citation{slacker}
+\citation{exoclones}
+\citation{docker-driver-eval}
+\citation{improve-cow-container-drivers}
+\citation{slacker}
+\citation{analysisdockergithub}
+\citation{dockervulnerabile}
+\citation{dockerworkload}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Off-line file-level deduplication run time.}}{9}{figure.12}}
+\newlabel{fig:dedup-res}{{12}{9}{Off-line file-level deduplication run time}{figure.12}{}}
+\newlabel{fig:dedup-res@cref}{{[figure][12][]12}{9}}
+\@writefile{toc}{\contentsline {paragraph}{Simulation.}{9}{section*.16}}
+\@writefile{toc}{\contentsline {paragraph}{Push.}{9}{section*.17}}
+\@writefile{toc}{\contentsline {paragraph}{Pull.}{9}{section*.18}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{9}{section.7}}
+\citation{2009-sparse_indexing_inline_dedup_using_sampling-fast}
+\citation{2001-low_bandwidth_network_fs-sosp}
+\citation{2012-idedup-fast}
+\citation{tarasov2014dmdedup}
+\citation{2008-avoid_disk_bottleneck_data_domain_dedupfs-fast}
+\citation{2009-dedup_effectiveness_on_vm_disk_images-systor}
+\citation{2012-data_reduction_in_primary_storage-systor}
+\citation{2012-hpc_practical_dedup_study-sc}
+\citation{2013-charact_increment_changes_data_protect-atc}
+\citation{msst16dedup-study}
+\citation{2012-charact_backup_workloads-fast}
+\citation{2013-charact_dedup_effic_big_data-iiswc}
+\bibstyle{acm}
+\bibdata{paper}
+\bibcite{NDK}{1}
+\bibcite{cowsay}{2}
+\bibcite{docker}{3}
+\bibcite{docker-hub}{4}
+\bibcite{Dockerfile}{5}
+\bibcite{lz4}{6}
+\bibcite{github}{7}
+\bibcite{go-ethereum}{8}
+\bibcite{GoogleCloudStoragePricing}{9}
+\bibcite{googletest}{10}
+\bibcite{GoogleContainerRegistry}{11}
+\bibcite{hdfs}{12}
+\bibcite{openvz}{13}
+\bibcite{pymagic}{14}
+\bibcite{redis}{15}
+\bibcite{singularity}{16}
+\bibcite{spark}{17}
+\bibcite{StorReduce_google}{18}
+\bibcite{xnu-chroot-environment}{19}
+\bibcite{dockerworkload}{20}
+\bibcite{dockerssd}{21}
+\bibcite{shifter}{22}
+\bibcite{analysisdockergithub}{23}
+\bibcite{slacker}{24}
+\bibcite{2009-dedup_effectiveness_on_vm_disk_images-systor}{25}
+\bibcite{2009-sparse_indexing_inline_dedup_using_sampling-fast}{26}
+\bibcite{2012-data_reduction_in_primary_storage-systor}{27}
+\bibcite{2012-hpc_practical_dedup_study-sc}{28}
+\bibcite{2001-low_bandwidth_network_fs-sosp}{29}
+\bibcite{pooranian2018rare}{30}
+\bibcite{MD5}{31}
+\bibcite{2013-charact_increment_changes_data_protect-atc}{32}
+\bibcite{dockervulnerabile}{33}
+\bibcite{exoclones}{34}
+\bibcite{2012-idedup-fast}{35}
+\bibcite{msst16dedup-study}{36}
+\bibcite{tarasov2014dmdedup}{37}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Related work}{10}{section.8}}
+\newlabel{sec:related}{{8}{10}{Related work}{section.8}{}}
+\newlabel{sec:related@cref}{{[section][8][]8}{10}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion}{10}{section.9}}
+\newlabel{sec:conclusion}{{9}{10}{Conclusion}{section.9}{}}
+\newlabel{sec:conclusion@cref}{{[section][9][]9}{10}}
+\@writefile{toc}{\contentsline {paragraph}{Future work.}{10}{section*.19}}
+\bibcite{docker-driver-eval}{38}
+\bibcite{2012-charact_backup_workloads-fast}{39}
+\bibcite{improve-cow-container-drivers}{40}
+\bibcite{2013-charact_dedup_effic_big_data-iiswc}{41}
+\bibcite{2008-avoid_disk_bottleneck_data_domain_dedupfs-fast}{42}
