@@ -1,4 +1,4 @@
-\section{Slimmer design}
+\section{\sysname~design}
 \label{sec:slimmer}
 
 %Our analysis in Section~\ref{sec:redundant_files} suggests that adding the
@@ -14,15 +14,28 @@
 
 %Cache-assisted Inline deduplication system
 
-Our goal is to improve the restoring performance when we apply deduplication on registries' backend storage systems.
-Modern container registries such as Google Container Registry~\cite{GoogleContainerRegistry} use cloud storage as their backend Docker image storage systems. Users push and pull Docker images to and from their repositories stored on cloud storage. To facilitate a fast and high-availability service, container registries use regional private repositories across the world.  This geographical distribution allows users to store images close to their compute instances and experience a fast response time. For example, IBM's Container Registry setup spans five regions~\cite{anwarfast}. 
+\NZ{move this part to intro and background}
+Modern container registries such as Google Container Registry~\cite{GoogleContainerRegistry} use cloud storage as their backend Docker image storage systems. 
+Users push and pull Docker images to and from their repositories stored on cloud storage. 
+To facilitate a fast and high-availability service, container registries use regional private repositories across the world.  
+This geographical distribution allows users to store images close to their compute instances and experience a fast response time. 
+For example, IBM's Container Registry setup spans five regions~\cite{dockerworkload}. 
 
-On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. For example, StorReduce~\cite{storreduce_purestorage}, the deduplication software choice of Google cloud and AWS, performs in-line data deduplication transparently and resides between the client's application and the hosting cloud storage.
+\NZ{move this part to intro and background too}
+On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. 
+For example, StorReduce~\cite{storreduce_purestorage}, the deduplication software choice of Google cloud and AWS, 
+performs in-line data deduplication transparently and resides between the client's application and the hosting cloud storage.
+
+\NZ{move this part to intro and background too}
 Intuitively, such deduplication techniques can be applied to eliminate redundant data from the Docker image storage system.  
-Except, the Docker image dataset is different from the common data stream. They are compressed archival files.
-To eliminate file-level redundancy from the compressed layer files, changes must be made to the deduplication method. Such changes should address and recognize the compression formats, perform decompression before feeding the data to a block-level or file-level deduplication process. Otherwise, the deduplication ratio would be very low since compressed files have a very low deduplication ratio. 
+Except, the Docker image dataset is different from the common data stream. 
+They are compressed archival files.
+To eliminate file-level redundancy from the compressed layer files, changes must be made to these deduplication methods. 
+Such changes should recognize the compression formats, perform decompression before feeding the data to a block-level or file-level deduplication process. 
+Otherwise, the deduplication ratio would be very low since compressed files have a very low deduplication ratio. 
 
-In this section, we present the detailed design of \sysname.
+In this section, we present the design of~\sysname.
+Our goal is to largely improve registry performance while significantly decrease storage capacity requirements on backend storage systems.
 
 \input{dedup_design}
 
