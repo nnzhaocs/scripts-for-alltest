@@ -1,4 +1,5 @@
 \subsection{User-based cache algorithm}
+\label{sec:design_cache_algori}
 
 \subsubsection{Observations}
 
@@ -13,7 +14,7 @@
 We use our observations of user access pattern to guide our cache replacement
 since user active time is more predictable based on Section~\ref{xxx}.
 In~\cref{sec:design}, the incoming PUT layer requests are first buffered in layer buffer and later evicted to file cache.
-If there is PULL layer request miss in both layer buffer and file cache, 
+If there is a PULL layer request miss in both layer buffer and file cache, 
 \sysname~will fetch the layer from backend storage system and store it in layer buffer.
 Correspondingly, cache pressure happens in both file cache and layer buffer caused by shortage of free space.
 Layer buffer or file cache will simply evict or delete some layers or files and reclaim space.
