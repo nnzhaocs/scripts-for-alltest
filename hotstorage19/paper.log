@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  9 MAR 2019 17:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  9 MAR 2019 17:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -334,14 +334,7 @@ Package cleveref Info: `algorithm2e' support loaded on input line 2966.
 )
 \gapspace=\skip74
 
-(./paper.aux
-
-LaTeX Warning: Label `sec:background' multiply defined.
-
-
-LaTeX Warning: Label `sec:background@cref' multiply defined.
-
-)
+(./paper.aux)
 \openout1 = `paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 75.
@@ -442,25 +435,13 @@ Package pdftex.def Info: graphs/dedup.png used on input line 11.
 [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
- <./graphs/nodedup.png> <./graphs/dedup.png>]
-
-LaTeX Warning: Reference `sec:observation' on page 2 undefined on input line 44
-.
-
-
-LaTeX Warning: Reference `sec:dedup-analysis' on page 2 undefined on input line
- 46.
-
-
-LaTeX Warning: Reference `sec:Sift' on page 2 undefined on input line 46.
-
-) (./background.tex
+ <./graphs/nodedup.png> <./graphs/dedup.png>]) (./background.tex
 
 LaTeX Warning: Citation `storreduce_purestorage' on page 2 undefined on input l
 ine 13.
 
 (./fig-docker-architecture.tex
-<graphs/fig-docker-architecture-v3.pdf, id=132, 2112.89375pt x 1179.40625pt>
+<graphs/fig-docker-architecture-v3.pdf, id=135, 2112.89375pt x 1179.40625pt>
 File: graphs/fig-docker-architecture-v3.pdf Graphic file (type pdf)
 
 <use graphs/fig-docker-architecture-v3.pdf>
@@ -514,7 +495,7 @@ Underfull \hbox (badness 2418) in paragraph at lines 94--94
  []
 
 ) (./observation.tex [3] (./fig-file-repeat-cnt.tex
-<graphs/File_repeat_count-eps.pdf, id=205, 335.74274pt x 191.20212pt>
+<graphs/File_repeat_count-eps.pdf, id=208, 335.74274pt x 191.20212pt>
 File: graphs/File_repeat_count-eps.pdf Graphic file (type pdf)
 
 <use graphs/File_repeat_count-eps.pdf>
@@ -522,7 +503,7 @@ Package pdftex.def Info: graphs/File_repeat_count-eps.pdf used on input line 16
 .
 (pdftex.def)             Requested size: 116.53531pt x 66.36449pt.
 
-<graphs/dedup-ratio-grow.pdf, id=206, 274.29378pt x 196.53024pt>
+<graphs/dedup-ratio-grow.pdf, id=209, 274.29378pt x 196.53024pt>
 File: graphs/dedup-ratio-grow.pdf Graphic file (type pdf)
 
 <use graphs/dedup-ratio-grow.pdf>
@@ -541,7 +522,7 @@ nverted-to.pdf graphs/skewness_cdf.eps>
 (epstopdf)             \includegraphics on input line 5.
 Package epstopdf Info: Output file is already uptodate.
 
-<graphs/skewness_cdf-eps-converted-to.pdf, id=208, 412.97435pt x 331.58083pt>
+<graphs/skewness_cdf-eps-converted-to.pdf, id=211, 412.97435pt x 331.58083pt>
 File: graphs/skewness_cdf-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graphs/skewness_cdf-eps-converted-to.pdf>
@@ -559,7 +540,7 @@ erted-to.pdf graphs/reuse_time.eps>
 (epstopdf)             \includegraphics on input line 11.
 Package epstopdf Info: Output file is already uptodate.
 
-<graphs/reuse_time-eps-converted-to.pdf, id=209, 419.21498pt x 332.5986pt>
+<graphs/reuse_time-eps-converted-to.pdf, id=212, 419.21498pt x 332.5986pt>
 File: graphs/reuse_time-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graphs/reuse_time-eps-converted-to.pdf>
@@ -570,14 +551,14 @@ ine 11.
 (./methodology.tex) (./dedup_ratio.tex [4 <./graphs/File_repeat_count-eps.pdf> 
 <./graphs/dedup-ratio-grow.pdf> <./graphs/skewness_cdf-eps-converted-to.pdf> <.
 /graphs/reuse_time-eps-converted-to.pdf>] (./fig-layer-size-compress-cdf.tex
-<graphs/shared-cnt-cdf.pdf, id=304, 335.20532pt x 204.81117pt>
+<graphs/shared-cnt-cdf.pdf, id=307, 335.20532pt x 204.81117pt>
 File: graphs/shared-cnt-cdf.pdf Graphic file (type pdf)
 
 <use graphs/shared-cnt-cdf.pdf>
 Package pdftex.def Info: graphs/shared-cnt-cdf.pdf used on input line 5.
 (pdftex.def)             Requested size: 111.87645pt x 68.35667pt.
 
-<graphs/layer-size-cdf.pdf, id=305, 311.92635pt x 204.05836pt>
+<graphs/layer-size-cdf.pdf, id=308, 311.92635pt x 204.05836pt>
 File: graphs/layer-size-cdf.pdf Graphic file (type pdf)
 
 <use graphs/layer-size-cdf.pdf>
@@ -618,7 +599,7 @@ pmignore\OT1/ptm/m/n/10 ) and the last file,
  []
 
 ) (./dedup_types.tex (./fig-dedup-overall.tex
-<graphs/dedup-overall.pdf, id=309, 520.99342pt x 191.26056pt>
+<graphs/dedup-overall.pdf, id=312, 520.99342pt x 191.26056pt>
 File: graphs/dedup-overall.pdf Graphic file (type pdf)
 
 <use graphs/dedup-overall.pdf>
@@ -657,7 +638,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 1--1
  []
 
 (./fig-sys-overview.tex
-<graphs/sys-architecture.png, id=341, 730.73pt x 564.1075pt>
+<graphs/sys-architecture.png, id=344, 730.73pt x 564.1075pt>
 File: graphs/sys-architecture.png Graphic file (type png)
 
 <use graphs/sys-architecture.png>
@@ -701,7 +682,7 @@ Underfull \hbox (badness 4291) in paragraph at lines 16--25
  []
 
 [8])) (./dedup_simulation_performance.tex (./fig_dedup_res.tex
-<graphs/res-time.pdf, id=393, 469.20695pt x 198.78868pt>
+<graphs/res-time.pdf, id=396, 469.20695pt x 198.78868pt>
 File: graphs/res-time.pdf Graphic file (type pdf)
 
 <use graphs/res-time.pdf>
@@ -770,9 +751,6 @@ Package rerunfilecheck Info: File `paper.out' has not changed.
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: There were multiply-defined labels.
-
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 254.
  )
 (\end occurred inside a group at level 1)
@@ -780,13 +758,13 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 254.
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 9365 strings out of 493014
- 150378 string characters out of 6133351
- 273403 words of memory out of 5000000
- 12576 multiletter control sequences out of 15000+600000
+ 9361 strings out of 493014
+ 150300 string characters out of 6133351
+ 272403 words of memory out of 5000000
+ 12572 multiletter control sequences out of 15000+600000
  30537 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 30i,19n,35p,640b,3042s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 30i,19n,35p,640b,3039s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
 }</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></
@@ -799,10 +777,10 @@ texlive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/
 2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf
 -dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2016/texmf-dist/font
 s/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (11 pages, 811682 bytes).
+Output written on paper.pdf (11 pages, 811667 bytes).
 PDF statistics:
- 571 PDF objects out of 1000 (max. 8388607)
- 476 compressed objects within 5 object streams
+ 574 PDF objects out of 1000 (max. 8388607)
+ 479 compressed objects within 5 object streams
  128 named destinations out of 1000 (max. 500000)
  253 words of extra memory for PDF output out of 10000 (max. 10000000)
 
