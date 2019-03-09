@@ -1,0 +1,47 @@
+%\subsection{Observations and motivation} % just find the proble and benefit
+%\label{sec:background}
+%
+%\subsection{Need of Deduplication}
+%
+%In order to understand the extent of storage requirements and performance demands from a Docker registry. 
+%We observe the amount of public repositories hosted by Docker Hub registries. 
+%The number of public repositories is constantly increasing with a growth that amounts 
+%to around one million repositories annually. 
+%This corresponds to~130\,TB of annual growth in storage requirements (but it is acually less because of shared layers, right?), 
+%costing around~\$15,000 a month if Google Cloud Storage is used~\cite{GoogleCloudStoragePricing}.
+%This growth implies significant benefits to storage deduplication. 
+%
+%Deduplication option, block level, file level ...?
+%
+%
+%
+%\paragraph{Deduplication statistics} % the potiential of deduplication 
+%
+%how dedup will help
+%
+%
+%layer ref count 
+%
+%\paragraph{Deduplication ratio growth} % benefit
+
+\subsection{Need for Usr-oriented cache management}
+
+\paragraph{Access skewness}
+
+\paragraph{Reuse time distribution}
+
+\paragraph{Hit ratios}
+
+\paragraph{Hit ratios with prefetching}
+
+%\subsection{} % what are the cost for a naive file-level deduplication
+
+\paragraph{Restoring performance breakdown}
+
+%\subsubsection{Observations}
+
+%\paragraph{Layers that belong to the same repo have different popularity}
+
+\paragraph{Layer reuse time varies a lot}
+
+\paragraph{User active time is predictable}
