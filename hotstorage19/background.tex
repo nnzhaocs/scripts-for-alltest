@@ -60,11 +60,15 @@ Google cloud and AWS employ StorReduce, a deduplication software that performs i
 server-side data deduplication?
 
 \subsection{Web/Proxy cache}
-Caching is a technique widely leveraged to reduce bandwidth and load off of highly loaded bottleneck backends. 
-One affective approach to caching is caching via web proxies. Proxy caches reduce traffic through a bottleneck backend by 
-cooperatively serving previously requested and saved data without it going all they way to the backend.
+Caching is a technique widely leveraged to reduce bandwidth and load off of highly loaded bottleneck backends by temporarily storing frequently requested data. 
+Caching can be introduced at the client, in between clients and servers as a proxy, or at the server side. 
+Proxy caches are efficient in reducing traffic from bottleneck backends by cooperatively serving previously requested and saved data without it going all they way to the backend. 
+The client therefore, experiences improved response times.
 
-talk about web/proxy cache in general, why and how, different kinds, http, proxy .. examples
+The Docker client inherently caches layers at the client. This way, the Docker daemon only pulls layers that are not available on the host machine. 
+
+Examples of open-source web (HTTP) proxy caches include Nginx~\cite{?}, Squid~\cite{?}, and Varnish~\cite{?}. Other software used for caching include Memcached~\cite{?}, an open-source distributed in-memory key-value store that works as a caching system and Redis~\cite{?} which is an open-source key-value store that works as an in-memory store and as a cache.
+
 
 
 \subsection{Apply traditional deduplication approaches to registries?}
