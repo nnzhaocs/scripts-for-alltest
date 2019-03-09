@@ -1,0 +1,20 @@
+\begin{algorithm}
+	%\scriptsize 
+	\caption{User-based cache replacement algorithm.}
+	\label{alg:cache}
+	\SetAlgoLined
+	\KwIn{
+		$S_{thresh}$: Threshold for layer buffer to trigger eviction.
+	}
+	\While{free\_buffer $<$ $S_{thresh}$}{
+		$last\_usr \gets UsrLRU.last\_item()$\\
+		\For{layer in reversed(LayerLRU.items())}{
+			\If{layer exclusively belongs to last\_usr}{
+				%{\scriptsize $/*$\textit{If layer is not shared with other users, layer is deleted}}\\
+				\textbf{Evict} $LayerLRU[layer]$\\			
+				$free\_buffer += sizeof(layer)$
+		}
+	}
+	\textbf{Evict} $UsrLRU[last\_usr]$
+	}
+\end{algorithm}
