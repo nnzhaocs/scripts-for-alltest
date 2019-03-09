@@ -1,6 +1,6 @@
 \begin{abstract}
 
-We did a deduplication analysis on around 50TB compressed image dataset and found that we can save about half of the storage space by doing file-level deduplication after decompressing all the images. However, deduplication affacts Docker registry’s performance especially for pulling performance because restoring layers require fetching files and compressing them into layers. To reduce deduplication restoring overhead(i.e., decompress/compression and additonal networking and I/O), we propose a novel architecture that intergrates compressed file-friendly deduplication and container user-friendly caching. 
+We did a deduplication analysis on around 50TB compressed image dataset and found that we can save about half of the storage space by doing file-level deduplication after decompressing all the images. However, deduplication affects Docker registry's performance especially for pulling performance because restoring layers require fetching files and compressing them into layers. To reduce deduplication restoring overhead(i.e., decompress/compression and additional networking and I/O), we propose a novel architecture that integrates compressed file-friendly deduplication and container user-friendly caching. 
 
 \end{abstract}
 

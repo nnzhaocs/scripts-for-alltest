@@ -1,6 +1,26 @@
 \section{Background}
 \label{sec:background}
 
+\HA{moved, will put in perfect place after finishing design}
+Modern container registries such as Google Container Registry~\cite{GoogleContainerRegistry} use cloud storage as their backend Docker image storage systems. 
+Users push and pull Docker images to and from their repositories stored on cloud storage. 
+To facilitate a fast and high-availability service, container registries use regional private repositories across the world.  
+This geographical distribution allows users to store images close to their compute instances and experience a fast response time. 
+For example, IBM's Container Registry setup spans five regions~\cite{dockerworkload}. 
+
+\HA{moved, will put in perfect place after finishing design}
+On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. 
+For example, StorReduce~\cite{storreduce_purestorage}, the deduplication software choice of Google cloud and AWS, 
+performs in-line data deduplication transparently and resides between the client's application and the hosting cloud storage.
+
+\HA{moved, will put in perfect place after finishing design}
+Intuitively, such deduplication techniques can be applied to eliminate redundant data from the Docker image storage system.  
+Except, the Docker image dataset is different from the common data stream. 
+They are compressed archival files.
+To eliminate file-level redundancy from the compressed layer files, changes must be made to these deduplication methods. 
+Such changes should recognize the compression formats, perform decompression before feeding the data to a block-level or file-level deduplication process. 
+Otherwise, the deduplication ratio would be very low since compressed files have a very low deduplication ratio. 
+
 \subsection{Docker, Docker registry, and Registry backend storage systems}
 Docker~\cite{docker} is a popular virtualization technology that extends traditional OS containers with higher level functionalities.
 It allows to efficiently package an application and its runtime dependencies in a container image to simplify and automate application deployment~\cite{slacker}.
@@ -60,11 +80,15 @@ Google cloud and AWS employ StorReduce, a deduplication software that performs i
 server-side data deduplication?
 
 \subsection{Web/Proxy cache}
-Caching is a technique widely leveraged to reduce bandwidth and load off of highly loaded bottleneck backends. 
-One affective approach to caching is caching via web proxies. Proxy caches reduce traffic through a bottleneck backend by 
-cooperatively serving previously requested and saved data without it going all they way to the backend.
+Caching is a technique widely leveraged to reduce bandwidth and load off of highly loaded bottleneck backends by temporarily storing frequently requested data. 
+Caching can be introduced at the client, in between clients and servers as a proxy, or at the server side. 
+Proxy caches are efficient in reducing traffic from bottleneck backends by cooperatively serving previously requested and saved data without it going all they way to the backend. 
+The client therefore, experiences improved response times.
 
-talk about web/proxy cache in general, why and how, different kinds, http, proxy .. examples
+The Docker client inherently caches layers at the client. This way, the Docker daemon only pulls layers that are not available on the host machine. 
+
+Examples of open-source web (HTTP) proxy caches include Nginx~\cite{?}, Squid~\cite{?}, and Varnish~\cite{?}. Other software used for caching include Memcached~\cite{?}, an open-source distributed in-memory key-value store that works as a caching system and Redis~\cite{?} which is an open-source key-value store that works as an in-memory store and as a cache.
+
 
 
 \subsection{Apply traditional deduplication approaches to registries?}

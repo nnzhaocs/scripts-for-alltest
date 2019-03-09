@@ -20,9 +20,9 @@ One option is to decompress the layers before applying deduplication on Docker r
 However, restoring layers by assembling files or chunks incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time.  
 
 Therefore, in this paper, we propose a low restore latency, adaptive deduplication framework for Docker registries. 
-To improve layer pull performance, we design a user behavior-oriented cooperative cache that adaptively stores a certain amount of active users' layers, in a layer buffer, to speed up active users' pull time. The cache also selectively stores a few popular \textit{shared} and \textit{deduplicated} files, in a file cache, to accelerate the layer restoring process. 
+To improve layer pull performance, we design a user behavior based cooperative cache that adaptively stores a certain amount of active users' layers, in a layer buffer, to speed up active users' pull time. The cache also selectively stores a few popular \textit{shared} and \textit{deduplicated} files, in a file cache, to accelerate the layer restoring process. 
 
-The idea behind the user behavior-oriented cooperative cache is that, instead of only focusing on layer-level access pattern, we consider the user behavior in cache replacement because users' behavior is more predictable than layer access pattern. Moreover, users are the ones who issue the layer/manifest pulls and pushes.  
+The idea behind the user behavior based cache is that, instead of only focusing on layer-level access pattern, we consider the user behavior in cache replacement because users' behavior is more predictable than layer access pattern. Moreover, users are the ones who issue the layer/manifest pulls and pushes.  
 Our cache replacement policy is an adaptive heuristic, top-down decision making process driven by users' behavior.
 During cache eviction, we evict the least recently accessed layer from layer candidates exclusively referenced by the least recently active users and their repositories to make room for new users' layers. 
 After an inactive user's layer is evicted from the layer buffer, based on our algorithm, it can either be deleted or hosted in the file cache. In the latter, the layer will undergo offline decompression and file-level deduplication.
