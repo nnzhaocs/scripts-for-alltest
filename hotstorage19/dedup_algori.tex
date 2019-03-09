@@ -1,27 +1,27 @@
-\subsection{User-based cache algorithm}
+\subsection{User-based Cache Algorithm}
 \label{sec:design_cache_algori}
 
 \input{cache_algori.tex}
 
-We use our observations of user access pattern to guide our cache replacement
-since user active time is more predictable based on Section~\ref{xxx}.
-In~\cref{sec:design}, the incoming PUT layer requests are first buffered in layer buffer and later evicted to file cache.
-If there is a PULL layer request miss in both layer buffer and file cache, 
-\sysname~will fetch the layer from backend storage system and store it in layer buffer.
-Correspondingly, cache pressure happens in both file cache and layer buffer caused by shortage of free space.
-Layer buffer or file cache will simply evict or delete some layers or files and reclaim space.
+We use our observations of the user access pattern to guide our cache replacement
+since the user's active time is more predictable as discussed in Section~\ref{xxx}.
+In~\cref{sec:design}, the incoming \texttt{push} layer requests are first buffered in the layer buffer and later evicted to the file cache.
+If there is a \texttt{pull} layer request miss in both the layer buffer and the file cache, 
+\sysname~will fetch the layer from backend storage system and store it in the layer buffer.
+When a cache pressure happens in both the file cache and the layer buffer caused by shortage of free space.
+The layer buffer or the file cache will simply evict or delete some layers or files and reclaim space.
 Since our layer buffer and file cache both share the same cache replacement algorithm, we only present
-how our user-based cache replacement algorithm work for layer buffer as shown in Algorithm~\ref{alg:cache}.
+our user-based cache replacement algorithm for the layer buffer  as shown in Algorithm~\ref{alg:cache}.
 
-Free space in layer buffer is too low if ($free\_buffer$ $<$ $S_{thresh}$). 
-\sysname~will reduce the buffer space being used by the inactive users. 
-\sysname~maintains two LRU lists: a LRU list of active users \emph{UsrLRU} and
-a LRU list of recently accessed layers \emph{LayerLRU} respectively.
+Free space in the layer buffer is too low if ($free\_buffer$ $<$ $S_{thresh}$). 
+\sysname~will free the buffer space used by inactive users. 
+\sysname~maintains two LRU lists: a LRU list of active users and
+a LRU list of recently accessed layers, that we call \emph{UsrLRU} and \emph{LayerLRU}, respectively.
 At first, \sysname~will select the least active user from \emph{UsrLRU}.
-Next, \sysname~will reversely iterate \emph{UsrLRU} til it finds a layer that exclusively owned by the inactive user, 
-then evict the layer from layer buffer. 
+Next, \sysname~will reversely iterate \emph{UsrLRU} until it finds a layer that is exclusively owned by that least active user, 
+\sysname~then evicts the layer from layer buffer. 
  Note that layers are shared among different active users.
- \sysname~stops eviction til there is enough free space in layer buffer.
+ \sysname~continues with evictions until the free space in the layer buffer is above the specified capacity threshold.
  
 %iteratively removes the least active users along with the least recently accessed layers 
 % that exclusively owned by these users from the two LRU lists and evict the layers from layer buffer.

@@ -4,7 +4,7 @@
 	\label{alg:cache}
 	\SetAlgoLined
 	\KwIn{
-		$S_{thresh}$: Threshold for layer buffer to trigger eviction.
+		$S_{thresh}$: Capacity threshold for layer buffer to trigger eviction.
 	}
 	\While{free\_buffer $<$ $S_{thresh}$}{
 		$last\_usr \gets UsrLRU.last\_item()$\\
