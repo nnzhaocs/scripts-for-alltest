@@ -34,18 +34,18 @@
 %However, if at least one file differs in two otherwise identical layers, the two layers are treated as different and stored separately.
 %\paragraph{Images and layers}
 
-On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. 
-For example, StorReduce~\cite{storreduce_purestorage}, the deduplication software choice of Google cloud and AWS, 
-performs in-line data deduplication transparently and resides between the client's application and the hosting cloud storage.
-A number of deduplication methods focus on client-side data deduplication to ensure that only unique files are uploaded, 
-to save network bandwidth, by having the client send a duplicate check request~\cite{xxx}~\cite{xxx}. 
-For example, xxxx\NZ{Hadeel, can you add one example and few relatedwork citation?}.
+We observe that the number of public repositories in Docker Hub is constantly increasing with a growth that amounts 
+to around 1 million repositories annually. Based on our estimation, this will cause at least~130\,TB of annual growth in storage needs.
 
-We observed that in Docker Hub, the number of public repositories is constantly increasing with a growth that amounts 
-to around 1 million repositories annually. Based on our estimation this will cause at least~130\,TB of annual growth in storage needs. 
-Intuitively, the above deduplication techniques can be applied to eliminate redundant data from the Docker image storage system.  
+On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. 
+For example, StorReduce~\cite{StorReduce}, the deduplication software choice of Google cloud and AWS, 
+performs in-line data deduplication transparently and resides between the client's application and the hosting cloud storage.
+%A number of deduplication methods focus on client-side data deduplication to ensure that only unique files are uploaded, 
+%to save network bandwidth, by having the client send a duplicate check request~\cite{xxx}~\cite{xxx}. 
+%For example, xxxx\NZ{Hadeel, can you add one example and few relatedwork citation?}. 
+Intuitively, such deduplication technique can be leveraged to eliminate redundant data from the Docker image storage system.  
 Except, the Docker image dataset is different from the common data stream. 
-They are \emph{compressed archival files}.
+Docker images are \emph{compressed archival files}.
 %Intuitively, registries can be deployed as a proxy cache to host frequently requested layers to speedup image pulls and improve performance 
 %while the backend cloud storage can leverage deduplication to save storage space.
 %However, there are several unique problems concerning the integration of caching and deduplication to the unique Docker registries workload: \textbf{compressed layers}. 
@@ -58,34 +58,34 @@ They are \emph{compressed archival files}.
 %This growth implies significant benefits to data deduplication. 
 
 We performed an in-depth and empirical analysis of file-level deduplication on container images. 
-We analyzed around 50\,TB of compressed Docker images (totally~170TB after decompression) collected from Docker Hub. 
+We analyzed around 47\,TB of compressed Docker images (167\,TB after decompression) collected from Docker Hub. 
 %In order to provide insights in terms of the redundancy measure in the image dataset and the benefits of deduplication,
 %we have to first decompress the layers included in the images. 
 %The decompressed layer comprises a set of files. 
 %The total number of files we observed amount to over 5 billion files.
 Surprisingly, only around 3\% of the those files are unique while the rest are redundant copies. 
-After removing the duplicate files, we can save around half of the storage space.
+We can save around half of the storage space after removing the duplicate files.
 
-To eliminate these redundant files from the compressed layer files, changes must be made to these deduplication methods. 
+To eliminate these redundant files from the compressed layer files, changes must be made to the deduplication method. 
 Such changes should recognize the compression formats, perform decompression before feeding the data to a block-level or file-level deduplication process. 
-Otherwise, the deduplication ratio would be very low since compressed files have a very low deduplication ratio~\cite{xxx}. 
+Otherwise, the deduplication ratio would be very low since compressed files have a very low deduplication ratio~\cite{meister2012study}. %"GZip-compressed files deduplication ratio is only 5.7%"
 Moreover for restoring a layer, the layer's
 containing files should all be fetched from wherever they reside, as they are likely to be scattered across multiple servers, 
-and compressed together, which causes a considerable overhead on pull layer requests performance.
+and then compressed together, which causes a considerable overhead on pull layer requests performance.
 
 \paragraph{Use registry as a web/proxy cache?}
 Traditionally, caches are placed as close to the requesting client as possible, 
-such caches are known as proxy caches, or web/HTTP caches for the short-lived storage of 
-frequently requested/accessed data to reduce the server's lag. 
-For example, \NZ{Hadeel, just like storage and dedup parts, this cache part we just needs two examples. with name. others we can put in citation}
+such caches are known as proxy caches, or web/HTTP caches for the temporary storage of 
+frequently requested data to reduce the load on backend resources. 
+For example, Varnish~\cite{varnish} and Squid~\cite{squid} are open-source high-performaning web/HTTP caches that accelerate web applications and improve response times by caching frequently requested web content.
 %Examples of open-source web (HTTP) proxy caches include Nginx~\cite{?}, Squid~\cite{?}, and Varnish~\cite{?}. 
 %They are typically implemented in an regional ISP or within a corporate network.
 %Deduplication methods are implemented on remote backend storage servers, and
 %transparently remove duplicates from the incoming data stream and restore the data for read requests. 
 Docker registry is a web server that serves docker pull and docker push requests.
-Intuitively, registries can be deployed as a proxy cache to host frequently requested layers to speedup image pulls and improve performance. 
+Intuitively, registries can be deployed as a proxy caches, \ie a pull-through cache~\cite{registrycache}, to host frequently requested layers to speedup image pulls and improve performance. 
 
-We analyzed IBM container registry workload in Dallas(\texttt{dal})~\cite{dockerworkload} and made the following observations.
+
 %Caching is a technique widely leveraged to reduce bandwidth and load off of highly loaded bottleneck backends by temporarily storing frequently requested data~\cite{xxx}. 
 %Caching can be introduced at the client, in between clients and servers as a proxy, or at the server side. 
 %Proxy caches are efficient in reducing traffic from bottleneck backends by cooperatively serving previously requested and saved data without it going all they way to the backend~\cite{xxxx}. 

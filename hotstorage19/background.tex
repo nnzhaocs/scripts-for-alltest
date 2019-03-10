@@ -1,19 +1,16 @@
-\section{Background, observations, and motivation}
+\section{Background, Observations, and Motivation}
 \label{sec:background}
 
-%\HA{moved, will put in perfect place after finishing design}
-%\HA{moved, will put in perfect place after finishing design}
-%\HA{moved, will put in perfect place after finishing design}
-
 Docker~\cite{docker} is a containerization platform to develop, deploy, and run applications inside \emph{containers}.
-Docker container is a running instance of an \emph{image} which wrap up an application and its runtime dependencies.
+A container is a running instance of an \emph{image} in which the application and its runtime dependencies are packaged.
 Users interact with Docker using the Docker client which, in turn, sends commands to the Docker host.
 The Docker host runs a daemon process that implements the core logic of Docker and is responsible for \emph{running} containers from locally available images.
 A Docker image consists of an ordered series of \emph{layers}.
 Each Docker layer contains a subset of the files in the image and often represents a specific component/dependency of the image, \eg a shared library.
 Layers can be shared between two or more images if the images depend on the same layer.
 Image layers are read-only.
-When users start a container, Docker creates a new \emph{writable layer} on top of the underlying read-only layers.% (Figure~\ref{fig-docker-architecture}).
+When users start a container, Docker creates a new \emph{writable layer} on top of the underlying read-only layers.
+% (Figure~\ref{fig-docker-architecture}).
 Any changes made to files in the image will be reflected inside the writable layer via a copy-on-write mechanism.
 
  %in a container image to simplify and automate application deployment~\cite{slacker}.
@@ -34,11 +31,11 @@ Layers are identified via a digest that is computed as a hash (SHA-256) over the
 
 %Docker registry is a web server that serves docker pull and docker push requests.
 Although Docker registry is a layer-level content addressable storage system holding all the images,
-it delegates storage to drivers which interact with either a local file system or a remote cloud storage like S3~\cite{xxxx}, Microsoft Azure~\cite{xxx}, OpenStack Swift~\cite{xxxx}, and Aliyun OSS~\cite{xxx}. 
-For example, Google Container Registry~\cite{GoogleContainerRegistry} use cloud storage as their backend Docker image storage systems.
-Users \texttt{push} and \texttt{pull} Docker images to and from their repositories stored on cloud storage. 
+it delegates storage to drivers which interact with either a local file system or a remote cloud storage like Amazon S3~\cite{S3}, Microsoft Azure~\cite{MS}, OpenStack Swift~\cite{swift}, and Aliyun OSS~\cite{xxx} \HA{ref plz}. 
+For example, Google Container Registry~\cite{GoogleContainerRegistry} uses cloud storage as its backend Docker image store.
+Users \texttt{push} and \texttt{pull} Docker images to and from their repositories that are stored on cloud storage. 
 To facilitate a fast and high-availability service, container registries use regional private repositories across the world.  
-This geographical distribution allows users to store images close to their compute instances and experience a fast response time. 
+This geographical distribution allows users to store images near their compute instances and experience a fast response time. 
 For example, IBM's Container Registry setup spans five regions~\cite{dockerworkload}. 
 
 %\input{fig-docker-architecture.tex}
