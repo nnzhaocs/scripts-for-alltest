@@ -39,18 +39,20 @@
 %storage of frequently requested data to reduce the server's lag.  They are
 %typically deployed in a regional ISP or within a corporate network.
 
-\sysname~seamlessly integrates the management of cache, deduplication on
-backend storage system (called backend dedup storage), and Docker registries
-\Ali{Following information should be part of Background section..
-Intuitively, registries can be deployed as a proxy cache to host
-frequently requested layers.  This approach, a registry as a pull-through
-cache, speeds up image pulls and improves overall performance.  At the same
-time, the backend cloud storage can leverage deduplication to save storage
-space.}\NZ{moved}
+\sysname~seamlessly integrates 
+%the management of 
+a cache and a deduplication mechanism on the
+backend storage system, that we call \emph{backend dedup storage}, with Docker registries.
+%\Ali{Following information should be part of Background section..
+%Intuitively, registries can be deployed as a proxy cache to host
+%frequently requested layers.  This approach, a registry as a pull-through
+%cache, speeds up image pulls and improves overall performance.  At the same
+%time, the backend cloud storage can leverage deduplication to save storage
+%space.}\NZ{moved}
 %A traditional backend dedup storage cannot meet registry performance requirement
 %especially for \texttt{pull} requests due to the large overhead during layer restoring. 
 %\subsection{Design challenges}
-and solves the unique problems concerning the integration
+\sysname~addresses the unique challenges concerning the integration
 of caching and deduplication to the Docker registry.
 First, for caching layers, \texttt{pull} layer requests are difficult to
 predict because same layers are not accessed frequently.
@@ -68,7 +70,7 @@ al., proposed a prefetching method~\cite{dockerworkload} based on the
 \texttt{push}-\texttt{pull} relationship: when there is a \texttt{PUSH} layer
 request directly followed by a \texttt{GET} manifest request, a \texttt{GET}
 layer request will most probably follow. 
-However, based on our trace\HA{we have to mention which trace???} analysis in~\cref{sec:background},
+However, based on our trace analysis in~\cref{sec:background},
 only half of the \texttt{GET} layer
 requests have a precedent \texttt{PUSH} layer request within the trace
 collecting duration of 75 days. This means that, after a user pushes a layer
