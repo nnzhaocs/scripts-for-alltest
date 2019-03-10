@@ -1,16 +1,40 @@
 \section{Introduction}
  
-Docker~\cite{docker} containers have become a prominent solution for deploying modern applications because to their tight isolation, low overhead, and efficient packaging of the execution environment.
-Containers are running instances of Docker \emph{images}. An image comprises a set of \emph{layers} and is stored in a Docker \emph{registry}. Each layer is a set of files that are compressed in a single archive. As layers are the building blocks of images, they can be shared among multiple images. A layer is uniquely identified by a collision-resistant hash of its content, called \emph{digest}, and therefore no duplicate layers are stored in the registry.
+Containers have become a prominent solution for deploying modern applications because to their tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}.
+Containers are running instances of \emph{images} which contains complete runtime environments for an application.
+An image comprises a set of shareable and content addressable \emph{layers}.
+% and is stored in Docker \emph{registry}. 
+Each layer is a set of files that are compressed in a single archive. 
+Layers are stored in Docker registry and accessed by clients as needed.
+%As layers are the building blocks of images, they can be shared among multiple images. 
+Since layers are uniquely identified by a collision-resistant hash of its content, 
+no duplicate layers are stored in the registry.
+Many container registries use remote cloud storage like S3~\cite{xxx}, 
+Microsoft Azure~\cite{xxx}, OpenStack Swift~\cite{xxx}, and Aliyun OSS~\cite{xxx} as their backend storage systems.
+For example, Google container Registry~\cite{xxxx} stores images on cloud storage while
+IBM container registry uses IBM cloud to manage image storage.
 
-Docker registries store a large amount of images and with the increasing popularity of Docker, registries continue to grow. 
+The amount of images stored in Docker registries is increasing dramatically.
+%Docker registries store a large amount of images and with the increasing popularity of Docker, registries continue to grow. 
 For example, Docker Hub~\cite{docker-hub}---a popular public registry---stores more than 2 million public repositories that host one or more images. 
-The number of public repositories grow by 1 million annually. 
-Moreover, the cost of storing 60\,TB worth of Docker images is around~\$7,000 dollars per month on Google cloud storage~\cite{GoogleCloudStoragePricing}.
-Then, the 1 million annual growth in the number of repositories amounts to about 130\,TB, costing around~\$15,000 a month.
+We observed that the number of public repositories grows by around 1 million annually. 
+We estimate that 1 million annual growth in the number of repositories 
+amounts to about 130\,TB storage space required per year.
+Moreover, 
+just storing 130\,TB worth of Docker images on Google cloud will cost around~\$14,000 per month~\cite{GoogleCloudStoragePricing}.
+This massive amount of image dataset presents great challenges for Docker registry storage infrastructure and so far has remained largely unexplored.
+%Then, the 1 million annual growth in the number of repositories amounts to about 130\,TB, costing around~\$15,000 a month.
 
-In our analysis of over 167\,TB of uncompressed Docker images, we found that only~3\% of the files are unique. Since many Docker images share many underlying layers, this considerable file-level redundancy across different images is not mitigated by Docker's existing layer sharing mechanism.
+We analyzed around 50\,TB (167\,TB uncompressed) of Docker images downloaded from Docker Hub,
+ which in total contain over 5 billion files.
+Surprisingly, 
+we found that only~3\% of the files are unique while others are redundant copies. 
+%Since many Docker images share many underlying layers, 
+This suggests that current layer sharing mechanism cannot efficiently remove data duplicates.
+%current
+% considerable file-level redundancy across different images is not mitigated by Docker's existing layer sharing mechanism.
 
+Many cloud storage system \NZ{to be continue}
 Deduplication is a fitting solution to eliminate redundancy in the storage system of container management platforms. 
 However, existing deduplication techniques cannot be directly applied to the image storage system 
 because of the unique characteristics of the Docker ecosystem. Images are stored as a collection of gzip compressed tar files, called layers. 
