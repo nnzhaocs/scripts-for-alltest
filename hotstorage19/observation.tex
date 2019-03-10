@@ -38,7 +38,7 @@ We observe that the number of public repositories in Docker Hub is constantly in
 to around 1 million repositories annually. Based on our estimation, this will cause at least~130\,TB of annual growth in storage needs.
 
 On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. 
-For example, StorReduce~\cite{StorReduce}, the deduplication software choice of Google cloud and AWS, 
+For example, StorReduce~\cite{storReduce}, the deduplication software choice of Google cloud and AWS, 
 performs in-line data deduplication transparently and resides between the client's application and the hosting cloud storage.
 %A number of deduplication methods focus on client-side data deduplication to ensure that only unique files are uploaded, 
 %to save network bandwidth, by having the client send a duplicate check request~\cite{xxx}~\cite{xxx}. 
@@ -83,7 +83,7 @@ For example, Varnish~\cite{varnish} and Squid~\cite{squid} are open-source high-
 %Deduplication methods are implemented on remote backend storage servers, and
 %transparently remove duplicates from the incoming data stream and restore the data for read requests. 
 Docker registry is a web server that serves docker pull and docker push requests.
-Intuitively, registries can be deployed as a proxy caches, \ie a pull-through cache~\cite{registrycache}, to host frequently requested layers to speedup image pulls and improve performance. 
+Intuitively, registries can be deployed as a proxy caches, \ie a pull-through cache~\cite{registryascache}, to host frequently requested layers to speedup image pulls and improve performance. 
 
 
 %Caching is a technique widely leveraged to reduce bandwidth and load off of highly loaded bottleneck backends by temporarily storing frequently requested data~\cite{xxx}. 
