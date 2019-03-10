@@ -24,7 +24,7 @@
 %
 %\paragraph{Deduplication ratio growth} % benefit
 
-\subsection{Need for User behavior based cache management}
+\subsection{Need for User Behavior based Cache Management}
 
 %\paragraph{Access skewness}
 %According to ~\cite{dockerworkload}, 
@@ -34,19 +34,31 @@
 %\paragraph{Layers that belong to the same repo have different popularity}
 \input{fig-skewness-reusetime}
 
+The following observations are obtained by analyzing the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
 \paragraph{Requests to layers are heavily skewed but layer reuse time is very long}
-Figure~\ref{fig:sknewss} shows the registry accesses to layers, repositories, and by users for IBM container registry workload in Dallas(\texttt{dal})~\cite{dockerworkload}. There is heavy skew in layer access. For example, 25\% of popular layers account for 80\% of all requests. For repository accesses and accesses by users, skew is more significant than for layers. 10\% most frequently accessed repositories account for 94\% of all requests while 9\% most active users issued 97\% of all requests. Active users are the users that issue requests to registries.
-This means few extremely active users create their repositories in \texttt{dal} and send majority of the requests.
 
-Figure~\ref{fig:sknewss} shows the reuse time of layers, repositories, and by users. Reuse time is the duration between two subsequent requests that accesses the same layer or repository while reuse time by user is defined as duration between two subsequent requests that are issued by the same user. 
-Layer reuse time is long.
-The median reuse time for layer is 1.3 hour. While 80\% repositories experience the highest request frequency of reuse time around 2 minutes and 90\% users maintain active for at least 0.06 second.
-So for a registry, most of its stored layers are not accessed frequently given a very short time period while
-users can maintain active for a longer time. 
-This is because users can access multiple layers and manifests.
+Figure~\ref{fig:sknewss} shows the registry accesses to layers and repositories, and accesses by users. 
+Layer accesses are heavily skewed. For example, 25\% of popular layers account for 80\% of all requests. 
+For repository accesses and accesses by users, the skew is more significant than it is for layers. %10\% most frequently accessed repositories account for 94\% of all requests
+94\% of all requests are accessing only 10\% of the most frequently accessed repositories and only 9\% of users, most active ones, issued 97\% of all requests. 
+This means that only a few extremely active users create their repositories in the \texttt{dal} registry and issue the majority of requests to the registry.
+
+Figure~\ref{fig:reusetime} shows the reuse time of layers and repositories, and reuse time by users.
+Reuse time is the duration between two subsequent requests to access the same layer or repository while 
+the reuse time by user is defined as duration between two subsequent requests issued by the same user. 
+The layer reuse time is long.
+The median reuse time of a layer is 1.3 hours. 80\% of repositories experience the highest request frequency, with a reuse time of around 2 minutes. 
+90\% of users remain active for at least 0.06 seconds.
+%So for a registry, most of its stored layers are not accessed frequently given a very short time period while
+%users can maintain active for a longer time. 
+%This is because users can access multiple layers and manifests.
+In other words, most of the layers stored in the
+registry are not frequently requested in a very short
+time period while users remain active for a longer time.
+This is because users request different layers or manifests.
 
 \paragraph{User active time is predictable} 
-Based on the above observations, we believe that user active time is predictable. 
+Based on the above observations, we believe that the user's active time is predictable. 
 By just maintaining a LRU list of users, we achieved 99\% accuracy for predicting user active time.
-Therefore, we utilize the predictable user active time in our cache algorithm design.
+For this reason, we utilize this predictability in our cache algorithm design.
 
