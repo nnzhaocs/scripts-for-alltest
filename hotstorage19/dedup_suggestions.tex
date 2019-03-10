@@ -1,6 +1,24 @@
 \section{Discussion}
 
-We propose additional optimizations that can help to speed up \sysname:
+%\NZ{put in background or intro, conclusion, discussion?}
+At a high-level, registries act like a distributed cache siting closer to clients to provide better performance in terms of response time. 
+The layer buffer holds hot layers that belong to active users.
+%To improve the capacity limitation of the main memory cache, we utilize flash memory to store unique files since it offers fast random read access.
+The utilization of flash memory to store unique files not only mitigates the capacity limitation of the main memory cache, it also offers fast random read accesses.
+% a on a distributed flash-based store.  \\
+
+\paragraph{How to further utilize user behavior pattern to accuracy predict layer access pattern }
+
+\paragraph{How many more layers can fit in file cache compared with naively storing layers in file cache}
+
+\paragraph{Can we do client-side deduplication to remove duplicates}
+It would affect container runtime.
+In the future work, we will offload client-side deduplication to server side, meaning that
+Docker client doesn't need to do deduplication because
+it can push all its created images to registry and registry can eliminate the duplicate files for the client. 
+In this case, Docker client can use registry as a wash machine to laundry duplicate files inside their local
+file systems without performance overhead.
+%We propose additional optimizations that can help to speed up \sysname:
 
 \begin{compactenumerate}
 %

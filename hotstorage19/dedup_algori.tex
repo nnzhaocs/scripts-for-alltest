@@ -1,15 +1,15 @@
-\subsection{User-based Cache Algorithm}
-\label{sec:design_cache_algori}
+\paragraph{User-based cache algorithm}
+%\label{sec:design_cache_algori}
 
 \input{cache_algori.tex}
 
 We use our observations of the user access pattern to guide our cache replacement
-since the user's active time is more predictable as discussed in Section~\ref{xxx}.
+since the user's active time is more predictable as discussed in~\cref{sec:background}.
 In~\cref{sec:design}, the incoming \texttt{push} layer requests are first buffered in the layer buffer and later evicted to the file cache.
 If there is a \texttt{pull} layer request miss in both the layer buffer and the file cache, 
 \sysname~will fetch the layer from backend storage system and store it in the layer buffer.
-When a cache pressure happens in both the file cache and the layer buffer caused by shortage of free space.
-The layer buffer or the file cache will simply evict or delete some layers or files and reclaim space.
+When a cache pressure happens in both the file cache and the layer buffer caused by shortage of free space,
+the layer buffer or the file cache will simply evict or delete some layers or files and reclaim space.
 Since our layer buffer and file cache both share the same cache replacement algorithm, we only present
 our user-based cache replacement algorithm for the layer buffer  as shown in Algorithm~\ref{alg:cache}.
 

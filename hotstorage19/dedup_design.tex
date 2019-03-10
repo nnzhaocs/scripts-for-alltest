@@ -93,46 +93,48 @@ Deduplication also slows down
 \texttt{push} layer requests because its highly demand for CPU, memory, I/O, and network resources.
 \Ali{Explain how push layer requests are not effected?}\NZ{fixed}
 
-\subsection{Design}
-To meet these challenges, we propose a new registry design featuring a user
+%\subsection{Design}
+To address these issues, we propose a new registry design featuring a user
 behavior based cache to reduce the performance degradation caused by
-deduplication on backend storage system (Figure~\ref{fig:sys-overview}).  Based
-on our observation, user's active time is easier to predict as shown in
-Figure~\ref{fig:reusetime}. Our cache design considers user
+backend dedup storage system (Figure~\ref{fig:sys-overview}).  Based
+on our observation in~\cref{sec:background}, user's active time is easier to predict. 
+Our cache design considers user
 behavior such as when a user is most likely to be active for
 layer evictions from the cache.
 
 Considering that layer size is around several megabyte on
 average~\cite{dockerworkload}, a small main memory cache cannot accommodate
 many active users' layers. To address this issue, we couple main memory and
-flash memory to provide separate caching for layers and \emph{deduped} files.
-We call compressed layer cache cache and \emph{deduped} files cache,
-\emph{layer buffer} and \emph{file cache}, respectively.
+flash memory to provide separate caching for layers and \emph{unique} files.
+Note that, layer is the compressed layer tarball sent by users
+while unique files are the \emph{unique} files after removing duplicate files from a uncompressed layer.
+%We call compressed layer cache and \emph{deduped} files cache,
+%\emph{layer buffer} and \emph{file cache}, respectively.
 For handling
 cache evictions, we first evict inactive users' layers from the layer buffer.
-Next, we \emph{dedup} the evicted layers, then store the \emph{deduped} files
+Next, we \emph{dedup} the evicted layers, then store the \emph{unique} files
 into the file cache (detailed in \cref{sec:design_operations}). 
 %the following operations: decompressing each evicted layer and comparing its
 %containing files with the files that are already stored in the file cache,
 %eliminating duplicate files, that is, only storing the unique files on flash
 %storage.
+
 When a user requests a
 layer not present in the layer buffer, the request is forwarded to the
 file cache (detailed in~\cref{sec:design_operations}). 
 If a layer is not found in both the layer buffer and the
 file cache, the request is forwarded to the backend dedup storage system.
-Note that during layer deduplication, uncompressed layer files are
+Note that after layer deduplication, unique files are
 scattered across multiple servers.
-We call all the files belonging to a layer on a specific server a
+We call all the files belonging to a layer that are stored on a specific server a
 \emph{slice} of the layer.
-All the slices for a layer are fetched in parallel for performance improvement.
-%
-%To avoid the network latency caused by fetching slices from different servers and
-%assembling them into a whole compressed layer, the \texttt{pull} request will
-%be separately forwarded to all the backend servers that store the requested
-%layer's slice.  
-%
-Each backend server compresses the slice and directly send the compressed slices back to the user.
+To avoid the network latency caused by fetching slices from different servers and
+assembling them into a whole compressed layer, the \texttt{pull} request will
+be spitted into several \texttt{pull slice} requests and 
+forwarded to all the backend servers that store the requested
+layer's slice.  
+After \texttt{pull slice} request is received, each backend server compresses the slice 
+and directly send the compressed slices back to the user.
 We modify the Docker client
 interface such that when it receives all the compressed slices, it can
 decompress them into a single layer. 
@@ -144,7 +146,7 @@ uncompressed data.
 %respectively.  consists of a \emph{layer buffer} and a \emph{file cache}.  The
 %layer buffer stores all the newly pushed layers in memory.  Although accessing
 %memory is very fast, the size of main memory is limited. 
-
+%All the slices for a layer are fetched in parallel for performance improvement.
 
 
 

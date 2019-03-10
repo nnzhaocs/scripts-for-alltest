@@ -4,7 +4,9 @@
 %\paragraph{Workflow}
 %
 The Docker registry API is almost the same as the original registry.
-The user's interaction with the Docker client is unchanged. The user simply pushes and pulls images to and from the registry. In this subsection we explain Docker operations integration with \sysname.
+The user's interaction with the Docker client is unchanged. 
+The user simply pushes and pulls images to and from the registry. 
+In this subsection we explain Docker operations integration with \sysname.
 
 %\sysname~ is composed of five main components(see Figure~\ref{onshareddir}):
 %a modified Docker client,
@@ -22,20 +24,22 @@ The user's interaction with the Docker client is unchanged. The user simply push
 \textbf{Push.}
 After receiving a \texttt{push} layer request from the client, 
 \sysname~first buffers the layer in the layer buffer for later accesses. 
-The layer buffer can be implemented on a distributed in-memory store,~\eg Plusma.
-Meantime, \sysname~will also submit this layer to the backend dedup storage system.\NZ{dedup}
+The layer buffer can be implemented on a distributed in-memory store,~\eg Plusma~\cite{xxx}.
+Meantime, \sysname~will also submit this layer to the backend dedup storage system.
 Our layer buffer and file cache use write through policies. 
-Since there is no modification to the layer or files, there is no data consistency issue between the cache and the backend dedup storage system.
+Since there is no modification to the layer or unique files, 
+there is no data consistency issue between the cache and the backend dedup storage system.
 A cold layer eviction might be triggered on layers stored in the layer buffer.
-The cold layer will be evicted to the file cache, but first it will be deduped and then stored in file cache.
-The deduplication process includes the following steps that are applied on every victim layer evicted from the layer buffer to the file cache:
+The cold layer will be evicted to the file cache, but first it will be \emph{deduped} and then stored in file cache.
+The deduplication process (called dedup) includes the following steps 
+that are applied on every victim layer evicted from the layer buffer to the file cache:
 
 \begin{compactenumerate}
 	\item decompress and unpack the layer's tarball into individual files;
 	\item compute a \emph{fingerprint} for every file in the layer;
 	\item check every file's fingerprint against the \emph{fingerprint index} to
-	identify identical files already present in the file cache;
-	\item only store the unique files in the file cache and update the \NZ{unique file}
+	identify if identical files already present in the file cache;
+	\item only store the unique files in the file cache and update the 
 	\emph{file index} with unique files' fingerprints and file location along with its host address;
 	\item create and store a \emph{layer recipe} that includes the file path,
 	metadata, and fingerprint of every file in the layer;
@@ -44,9 +48,10 @@ The deduplication process includes the following steps that are applied on every
 
 Layer recipes are identified by layer digests and files are identified by their fingerprints.
 These identifiers are used to address corresponding objects in the underlying flash storage. 
-\emph{fingerprint index} and \emph{layer recipes} \HA{why are they in italic again?} are stored on Redis~\cite{redis}.
+Fingerprint index and layer recipes are stored on Redis~\cite{redis}.
 
-File cache is a flash-based distributed cache that can be implemented on distributed log structured store, \eg CORFU.
+File cache is a flash-based distributed cache that can be implemented on 
+distributed log structured store, \eg CORFU~\cite{xxx}.
 The unique files are flash-friendly because there is no modification to these files.
 %, meaning that there is no small write.?
 %
@@ -59,7 +64,7 @@ The unique files are flash-friendly because there is no modification to these fi
 The eviction of a cold layer from the layer buffer might also trigger the eviction of its files.
 And since the backend dedup storage system already stores a backup of the layers, 
 we can simply discard the victim files from the file cache.
-The cache replacement algorithm is presented in section~\cref{sec:design_cache_algori}. 
+The cache replacement algorithm is presented in last part of the section. 
 %\sysname\ handles push requests asynchronously.
 %\sysname 
 %does not immediately unpack the layer.
@@ -110,30 +115,25 @@ Otherwise, if it finds its containing files in file cache, that is a file cache 
 	%service it directly from there;
 	\item find the layer recipe by the layer digest and get the layers' containing files' \emph{fingerprints};
 	\item lookup the \emph{fingerprints} in \emph{fingerprint index} to get a destination server list.
-	\item forward the \texttt{pull} layer slice request and layer recipe to each server in the server list.
+	\item forward the \texttt{pull slice} layer request and layer recipe to each server in the server list.
 \end{compactenumerate}
 
-Once the \texttt{pull} layer slice request is received, each destination server will initiate a layer slice restoring process 
+Once the \texttt{pull slice} layer request is received, each destination server will initiate a layer slice restoring process 
 which performs the following steps: 
 
 \begin{compactenumerate}
-	\item Prepares a directory structure for the layer based on the layer recipe;
-	\item Copy the locally available files into the directory tree, 
-	\item Compresses the layer's directory tree into a temporary tarball;
-	\item Send the layer tarball back to the client and then discard the layer tarball.
+	\item prepares a directory structure for the layer based on the layer recipe;
+	\item copy the locally available files into the directory tree, 
+	\item compresses the layer's directory tree into a temporary tarball;
+	\item send the layer tarball back to the client and then discard the layer tarball.
 \end{compactenumerate}
 
-If A \texttt{pull} layer request is miss on both the layer buffer and the file cache, 
+If a \texttt{pull} layer request is miss on both the layer buffer and the file cache, 
 the request will be forwarded to the backend dedup storage system.
 The layer restoring process on the backend storage system is similar to restoring from the file cache.
 Many modern storage systems with the deduplication feature can be used as our backend storage system, including GFS~\cite{gfs}, HDFS~\cite{hdfs}, S3~\cite{s3}, and Swift~\cite{swift}.
 We can modify the above systems so that they can recognize the compressed layer file type and decompress them before performing deduplication.
-Moreover, the systems can restore layer slices in parallel. 
+Moreover, these systems should also be modified to restore layer slices in parallel. 
 %Note that there is no consistency issue between either layer buffer, file cache or backend storage because layers won't be changed in the future.
 
-\NZ{put in background or intro, conclusion, discussion?}
-At a high-level, registries act like a distributed cache siting closer to clients to provide better performance in terms of response time. 
-The layer buffer holds hot layers that belong to active users.
-%To improve the capacity limitation of the main memory cache, we utilize flash memory to store unique files since it offers fast random read access.
-The utilization of flash memory to store unique files not only mitigates the capacity limitation of the main memory cache, it also offers fast random read accesses.
-% a on a distributed flash-based store.  \\
+\input{dedup_algori}
