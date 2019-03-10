@@ -31,7 +31,7 @@ Layers are identified via a digest that is computed as a hash (SHA-256) over the
 
 %Docker registry is a web server that serves docker pull and docker push requests.
 Although Docker registry is a layer-level content addressable storage system holding all the images,
-it delegates storage to drivers which interact with either a local file system or a remote cloud storage like Amazon S3~\cite{S3}, Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, and Aliyun OSS~\cite{xxx} \HA{ref plz}. 
+it delegates storage to drivers which interact with either a local file system or a remote cloud storage like Amazon S3~\cite{s3}, Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, and Aliyun OSS~\cite{xxx} \HA{ref plz}. 
 For example, Google Container Registry~\cite{GoogleContainerRegistry} uses cloud storage as its backend Docker image store.
 Users \texttt{push} and \texttt{pull} Docker images to and from their repositories that are stored on cloud storage. 
 To facilitate a fast and high-availability service, container registries use regional private repositories across the world.  
