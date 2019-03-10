@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  9 MAR 2019 17:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  9 MAR 2019 20:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -334,7 +334,14 @@ Package cleveref Info: `algorithm2e' support loaded on input line 2966.
 )
 \gapspace=\skip74
 
-(./paper.aux)
+(./paper.aux
+
+LaTeX Warning: Label `sec:background' multiply defined.
+
+
+LaTeX Warning: Label `sec:background@cref' multiply defined.
+
+)
 \openout1 = `paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 75.
@@ -420,13 +427,13 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 37.
  (./fig-nodedupvsdedup.tex
-<graphs/nodedup.png, id=103, 595.22375pt x 433.62pt>
+<graphs/nodedup.png, id=63, 595.22375pt x 433.62pt>
 File: graphs/nodedup.png Graphic file (type png)
  <use graphs/nodedup.png>
 Package pdftex.def Info: graphs/nodedup.png used on input line 5.
 (pdftex.def)             Requested size: 104.88463pt x 76.40733pt.
 
-<graphs/dedup.png, id=105, 597.23125pt x 439.6425pt>
+<graphs/dedup.png, id=65, 597.23125pt x 439.6425pt>
 File: graphs/dedup.png Graphic file (type png)
  <use graphs/dedup.png>
 Package pdftex.def Info: graphs/dedup.png used on input line 11.
@@ -435,82 +442,66 @@ Package pdftex.def Info: graphs/dedup.png used on input line 11.
 [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
- <./graphs/nodedup.png> <./graphs/dedup.png>]) (./background.tex
+ <./graphs/nodedup.png> <./graphs/dedup.png>]
 
-LaTeX Warning: Citation `storreduce_purestorage' on page 2 undefined on input l
-ine 13.
+LaTeX Warning: Reference `sec:observation' on page 2 undefined on input line 44
+.
 
-(./fig-docker-architecture.tex
-<graphs/fig-docker-architecture-v3.pdf, id=135, 2112.89375pt x 1179.40625pt>
-File: graphs/fig-docker-architecture-v3.pdf Graphic file (type pdf)
 
-<use graphs/fig-docker-architecture-v3.pdf>
-Package pdftex.def Info: graphs/fig-docker-architecture-v3.pdf used on input li
-ne 4.
-(pdftex.def)             Requested size: 223.7458pt x 124.89409pt.
-)
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 38.
+LaTeX Warning: Reference `sec:dedup-analysis' on page 2 undefined on input line
+ 46.
+
+
+LaTeX Warning: Reference `sec:Sift' on page 2 undefined on input line 46.
+
+) (./background.tex
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 22.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 3049) in paragraph at lines 45--49
-[]\OT1/ptm/m/n/10 Docker Hub is one of the most pop-u-lar pub-
+Underfull \hbox (badness 1430) in paragraph at lines 25--25
+[]\OT1/ptm/b/n/12 Docker reg-istry and back-end cloud
  []
 
 
-Underfull \hbox (badness 4254) in paragraph at lines 45--49
-\OT1/ptm/m/n/10 lic reg-istries, sup-port-ing both pub-lic and pri-vate
+LaTeX Warning: Citation `xxxx' on page 2 undefined on input line 37.
+
+
+LaTeX Warning: Citation `xxx' on page 2 undefined on input line 37.
+
+
+LaTeX Warning: Citation `xxxx' on page 2 undefined on input line 37.
+
+
+LaTeX Warning: Citation `xxx' on page 2 undefined on input line 37.
+
+(./observation.tex
+
+LaTeX Warning: Citation `storreduce_purestorage' on page 2 undefined on input l
+ine 38.
+
+
+LaTeX Warning: Citation `xxx' on page 2 undefined on input line 41.
+
+
+LaTeX Warning: Citation `xxx' on page 2 undefined on input line 41.
+
+
+Underfull \hbox (badness 6927) in paragraph at lines 37--43
+ []\OT1/ptm/b/n/10 Deduplication for Docker reg-istries?.[] \OT1/ptm/m/n/10 On-
+cloud
  []
 
 
-Underfull \hbox (badness 3219) in paragraph at lines 45--49
-\OT1/ptm/m/n/10 repos-i-to-ries, via which users can up-load, search,
+Underfull \hbox (badness 1048) in paragraph at lines 37--43
+\OT1/ptm/m/n/10 global dedu-pli-ca-tion soft-ware is widely adopted by
  []
 
 
-Underfull \hbox (badness 2426) in paragraph at lines 45--49
-\OT1/ptm/m/n/10 and down-load im-ages [[]]. In Docker Hub, the
- []
+LaTeX Warning: Citation `xxx' on page 2 undefined on input line 71.
 
-[2 <./graphs/fig-docker-architecture-v3.pdf>]
-
-LaTeX Warning: Citation `?' on page 3 undefined on input line 90.
-
-
-LaTeX Warning: Citation `?' on page 3 undefined on input line 90.
-
-
-LaTeX Warning: Citation `?' on page 3 undefined on input line 90.
-
-
-LaTeX Warning: Citation `?' on page 3 undefined on input line 90.
-
-
-LaTeX Warning: Citation `?' on page 3 undefined on input line 90.
-
-
-Underfull \hbox (badness 2418) in paragraph at lines 94--94
-[]\OT1/ptm/b/n/12 Apply tra-di-tional dedu-pli-ca-tion ap-
- []
-
-) (./observation.tex [3] (./fig-file-repeat-cnt.tex
-<graphs/File_repeat_count-eps.pdf, id=208, 335.74274pt x 191.20212pt>
-File: graphs/File_repeat_count-eps.pdf Graphic file (type pdf)
-
-<use graphs/File_repeat_count-eps.pdf>
-Package pdftex.def Info: graphs/File_repeat_count-eps.pdf used on input line 16
-.
-(pdftex.def)             Requested size: 116.53531pt x 66.36449pt.
-
-<graphs/dedup-ratio-grow.pdf, id=209, 274.29378pt x 196.53024pt>
-File: graphs/dedup-ratio-grow.pdf Graphic file (type pdf)
-
-<use graphs/dedup-ratio-grow.pdf>
-Package pdftex.def Info: graphs/dedup-ratio-grow.pdf used on input line 25.
-(pdftex.def)             Requested size: 93.22682pt x 66.7954pt.
-)) (./observation-traces.tex
-(./fig-skewness-reusetime.tex
+[2]) (./observation-traces.tex (./fig-skewness-reusetime.tex
 Package epstopdf Info: Source file: <graphs/skewness_cdf.eps>
 (epstopdf)                    date: 2019-03-09 14:01:34
 (epstopdf)                    size: 48166 bytes
@@ -522,7 +513,7 @@ nverted-to.pdf graphs/skewness_cdf.eps>
 (epstopdf)             \includegraphics on input line 5.
 Package epstopdf Info: Output file is already uptodate.
 
-<graphs/skewness_cdf-eps-converted-to.pdf, id=211, 412.97435pt x 331.58083pt>
+<graphs/skewness_cdf-eps-converted-to.pdf, id=101, 412.97435pt x 331.58083pt>
 File: graphs/skewness_cdf-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graphs/skewness_cdf-eps-converted-to.pdf>
@@ -540,105 +531,21 @@ erted-to.pdf graphs/reuse_time.eps>
 (epstopdf)             \includegraphics on input line 11.
 Package epstopdf Info: Output file is already uptodate.
 
-<graphs/reuse_time-eps-converted-to.pdf, id=212, 419.21498pt x 332.5986pt>
+<graphs/reuse_time-eps-converted-to.pdf, id=102, 419.21498pt x 332.5986pt>
 File: graphs/reuse_time-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graphs/reuse_time-eps-converted-to.pdf>
 Package pdftex.def Info: graphs/reuse_time-eps-converted-to.pdf used on input l
 ine 11.
 (pdftex.def)             Requested size: 104.88463pt x 83.21034pt.
-)) (./dedup_analysis.tex
-(./methodology.tex) (./dedup_ratio.tex [4 <./graphs/File_repeat_count-eps.pdf> 
-<./graphs/dedup-ratio-grow.pdf> <./graphs/skewness_cdf-eps-converted-to.pdf> <.
-/graphs/reuse_time-eps-converted-to.pdf>] (./fig-layer-size-compress-cdf.tex
-<graphs/shared-cnt-cdf.pdf, id=307, 335.20532pt x 204.81117pt>
-File: graphs/shared-cnt-cdf.pdf Graphic file (type pdf)
-
-<use graphs/shared-cnt-cdf.pdf>
-Package pdftex.def Info: graphs/shared-cnt-cdf.pdf used on input line 5.
-(pdftex.def)             Requested size: 111.87645pt x 68.35667pt.
-
-<graphs/layer-size-cdf.pdf, id=308, 311.92635pt x 204.05836pt>
-File: graphs/layer-size-cdf.pdf Graphic file (type pdf)
-
-<use graphs/layer-size-cdf.pdf>
-Package pdftex.def Info: graphs/layer-size-cdf.pdf used on input line 11.
-(pdftex.def)             Requested size: 102.55164pt x 67.08725pt.
-)
-Underfull \hbox (badness 6047) in paragraph at lines 127--133
-\OT1/ptm/m/n/10 re-peat 3,338,145 -- 11,847,356 times. Specif-i-
- []
-
-
-Underfull \hbox (badness 1231) in paragraph at lines 127--133
-\OT1/ptm/m/n/10 cally, two files \OT1/pcr/m/n/10 libkrb5-3:amd64.postrm \OT1/pt
-m/m/n/10 and
- []
-
-
-Underfull \hbox (badness 3396) in paragraph at lines 127--133
-\OT1/pcr/m/n/10 libkrb5-3:amd64.postinst \OT1/ptm/m/n/10 are two Ker-ber-
- []
-
-
-Underfull \hbox (badness 7151) in paragraph at lines 127--133
-\OT1/ptm/m/n/10 os run-time li-braries for \OT1/pcr/m/n/10 dpkg\OT1/ptm/m/n/10 
-. An-other two
- []
-
-
-Underfull \hbox (badness 8000) in paragraph at lines 127--133
-\OT1/ptm/m/n/10 files are re-lated to the \OT1/pcr/m/n/10 npm \OT1/ptm/m/n/10 p
-ack-age man-ager
- []
-
-
-Underfull \hbox (badness 3735) in paragraph at lines 127--133
-\OT1/ptm/m/n/10 (\OT1/pcr/m/n/10 license \OT1/ptm/m/n/10 and \OT1/pcr/m/n/10 .n
-pmignore\OT1/ptm/m/n/10 ) and the last file,
- []
-
-) (./dedup_types.tex (./fig-dedup-overall.tex
-<graphs/dedup-overall.pdf, id=312, 520.99342pt x 191.26056pt>
-File: graphs/dedup-overall.pdf Graphic file (type pdf)
-
-<use graphs/dedup-overall.pdf>
-Package pdftex.def Info: graphs/dedup-overall.pdf used on input line 3.
-(pdftex.def)             Requested size: 186.45366pt x 68.44809pt.
-) [5 <./graphs/shared-cnt-cdf.pdf> <./graphs/layer-size-cdf.pdf> <./graphs/dedu
-p-overall.pdf>]
-Underfull \hbox (badness 2150) in paragraph at lines 99--137
-\OT1/ptm/m/n/10 files oc-cupy over half of the to-tal dataset ca-pac-
- []
-
-
-Underfull \hbox (badness 1168) in paragraph at lines 99--137
-\OT1/ptm/m/n/10 ity (51.4%). We an-a-lyze the top-5 most fre-quent
- []
-
-
-Underfull \hbox (badness 6625) in paragraph at lines 99--137
-\OT1/ptm/m/n/10 which stores news about pack-age changes, has
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 99--137
-\OT1/ptm/m/n/10 521,611 copies and \OT1/pcr/m/n/10 pwunconv.8.gz\OT1/ptm/m/n/10
- , which
- []
-
-
-Underfull \hbox (badness 3525) in paragraph at lines 99--137
-\OT1/ptm/m/n/10 is used to cre-ate pass-words has 358,374 copies.
- []
-
-)) (./design-and-eval.tex (./dedup_design.tex
+))) (./design-and-eval.tex
+(./dedup_design.tex
 Underfull \hbox (badness 10000) in paragraph at lines 1--1
 []\OT1/ptm/b/n/12 Integrating dedu-pli-ca-tion, caching,
  []
 
 (./fig-sys-overview.tex
-<graphs/sys-architecture.png, id=344, 730.73pt x 564.1075pt>
+<graphs/sys-architecture.png, id=106, 730.73pt x 564.1075pt>
 File: graphs/sys-architecture.png Graphic file (type png)
 
 <use graphs/sys-architecture.png>
@@ -650,29 +557,33 @@ Overfull \hbox (9.03375pt too wide) in paragraph at lines 5--6
  []
 
 )
-LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <10> not available
-(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 38.
- [6 <./graphs/sys-architecture.png>]
 Missing character: There is no Â in font ptmr7t!
 Missing character: There is no § in font ptmr7t!
 Missing character: There is no Â in font ptmr7t!
 Missing character: There is no § in font ptmr7t!
-) (./dedup_operations.tex [7]
+ [3 <./graphs/skewness_cdf-eps-converted-to.pdf> <./graphs/reuse_time-eps-conve
+rted-to.pdf> <./graphs/sys-architecture.png>]
+Missing character: There is no Â in font ptmr7t!
+Missing character: There is no § in font ptmr7t!
+Missing character: There is no Â in font ptmr7t!
+Missing character: There is no § in font ptmr7t!
+) (./dedup_operations.tex
+[4]
 Missing character: There is no Â in font ptmr7t!
 Missing character: There is no § in font ptmr7t!
 
 
-LaTeX Warning: Citation `gfs' on page 8 undefined on input line 129.
+LaTeX Warning: Citation `gfs' on page 5 undefined on input line 129.
 
 
-LaTeX Warning: Citation `s3' on page 8 undefined on input line 129.
+LaTeX Warning: Citation `s3' on page 5 undefined on input line 129.
 
 
-LaTeX Warning: Citation `swift' on page 8 undefined on input line 129.
+LaTeX Warning: Citation `swift' on page 5 undefined on input line 129.
 
 ) (./dedup_algori.tex (./cache_algori.tex)
 
-LaTeX Warning: Reference `xxx' on page 8 undefined on input line 7.
+LaTeX Warning: Reference `xxx' on page 5 undefined on input line 7.
 
 Missing character: There is no Â in font ptmr7t!
 Missing character: There is no § in font ptmr7t!
@@ -681,8 +592,8 @@ Underfull \hbox (badness 4291) in paragraph at lines 16--25
 []\OT1/ptm/m/n/10 Free space in the layer buffer is too low if
  []
 
-[8])) (./dedup_simulation_performance.tex (./fig_dedup_res.tex
-<graphs/res-time.pdf, id=396, 469.20695pt x 198.78868pt>
+[5])) (./dedup_simulation_performance.tex (./fig_dedup_res.tex
+<graphs/res-time.pdf, id=191, 469.20695pt x 198.78868pt>
 File: graphs/res-time.pdf Graphic file (type pdf)
 
 <use graphs/res-time.pdf>
@@ -694,8 +605,14 @@ Underfull \hbox (badness 1997) in paragraph at lines 116--133
 -formed
  []
 
-) (./dedup_suggestions.tex) (./relatedwork.tex [9 <./graphs/res-time.pdf>])
-(./conclusion.tex) (./paper.bbl
+
+LaTeX Warning: Reference `fig:layer-size-cdf' on page 6 undefined on input line
+ 216.
+
+) (./dedup_suggestions.tex) (./relatedwork.tex
+Underfull \vbox (badness 7888) has occurred while \output is active []
+
+ [6 <./graphs/res-time.pdf>]) (./conclusion.tex) (./paper.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 20--22
 []\OT1/ptm/m/n/8 Dockerfile.  [][]$\OT1/pcr/m/n/8 https : / / docs . docker . c
 om / engine /
@@ -736,35 +653,38 @@ Underfull \hbox (badness 10000) in paragraph at lines 77--79
 b . com /
  []
 
-[10])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 254.
- [11
+[7])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 252.
+ [8
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 254.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 252.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 254.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 254.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 252.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 252.
 Package rerunfilecheck Info: File `paper.out' has not changed.
-(rerunfilecheck)             Checksum: 3DC5228D01A415551647DB1AE46B8585;1629.
+(rerunfilecheck)             Checksum: 6AE7386BFB284DE5AF7B72FC297E26E0;930.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 254.
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 252.
  )
 (\end occurred inside a group at level 1)
 
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 9361 strings out of 493014
- 150300 string characters out of 6133351
- 272403 words of memory out of 5000000
- 12572 multiletter control sequences out of 15000+600000
- 30537 words of font info for 70 fonts, out of 8000000 for 9000
+ 9252 strings out of 493014
+ 148071 string characters out of 6133351
+ 273403 words of memory out of 5000000
+ 12521 multiletter control sequences out of 15000+600000
+ 30022 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 30i,19n,35p,640b,3039s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 30i,19n,35p,640b,3043s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
 }</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></
@@ -772,15 +692,14 @@ usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></us
 r/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/l
 ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/lo
 cal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></us
-r/local/texlive/2016/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/local/
-texlive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/
-2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf
--dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2016/texmf-dist/font
-s/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (11 pages, 811667 bytes).
+r/local/texlive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/
+texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/20
+16/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2016/texmf-d
+ist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on paper.pdf (8 pages, 597200 bytes).
 PDF statistics:
- 574 PDF objects out of 1000 (max. 8388607)
- 479 compressed objects within 5 object streams
- 128 named destinations out of 1000 (max. 500000)
- 253 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 374 PDF objects out of 1000 (max. 8388607)
+ 333 compressed objects within 4 object streams
+ 102 named destinations out of 1000 (max. 500000)
+ 143 words of extra memory for PDF output out of 10000 (max. 10000000)
 

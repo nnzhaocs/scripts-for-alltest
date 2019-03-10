@@ -1,24 +1,14 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section.2}{Background}{}% 2
-\BOOKMARK [2][-]{subsection.2.1}{Docker, Docker registry, and Registry backend storage systems}{section.2}% 3
-\BOOKMARK [2][-]{subsection.2.2}{Cloud Storage and Deduplication}{section.2}% 4
-\BOOKMARK [2][-]{subsection.2.3}{Web/Proxy cache}{section.2}% 5
-\BOOKMARK [2][-]{subsection.2.4}{Apply traditional deduplication approaches to registries?}{section.2}% 6
-\BOOKMARK [2][-]{subsection.2.5}{Use-cases of Slimmer}{section.2}% 7
-\BOOKMARK [1][-]{section.3}{Observations and Motivation}{}% 8
-\BOOKMARK [2][-]{subsection.3.1}{Need for Deduplication}{section.3}% 9
-\BOOKMARK [2][-]{subsection.3.2}{Need for User behavior based cache management}{section.3}% 10
-\BOOKMARK [1][-]{section.4}{Deduplication analysis}{}% 11
-\BOOKMARK [2][-]{subsection.4.1}{Methodology}{section.4}% 12
-\BOOKMARK [2][-]{subsection.4.2}{Data reduction analysis}{section.4}% 13
-\BOOKMARK [2][-]{subsection.4.3}{Deduplication by file types}{section.4}% 14
-\BOOKMARK [1][-]{section.5}{Sift Design}{}% 15
-\BOOKMARK [2][-]{subsection.5.1}{Integrating deduplication, caching, and Docker registries}{section.5}% 16
-\BOOKMARK [2][-]{subsection.5.2}{Design challenges}{section.5}% 17
-\BOOKMARK [2][-]{subsection.5.3}{Design}{section.5}% 18
-\BOOKMARK [2][-]{subsection.5.4}{Operations}{section.5}% 19
-\BOOKMARK [2][-]{subsection.5.5}{User-based Cache Algorithm}{section.5}% 20
-\BOOKMARK [1][-]{section.6}{Preliminary evaluation}{}% 21
-\BOOKMARK [1][-]{section.7}{Discussion}{}% 22
-\BOOKMARK [1][-]{section.8}{Related work}{}% 23
-\BOOKMARK [1][-]{section.9}{Conclusion}{}% 24
+\BOOKMARK [1][-]{section.2}{Background, observations, and motivation}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Docker registry and backend cloud storage systems}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Observations and Motivation}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Need for User Behavior based Cache Management}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Sift Design}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Integrating deduplication, caching, and Docker registries}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Design}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.3}{Operations}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.4}{User-based Cache Algorithm}{section.3}% 10
+\BOOKMARK [1][-]{section.4}{Preliminary evaluation}{}% 11
+\BOOKMARK [1][-]{section.5}{Discussion}{}% 12
+\BOOKMARK [1][-]{section.6}{Related work}{}% 13
+\BOOKMARK [1][-]{section.7}{Conclusion}{}% 14
