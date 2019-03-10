@@ -14,52 +14,62 @@
 %
 %For the sake of this paper, we explain only the main steps omitting smaller
 %details.
-\Ali{Following text makes no sense.. what are you trying to explain??
-\sysname~seamlessly integrates the management of cache, deduplication on
-backend storage system (called backend dedup storage), and Docker registries.
-Traditionally, caches are placed as close to the requesting client as possible,
-such caches are known as proxy caches, or web/HTTP caches for the temporary
-storage of frequently requested data to reduce the server's lag.  They are
-typically deployed in a regional ISP or within a corporate network.
-Deduplication methods are implemented on remote backend storage servers, and
-transparently remove duplicates from the incoming data stream and restore the
-data for read requests.}
+\Ali{Following text makes no sense.. what are you trying to explain??}
+\NZ{This part includes our architecture. Our architecture doesn't required many words to explain}
+%
+%Traditionally, Docker registry is a web server that serves Docker
+%\texttt{pull} and Docker \texttt{push} requests.  Although Docker registry is a
+%layer-level content addressable storage system holding all the images, it
+%delegates storage to drivers which interact with either a local file system or
+%a remote cloud storage like S3~\cite{xxx}, Microsoft Azure~\cite{xxxx}, OpenStack Swift~\cite{xxx}, and Aliyun
+%OSS~\cite{xxx} as shown in Figure~\ref{fig:sys-overview}.
+%Deduplication methods are implemented on remote cloud storage servers or data centers to
+%transparently remove duplicates from the incoming data stream.
 
+%proxy caches, or web/HTTP caches 
+%Modern container registries such as Google Container Registry~\cite{GoogleContainerRegistry} use cloud storage as their backend Docker image storage systems. 
+%Users push and pull Docker images to and from their repositories stored on cloud storage. 
+%
+%To facilitate a fast and high-availability service, container registries use regional private repositories across the world.  
+%This geographical distribution allows users to store images close to their compute instances and experience a fast response time. 
+%For example, IBM's Container Registry setup spans five regions~\cite{dockerworkload}. 
+
+%caches are placed as close to the requesting client as possible,
+%such caches are known as for the temporary
+%storage of frequently requested data to reduce the server's lag.  They are
+%typically deployed in a regional ISP or within a corporate network.
+
+\sysname~seamlessly integrates the management of cache, deduplication on
+backend storage system (called backend dedup storage), and Docker registries
 \Ali{Following information should be part of Background section..
-Docker registry is a web server that serves Docker
-\texttt{pull} and Docker \texttt{push} requests.  Although Docker registry is a
-layer-level content addressable storage system holding all the images, it
-delegates storage to drivers which interact with either a local file system or
-a remote cloud storage like S3, Microsoft Azure, OpenStack Swift, and Aliyun
-OSS.  Intuitively, registries can be deployed as a proxy cache to host
+Intuitively, registries can be deployed as a proxy cache to host
 frequently requested layers.  This approach, a registry as a pull-through
 cache, speeds up image pulls and improves overall performance.  At the same
 time, the backend cloud storage can leverage deduplication to save storage
-space.}
-
-
-\subsection{Design challenges}
-There are several unique problems concerning the integration
+space.}\NZ{moved}
+%A traditional backend dedup storage cannot meet registry performance requirement
+%especially for \texttt{pull} requests due to the large overhead during layer restoring. 
+%\subsection{Design challenges}
+and solves the unique problems concerning the integration
 of caching and deduplication to the Docker registry.
-%
 First, for caching layers, \texttt{pull} layer requests are difficult to
 predict because same layers are not accessed frequently.
-We observed that, on average, around half of the cached layers' are not
-accessed again for at least 4 hours which means that if we
-cache a layer, we might need to wait hours to get a hit on that layer.  
+We observed that, around half of the cached layers' are not
+accessed again for at least 1.3 hours which means that if we
+cache a layer, we might need to wait hours to get a hit on that layer as mentioned in~\cref{sec:background}.  
 This is
 because when a user pulls an image from the registry, the Docker daemon on the
 requesting host will only pull the layers that are not locally stored.
 \Ali{I do not understand the following sentence.}
-Moreover, we have to consider that a user might deploy an applications on
-multiple machines, so it's not easy to predict when a user will access which layers. 
+%Moreover, we have to consider that a user might deploy an applications on
+%multiple machines, so it's not easy to predict when a user will access which layers. 
 Ali Anwar et
 al., proposed a prefetching method~\cite{dockerworkload} based on the
 \texttt{push}-\texttt{pull} relationship: when there is a \texttt{PUSH} layer
 request directly followed by a \texttt{GET} manifest request, a \texttt{GET}
 layer request will most probably follow. 
-However, based on our trace\HA{we have to mention which trace???} analysis,
-only half of the \texttt{pull} layer
+However, based on our trace\HA{we have to mention which trace???} analysis in~\cref{sec:background},
+only half of the \texttt{GET} layer
 requests have a precedent \texttt{PUSH} layer request within the trace
 collecting duration of 75 days. This means that, after a user pushes a layer
 to the registry, it takes a few days, weeks, or even months for a user to make
@@ -71,15 +81,17 @@ should have a precedent GET layer request which is wrong. We can make a case
 that not all GET layers requests have a precedent PUSH layer request but we can
 not say that it takes a few days, weeks, or even months for a user to make a pull
 layer request after a push layer request.}
-
+\NZ{I mean the first case, push beyond your trace collection time.}
+%
 Second, we can not deduplicate compressed layers. Hence, for deduplication each layer
 needs to be uncompressed and then undergo a file-level deduplication. Similarly,
 to restore a layer, we need to fetch files from multiple servers and then compress
 them in to a tar file. 
 This whole process can cause a 
 considerable overhead on \texttt{pull} layer requests performance.
-\Ali{Explain how push layer requests are not effected?}
-
+Deduplication also slows down
+\texttt{push} layer requests because its highly demand for CPU, memory, I/O, and network resources.
+\Ali{Explain how push layer requests are not effected?}\NZ{fixed}
 
 \subsection{Design}
 To meet these challenges, we propose a new registry design featuring a user
