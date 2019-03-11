@@ -24,7 +24,7 @@ In this subsection we explain Docker operations integration with \sysname.
 \textbf{Push.}
 After receiving a \texttt{push} layer request from the client, 
 \sysname~first buffers the layer in the layer buffer for later accesses. 
-The layer buffer can be implemented on a distributed in-memory store,~\eg Plusma~\cite{xxx}.
+The layer buffer can be implemented on a distributed in-memory store,~\eg Plasma~\cite{plasma}.
 Meantime, \sysname~will also submit this layer to the backend dedup storage system.
 Our layer buffer and file cache use write through policies. 
 Since there is no modification to the layer or unique files, 
