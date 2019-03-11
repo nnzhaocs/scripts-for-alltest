@@ -133,11 +133,11 @@ We call all the files belonging to a layer that are stored on a specific server 
 \emph{slice} of the layer.
 To avoid the network latency caused by fetching slices from different servers and
 assembling them into a whole compressed layer, the \texttt{pull} request will
-be spitted into several \texttt{pull slice} requests and 
+be split into several~\texttt{pull slice}~requests. Those requests will then be
 forwarded to all the backend servers that store the requested
-layer's slice.  
-After \texttt{pull slice} request is received, each backend server compresses the slice 
-and directly send the compressed slices back to the user.
+layer's slices. 
+After the~\texttt{pull slice}~request is received, each backend server compresses the slice 
+and directly send it back to the user.
 We modify the Docker client
 interface such that when it receives all the compressed slices, it can
 decompress them into a single layer. 
