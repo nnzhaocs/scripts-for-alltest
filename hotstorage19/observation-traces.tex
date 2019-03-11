@@ -35,10 +35,10 @@
 %\paragraph{Layers that belong to the same repo have different popularity}
 \input{fig-skewness-reusetime}
 %We analyzed IBM container registry workload in Dallas(\texttt{dal})~\cite{dockerworkload} and made the following observations.
-The following observations are obtained by analyzing the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
+%The following observations are obtained by analyzing the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
 \paragraph{Requests to layers are heavily skewed but layer reuse time is very long}
-
-Figure~\ref{fig:sknewss} shows the registry accesses to layers and repositories, and accesses by users. 
+We also analyzed the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
+As shown in Figure~\ref{fig:sknewss}, the registry accesses to layers and repositories, and accesses by users. 
 Layer accesses are heavily skewed. For example, 25\% of popular layers account for 80\% of all requests. 
 For repository accesses and accesses by users, the skew is more significant than it is for layers. %10\% most frequently accessed repositories account for 94\% of all requests
 94\% of all requests are accessing only 10\% of the most frequently accessed repositories and only 9\% of users, most active ones, issued 97\% of all requests. 

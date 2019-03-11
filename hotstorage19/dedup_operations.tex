@@ -3,10 +3,10 @@
 
 %\paragraph{Workflow}
 %
-The Docker registry API is almost the same as the original registry.
-The user's interaction with the Docker client is unchanged. 
-The user simply pushes and pulls images to and from the registry. 
-In this subsection we explain Docker operations integration with \sysname.
+The proposed Docker registry API is very similar to the original registry.
+Interactions with the Docker client is unchanged: 
+a user simply pushes and pulls images to and from the registry. 
+In the followin, we explain Docker operations integration with \sysname.
 
 %\sysname~ is composed of five main components(see Figure~\ref{onshareddir}):
 %a modified Docker client,
@@ -25,25 +25,25 @@ In this subsection we explain Docker operations integration with \sysname.
 After receiving a \texttt{push} layer request from the client, 
 \sysname~first buffers the layer in the layer buffer for later accesses. 
 The layer buffer can be implemented on a distributed in-memory store,~\eg Plasma~\cite{plasma}.
-Meantime, \sysname~will also submit this layer to the backend dedup storage system.
+At the same time, \sysname~will also submit the layer to the backend dedup storage system.
 Our layer buffer and file cache use write through policies. 
 Since there is no modification to the layer or unique files, 
 there is no data consistency issue between the cache and the backend dedup storage system.
-A cold layer eviction might be triggered on layers stored in the layer buffer.
-The cold layer will be evicted to the file cache, but first it will be \emph{deduped} and then stored in file cache.
-The deduplication process (called dedup) includes the following steps 
+A cold layer eviction may be triggered on layers stored in the layer buffer.
+The cold layer will be evicted to the file cache, but before that can happen, it will be \emph{deduped}.
+The deduplication process includes the following steps 
 that are applied on every victim layer evicted from the layer buffer to the file cache:
 
 \begin{compactenumerate}
 	\item decompress and unpack the layer's tarball into individual files;
 	\item compute a \emph{fingerprint} for every file in the layer;
 	\item check every file's fingerprint against the \emph{fingerprint index} to
-	identify if identical files already present in the file cache;
+	identify if identical files are already present in the file cache;
 	\item only store the unique files in the file cache and update the 
-	\emph{file index} with unique files' fingerprints and file location along with its host address;
+	\emph{file index} with the unique files' fingerprints, location, and its host address;
 	\item create and store a \emph{layer recipe} that includes the file path,
-	metadata, and fingerprint of every file in the layer;
-	\item remove the layer's tarball from the layer buffer.
+	metadata, and fingerprint of every file in the layer; and
+	\item remove the layer's tarball from the layer buffer, completing eviction.
 \end{compactenumerate}
 
 Layer recipes are identified by layer digests and files are identified by their fingerprints.
