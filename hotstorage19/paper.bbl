@@ -1,12 +1,17 @@
 \begin{thebibliography}{10}
 
-\bibitem{NDK}
-{Android Native Development Kit (NDK)}.
-\newblock \url{https://github.com/android-ndk/ndk}.
+\bibitem{ibmregistry}
+About ibm cloud container registry.
+\newblock
+  \url{https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_overview}.
 
-\bibitem{cowsay}
-{cowsay}.
-\newblock \url{https://github.com/piuccio/cowsay}.
+\bibitem{aliyun}
+{Aliyun Open Storage Service (Aliyun OSS)}.
+\newblock \url{https://cn.aliyun.com/product/oss?spm=5176.683009.2.4.Wma3SL}.
+
+\bibitem{s3}
+Amazon s3.
+\newblock \url{https://aws.amazon.com/s3/}.
 
 \bibitem{docker}
 Docker.
@@ -16,30 +21,6 @@ Docker.
 {Docker Hub}.
 \newblock \url{https://hub.docker.com/}.
 
-\bibitem{Dockerfile}
-{Dockerfile}.
-\newblock \url{https://docs.docker.com/engine/reference/builder/}.
-
-\bibitem{lz4}
-{Extremely Fast Compression algorithm}.
-\newblock \url{https://github.com/lz4/lz4}.
-
-\bibitem{github}
-{GitHub}.
-\newblock \url{https://github.com/}.
-
-\bibitem{go-ethereum}
-go-ethereum.
-\newblock \url{https://github.com/ethereum/go-ethereum}.
-
-\bibitem{GoogleCloudStoragePricing}
-Google cloud storage pricing.
-\newblock \url{https://cloud.google.com/storage/pricing#storage-pricing}.
-
-\bibitem{googletest}
-Google test.
-\newblock \url{https://github.com/google/googletest}.
-
 \bibitem{GoogleContainerRegistry}
 Google's container registry.
 \newblock \url{https://cloud.google.com/container-registry/}.
@@ -48,34 +29,37 @@ Google's container registry.
 hdfs.
 \newblock \url{https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html}.
 
-\bibitem{openvz}
-{OpenVZ Linux Containers Wiki}.
-\newblock \url{http://openvz.org/}.
+\bibitem{azure}
+Microsoft azure storage.
+\newblock \url{https://azure.microsoft.com/en-us/services/storage/}.
 
-\bibitem{pymagic}
-{python-magic}.
-\newblock \url{https://github.com/ahupp/python-magic}.
+\bibitem{swift}
+Openstack swift.
+\newblock \url{https://docs.openstack.org/swift}.
 
 \bibitem{redis}
 {redis}.
 \newblock \url{https://redis.io/}.
 
-\bibitem{singularity}
-{singularity}.
-\newblock \url{http://singularity.lbl.gov/}.
+\bibitem{registryascache}
+{Registry as a pull through cache}.
+\newblock \url{https://docs.docker.com/registry/recipes/mirror/}.
 
-\bibitem{spark}
-spark.
-\newblock \url{https://spark.apache.org/}.
+\bibitem{squid}
+{Squid Cache - Optimising Web Delivery}.
+\newblock \url{http://www.squid-cache.org/}.
 
-\bibitem{StorReduce_google}
-{Using StorReduce for cloud-based data deduplication}.
-\newblock
-  \url{https://cloud.google.com/solutions/partners/storreduce-cloud-deduplication}.
+\bibitem{storReduce}
+Storreduce.
+\newblock \url{http://storreduce.com}.
 
-\bibitem{xnu-chroot-environment}
-xnu-chroot-environment.
-\newblock \url{https://github.com/winocm/xnu-chroot-environment}.
+\bibitem{plasma}
+{The Plasma In-Memory Object Store}.
+\newblock \url{https://arrow.apache.org/docs/python/plasma.html}.
+
+\bibitem{varnish}
+{Varnish HTTP Cache}.
+\newblock \url{https://varnish-cache.org/}.
 
 \bibitem{dockerworkload}
 {\sc Anwar, A., Mohamed, M., Tarasov, V., Littley, M., Rupprecht, L., Cheng,
@@ -84,6 +68,14 @@ xnu-chroot-environment.
 \newblock Improving docker registry design based on production workload
   analysis.
 \newblock In {\em USENIX FAST'18}.
+
+\bibitem{180277}
+{\sc Balakrishnan, M., Malkhi, D., Prabhakaran, V., Wobbler, T., Wei, M., and
+  Davis, J.~D.}
+\newblock {CORFU}: A shared log design for flash clusters.
+\newblock In {\em Presented as part of the 9th {USENIX} Symposium on Networked
+  Systems Design and Implementation ({NSDI} 12)\/} (San Jose, CA, 2012),
+  {USENIX}, pp.~1--14.
 
 \bibitem{dockerssd}
 {\sc Bhimani, J., Yang, J., Yang, Z., Mi, N., Xu, Q., Awasthi, M., Pandurangan,
@@ -102,6 +94,10 @@ xnu-chroot-environment.
   Gall, H.~C.}
 \newblock {An Empirical Analysis of the Docker Container Ecosystem on GitHub}.
 \newblock In {\em IEEE MSR'17}.
+
+\bibitem{ghemawat2003google}
+{\sc Ghemawat, S., Gobioff, H., and Leung, S.-T.}
+\newblock The google file system.
 
 \bibitem{slacker}
 {\sc Harter, T., Salmon, B., Liu, R., Arpaci-Dusseau, A.~C., and
@@ -132,21 +128,18 @@ xnu-chroot-environment.
 \newblock A study on data deduplication in {HPC} storage systems.
 \newblock In {\em ACM/IEEE SC'12}.
 
+\bibitem{meister2012study}
+{\sc Meister, D., Kaiser, J., Brinkmann, A., Cortes, T., Kuhn, M., and Kunkel,
+  J.}
+\newblock A study on data deduplication in hpc storage systems.
+\newblock In {\em Proceedings of the International Conference on High
+  Performance Computing, Networking, Storage and Analysis\/} (2012), IEEE
+  Computer Society Press, p.~7.
+
 \bibitem{2001-low_bandwidth_network_fs-sosp}
 {\sc Muthitacharoen, A., Chen, B., and Mazieres, D.}
 \newblock A low-bandwidth network file system.
 \newblock In {\em ACM SOSP'01}.
-
-\bibitem{pooranian2018rare}
-{\sc Pooranian, Z., Chen, K.-C., Yu, C.-M., and Conti, M.}
-\newblock Rare: Defeating side channels based on data-deduplication in cloud
-  storage.
-\newblock In {\em IEEE INFOCOM 2018-IEEE Conference on Computer Communications
-  Workshops (INFOCOM WKSHPS)\/} (2018), IEEE, pp.~444--449.
-
-\bibitem{MD5}
-{\sc Rivest, R.}
-\newblock The md5 message-digest algorithm.
 
 \bibitem{2013-charact_increment_changes_data_protect-atc}
 {\sc Shim, H., Shilane, P., and Hsu, W.}

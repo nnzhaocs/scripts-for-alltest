@@ -31,6 +31,9 @@ all: paper.pdf
 
 paper.pdf: paper.tex
 	latexmk -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make paper.tex
+ifeq ($(USER), butta)
+	evince paper.pdf
+endif
 
 clean:
 	latexmk -CA
