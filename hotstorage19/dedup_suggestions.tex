@@ -1,7 +1,7 @@
-\section{Discussion \& Conclusion}
-\label{sec:Discussion&Conclusion}
+\section{Conclusion}
+\label{sec:Conclusion}
 %\NZ{put in background or intro, conclusion, discussion?}
-This paper presents \sysname~that integrates caching, and deduplication with Docker registry to
+This paper presents \sysname~that integrates caching and deduplication with the Docker registry to
 improve its performance and to decrease the backend storage capacity requirement. 
 %The layer buffer holds hot layers that belong to active users.
 %To improve the capacity limitation of the main memory cache, we utilize flash memory to store unique files since it offers fast random read access.
@@ -11,26 +11,26 @@ Moreover, we proposed a two-tier heterogeneous cache architecture to efficiently
 utilization. We utilize the user behavior for the cache replacement algorithm to improve cache hit ratio.
 Next, we present some issues or concerns about~\sysname~and additional optimizations to help speed up~\sysname:
 
-\paragraph{Further utilize user behavior pattern to accurately predict layer access pattern}
-%\HA{my thoughts}
-%maybe reserve 5\% or 10\% of cache space to cache the top most requested layers of all time. I assume some OS images like Alpine are used as OS of many Docker images as its the choice OS for Docker instead of ubuntu because ubuntu is much larger in size.
-%We observed that there are some active users but do not access layers, instead, they issued a lot \texttt{get}
-%manifest requests. In our cache algorithm, we already identified and ruled out these users from our cache.
-%However, there are users who issues  
-We observed that although half of the users have only one repository with a few layers, there are some users who own many layers. 
-For future work, we will focus on precisely predicting which layers will be accessed by active users and prefetch them in the cache for later accesses.
-We also observed that 
-
-%\paragraph{How many more "layers" can fit in file cache compared with naively storing layers in file cache}
-%\paragraph{Can we do client-side deduplication to remove duplicates}
-\paragraph{Docker client-side deduplication: viability and implications}
-Client-side deduplication affects the container runtime. 
-Because performing inline file-level deduplication on the Docker client side requires intensive file 
-fingerprint calculations and file fingerprint lookup, which will slow down container runtime performance.
-For future work, we will offload client-side deduplication to server-side, meaning that the 
-Docker client doesn't need to do deduplication because
-it can push all its created images to the registry and the registry eliminates duplicate files for the client. 
-In this case, Docker clients use the registry as a washing machine to launder duplicate files in their local file systems without performance overhead.
+%\paragraph{Further utilize user behavior pattern to accurately predict layer access pattern}
+%%\HA{my thoughts}
+%%maybe reserve 5\% or 10\% of cache space to cache the top most requested layers of all time. I assume some OS images like Alpine are used as OS of many Docker images as its the choice OS for Docker instead of ubuntu because ubuntu is much larger in size.
+%%We observed that there are some active users but do not access layers, instead, they issued a lot \texttt{get}
+%%manifest requests. In our cache algorithm, we already identified and ruled out these users from our cache.
+%%However, there are users who issues  
+%We observed that although half of the users have only one repository with a few layers, there are some users who own many layers. 
+%For future work, we will focus on precisely predicting which layers will be accessed by active users and prefetch them in the cache for later accesses.
+%We also observed that 
+%
+%%\paragraph{How many more "layers" can fit in file cache compared with naively storing layers in file cache}
+%%\paragraph{Can we do client-side deduplication to remove duplicates}
+%\paragraph{Docker client-side deduplication: viability and implications}
+%Client-side deduplication affects the container runtime. 
+%Because performing inline file-level deduplication on the Docker client side requires intensive file 
+%fingerprint calculations and file fingerprint lookup, which will slow down container runtime performance.
+%For future work, we will offload client-side deduplication to server-side, meaning that the 
+%Docker client doesn't need to do deduplication because
+%it can push all its created images to the registry and the registry eliminates duplicate files for the client. 
+%In this case, Docker clients use the registry as a washing machine to launder duplicate files in their local file systems without performance overhead.
 
 %\HA{my thoughts:} 
 %There are two things,
