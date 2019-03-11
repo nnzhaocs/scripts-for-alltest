@@ -1,7 +1,7 @@
 \section{Introduction}
  
 Containers have become a prominent solution for deploying modern applications because to their tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}.
-Containers are running instances of \emph{images} which contains complete runtime environments for an application.
+Containers are running instances of \emph{images} which contains the complete runtime environment for an application.
 An image comprises a set of shareable and content addressable \emph{layers}.
 % and is stored in Docker \emph{registry}. 
 Each layer is a set of files that are compressed in a single archive. 
@@ -9,24 +9,24 @@ Layers are stored in Docker registry and accessed by clients as needed.
 %As layers are the building blocks of images, they can be shared among multiple images. 
 Since layers are uniquely identified by a collision-resistant hash of its content, 
 no duplicate layers are stored in the registry.
-Many container registries use remote cloud storage like S3~\cite{xxx}, 
-Microsoft Azure~\cite{xxx}, OpenStack Swift~\cite{xxx}, and Aliyun OSS~\cite{xxx} as their backend storage systems as shown in Figure~\ref{fig:without-dedup}.
-For example, Google container Registry~\cite{xxxx} stores images on cloud storage while
+Many container registries use remote\HA{is it really remote?} cloud storage like S3~\cite{s3}, 
+Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, and Aliyun OSS~\cite{xxx} as their backend storage systems as shown in Figure~\ref{fig:without-dedup}.
+For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
 IBM container registry uses IBM cloud to manage image storage.
 
 The amount of images stored in Docker registries is increasing dramatically.
 %Docker registries store a large amount of images and with the increasing popularity of Docker, registries continue to grow. 
-For example, Docker Hub~\cite{docker-hub}---a popular public registry---stores more than 2 million public repositories that host one or more images. 
-We observed that the number of public repositories grows by around 1 million annually. 
-We estimate that 1 million annual growth in the number of repositories 
-amounts to about 130\,TB storage space required per year.
+For example, Docker Hub~\cite{docker-hub}---a popular public registry---stores more than~2 million public repositories that host one or more images. 
+We observed that the number of public repositories grows by around~1 million annually. 
+We estimate that~1 million annual growth in the number of repositories 
+amounts to about~130\,TB storage space required per year.
 Moreover, 
-just storing 130\,TB worth of Docker images on Google cloud will cost around~\$14,000 per month~\cite{GoogleCloudStoragePricing}.
+just storing~130\,TB worth of Docker images on Google cloud will cost around~\$14,000 per month~\cite{GoogleCloudStoragePricing}.
 This massive amount of image dataset presents great challenges for Docker registry storage infrastructure and so far has remained largely unexplored.
 %Then, the 1 million annual growth in the number of repositories amounts to about 130\,TB, costing around~\$15,000 a month.
 
-We analyzed around 50\,TB (167\,TB uncompressed) of Docker images downloaded from Docker Hub,
- which in total contain over 5 billion files.
+We analyzed around~50\,TB (167\,TB uncompressed) of Docker images downloaded from Docker Hub,
+ which in total contain over~5 billion files.
 Surprisingly, 
 we found that only~3\% of the files are unique while others are redundant copies. 
 %Since many Docker images share many underlying layers, 
@@ -35,54 +35,59 @@ This suggests that current layer sharing mechanism cannot efficiently remove dat
 % considerable file-level redundancy across different images is not mitigated by Docker's existing layer sharing mechanism.
 
 Many cloud storage systems already implemented deduplication to effectively eliminate redundant data.
-\NZ{let use redundant data instead of redundancy}
+%\NZ{let use redundant data instead of redundancy}
 For example,
-For example, Google cloud and AWS, 
-performs in-line data deduplication transparently.\NZ{use a new example}
+Google cloud and AWS, 
+perform in-line data deduplication transparently.\NZ{use a new example}
 However, existing deduplication techniques cannot be directly applied to the image storage system 
-because of unique workload in Docker registry: compressed layers. 
+because of unique dataset in the Docker registry: compressed layers. 
 In contrast to uncompressed files, compressed files have a lower deduplication ratio. 
-So the layers should be decompressed before performing deduplication.
+So layers should be decompressed before performing deduplication.
 As shown in Figure~\ref{fig:with-dedup}, 
 after decompression and file-level deduplication, the unique files are scattered on
 multiple servers. 
 To restore a layer,
 the layer's containing files should be first fetched from multiple servers, then compressed as a layer
-and send back to the client.
-These extra network, I/O, and computation latency will slow down image pull response time.
-As shown in Figure~\ref{xxx},
-without deduplication,
-the average latency for requesting a layer is around 2\,~s for layer size less than 50MB.
-While the latency increased to 12\,s when deduplication is implemented in backend storage system.
-Docker registry performance drop down dramatically for bigger layers.
-We see that the average latency for requesting layers bigger than 50MB and smaller than 1GB
-is around 128\,s while it worsen when dedupliation is implemented, the average latency increased to around
-800\,s.
+and sent back to the client.
+The extra network, I/O, and computation latency will slow down the response time for pulling an image.
+Without deduplication (Figure~\ref{fig:without-dedup}),
+the average latency for requesting a layer is around~2\,s for layers with size less than~50\,MB.
+The latency increases to~12\,s when deduplication is implemented in the backend storage system.
+Furthermore, Docker registry performance drops down dramatically for bigger layers.
+We observe that the average latency for requesting layers larger than~50\,MB and smaller than~1\,GB
+is around~128\,s. The latency worsens when dedupliation is implemented, with an average around~800\,s.
 %incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time. 
 %A solution would be to decompress the layers before applying deduplication on Docker registries.
  
-Therefore, in this paper, we propose a new Docker registry architecture~\sysname
-that integrates cache, deduplication, and Docker registries to address the aforementioned obstacles.
+%Therefore, in this paper, we propose a new Docker registry architecture,~\sysname,
+%that integrates caching and deduplication with Docker registries to address the aforementioned obstacles.
 %low restore latency %adaptive%
 % deduplication framework for Docker registries. 
-Large container registry service provider like Google and IBM use regional private repositories across the world to facilitate a fast and high-availability service~\cite{xxx}.  
-This geographical distribution allows users to store images near their compute instances and experience a fast response time. 
-Therefore, registry can be used as a cache to temporarily store popular layers
-to reduce remote cloud storage access latency.
-Although cache has been studied as web cache or proxy cache, 
-this paper addresses the unique challenges in integrating cache with deduplication in Docker registry.
 
-First, layer size varies from few MB to several GB.
-We observed that majority of layers are around several MB.
-Small main memory cache cannot accommodate many popular layers.
+Large container registry service providers like Google and IBM use regional private registries across the world to facilitate a fast and high-availability service~\cite{xxx}.  
+This geographical distribution allows users to store images near their compute instances and experience a fast response time. 
+Deploying these registries as a cache, temporarily storing popular layers,
+to improve pull latency may be intuitive.
+%Although cache has been studied as web cache or proxy cache, 
+However, there are unique challenges in integrating a cache with deduplication in Docker registry.
+%%%%
+%we can use registry as a web/proxy cache because registry already has been deployed regionally close to clients to speedup performance. although there are so many works on web/proxy cache but you cannot just use it with docker registry because of the following challenges. 
+%%%%
+First, we observe that layer sizes vary from a few MB to several GB and that majority of layers are around several MB.
+A small main memory cache cannot accommodate many popular layers.
 Second, 
-We observed that although layer accesses are heavily skewed, the duration between two subsequent layer access requests is too long, 
-which means if we cache a layer, we might need to wait hours to get a hit on that layer.
-To address these issues,~\sysname~embodies a two tier cache architecture 
-comprising a layer buffer and a file cache to hold as many as more popular layers:
-Layer buffer stores popular layers in main memory while file cache stores 
-the \emph{non-deduped} unique files for the victim layers that are evicted from layer buffer on flash-based storage system to improve cache space utilization.
-Moreover, we proposed a user-based cache algorithm to improve cache hit ratio 
+Although layer pull requests are heavily skewed, we observed that the duration between two subsequent requests is too long. 
+Meaning, if we cache a layer, we might need to wait hours to get a hit on that layer.
+
+Therefore, in this paper, we propose a new Docker registry architecture,~\sysname,
+that integrates caching and deduplication with Docker registries to address the aforementioned obstacles.
+%To address these issues,
+~\sysname~embodies a heterogeneous two-tier cache architecture 
+comprising a layer buffer and a file cache to hold even more popular layers:
+The layer buffer stores popular layers in main memory while the file cache stores 
+the \emph{deduped} unique files for the victim layers that are evicted from the layer buffer on a 
+flash-based storage system to improve cache space utilization.
+Moreover, we proposed a user-based cache algorithm to improve the cache hit ratio 
 because we observed that user active time is more predictable.
 
 %Moreover, to improve layer pull performance, we design a user behavior based cache. 
@@ -96,19 +101,19 @@ because we observed that user active time is more predictable.
 %After an inactive user's layer is evicted from the layer buffer, based on our algorithm, it can either be discarded or hosted in the file cache. For the latter, the layer will undergo offline decompression and file-level deduplication.
 %For the incoming new users, we prefetch a number of their repositories along with their containing layers based on their access probabilities.
 
-We evaluate our proposed design, \sysname, 
-\sysname's hit ratio~can achieve 20\% higher than traditional LRU. 
+We evaluate our proposed design, \sysname. 
+\sysname~acheives a hit ratio~20\% higher than that of traditional LRU. 
 %by conducting a preliminary simulation-based study. Our study aims to explore the feasibility/benefits of deduplication and quantify the overhead it introduces.
-\HA{add preliminary results}.  
+\HA{plz add preliminary results}.  
 
 \input{fig-nodedupvsdedup}
 
 %\HA{need to mention Figure~\ref{fig:without-dedup} and Figure~\ref{fig:with-dedup}}
 
 The organization of this paper as follows: 
-We explain current deduplication practices in production registries and relevant Docker details in Section~\ref{sec:background} and observations in Section~\ref{sec:observation}. 
-We present ~\sysname~design in Section~\ref{sec:\sysname} and our preliminary evaluation in Section~\ref{sec:Evaluation}. 
-lastly, we describe related work in Section~\ref{sec:related},
+We explain relevant Docker details along with observations and current deduplication practices in production registries in Section~\ref{sec:background}.
+We present~\sysname~in Section~\ref{sec:\sysname} and ~\sysname's preliminary evaluation in Section~\ref{sec:Evaluation}. 
+lastly, we discuss related work in Section~\ref{sec:related},
 and conclude in Section~\ref{sec:conclusion}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
