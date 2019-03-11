@@ -82,7 +82,7 @@ Meaning, if we cache a layer, we might need to wait hours to get a hit on that l
 Therefore, in this paper, we propose a new Docker registry architecture,~\sysname,
 that integrates caching and deduplication with Docker registries to address the aforementioned obstacles.
 %To address these issues,
-~\sysname~embodies a heterogeneous two-tier cache architecture 
+~\sysname~embodies a two-tier heterogeneous cache architecture 
 comprising a layer buffer and a file cache to hold even more popular layers:
 The layer buffer stores popular layers in main memory while the file cache stores 
 the \emph{deduped} unique files for the victim layers that are evicted from the layer buffer on a 
