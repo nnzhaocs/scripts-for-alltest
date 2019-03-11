@@ -89,26 +89,24 @@ Deduplication also slows down
 \texttt{push} layer requests because of its high demand for CPU, memory, I/O, and network resources.
 %\Ali{Explain how push layer requests are not effected?}\NZ{fixed}
 
-%----------------------------------------------------------------------arb wip
-
 %\subsection{Design}
-To address these issues, we propose a new registry design featuring a user
-behavior based cache to reduce the performance degradation caused by
+To address these issues, we propose a new registry design. The key feature of our design is a user-behavior-based cache that helps mitigate the performance degradation due to the 
 backend dedup storage system (Figure~\ref{fig:sys-overview}).  Based
-on our observation in~\cref{sec:background}, user's active time is easier to predict. 
-Our cache design considers user
-behavior, \ie when a user is most likely to be active, for layer evictions from the cache.
+on our observation in~\cref{sec:background}, a user's active time is predictable. 
+Thus, we leverage users' behavior, \ie
+when a user is most likely to be active, to drive layer evictions from the cache.
 
-Considering that the layer size is around several megabyte on
-average~\cite{dockerworkload}, a small main memory cache cannot accommodate
-many active users' layers. To address this issue, we couple main memory and
-flash memory to provide separate caching for layers and \emph{unique} files.
-Note that, layers are the compressed tarball 
+Considering that layer sizes are typically about several megabytes~\cite{dockerworkload}, a small main memory cache will be unable to accommodate
+active users' layers (for any reasonable/practical number of users). To address this issue, we 
+create separate caches for layers and \emph{unique} files, called {\em layer buffer} and {\em file cache}, respectively. Both caches comprise both
+main memory and flash memory.
+\arb{are main memory for one type and flash for the other type, or both for both types. I assumed both types of memory are used, and there are two caches. check previous sentence for correctness.}
+Note that, layers are  compressed tarballs, and 
 %sent by users
-while \emph{unique} files are the remaining files after removing duplicate files from the uncompressed layer.
+ \emph{unique} files are uncompressed files from which duplicates have been removed. 
 %We call compressed layer cache and \emph{deduped} files cache,
 %\emph{layer buffer} and \emph{file cache}, respectively.
-For handling
+For 
 cache evictions, we first evict inactive users' layers from the layer buffer.
 Next, we \emph{dedup} the evicted layers, then store the \emph{unique} files
 into the file cache (detailed in~\cref{sec:design_operations}). 
@@ -118,27 +116,25 @@ into the file cache (detailed in~\cref{sec:design_operations}).
 %storage.
 
 When a user requests a
-layer not present in the layer buffer, the request is forwarded to the
+layer that is not present in the layer buffer, the request is forwarded to the
 file cache (detailed in~\cref{sec:design_operations}). 
-If a layer is not found in both the layer buffer and the
+If a layer is also not found in the
 file cache, the request is forwarded to the backend dedup storage system.
 Note that after layer deduplication, unique files are
-scattered across multiple servers.
-We call all the files belonging to a layer that are stored on a specific server a
-\emph{slice} of the layer.
+scattered across multiple servers. We define all the per-server files belonging to a layer as a {\em slice}. A server stores slices for many layers, and a layer is composed of slices stored on multiple servers.
 To avoid the network latency caused by fetching slices from different servers and
-assembling them into a whole compressed layer, the \texttt{pull} request will
-be split into several~\texttt{pull slice}~requests. Those requests will then be
+assembling them into a whole compressed layer, we split a \texttt{pull} request 
+into several~\texttt{pull slice}~requests. Those requests will then be
 forwarded to all the backend servers that store the requested
 layer's slices. 
-After the~\texttt{pull slice}~request is received, each backend server compresses the slice 
-and directly send it back to the user.
+After a~\texttt{pull slice}~request is received, each backend server compresses the slice 
+and directly sends it back to the user.
 We modify the Docker client
 interface such that when it receives all the compressed slices, it can
 decompress them into a single layer. 
 Furthermore, compressing slices
 of layers in parallel considerably mitigates the compression latency caused by
-compressing a whole layer since compression time depends on the size of the
+compressing a whole layer, since compression time depends on the size of the
 uncompressed data.
 %to cache layers and cache unique files after decompression and deduplication,
 %respectively.  consists of a \emph{layer buffer} and a \emph{file cache}.  The
