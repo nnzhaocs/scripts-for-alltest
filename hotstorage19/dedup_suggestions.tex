@@ -1,46 +1,54 @@
-\section{Discussion}
+\section{Discussion \& conclusion}
 
 %\NZ{put in background or intro, conclusion, discussion?}
-At a high-level, registries act like a distributed cache siting closer to clients to provide better performance in terms of response time. 
-The layer buffer holds hot layers that belong to active users.
+This paper presents \sysname~that integrates caching, deduplication, and Docker registries to
+improve Docker registry performance and to decrease the backend storage capacity requirement. 
+%The layer buffer holds hot layers that belong to active users.
 %To improve the capacity limitation of the main memory cache, we utilize flash memory to store unique files since it offers fast random read access.
-The utilization of flash memory to store unique files not only mitigates the capacity limitation of the main memory cache, it also offers fast random read accesses.
+%The utilization of flash memory to store unique files not only mitigates the capacity limitation of the main memory cache, it also offers fast random read accesses.
 % a on a distributed flash-based store.  \\
+Moreover, we proposed a two-tier heterogeneous cache architecture to efficiently improve cache space 
+utilization. And we use use-based cache algorithm to improve cache hit ratio.
+Next, we present some issues or concerns about~\sysname~
+and additional optimizations that can help to speed up \sysname:
 
-\paragraph{How to further utilize user behavior pattern to accurately predict layer access pattern }
-\HA{my thoughts}
-maybe reserve 5\% or 10\% of cache space to cache the top most requested layers of all time. I assume some OS images like Alpine are used as OS of many Docker images as its the choice OS for Docker instead of ubuntu because ubuntu is much larger in size.
+\paragraph{Further utilize user behavior pattern to accurately predict layer access pattern }
+%\HA{my thoughts}
+%maybe reserve 5\% or 10\% of cache space to cache the top most requested layers of all time. I assume some OS images like Alpine are used as OS of many Docker images as its the choice OS for Docker instead of ubuntu because ubuntu is much larger in size.
+%We observed that there are some active users but do not access layers, instead, they issued a lot \texttt{get}
+%manifest requests. In our cache algorithm, we already identified and ruled out these users from our cache.
+%However, there are users who issues  
+We observed that although half of the users have only one repository with few layers, but there are some users which own many layers. In the future work, we will focus on how to precisely predict which layer will be accessed by the active users and prefetch them in the cache for late access.
+We also observed that 
 
-
-\paragraph{How many more "layers" can fit in file cache compared with naively storing layers in file cache}
-
-
+%\paragraph{How many more "layers" can fit in file cache compared with naively storing layers in file cache}
 %\paragraph{Can we do client-side deduplication to remove duplicates}
-\paragraph{Client-side deduplication: viability and implications}
-Client-side deduplication would affect container runtime.\HA{how?}
-In the future work, we will offload client-side deduplication to server side\HA{here you are assuming we are doing client-side deduplication}, meaning that
+\paragraph{Docker client-side deduplication: viability and implications}
+Client-side deduplication would affect container runtime.%\HA{how?}
+Because performing inline file-level deduplication on Docker client side requires intensive file fingerprint calculations and file fingerprint lookup, which will slow down container runtime performance.
+In the future work, we will offload client-side deduplication to server side, meaning that
 Docker client doesn't need to do deduplication because
 it can push all its created images to registry and registry can eliminate the duplicate files for the client. 
 In this case, Docker client can use registry as a wash machine to laundry duplicate files inside their local
 file systems without performance overhead.
 
-\HA{my thoughts:} 
-There are two things,
-First, client-side deduplication: meaning the client assisting registry deduplication. That is, the client only sends the files that the registry does not have, saving bandwidth, less compute cycles at the registry, making it more available for other requests, eventually improving performance. For this, a server or registry would maintain a list of stored files, the client first sends a check request, then only sends the files not stored at the registry.
-
-Second, client-storage deduplication. For its viability, we need to know how big a Docker client can be, and how much can deduplication benefit and affect client/host performance. 
-
-Maybe, a registry deployed as a cache (a pull through cache) can benefit from deduplication, if its serving a large corporation and employees pull lots of different images.
-\HA{end of my thoughts}
-
-We propose additional optimizations that can help to speed up \sysname:
-
-\begin{compactenumerate}
+%\HA{my thoughts:} 
+%There are two things,
+%First, client-side deduplication: meaning the client assisting registry deduplication. That is, the client only sends the files that the registry does not have, saving bandwidth, less compute cycles at the registry, making it more available for other requests, eventually improving performance. For this, a server or registry would maintain a list of stored files, the client first sends a check request, then only sends the files not stored at the registry.
 %
-\item
+%Second, client-storage deduplication. For its viability, we need to know how big a Docker client can be, and how much can deduplication benefit and affect client/host performance. 
 %
-As the majority of the pull time is caused by compression, we propose to cache
-hot layers as precompressed tar files in the staging area.
+%Maybe, a registry deployed as a cache (a pull through cache) can benefit from deduplication, if its serving a large corporation and employees pull lots of different images.
+%\HA{end of my thoughts}
+
+
+
+%\begin{compactenumerate}
+%%
+%\item
+%%
+%As the majority of the pull time is caused by compression, we propose to cache
+%hot layers as precompressed tar files in the staging area.
 %
 %We observe that only a small proportion of images and layers are frequently
 %requested and majority of images and layers are \textit{cold}.
@@ -48,12 +56,12 @@ hot layers as precompressed tar files in the staging area.
 %Figure~\ref{fig:pull-cnt} shows the total number of pulls from the time an
 %image/layer has been stored in Docker Hub until May 30, 2017.
 %
-According to our statistics, only 10\% of all images were pulled
-from Docker Hub more than 360 times from the time the image was first pushed to Docker Hub
-until May 30, 2017. Moreover, we found that 90\% of pulls
-went to only 0.25\% of images based on image pull counts.
-%
-This suggests the existence of both cold and hot images and layers.
+%According to our statistics, only 10\% of all images were pulled
+%from Docker Hub more than 360 times from the time the image was first pushed to Docker Hub
+%until May 30, 2017. Moreover, we found that 90\% of pulls
+%went to only 0.25\% of images based on image pull counts.
+%%
+%This suggests the existence of both cold and hot images and layers.
 %
 %\VT{Nannan, can we instead compute that 90\% of pulls
 %wen to 0.25\% of images?}
@@ -71,33 +79,33 @@ This suggests the existence of both cold and hot images and layers.
 %downloaded and are already available locally.
 %
 
-\item
+%\item
+%%
+%As deduplication provides significant storage savings, \sysname\ can use faster
+%but less effective local compression methods than gzip~\cite{lz4}.
+%%
+%%\VT{cite a few}
 %
-As deduplication provides significant storage savings, \sysname\ can use faster
-but less effective local compression methods than gzip~\cite{lz4}.
-%
-%\VT{cite a few}
-
-\item
+%\item
 %
 %Deduplicating when workload is light As shown above, file-level deduplication
 %comes with some performance overhead.
 %
-The registries often experience fluctuation in load with peaks and
-troughs~\cite{dockerworkload}.
-%
-Thus, file-level deduplication can be triggered
-when the load is low to prevent interference with 
-client \texttt{pull} and \texttt{push} requests.
-%
-%To further improve the performance of \sysname\, we also suggest to use main
-%memory for temporarily storing and processing \textit{small} layers.
-%
-%According to our findings (see~\S\ref{sec:dedup_ratio}), the majority of
-%layers~(87.3\%) are smaller than 50\,MB and hence can be stored and processed
-%in RAM to speed up deduplication. 
-%
-\end{compactenumerate}
+%The registries often experience fluctuation in load with peaks and
+%troughs~\cite{dockerworkload}.
+%%
+%Thus, file-level deduplication can be triggered
+%when the load is low to prevent interference with 
+%client \texttt{pull} and \texttt{push} requests.
+%%
+%%To further improve the performance of \sysname\, we also suggest to use main
+%%memory for temporarily storing and processing \textit{small} layers.
+%%
+%%According to our findings (see~\S\ref{sec:dedup_ratio}), the majority of
+%%layers~(87.3\%) are smaller than 50\,MB and hence can be stored and processed
+%%in RAM to speed up deduplication. 
+%%
+%\end{compactenumerate}
 
 %\input{fig_pull_cnt}
 
