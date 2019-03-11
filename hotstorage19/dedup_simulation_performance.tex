@@ -1,21 +1,21 @@
 \section{Preliminary evaluation}
 \label{sec:Evaluation}
 
-Our user-based cache on registry can improve the performance of the whole system
-by hiding the long latency imposed by backend dedup system.
-Therefore, we present our preliminary evaluation of our user-based cache.
+Our user-based cache in the registry can improve the performance of the entire system
+by hiding the long latency imposed by the backend dedup system.
+Next, we present the preliminary evaluation of our user-based cache.
 
 \paragraph{Cache hit ratio of layer buffer}
 As shown in Figure~\ref{xxx},
 we compare the cache hit ratio of LRU, Prefetch~\cite{xxxx}, and our 
-user-based cache by replaying three IBM container registry workloads~\cite{xxxx}.
-Our user-based cache exhibits an better cache performance, hit ratio improvements ranging from 
-0.2 to 0.3 for all three workloads compared to LRU.
+user-based cache replacement algorithm by replaying three IBM container registry workloads~\cite{dockerworkload}.
+Our user-based cache exhibits an enhanced cache performance, with hit ratio improvements ranging from 
+0.2 to 0.3 for all the three workloads compared to LRU.
 
 \paragraph{File cache deduplication ratio}
-In this experiment, we show that how many more layers can be saved in file cache 
-through decompression and file-level deduplication.
-Figure~\ref{xxxx} shows the growth of deduplication ratio with different dataset size.
+In this experiment, we show how many more layers can be stored in the file cache 
+after decompression and file-level deduplication.
+Figure~\ref{xxxx} shows the growth of deduplication ratio with different dataset sizes.
 
 
 %We evaluated \sysname's performance improvement over traditional 
