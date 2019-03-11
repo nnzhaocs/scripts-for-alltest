@@ -10,7 +10,7 @@ Layers are stored in Docker registry and accessed by clients as needed.
 Since layers are uniquely identified by a collision-resistant hash of its content, 
 no duplicate layers are stored in the registry.
 Many container registries use remote cloud storage like S3~\cite{xxx}, 
-Microsoft Azure~\cite{xxx}, OpenStack Swift~\cite{xxx}, and Aliyun OSS~\cite{xxx} as their backend storage systems.
+Microsoft Azure~\cite{xxx}, OpenStack Swift~\cite{xxx}, and Aliyun OSS~\cite{xxx} as their backend storage systems as shown in Figure~\ref{fig:without-dedup}.
 For example, Google container Registry~\cite{xxxx} stores images on cloud storage while
 IBM container registry uses IBM cloud to manage image storage.
 
@@ -34,35 +34,76 @@ This suggests that current layer sharing mechanism cannot efficiently remove dat
 %current
 % considerable file-level redundancy across different images is not mitigated by Docker's existing layer sharing mechanism.
 
-Many cloud storage system \NZ{to be continue}
-Deduplication is a fitting solution to eliminate redundancy in the storage system of container management platforms. 
+Many cloud storage systems already implemented deduplication to effectively eliminate redundant data.
+\NZ{let use redundant data instead of redundancy}
+For example,
+For example, Google cloud and AWS, 
+performs in-line data deduplication transparently.\NZ{use a new example}
 However, existing deduplication techniques cannot be directly applied to the image storage system 
-because of the unique characteristics of the Docker ecosystem. Images are stored as a collection of gzip compressed tar files, called layers. 
-In contrast to uncompressed files, gzip compressed files have a lower deduplication ratio. 
-A solution would be to decompress the layers before applying deduplication on Docker registries.
-However, restoring layers by assembling files incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time.  
+because of unique workload in Docker registry: compressed layers. 
+In contrast to uncompressed files, compressed files have a lower deduplication ratio. 
+So the layers should be decompressed before performing deduplication.
+As shown in Figure~\ref{fig:with-dedup}, 
+after decompression and file-level deduplication, the unique files are scattered on
+multiple servers. 
+To restore a layer,
+the layer's containing files should be first fetched from multiple servers, then compressed as a layer
+and send back to the client.
+These extra network, I/O, and computation latency will slow down image pull response time.
+As shown in Figure~\ref{xxx},
+without deduplication,
+the average latency for requesting a layer is around 2\,~s for layer size less than 50MB.
+While the latency increased to 12\,s when deduplication is implemented in backend storage system.
+Docker registry performance drop down dramatically for bigger layers.
+We see that the average latency for requesting layers bigger than 50MB and smaller than 1GB
+is around 128\,s while it worsen when dedupliation is implemented, the average latency increased to around
+800\,s.
+%incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time. 
+%A solution would be to decompress the layers before applying deduplication on Docker registries.
+ 
+Therefore, in this paper, we propose a new Docker registry architecture~\sysname
+that integrates cache, deduplication, and Docker registries to address the aforementioned obstacles.
+%low restore latency %adaptive%
+% deduplication framework for Docker registries. 
+Large container registry service provider like Google and IBM use regional private repositories across the world to facilitate a fast and high-availability service~\cite{xxx}.  
+This geographical distribution allows users to store images near their compute instances and experience a fast response time. 
+Therefore, registry can be used as a cache to temporarily store popular layers
+to reduce remote cloud storage access latency.
+Although cache has been studied as web cache or proxy cache, 
+this paper addresses the unique challenges in integrating cache with deduplication in Docker registry.
 
-Therefore, in this paper, we propose a low restore latency %adaptive%
- deduplication framework for Docker registries. 
-Moreover, to improve layer pull performance, we design a user behavior based cache. 
-The cache adaptively stores a certain amount of active users' layers, in a layer buffer, to speed up active users' pull time. 
-The cache also selectively stores a few popular \textit{shared} and \textit{deduplicated} files, in a file cache, to accelerate the layer restoring process. 
+First, layer size varies from few MB to several GB.
+We observed that majority of layers are around several MB.
+Small main memory cache cannot accommodate many popular layers.
+Second, 
+We observed that although layer accesses are heavily skewed, the duration between two subsequent layer access requests is too long, 
+which means if we cache a layer, we might need to wait hours to get a hit on that layer.
+To address these issues,~\sysname~embodies a two tier cache architecture 
+comprising a layer buffer and a file cache to hold as many as more popular layers:
+Layer buffer stores popular layers in main memory while file cache stores 
+the \emph{non-deduped} unique files for the victim layers that are evicted from layer buffer on flash-based storage system to improve cache space utilization.
+Moreover, we proposed a user-based cache algorithm to improve cache hit ratio 
+because we observed that user active time is more predictable.
 
-The rationale behind the user behavior based cache is that, instead of only focusing on layer-level access pattern, 
-we consider the user behavior for cache replacement because users' behavior is more predictable than layer access pattern. 
-Moreover, users are the ones who issue the layer/manifest pulls and pushes.  
-For this reason, our cache replacement policy is an adaptive heuristic, top-down decision making process driven by users' behavior.
-During cache eviction, we evict the least recently accessed layer from a set of candidate layers exclusively referenced by the least recently active users to make room for new users' layers. 
-After an inactive user's layer is evicted from the layer buffer, based on our algorithm, it can either be discarded or hosted in the file cache. For the latter, the layer will undergo offline decompression and file-level deduplication.
-For the incoming new users, we prefetch a number of their repositories along with their containing layers based on their access probabilities.
+%Moreover, to improve layer pull performance, we design a user behavior based cache. 
+%The cache adaptively stores a certain amount of active users' layers, in a layer buffer, to speed up active users' pull time. 
+%The cache also selectively stores a few popular \textit{shared} and \textit{deduplicated} files, in a file cache, to accelerate the layer restoring process. 
+%The rationale behind the user behavior based cache is that, instead of only focusing on layer-level access pattern, 
+%we consider the user behavior for cache replacement because users' behavior is more predictable than layer access pattern. 
+%Moreover, users are the ones who issue the layer/manifest pulls and pushes.  
+%For this reason, our cache replacement policy is an adaptive heuristic, top-down decision making process driven by users' behavior.
+%During cache eviction, we evict the least recently accessed layer from a set of candidate layers exclusively referenced by the least recently active users to make room for new users' layers. 
+%After an inactive user's layer is evicted from the layer buffer, based on our algorithm, it can either be discarded or hosted in the file cache. For the latter, the layer will undergo offline decompression and file-level deduplication.
+%For the incoming new users, we prefetch a number of their repositories along with their containing layers based on their access probabilities.
 
 We evaluate our proposed design, \sysname, 
-by conducting a preliminary simulation-based study. Our study aims to explore the feasibility/benefits of deduplication and quantify the overhead it introduces.
+\sysname's hit ratio~can achieve 20\% higher than traditional LRU. 
+%by conducting a preliminary simulation-based study. Our study aims to explore the feasibility/benefits of deduplication and quantify the overhead it introduces.
 \HA{add preliminary results}.  
 
 \input{fig-nodedupvsdedup}
 
-\HA{need to mention Figure~\ref{fig:without-dedup} and Figure~\ref{fig:with-dedup}}
+%\HA{need to mention Figure~\ref{fig:without-dedup} and Figure~\ref{fig:with-dedup}}
 
 The organization of this paper as follows: 
 We explain current deduplication practices in production registries and relevant Docker details in Section~\ref{sec:background} and observations in Section~\ref{sec:observation}. 
