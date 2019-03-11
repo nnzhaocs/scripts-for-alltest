@@ -41,8 +41,8 @@
 
 \sysname~seamlessly integrates 
 %the management of 
-a cache and a deduplication mechanism on the
-backend storage system, that we call \emph{backend dedup storage}, with Docker registries.
+a cache along with a deduplication mechanism on the
+backend storage system, that we call \emph{backend dedup storage}, with Docker registries
 %\Ali{Following information should be part of Background section..
 %Intuitively, registries can be deployed as a proxy cache to host
 %frequently requested layers.  This approach, a registry as a pull-through
@@ -52,8 +52,8 @@ backend storage system, that we call \emph{backend dedup storage}, with Docker r
 %A traditional backend dedup storage cannot meet registry performance requirement
 %especially for \texttt{pull} requests due to the large overhead during layer restoring. 
 %\subsection{Design challenges}
-\sysname~addresses the unique challenges concerning the integration
-of caching and deduplication to the Docker registry.
+\sysname~addresses the unique challenges concerning such integration.
+%of caching and deduplication to the Docker registry.
 First, for caching layers, \texttt{pull} layer requests are difficult to
 predict because same layers are not accessed frequently.
 We observed that, around half of the cached layers' are not
