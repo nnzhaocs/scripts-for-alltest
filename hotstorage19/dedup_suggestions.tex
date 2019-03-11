@@ -7,18 +7,33 @@ The layer buffer holds hot layers that belong to active users.
 The utilization of flash memory to store unique files not only mitigates the capacity limitation of the main memory cache, it also offers fast random read accesses.
 % a on a distributed flash-based store.  \\
 
-\paragraph{How to further utilize user behavior pattern to accuracy predict layer access pattern }
+\paragraph{How to further utilize user behavior pattern to accurately predict layer access pattern }
+\HA{my thoughts}
+maybe reserve 5\% or 10\% of cache space to cache the top most requested layers of all time. I assume some OS images like Alpine are used as OS of many Docker images as its the choice OS for Docker instead of ubuntu because ubuntu is much larger in size.
 
-\paragraph{How many more layers can fit in file cache compared with naively storing layers in file cache}
 
-\paragraph{Can we do client-side deduplication to remove duplicates}
-It would affect container runtime.
-In the future work, we will offload client-side deduplication to server side, meaning that
+\paragraph{How many more "layers" can fit in file cache compared with naively storing layers in file cache}
+
+
+%\paragraph{Can we do client-side deduplication to remove duplicates}
+\paragraph{Client-side deduplication: viability and implications}
+Client-side deduplication would affect container runtime.\HA{how?}
+In the future work, we will offload client-side deduplication to server side\HA{here you are assuming we are doing client-side deduplication}, meaning that
 Docker client doesn't need to do deduplication because
 it can push all its created images to registry and registry can eliminate the duplicate files for the client. 
 In this case, Docker client can use registry as a wash machine to laundry duplicate files inside their local
 file systems without performance overhead.
-%We propose additional optimizations that can help to speed up \sysname:
+
+\HA{my thoughts:} 
+There are two things,
+First, client-side deduplication: meaning the client assisting registry deduplication. That is, the client only sends the files that the registry does not have, saving bandwidth, less compute cycles at the registry, making it more available for other requests, eventually improving performance. For this, a server or registry would maintain a list of stored files, the client first sends a check request, then only sends the files not stored at the registry.
+
+Second, client-storage deduplication. For its viability, we need to know how big a Docker client can be, and how much can deduplication benefit and affect client/host performance. 
+
+Maybe, a registry deployed as a cache (a pull through cache) can benefit from deduplication, if its serving a large corporation and employees pull lots of different images.
+\HA{end of my thoughts}
+
+We propose additional optimizations that can help to speed up \sysname:
 
 \begin{compactenumerate}
 %
