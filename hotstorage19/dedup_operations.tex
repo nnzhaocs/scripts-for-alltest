@@ -131,7 +131,7 @@ which performs the following steps:
 If a \texttt{pull} layer request is miss on both the layer buffer and the file cache, 
 the request will be forwarded to the backend dedup storage system.
 The layer restoring process on the backend storage system is similar to restoring from the file cache.
-Many modern storage systems with the deduplication feature can be used as our backend storage system, including GFS~\cite{gfs}, HDFS~\cite{hdfs}, S3~\cite{s3}, and Swift~\cite{swift}.
+Many modern storage systems with the deduplication feature can be used as our backend storage system, including GFS~\cite{ghemawat2003google}, HDFS~\cite{hdfs}, S3~\cite{s3}, and Swift~\cite{swift}.
 We can modify the above systems so that they can recognize the compressed layer file type and decompress them before performing deduplication.
 Moreover, these systems should also be modified to restore layer slices in parallel. 
 %Note that there is no consistency issue between either layer buffer, file cache or backend storage because layers won't be changed in the future.
