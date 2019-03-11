@@ -1,6 +1,21 @@
+\section{Conclusion}
+\label{sec:conclusion}
+%\NZ{put in background or intro, conclusion, discussion?}
+In this paper, we presented \sysname, a new Docker registry architecture that integrates caching and deduplication with the Docker registry to
+improve the registry's performance and decrease the backend storage capacity requirement. 
+%The layer buffer holds hot layers that belong to active users.
+%To improve the capacity limitation of the main memory cache, we utilize flash memory to store unique files since it offers fast random read access.
+%The utilization of flash memory to store unique files not only mitigates the capacity limitation of the main memory cache, it also offers fast random read accesses.
+% a on a distributed flash-based store.  \\
+\sysname~leverages a two-tier heterogeneous cache architecture to efficiently improve cache space 
+utilization. The cache applies a user behavior based cache replacement algorithm to improve cache hit ratio.
+
+
 \section{Discussion}
 \label{sec:discussion}
-
+In this section, we discuss issues and concerns 
+%about~\sysname~
+and additional optimizations to help speed up~\sysname.
 \paragraph{Further utilize user behavior pattern to accurately predict layer access pattern}
 We observed that although half of the users have only one repository with a few layers, there are some users who own many layers. 
 For future work, we will focus on precisely predicting which layers will be accessed by active users and prefetch them in the cache for later accesses.
