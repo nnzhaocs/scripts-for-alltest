@@ -7,10 +7,10 @@ Warning--I didn't find a database entry for "xxxx"
 Warning--to sort, need author or key in docker
 Warning--to sort, need author or key in docker-hub
 Warning--to sort, need author or key in s3
-Warning--to sort, need author or key in azure
-Warning--to sort, need author or key in swift
 Warning--to sort, need author or key in GoogleContainerRegistry
 Warning--to sort, need author or key in ibmregistry
+Warning--to sort, need author or key in azure
+Warning--to sort, need author or key in swift
 Warning--to sort, need author or key in aliyun
 Warning--to sort, need author or key in storReduce
 Warning--to sort, need author or key in varnish

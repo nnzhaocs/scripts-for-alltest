@@ -1,72 +1,35 @@
-%\subsection{Observations and motivation} % just find the proble and benefit
-%\label{sec:background}
-%
-%\subsection{Need of Deduplication}
-%
-%In order to understand the extent of storage requirements and performance demands from a Docker registry. 
-%We observe the amount of public repositories hosted by Docker Hub registries. 
-%The number of public repositories is constantly increasing with a growth that amounts 
-%to around one million repositories annually. 
-%This corresponds to~130\,TB of annual growth in storage requirements (but it is acually less because of shared layers, right?), 
-%costing around~\$15,000 a month if Google Cloud Storage is used~\cite{GoogleCloudStoragePricing}.
-%This growth implies significant benefits to storage deduplication. 
-%
-%Deduplication option, block level, file level ...?
-%
-%
-%
-%\paragraph{Deduplication statistics} % the potiential of deduplication 
-%
-%how dedup will help
-%
-%
-%layer ref count 
-%
-%\paragraph{Deduplication ratio growth} % benefit
 
-%\subsection{Need for User Behavior based Cache Management}
-%\subsection{Need for User behavior based cache management}
+\input{fig-skewness-reusetime}
 
-%\paragraph{Access skewness}
-%According to ~\cite{dockerworkload}, 
-%\paragraph{Reuse time distribution}
-%\subsubsection{Observations}
 
-%\paragraph{Layers that belong to the same repo have different popularity}
-
-%We analyzed IBM container registry workload in Dallas(\texttt{dal})~\cite{dockerworkload} and made the following observations.
-%The following observations are obtained by analyzing the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
-\paragraph{Requests to layers are heavily skewed but layer reuse time is very long}
+\paragraph{Understanding layer access patterns.}
 We analyzed the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
-As shown in Figure~\ref{fig:sknewss}, the registry accesses to layers and repositories, and accesses by users. 
+Figure~\ref{fig:sknewss} shows the registry accesses to layers and repositories, as well as users accesses to the \arb{layers??}. 
 Layer accesses are heavily skewed. For example, 25\% of popular layers account for 80\% of all requests. 
 For repository accesses and accesses by users, the skew is more significant than it is for layers. %10\% most frequently accessed repositories account for 94\% of all requests
-94\% of all requests are accessing only 10\% of the most frequently accessed repositories and only 9\% of users, most active ones, issued 97\% of all requests. 
+94\% of all requests accessed only 10\% of the most frequently accessed repositories. Similarly, only 9\% of users, most active ones, issued 97\% of all requests. 
 This means that only a few extremely active users create their repositories in the \texttt{dal} registry and issue the majority of requests to the registry.
 
 Figure~\ref{fig:reusetime} shows the reuse time of layers and repositories, and reuse time by users.
-Reuse time is the duration between two subsequent requests to access the same layer or repository while 
-the reuse time by user is defined as duration between two subsequent requests issued by the same user. 
+Layer reuse time is the duration between two consecutive requests to the same layer or repository. Similarly,
+reuse time by user is defined as duration between two consecutive requests issued by the same user. 
 The layer reuse time is long.
-The median reuse time of a layer is 1.3 hours. 80\% of repositories experience the highest request frequency, with a reuse time of around 2 minutes. 
-90\% of users remain active for at least 0.06 seconds.
+The median reuse time of a layer is 1.3 hours. 80\% of repositories experience the highest request frequency, with a reuse time of $\~2$ minutes. 
+90\% of users remain active for at least $0.06$ seconds.
 %So for a registry, most of its stored layers are not accessed frequently given a very short time period while
 %users can maintain active for a longer time. 
 %This is because users can access multiple layers and manifests.
 In other words, most of the layers stored in the
 registry are not frequently requested in a very short
-time period while users remain active for a longer time.
+time period, while users remain active for a longer time.
 This is because users can request different layers or manifests.
 
-To quantify how traditonal LRU and pull-push prefetching works,
-we implemented a LRU algorithm and pull-push prefetching 
+To quantify the efficacy of traditional LRU and pull-push prefetching,
+we implemented an LRU algorithm and pull-push prefetching 
 and replayed different number of requests from
 IBM registry workload \texttt{dal} as shown in 
 Figure~\ref{fig:lru_prefetching_hits}.
-The hit ratio for LRU is shown lower than 0.6 
-while pull-push prefetching slightly improved the hit ratio up to 0.8.
-%\paragraph{User active time is predictable} 
-%Based on the above observations, we believe that the user's active time is predictable. 
-%By just maintaining a LRU list of users, we achieved 99\% accuracy for predicting user active time.
-%For this reason, we utilize this predictability in our cache algorithm.
+The hit ratio for LRU was found to be lower than $0.6$ 
+while pull-push prefetching slightly improved the hit ratio to up to $0.8.$
+\arb{say something whether this is good or bad... or is very low and show that LRU is not an effective mechanism for managing the proposed caches}
 

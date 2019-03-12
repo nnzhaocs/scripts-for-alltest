@@ -22,8 +22,9 @@ Docker images/layers are stored in an online store called Docker registry~\cite{
 %As layers are the building blocks of images, they can be shared among multiple images. 
 Since a layer is uniquely identified by a collision-resistant hash of its content, 
 no duplicate layers are stored in the registry.
-Many container registries use remote cloud storage such as S3~\cite{s3}, 
-Microsoft Azure~\cite{azure}, and OpenStack Swift~\cite{swift} as their backend storage systems~(Figure~\ref{fig:without-dedup}).
+Many container registries use remote cloud storage, e.g., S3~\cite{s3}, etc.,
+% Microsoft Azure~\cite{azure}, and OpenStack Swift~\cite{swift} 
+as their backend storage systems~(Figure~\ref{fig:without-dedup}).
 %For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
 %IBM container registry uses IBM cloud to manage image storage.
 
