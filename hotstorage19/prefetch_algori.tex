@@ -1,6 +1,6 @@
 \begin{algorithm}
 	\scriptsize 
-	\caption{User access history based prefetch algorithm.}
+	\caption{User Access History based Prefetching Algorithm.}
 	\label{alg:prefetch}
 	\SetAlgoLined
 	\KwIn{
@@ -26,9 +26,9 @@
 					\emph{serve from PrefetchedLayers or LayerBuffer} \\
 					\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
 					\texttt{Reset} \emph{L\_timer[r.layer]}\\
-					\emph{prefetch\_hit++} 
+					\emph{hit++} 
 				}{
-					\emph{server from backend storage system} \\
+					\emph{serve from backend storage system} \\
 					\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
 					\emph{layers} $\gets$ \texttt{select} \emph{URLMap[(r.client, r.repo)]} \\
 					\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
