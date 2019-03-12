@@ -1,16 +1,16 @@
 \begin{figure}[t]
 	\centering
-		%\begin{minipage}{0.225\textwidth}
-			\centering
-			\includegraphics[width=0.5\textwidth]{graphs/avglatency_dedup_nodedup.png}
-			\caption{Layer pull latency with and without deduplication implemented with respect to average layer size}
-			%\label{fig:ref_count}
-		%\end{minipage}
-%	\begin{minipage}{0.225\textwidth}
-%		\centering
-%		\includegraphics[width=1\textwidth]{graphs/slimmer-cache.png}
-%		\caption{CDF of compress. and uncompress. layer size.}
-%		\vspace{-3pt}
+	\begin{minipage}{0.225\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/avglatency_dedup_nodedup.png}
+		\caption{Layer pull latency w.r.t. average layer size.}
 		\label{fig:avg_latency_dedup_nodedup}
-%	\end{minipage}
+	\end{minipage}
+	\begin{minipage}{0.225\textwidth}
+		\centering
+		\includegraphics[width=1\textwidth]{graphs/lru_prefetch_hits.png}
+		\caption{CDF of reuse time for layers, repos, and users.}
+		\vspace{-3pt}
+		\label{fig:lru_prefetching_hits}
+	\end{minipage}
 \end{figure}
