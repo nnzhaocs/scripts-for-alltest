@@ -73,6 +73,9 @@ Moreover for restoring a layer, the layer's
 containing files should all be fetched from wherever they reside, as they are likely to be scattered across multiple servers, 
 and then compressed together, which causes a considerable overhead on pull layer requests performance.
 
+\HA{running five registries, replaying dal trace using trace replayer-cite, and since the replayer doesn't use real layers we randomly match the request to our dataset downloaded from docker hub. describe how we got these numbers. for dedup, we simply implemented a decompress/compress + file-level deduplication on backend storage systems, we use a CHT based distributed storage system. Figure~\ref{fig:avg_latency_dedup_nodedup}}
+\input{fig:avg_latency_dedup_nodedup}
+
 \paragraph{Use registry as a web/proxy cache?}
 Traditionally, caches are placed as close to the requesting client as possible, 
 such caches are known as proxy caches, or web/HTTP caches for the temporary storage of 
