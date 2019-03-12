@@ -113,9 +113,11 @@ because it is highly likely they will be requested again.
 However, it is the opposite for the layer access pattern: if a layer is pulled by a user,
 then this layer will not be pulled by this user in the future
 since this layer is locally available to the user.
-Ali Anwar et al. proposed a push-pull prefetch to improve the cache hit ratio~\cite{dockerworkload}.
-Based on our following observations, we found the duration between two subsequent layer requests is very long,
-if we cache a layer, we might need to wait for hours to get a hit on that layer.
+Ali Anwar et al. proposed a push-pull prefetching algorithm to improve the cache hit ratio~\cite{dockerworkload}.
+Based on our observations, 
+%we found the duration between two subsequent layer requests is very long,
+we found that the inter-access time for layer pulls is very long.
+Thus, if we cache a layer, we might need to wait for hours to get a hit on that layer.
 
 \input{fig-skewness-reusetime}
 
