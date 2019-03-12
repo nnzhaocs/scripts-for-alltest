@@ -1,18 +1,19 @@
 \section{Introduction}
  \label{sec:intro}
-Containers 
-have become an effective means for deploying modern applications because 
-of desirable features such as tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}. However,
-sustaining and scaling container systems in the face of exponential growth is challenging. 
-%
-For example, Docker Hub~\cite{docker-hub}---a popular public container registry---stores more than~2 million public repositories. These repositories have grown at the rate of about $1$ million annually---requiring provisioning an additional 2.5~TB of storage per week on average---and the rate is expected to increase.
-%
-This puts intense pressure on Docker registry storage infrastructure, but the problem has so far remained largely unexplored.
-%
-In this paper, we propose a new Docker registry architecture, \sysname,
-that integrates caching and deduplication with Docker registries to help reduce the storage requirements while mitigating any performance overhead.
-
-
+ 
+ Containers 
+ have become an effective means for deploying modern applications because 
+ of desirable features such as tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}. 
+ However,
+ sustaining and scaling container systems in the face of exponential growth is challenging. 
+ %
+ For example, Docker Hub~\cite{docker-hub}---a popular public container registry---stores more than~2 million public repositories. These repositories have grown at the rate of about $1$ million annually---requiring provisioning an additional 2.5~TB of storage per week on average---and the rate is expected to increase.
+ %
+ This puts intense pressure on Docker registry storage infrastructure, but the problem has so far remained largely unexplored.
+ %
+ In this paper, we propose a new Docker registry architecture, \sysname,
+ that integrates caching and deduplication with Docker registries to help reduce the storage requirements while mitigating any performance overhead.
+ 
 Containers are running instances of \emph{images} that encapsulate complete runtime environment for an application.
 An image comprises a set of shareable and content addressable \emph{layers}.
 % and is stored in Docker \emph{registry}. 
@@ -37,10 +38,11 @@ to effectively remove data duplicates. This is despite the fact that
 many cloud storage systems implement deduplication to effectively eliminate redundant data.
 For example,
 Google cloud and AWS, 
-employ in-line transparent data deduplication.\NZ{use a new example}
+employ in-line transparent data deduplication~\cite{storReduce}.%\NZ{use a new example}
 But the compressed layers reduce the opportunity for deduplication significantly. Effectively removing reduducncy from layers would entail decompressing them before performing deduplication.
 
-The challenge is that decompressing layers can have overheads besides the obvious decompression/compression. As shown in Figure~\ref{fig:with-dedup}, 
+The challenge is that decompressing layers can have overheads besides the obvious decompression/compression. 
+As shown in Figure~\ref{fig:with-dedup}, 
 after decompression and simple file-level deduplication, the unique files may become scattered on
 multiple servers. 
 To restore a layer,
@@ -69,18 +71,33 @@ This geographical distribution allows users to store images near their compute i
 An intuitive solution is to 
 leverage these distributed registries as a cache to temporarily store popular layers and
 improve pull latency.
-The challenge here is our Docker Hub image analysis shows that the layer sizes 
-vary from a few MB to several GB and that a majority of layers sizes are around several MB. A small main memory cache cannot accommodate many popular layers, and thus is ineffective. Moreover, the inter-access time for layer pulls can range from minutes to hours to months, making it difficult to manage the cache using traditional approaches such as LRU.
+The challenge here is that the layer access pattern is greatly different with traditional workloads 
+since once a layer is pulled by a user, the layer won't be pulled again by this user because
+the layer is locally available to this user. 
+This pattern has been observed by our registry workload analysis. 
+The inter-access time for layer pulls can range from minutes to hours to months, making it difficult to manage the cache using traditional approaches such as LRU.
+Moreover, our Docker Hub image analysis shows that the layer sizes 
+vary from a few MB to several GB and that a majority of layers sizes are around several MB. A small main memory cache cannot accommodate many layers, and thus is ineffective. 
 
 \paragraph{\sysname to the rescue.}
-\sysname addresses the above challenges as follows. First, it uses a mix of main memory and flash memory to realize the needed large capacity for caching popular layers and files.
+\sysname addresses the above challenges as follows. 
+First, it explores layer access pattern and uses a 
+user access history-based prefetch algorithm to accurately prefetch
+the layers that will be accessed shortly.
+%
 Second, \sysname embodies a two-tier heterogeneous cache architecture 
-comprising a {\em layer buffer} and a {\em file cache} to hold  popular layers.
+comprising a {\em layer buffer} and a {\em file cache} to hold  prefetched layers.
 The layer buffer stores layers in main memory. The file cache stores 
 the \emph{deduped} unique files for the victim layers that are evicted from the layer buffer on a 
 flash-based storage system.
-Moreover, we propose a user-based cache algorithm to improve the cache hit ratio 
-based on our Docker Hub image analysis that showed that user-active-time is more predictable.
+The mix of main memory and flash memory can realize the needed large capacity for caching prefetched
+ layers and files.
+ Our evaluation shows that our user access history-based prefetch algorithm can achieve 
+ over a hit ratio of 0.96.
+ And by using our two-tier heterogeneous cache architecture, 
+ we can put up to 56\% more layers into file cache.
+%Moreover, we propose a user-based cache algorithm to improve the cache hit ratio 
+%based on our Docker Hub image analysis that showed that user-active-time is more predictable.
 
 %Moreover, to improve layer pull performance, we design a user behavior based cache. 
 %The cache adaptively stores a certain amount of active users' layers, in a layer buffer, to speed up active users' pull time. 
@@ -93,10 +110,10 @@ based on our Docker Hub image analysis that showed that user-active-time is more
 %After an inactive user's layer is evicted from the layer buffer, based on our algorithm, it can either be discarded or hosted in the file cache. For the latter, the layer will undergo offline decompression and file-level deduplication.
 %For the incoming new users, we prefetch a number of their repositories along with their containing layers based on their access probabilities.
 
-We evaluate \sysname using \arb{???}, and show that
-\sysname~achieves 20\% higher hit ratio compared to LRU. 
-%by conducting a preliminary simulation-based study. Our study aims to explore the feasibility/benefits of deduplication and quantify the overhead it introduces.
-\HA{plz add preliminary results}.  
+%We evaluate \sysname using \arb{???}, and show that
+%\sysname~achieves 20\% higher hit ratio compared to LRU. 
+%%by conducting a preliminary simulation-based study. Our study aims to explore the feasibility/benefits of deduplication and quantify the overhead it introduces.
+%\HA{plz add preliminary results}.  
 
 \input{fig-nodedupvsdedup}
 
