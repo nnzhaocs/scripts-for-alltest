@@ -39,11 +39,11 @@ to around 1 million repositories annually. Based on our estimation, this will ca
 
 On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. 
 For example, StorReduce~\cite{storReduce}, the deduplication software choice of Google cloud and AWS, 
-performs in-line data deduplication transparently and resides between the client's application and the hosting cloud storage.
+performs in-line ransparent data deduplication and resides between the client's application and the hosting cloud storage.
 %A number of deduplication methods focus on client-side data deduplication to ensure that only unique files are uploaded, 
 %to save network bandwidth, by having the client send a duplicate check request~\cite{xxx}~\cite{xxx}. 
 %For example, xxxx\NZ{Hadeel, can you add one example and few relatedwork citation?}. 
-Intuitively, such deduplication technique can be leveraged to eliminate redundant data from the Docker image storage system.  
+Intuitively, such deduplication techniques can be leveraged to eliminate redundant data from the Docker image storage system.  
 Except, the Docker image dataset is different from the common data stream. 
 Docker images are \emph{compressed archival files}.
 %Intuitively, registries can be deployed as a proxy cache to host frequently requested layers to speedup image pulls and improve performance 
@@ -70,21 +70,23 @@ To eliminate these redundant files from the compressed layer files,
 changes must be made to the deduplication method. 
 Such changes should recognize the compression formats, perform decompression before feeding the data to a block-level or file-level deduplication process. 
 Otherwise, the deduplication ratio would be very low since compressed files have a very low deduplication ratio~\cite{meister2012study}. %"GZip-compressed files deduplication ratio is only 5.7%"
-Moreover for restoring a layer, the layer's
-containing files should all be fetched from wherever they reside, as they are likely to be scattered across multiple servers, 
+Moreover for restoring a layer, all the layer's files should be fetched from wherever they reside, as they are likely to be scattered across multiple servers, 
 and then compressed together, which causes a considerable overhead on pull layer requests performance.
 
-To quantify how much performance overhead caused by using deduplication on Docker registry,
-we setup five registry with local file system as their backend storage system,
-and implemented the above file-level deduplication with decompression and compression operations.
-We replayed IBM registry workload \texttt{dal}~\cite{dockerworkload} 
-by sending requests randomly to our five registries and presented average latency 
+To quantify how much performance overhead is caused by using deduplication on the Docker registry,
+we setup five registry instances, each with a local file system as their backend storage system,
+and implemented file-level deduplication with decompression and compression operations.
+We replayed the IBM registry workload \texttt{dal}~\cite{dockerworkload} 
+%by sending requests randomly 
+randomly to our five registries and presented average latency 
 as shown in Figure~\ref{fig:avg_latency_dedup_nodedup}.
-Note that since IBM registry workload \texttt{dal} does not contain real layers, so
-we extract layer digest from each request and match it with a layer randomly selected from our dataset.
+Note that since 
+%the IBM registry workload 
+\texttt{dal} does not contain real layers,
+we extract the layer digest from each request and match it with a layer randomly selected from our Docker Hub dataset.
 
 Without deduplication,
-the average latency for requesting a layer is around~2\,s for layers with size less than~50\,MB.
+the average latency for requesting a layer is around~2\,s for layers with sizes less than~50\,MB.
 The latency increases to~12\,s when the above deduplication is implemented in the backend storage system.
 Furthermore, Docker registry performance drops down dramatically for bigger layers.
 We observe that the average latency for requesting layers larger than~50\,MB and smaller than~1\,GB
@@ -105,11 +107,11 @@ For example, Varnish~\cite{varnish} and Squid~\cite{squid} are high-performance 
 Docker registry is a web server that serves docker \texttt{pull} and docker \texttt{push} requests.
 Intuitively, registries can be deployed as a proxy caches, \ie a pull-through cache~\cite{registryascache}, to host frequently requested layers to speedup image pulls and improve performance. 
 
-However, the layer access pattern is largely different from traditional request streams.
-Usually, traditional LRU will put recently requested data into cache 
-because they will have a big chance to be requested again.
-However, it's opposite to layer access pattern: if a layer is pulled by a user,
-then this layer mostly will not be pulled in the future by the user 
+However, the layer access pattern differs greatly from traditional request streams.
+Traditional LRU will place recently requested data into the cache 
+because it is highly likely they will be requested again.
+However, it is the opposite for the layer access pattern: if a layer is pulled by a user,
+then this layer will not be pulled by this user in the future
 since this layer is locally available to the user.
 Ali Anwar et al. proposed a push-pull prefetch to improve the cache hit ratio~\cite{dockerworkload}.
 Based on our following observations, we found the duration between two subsequent layer requests is very long,
