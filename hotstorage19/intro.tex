@@ -1,5 +1,5 @@
 \section{Introduction}
- 
+ \label{sec:intro}
 Containers 
 have become an effective means for deploying modern applications because 
 of desirable features such as tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}. However,
@@ -26,7 +26,9 @@ Microsoft Azure~\cite{azure}, and OpenStack Swift~\cite{swift} as their backend 
 %For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
 %IBM container registry uses IBM cloud to manage image storage.
 
-\paragraph{Is current registry deduplication effective?} To guide our design, we downloaded and analyzed $\~47$~TB ($167$~TB uncompressed) of Docker images 
+\paragraph{Is current registry deduplication effective?} 
+To guide our design, we downloaded and analyzed 
+$47$~TB ($167$~TB uncompressed) of Docker images 
 from Docker Hub (containing over~5 billion files). We found 
 that only~3\% of the stored files across the layers are unique; the remaining are redundant copies. 
 This clearly shows that the current layer-based sharing mechanism is unable 
