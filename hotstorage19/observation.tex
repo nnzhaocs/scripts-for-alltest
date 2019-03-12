@@ -66,29 +66,59 @@ We analyzed around 47\,TB of compressed Docker images (167\,TB after decompressi
 Surprisingly, only around 3\% of the those files are unique while the rest are redundant copies. 
 We can save around half of the storage space after removing the duplicate files.
 
-To eliminate these redundant files from the compressed layer files, changes must be made to the deduplication method. 
+To eliminate these redundant files from the compressed layer files, 
+changes must be made to the deduplication method. 
 Such changes should recognize the compression formats, perform decompression before feeding the data to a block-level or file-level deduplication process. 
 Otherwise, the deduplication ratio would be very low since compressed files have a very low deduplication ratio~\cite{meister2012study}. %"GZip-compressed files deduplication ratio is only 5.7%"
 Moreover for restoring a layer, the layer's
 containing files should all be fetched from wherever they reside, as they are likely to be scattered across multiple servers, 
 and then compressed together, which causes a considerable overhead on pull layer requests performance.
 
-\HA{running five registries, replaying dal trace using trace replayer-cite, and since the replayer doesn't use real layers we randomly match the request to our dataset downloaded from docker hub. describe how we got these numbers. for dedup, we simply implemented a decompress/compress + file-level deduplication on backend storage systems, we use a CHT based distributed storage system. Figure~\ref{fig:avg_latency_dedup_nodedup}}
+To quantify how much performance overhead caused by using deduplication on Docker registry,
+we setup five registry with local file system as their backend storage system,
+and implemented the above file-level deduplication with decompression and compression operations.
+We replayed IBM registry workload \texttt{dal}~\cite{dockerworkload} 
+by sending requests randomly to our five registries and presented average latency 
+as shown in Figure~\ref{fig:avg_latency_dedup_nodedup}.
+Note that since IBM registry workload \texttt{dal} does not contain real layers, so
+we extract layer digest from each request and match it with a layer randomly selected from our dataset.
+
+Without deduplication,
+the average latency for requesting a layer is around~2\,s for layers with size less than~50\,MB.
+The latency increases to~12\,s when the above deduplication is implemented in the backend storage system.
+Furthermore, Docker registry performance drops down dramatically for bigger layers.
+We observe that the average latency for requesting layers larger than~50\,MB and smaller than~1\,GB
+is around~128\,s. The latency worsens when dedupliation is implemented, with an average around~800\,s.
+
+%\HA{running five registries, replaying dal trace using trace replayer-cite, and since the replayer doesn't use real layers we randomly match the request to our dataset downloaded from docker hub. describe how we got these numbers. for dedup, we simply implemented a decompress/compress + file-level deduplication on backend storage systems, we use a CHT based distributed storage system. Figure~\ref{fig:avg_latency_dedup_nodedup}}
 \input{fig:avg_latency_dedup_nodedup}
 
 \paragraph{Use registry as a web/proxy cache?}
 Traditionally, caches are placed as close to the requesting client as possible, 
 such caches are known as proxy caches, or web/HTTP caches for the temporary storage of 
-frequently requested data to reduce the load on backend resources. 
-For example, Varnish~\cite{varnish} and Squid~\cite{squid} are open-source high-performaning web/HTTP caches that accelerate web applications and improve response times by caching frequently requested web content.
+frequently requested data to reduce the remote server lag. 
+For example, Varnish~\cite{varnish} and Squid~\cite{squid} are high-performance web/HTTP caches that accelerate web applications and improve response times by caching frequently requested web content.
 %Examples of open-source web (HTTP) proxy caches include Nginx~\cite{?}, Squid~\cite{?}, and Varnish~\cite{?}. 
 %They are typically implemented in an regional ISP or within a corporate network.
 %Deduplication methods are implemented on remote backend storage servers, and
 %transparently remove duplicates from the incoming data stream and restore the data for read requests. 
-Docker registry is a web server that serves docker pull and docker push requests.
+Docker registry is a web server that serves docker \texttt{pull} and docker \texttt{push} requests.
 Intuitively, registries can be deployed as a proxy caches, \ie a pull-through cache~\cite{registryascache}, to host frequently requested layers to speedup image pulls and improve performance. 
 
+However, the layer access pattern is largely different from traditional request streams.
+Usually, traditional LRU will put recently requested data into cache 
+because they will have a big chance to be requested again.
+However, it's opposite to layer access pattern: if a layer is pulled by a user,
+then this layer mostly will not be pulled in the future by the user 
+since this layer is locally available to the user.
+Ali Anwar et al. proposed a push-pull prefetch to improve the cache hit ratio~\cite{dockerworkload}.
+Based on our following observations, we found the duration between two subsequent layer requests is very long,
+if we cache a layer, we might need to wait for hours to get a hit on that layer.
 
+\input{fig-skewness-reusetime}
+
+\input{observation-traces}
+%We analyzed IBM registry workload and made the two following obervations:
 %Caching is a technique widely leveraged to reduce bandwidth and load off of highly loaded bottleneck backends by temporarily storing frequently requested data~\cite{xxx}. 
 %Caching can be introduced at the client, in between clients and servers as a proxy, or at the server side. 
 %Proxy caches are efficient in reducing traffic from bottleneck backends by cooperatively serving previously requested and saved data without it going all they way to the backend~\cite{xxxx}. 
