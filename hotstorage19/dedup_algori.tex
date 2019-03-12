@@ -1,4 +1,4 @@
-\paragraph{User-based cache algorithm}
+\paragraph{User active time-based cache replacement algorithm}
 %\label{sec:design_cache_algori}
 
 \input{cache_algori.tex}
@@ -29,4 +29,40 @@ Next, \sysname~will \arb{what is???: reversely iterate} \emph{UsrLRU} until it f
 % that exclusively owned by these users from the two LRU lists and evict the layers from layer buffer.
 %, then   
 
+\paragraph{User access history-based prefetch algorithm}
+
+To improve our cache hit ratio for \texttt{pull} layer request, we proposed a user access history-based prefetch algorithm
+by utilizing the uniqueness of registry image dataset hierarchy or organization: User $\rightarrow$ repositories $\rightarrow$ layers.
+Users create repositories in Docker registry, \texttt{push} layers to their own repositories,
+and \texttt{pull} layers from their own repositories or other public repositories. 
+%When user \texttt{pull} an image from registry, it will first pull the manifest of the image while user 
+%\texttt{push} an image to registry~\cite{docker}~\cite{dockerworkload}. 
+Based on the above behavior pattern and hierarchy of image in Docker registry, 
+we can record user access history and,
+when a new use connects to registry, we can prefetch all the layers that have been accessed by this user
+into cache ideally.
+Gradually, cache hit ratio will almost reach 1.
+However, limited to the cache size, we won't be able to fit all the active users' layers into cache.
+But we can prefetch active users' popular layers in the cache based on the historical access information.
+
+\input{prefetch_algori}
+As shown in algorithm~\ref{alg:prefetch}, \sysname~maintains a tree-like URLMap for recording 
+user access history information. For example, if usr \emph{U} accesses repository \emph{R}'s layer \emph{L},
+we will add a child node \emph{L} to parent node \emph{R} which is a child node of \emph{U}.
+Each node records the follow history information: (\emph{Pull\_cnt}, \emph{Put\_cnt}, \emph{last\_access\_time}). Note that for layer node, \emph{Put\_cnt} $=$ 1 or $=$ 0.
+Whenever a GET or PUT layer request is received, \sysname~will update URLMap for the associate user, repository, and layer. 
+When a GET manifest request is received or a GET layer request is miss,
+\sysname~will select a certain number of layers from client's previously accessed layers by lookup URLMap
+and prefetch them into cache for later access.
+To determine if layer is a popular layer and need to be prefetched into cache,
+we only consider the layers that was recently accessed with a time period 
+that is shorter than \emph{T\_thresh}, meaning that
+\emph{current\_time} $-$ \emph{last\_access\_time} $<$ \emph{T\_thresh}.
+Then we calculate the layer popularity as: 
+$\omega_{pull} \times Pull\_cnt + \omega_{push} \times Push\_cnt$.
+Since recently \emph{pushed} layer has a higher chance to get \emph{pulled} in the future,
+we give a higher weight ($\omega_{push} > \omega_{pull}$) for the layer if it has a \emph{Push\_cnt} equal to 1. 
+
+ 
+%We assume that users are independent with each other.
 
