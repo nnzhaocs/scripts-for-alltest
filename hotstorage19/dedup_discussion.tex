@@ -1,23 +1,60 @@
 \section{Discussion}
 \label{sec:discussion}
 In this section, we discuss issues and concerns 
-%about~\sysname~
-and additional optimizations to help speed up~\sysname.
-\paragraph{Further utilize user behavior pattern to accurately predict layer access pattern}
-We observed that although half of the users have only one repository with a few layers, there are some users who own many layers. 
-For future work, we will focus on precisely predicting which layers will be accessed by active users and prefetch them in the cache for later accesses.
-We also observed that 
+and additional optimizations to help speed up \sysname.
 
+%1. File cache and layer buffer management 
+%We observed that although half of the users have only one repository with a few layers, there are some users who own many layers. 
+%For future work, we will focus on precisely predicting which layers will be accessed by active users and prefetch them in the cache for later accesses.
+%We also observed that 
 %\paragraph{How many more "layers" can fit in file cache compared with naively storing layers in file cache}
 %\paragraph{Can we do client-side deduplication to remove duplicates}
-\paragraph{Docker client-side deduplication: viability and implications}
+%In the future work, we will focus on how to efficiently manage file cache and layer buffer
+%so that we can facilitate more active user requests.
+%For example, where to store prefetch layers?
+%Our algorithm requires to 
+%fetch a certain amount of layers for all connected users to maintain a higher hit ratio.
+%If we store prefetched layers into layer buffer,  it requires a big cache to accommodate these layers.
+%So during layer prefetching, if the layer buffer is full, 
+%we will put the prefetched
+%Our algorithm can efficiently improve the cache hit ratio. 
+%However, it requires to fetch a certain amount of layers for all connected users.
+%And its hit ratio largely depends on duration threshold.
+%If we set a higher duration threshold, we can keep more layers in cache 
+%but
+
+1. Seamlessly integrate backend dedup process with prefetch cache algorithm
+
+In the future work, we will analyze how long it will take to fetch a layer from
+backend storage system.
+If the latency of prefetching a layer is longer,
+the incoming pull layer requests will not be served immediate.
+Next, we will analyze the cost-benefit of 
+prefetching a layer.
+Prefetching a layer from cold repositories can serve an immediate pull request,
+but this layer will be deleted from cache after a short period of time 
+because it won't be accessed again by other users 
+but prefetching this will consume a lot of resources, 
+for example, CPU, network bandwidth, I/Os. 
+Moreover, this layer staying in cache might trigger other layers from hot repositories to be evicted.
+Another question is how much is the performance again by using file cache.
+Although file cache can increase space efficiency, once layer request is hit in layer cache,
+we need to do parallel compression and it also cause a latency.
+
+%Our first question is if we prefetch layers from backend dedup storage system,
+%there will a latency added to our prefetch requests, 
+
+2. Another angel to reduce redudant data in Docker registry: Docker client-side deduplication
+
 Client-side deduplication affects the container runtime. 
-Because performing inline file-level deduplication on the Docker client side requires intensive file 
-fingerprint calculations and file fingerprint lookup, which will slow down container runtime performance.
+This is because performing inline file-level deduplication on the Docker client side requires intensive file 
+fingerprint calculations, and file fingerprint lookup, 
+which will slow down container runtime performance.
 For future work, we will offload client-side deduplication to server-side, meaning that the 
 Docker client doesn't need to do deduplication because
 it can push all its created images to the registry and the registry eliminates duplicate files for the client. 
-In this case, Docker clients use the registry as a washing machine to launder duplicate files in their local file systems without performance overhead.
+In this case, Docker clients use the registry as a duplicate file washing machine to 
+remove duplicate files in their local file systems without performance overhead.
 
 
 %
