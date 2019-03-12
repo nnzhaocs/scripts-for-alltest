@@ -279,7 +279,7 @@
                                     {1.25ex \@plus 0.2ex \@minus 0.2ex}%
                                     {-1.0em}%
                                     {\normalfont\normalsize\bfseries}}
-\renewcommand\paragraph[1] {\@paragraph{#1.}}
+\renewcommand\paragraph[1] {\@paragraph{#1}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
                                     {1.25ex \@plus 0.2ex \@minus 0.2ex}%
                                     {-1.0em}%
