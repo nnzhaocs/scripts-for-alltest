@@ -6,7 +6,40 @@ by hiding the long latency imposed by the backend dedup system.
 Next, we present the preliminary evaluation of our user access history-based cache algorithm
 and the space efficiency of file cache.
 
+\input{fig-eval-cachehitratio-spaceefficiency}
 \paragraph{Cache hit ratio}
+
+We present the cache hit ratio of our user access history-based algorithm 
+by replaying three IBM container registry workloads~\cite{dockerworkload}
+as shown in Figure~\ref{fig:hitratio},.
+%Our algorithm exhibits an enhanced cache performance, with a high hit ratio
+%up to 0.96.
+The hit ratio increases significant from 0.74 to 0.95 as the duration threshold grows from 1 min to 10 min.
+Increasing the duration threshold can keep more recently prefetched layers in the cache and serve later
+pull requests. 
+After that, the hit ratio stays stable around 0.96 as the duration threshold grows from 15 min to 20 min.
+Therefore,
+the highest hit ratio of our algorithm is around 0.96,
+and there are 0.4 of layers that are miss because 
+some users \emph{re-pull} the layers after they pull the same layers.
+From Figure~\ref{fig:hitratio} we also can see that 74\% of users can finish their \texttt{pull} layer request
+within a minute and 
+around 89\% of users can finished their \texttt{pull} layer request with less than 5 min. 
+Moreover, compare hit ratio for prefetched layers (i.e., prefetch hit ratio) and layer buffer hit ratio,
+we see that in a short time period, 
+our prefetched layers have a much high hit ratio than layer buffer across different duration threshold,
+which means that it takes longer time for a newly \emph{pushed} layer to be pulled.
+
+%
+%In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while
+%in terms of capacity, it increases from \textbf{1.9$\times$} to
+%\textbf{6.9$\times$} as the layer dataset grows from 1000 to 1.7 million layers.
+%%
+%This confirms the high potential for file-level deduplication in large-scale
+%Docker registry deployments.
+
+\paragraph{Space efficiency}
+
 %As shown in Figure~\ref{xxx},
 %we compare the cache hit ratio of LRU, Prefetch~\cite{xxxx}, and our 
 %user-based cache replacement algorithm by replaying three IBM container registry workloads~\cite{dockerworkload}.
@@ -15,11 +48,11 @@ and the space efficiency of file cache.
 We analyze the space efficiency for file cache comparing to a cache that naively store
 compressed layer tarballs.
 %for an increasing number of files stored in the file cache 
-(see Figure~\ref{fig:dedup-ratio-growth}).
+%(see Figure~\ref{fig:dedup-ratio-growth}).
 %
 %Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth over the layer dataset size.
 %
-The x-axis values correspond to the sizes of 4 random samples drawn from the whole dataset and the size of the dataset in terms of layer count and capacity.
+As shown in Figure~\ref{fig:cacheefficiency}The x-axis values correspond to the sizes of 4 random samples drawn from the whole dataset and the size of the dataset in terms of layer count and capacity.
 For a traditional cache, the compressed layer tarballs will be kept as it is.
 While for our cache, \sysname will store \emph{deduped} layers: 
 unique files in the file cache.
@@ -33,32 +66,7 @@ in file cache.
 The number of extra layers increases almost linearly with the layer dataset size.
 In this case, there is a high potential for file cache when the cache size is big.
 we should be carefully select file cache size. 
-%
-%In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while
-%in terms of capacity, it increases from \textbf{1.9$\times$} to
-%\textbf{6.9$\times$} as the layer dataset grows from 1000 to 1.7 million layers.
-%%
-%This confirms the high potential for file-level deduplication in large-scale
-%Docker registry deployments.
 
-\paragraph{Space efficiency}
-
-We present the cache hit ratio of our user access history-based algorithm 
-by replaying three IBM container registry workloads~\cite{dockerworkload}
-as shown in Figure~\ref{xxx},.
-%Our algorithm exhibits an enhanced cache performance, with a high hit ratio
-%up to 0.96.
-The hit ratio increases significant from 0.74 to 0.95 as the duration threshold grows from 1 min to 10 min.
-Increasing the duration threshold can keep more recently prefetched layers in the cache and serve later
-pull requests. 
-After that, the hit ratio stays stable around 0.96 as the duration threshold grows from 15 min to 20 min.
-Therefore,
-the highest hit ratio of our algorithm is around 0.96,
-and there are 0.4 of layers that are miss because 
-some users \emph{re-pull} the layers after they pull the same layers.
-From Figure~\ref{xxx} we also can see that 74\% of users can finish their \texttt{pull} layer request
-within a minute and 
-around 89\% of users can finished their \texttt{pull} layer request with less than 5 min. 
 
 %In this experiment, we show how many more layers can be stored in the file cache 
 %after decompression and file-level deduplication.
