@@ -1,9 +1,16 @@
 \section{Introduction}
  
 Containers 
-have become an effective means for deploying modern applications, because 
-of the desirable features offered such as tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}. However,
-sustaining and scaling container systems in the face of exponential growth is challenging.
+have become an effective means for deploying modern applications because 
+of desirable features such as tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}. However,
+sustaining and scaling container systems in the face of exponential growth is challenging. 
+%
+For example, Docker Hub~\cite{docker-hub}---a popular public container registry---stores more than~2 million public repositories. These repositories have grown at the rate of about $1$ million annually. A similar rate of growth  would require provisioning an additional 2.5~TB of storage per week (and is expected to increase).
+%
+This puts intense pressure on Docker registry storage infrastructure, and the problem has so far remained largely unexplored.
+%
+To mitigate this problem, in this paper, we propose a new Docker registry architecture,~\sysname,
+that integrates caching and deduplication with Docker registries to help reduce the storage requirements while keeping the performance overhead to a minimum.
 
 
 Containers are running instances of \emph{images} that encapsulate complete runtime environment for an application.
@@ -19,14 +26,6 @@ Microsoft Azure~\cite{azure}, and OpenStack Swift~\cite{swift} as their backend 
 %For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
 %IBM container registry uses IBM cloud to manage image storage.
 
-The amount of images stored in Docker registries is increasing dramatically.
-%Docker registries store a large amount of images and with the increasing popularity of Docker, registries continue to grow. 
-For example, Docker Hub~\cite{docker-hub}---a popular public registry---stores more than~2 million public repositories that host one or more images. 
-We observed that the number of public repositories grows by around~1 million annually. At this rate an additional 2.5~TB of storage is required per week (and the growth is expected to increase).
-%Moreover, 
-%just storing~130\,TB worth of Docker images on Google cloud will cost around~\$14,000 per month~\cite{GoogleCloudStoragePricing}.
-This massive amount of image dataset puts intense pressure on Docker registry storage infrastructure, and this problem has so far remained largely unexplored.
-%Then, the 1 million annual growth in the number of repositories amounts to about 130\,TB, costing around~\$15,000 a month.
 
 \paragraph{Deduplication}
 Our analysis of around~47\,TB (167\,TB uncompressed) of Docker images downloaded from Docker Hub (containing over~5 billion files) reveals
@@ -42,8 +41,7 @@ Google cloud and AWS,
 perform in-line data deduplication transparently.\NZ{use a new example}
 However, existing deduplication techniques cannot be directly applied to the image storage system 
 because of the unique dataset in the Docker registry: compressed layers. 
-In contrast to uncompressed files, compressed files have a lower deduplication ratio. 
-So layers should be decompressed before performing deduplication.
+In contrast to uncompressed files, compressed files have a lower deduplication ratio. \sysname~addresses this by decompressing layers before performing deduplication.
 
 As shown in Figure~\ref{fig:with-dedup}, 
 after decompression and simple file-level deduplication, the unique files may get scattered on
@@ -85,9 +83,6 @@ Although layer pull requests are heavily skewed, we observed that the duration b
 Meaning, if we cache a layer, we might need to wait hours to get a hit on that layer.
 
 \paragraph{~\sysname}
-In this paper, we propose a new Docker registry architecture,~\sysname,
-that integrates caching and deduplication with Docker registries to address the aforementioned obstacles.
-%To address these issues,
 ~\sysname~embodies a two-tier heterogeneous cache architecture 
 comprising a layer buffer and a file cache to hold  popular layers:
 The layer buffer stores popular layers in main memory while the file cache stores 
