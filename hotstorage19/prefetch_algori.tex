@@ -10,13 +10,14 @@
 		\emph{r} $\leftarrow$ \texttt{request received}\\
 		\uIf{r = GET manifest}{
 %			layerlst $\leftarrow$ URLMap[(r.client, r.repo)]
-			\emph{layers} $\gets$ \texttt{select} \emph{URLMap[(r.client, r.repo)]} \\
+			\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[(r.client, r.repo)]} \\
 			\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
 			\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
 			{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
 			}
 		\uElseIf{r = PUT layer }{
 				\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
+				\texttt{update} \emph{RLMap[(r.repo, r.layer)]} \\
 				\emph{LayerBuffer} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
 				\texttt{set} \emph{L\_timer[r.layer]} \\
 				{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
@@ -30,7 +31,7 @@
 				}{
 					\emph{serve from backend storage system} \\
 					\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
-					\emph{layers} $\gets$ \texttt{select} \emph{URLMap[(r.client, r.repo)]} \\
+					\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[(r.client, r.repo)]} \\
 					\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
 					\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
 					{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
