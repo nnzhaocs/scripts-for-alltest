@@ -7,7 +7,7 @@ we believe the current registry design is inefficient and
 the massive amount of images will make the registry become a bottleneck in the whole
 container system.
 In this work, we have attempted to solve the redundant data issue 
-with seamlessly integrating caching and deduplication guided by user access patterns
+with a seamless integration of caching and deduplication guided by user access patterns
 to showcase the benefits for both the Docker registry service providers as well as the clients.
 
 We believe that our paper will lead to discussion on the following points of interest:
@@ -15,7 +15,7 @@ We believe that our paper will lead to discussion on the following points of int
 Since deduplication is a well-studied area, we believe that the paper will lead to 
 hot discussion on how the extant approaches can be applied/adapted
 to diverse data formats such as compressed files.
-(2) Issues about how to effectively use caching by exploring user access pattern to improve the performance of whole container system,
+(2) Issues about how to effectively use caching by exploring user access pattern to improve the performance of whole container systems,
 and where to place the cache (for example, at registry side, remote cloud storage side, or Docker client side)
 to benefit container performance. 
 (3) The role of layer and image.
@@ -41,8 +41,8 @@ Therefore, the redundancy issue in Docker client side with limited local storage
  This is because performing file-level deduplication on the Docker client side
  requires intensive file fingerprint calculations, and file fingerprint lookup, 
  which will slow down container runtime performance.
- Furthermore, we believe our work can help to synchronize deduplication for both
- client side deduplication with registry side deduplication
+ Furthermore, we believe our work can help  synchronize deduplication for both
+ client side deduplication and registry side deduplication
  to yield desirable win-win solutions.
  
 % For future work, we will offload client-side deduplication to server-side, meaning that the 
