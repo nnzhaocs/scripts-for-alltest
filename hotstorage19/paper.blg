@@ -3,26 +3,23 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: paper.aux
 The style file: acm.bst
 Database file #1: paper.bib
-Warning--I didn't find a database entry for "xxxx"
+Warning--I didn't find a database entry for "cntr"
 Warning--to sort, need author or key in docker
 Warning--to sort, need author or key in docker-hub
 Warning--to sort, need author or key in s3
-Warning--to sort, need author or key in GoogleContainerRegistry
-Warning--to sort, need author or key in ibmregistry
-Warning--to sort, need author or key in azure
-Warning--to sort, need author or key in swift
-Warning--to sort, need author or key in aliyun
 Warning--to sort, need author or key in storReduce
+Warning--to sort, need author or key in ibmregistry
+Warning--to sort, need author or key in GoogleContainerRegistry
 Warning--to sort, need author or key in varnish
 Warning--to sort, need author or key in squid
 Warning--to sort, need author or key in registryascache
 Warning--to sort, need author or key in plasma
 Warning--to sort, need author or key in redis
 Warning--to sort, need author or key in hdfs
+Warning--to sort, need author or key in swift
 Warning--empty year in dockerworkload
 Warning--empty year in dockerssd
 Warning--empty year in shifter
-Warning--empty year in analysisdockergithub
 Warning--empty journal in ghemawat2003google
 Warning--empty year in slacker
 Warning--empty year in 2009-dedup_effectiveness_on_vm_disk_images-systor
@@ -31,7 +28,6 @@ Warning--empty year in 2012-data_reduction_in_primary_storage-systor
 Warning--empty year in 2012-hpc_practical_dedup_study-sc
 Warning--empty year in 2001-low_bandwidth_network_fs-sosp
 Warning--empty year in 2013-charact_increment_changes_data_protect-atc
-Warning--empty year in dockervulnerabile
 Warning--empty year in exoclones
 Warning--empty year in 2012-idedup-fast
 Warning--empty year in msst16dedup-study
@@ -41,45 +37,45 @@ Warning--empty year in 2012-charact_backup_workloads-fast
 Warning--empty year in improve-cow-container-drivers
 Warning--empty year in 2013-charact_dedup_effic_big_data-iiswc
 Warning--empty year in 2008-avoid_disk_bottleneck_data_domain_dedupfs-fast
-You've used 39 entries,
+You've used 35 entries,
             2253 wiz_defined-function locations,
-            674 strings with 9690 characters,
-and the built_in function-call counts, 11318 in all, are:
-= -- 913
-> -- 693
+            660 strings with 9149 characters,
+and the built_in function-call counts, 10315 in all, are:
+= -- 831
+> -- 642
 < -- 0
-+ -- 297
-- -- 252
-* -- 763
-:= -- 1765
-add.period$ -- 101
-call.type$ -- 39
-change.case$ -- 243
++ -- 275
+- -- 234
+* -- 703
+:= -- 1617
+add.period$ -- 91
+call.type$ -- 35
+change.case$ -- 222
 chr.to.int$ -- 0
-cite$ -- 76
-duplicate$ -- 487
-empty$ -- 994
-format.name$ -- 252
-if$ -- 2349
+cite$ -- 68
+duplicate$ -- 441
+empty$ -- 894
+format.name$ -- 234
+if$ -- 2134
 int.to.chr$ -- 0
-int.to.str$ -- 39
-missing$ -- 24
-newline$ -- 182
-num.names$ -- 48
-pop$ -- 496
+int.to.str$ -- 35
+missing$ -- 22
+newline$ -- 164
+num.names$ -- 44
+pop$ -- 447
 preamble$ -- 1
-purify$ -- 204
+purify$ -- 187
 quote$ -- 0
-skip$ -- 199
+skip$ -- 179
 stack$ -- 0
-substring$ -- 222
-swap$ -- 68
+substring$ -- 202
+swap$ -- 62
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 156
-warning$ -- 37
-while$ -- 52
-width$ -- 41
-write$ -- 325
-(There were 38 warnings)
+type$ -- 140
+warning$ -- 33
+while$ -- 48
+width$ -- 37
+write$ -- 293
+(There were 34 warnings)

@@ -5,10 +5,6 @@ About ibm cloud container registry.
 \newblock
   \url{https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_overview}.
 
-\bibitem{aliyun}
-{Aliyun Open Storage Service (Aliyun OSS)}.
-\newblock \url{https://cn.aliyun.com/product/oss?spm=5176.683009.2.4.Wma3SL}.
-
 \bibitem{s3}
 Amazon s3.
 \newblock \url{https://aws.amazon.com/s3/}.
@@ -28,10 +24,6 @@ Google's container registry.
 \bibitem{hdfs}
 hdfs.
 \newblock \url{https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html}.
-
-\bibitem{azure}
-Microsoft azure storage.
-\newblock \url{https://azure.microsoft.com/en-us/services/storage/}.
 
 \bibitem{swift}
 Openstack swift.
@@ -89,12 +81,6 @@ Storreduce.
 \newblock {Shifter: Containers for {HPC}}.
 \newblock In {\em Cray User Group'16}.
 
-\bibitem{analysisdockergithub}
-{\sc Cito, J., Schermann, G., Wittern, J.~E., Leitner, P., Zumberi, S., and
-  Gall, H.~C.}
-\newblock {An Empirical Analysis of the Docker Container Ecosystem on GitHub}.
-\newblock In {\em IEEE MSR'17}.
-
 \bibitem{ghemawat2003google}
 {\sc Ghemawat, S., Gobioff, H., and Leung, S.-T.}
 \newblock The google file system.
@@ -146,11 +132,6 @@ Storreduce.
 \newblock Characterization of incremental data changes for efficient data
   protection.
 \newblock In {\em USENIX ATC'13}.
-
-\bibitem{dockervulnerabile}
-{\sc Shu, R., Gu, X., and Enck, W.}
-\newblock {A Study of Security Vulnerabilities on Docker Hub}.
-\newblock In {\em ACM CODASPY'17}.
 
 \bibitem{exoclones}
 {\sc Spillane, R.~P., Wang, W., Lu, L., Austruy, M., Rivera, R., and
