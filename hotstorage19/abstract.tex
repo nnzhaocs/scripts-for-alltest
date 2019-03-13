@@ -4,7 +4,7 @@
 The fast growing number of container images and the associated
 performance and storage capacity demands are key obstacles to
 sustaining and scaling Docker registries.  
-The inability to effeciently and effectively deduplicate 
+The inability to efficiently and effectively deduplicate 
 layers that are stored in a compressed format is a major obstacle.
 %   Moreover, the layers  are not amenable to direct application of
 %   existing deduplication techniques efficiently.
@@ -14,9 +14,8 @@ In this paper, we propose a new Docker registry architecture,
 registries and reduces the storage requirements while mitigating any
 performance overhead. \sysname uses a highly-effective
 user-access-history-based prefetch algorithm, and a two two-tier
-heterogeneous cache comprising memory and flash storage.
-Evaluation of the prefetching algorithm shows 
-a high hit ratio of 96\%. Moreover, the two-tier cache is able to store 56\% more layers into the file cache.
+heterogeneous cache comprising memory and flash storage. \sysname achieves 
+a $96$\% hit ratio and saves $56$\% more cache space.
 
 %Based on our 
 
