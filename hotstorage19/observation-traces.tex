@@ -30,15 +30,29 @@ and replayed
 IBM registry workload \texttt{dal} with different cache size as shown in 
 Figure~\ref{fig:lru_prefetching_hits}.
 The hit ratio for LRU was found to be lower than $0.6$ across different sizes.
-This is because layer accesses do not follow LRU temporal trend.
+This is because layer accesses do not follow LRU temporal trend:
+recently pulled layer will not be pulled again by the same user.
 Although pull-push prefetching slightly improved the hit ratio compared to LRU,
 the maximum hit ratio is still low and stays stable around $0.8$.
-This is because, first, push-pull prefetching predicts the future accesses based on  
-pushed layers but according to our above observations, layer reuse time
-is very long. 
-Second, we found in the traces only half of the pull layer requests have a precedent 
-push layer request and push-pull prefetching ignored the layers that were pushed 
-before data collection.
+This is because push-pull prefetching predicts the future accesses based on  
+pushed layers.
+However, based on our above trace analysis,
+only half of the \texttt{pull} layer
+requests have a preceding \texttt{push} layer request within the trace
+%collecting duration
+collection period of 75 days. This means that, after a user pushes a layer
+to the registry, it takes a few days, weeks, or even months for a user to make
+a \texttt{pull} request. 
+%Second, we found in the traces only half of the pull layer requests have a preceding 
+%push layer request and push-pull prefetching ignored the layers that were pushed 
+%before data collection.
+
+%Anwar et
+%al. have proposed a prefetching method~\cite{dockerworkload} based on the
+%\texttt{push}-\texttt{pull} relationship: whenever there is a \texttt{PUSH} layer
+%request directly followed by a \texttt{GET} manifest request, with a high probability these will be followed by a \texttt{GET}
+%layer request.
+
 
 \arb{say something whether this is good or bad... or is very low and show that LRU is not an effective mechanism for managing the proposed caches}\NZ{addressed}
 

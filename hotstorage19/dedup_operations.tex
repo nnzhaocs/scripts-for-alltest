@@ -4,9 +4,9 @@
 %\paragraph{Workflow}
 %
 The proposed Docker registry API is very similar to the original registry.
-Interactions with the Docker client is unchanged: 
+%Interactions with the Docker client is unchanged: 
 a user simply pushes and pulls images to and from the registry. 
-In the followin, we explain Docker operations integration with \sysname.
+In the following, we explain Docker operations integration with \sysname.
 
 %\sysname~ is composed of five main components(see Figure~\ref{onshareddir}):
 %a modified Docker client,
@@ -61,7 +61,8 @@ The unique files are flash-friendly because there is no modification to these fi
 %its host addresses are exposed to our ~\sysname.
 %
 %Similar to layer buffer, storing unique files in file cache might also trigger the eviction of cold layer's files.
-The eviction of a cold layer from the layer buffer may also trigger the eviction of its files.
+The eviction of a cold layer from the layer buffer to file cache
+ may also trigger the eviction of unique files in file cache.
 Since the backend dedup storage system already stores a backup of the layers, 
 we can simply discard the victim files from the file cache. Algorithm~\ref{alg:cache} presents our 
 cache replacement algorithm.
