@@ -10,19 +10,18 @@
 \vspace{-6pt}
 \paragraph{Cache hit ratio.}
 
-We measure the hit ratio of our user access history-based cache via
-a simulation and 
-replaying the \texttt{dal} workload~\cite{dockerworkload}.
+We simulate our user-access-history-based cache and 
+replay the \texttt{dal} workload~\cite{dockerworkload} to measure the hit ratio.
 %as shown in Figure~\ref{fig:hitratio}.
 %Our algorithm exhibits an enhanced cache performance, with a high hit ratio
 %up to 0.96.
-Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio from $74\%$ to $95\%$ as the duration threshold grows from $1$ to $10$ minutes. This is because prefetched layers are kept in the cache for more time.
+Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio, $74\%$ to $95\%$ as the duration threshold grows from $1$ to $10$ minutes. This is because prefetched layers are kept in the cache for more time.
 The hit ratio stablizes at $96\%$ as the duration threshold increases from $15$ to $20$ minutes.
 %Therefore,
 %the highest hit ratio of our algorithm is around 0.96,
 %and there are 0.4 of layers that are miss because 
 %some users \emph{re-pull} the layers after they pull the same layers.
-The layers responsible for the $4$\% miss rate are the ones being
+The layers responsible for the $4\%$ miss rate are the ones being
 \emph{re-pulled} by the same user.
 %We also see that 74\% of users can finish their \texttt{pull} layer request
 %within a minute and 
@@ -64,7 +63,7 @@ The y-axis shows how many more \emph{deduped} layers can fit in our file cache c
 For the first two samples of the dataset, with size less than $20$~GB, 
 there is no benefit to \emph{dedup} layers 
 because the deduplication ratio is very low.
-However, when the dataset size is $3$~TB, we can store $56$\% more \emph{deduped} layers' unique files in file cache.
+However, when the dataset size is $3$~TB, we can store $56\%$ more \emph{deduped} layers' unique files in file cache.
 The number of extra \emph{deduped} layers that can fit in the file cache increases almost linearly with the size of the layer dataset.
 %the bigger the dataset, the more deduped layers that can fit in the file cache.
 %The number of extra layers increases almost linearly with the layer dataset size.
