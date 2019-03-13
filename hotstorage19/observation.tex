@@ -1,5 +1,5 @@
-\subsection{Observations and Motivation} % just find the problem and benefit
-\label{sec:observationandmotivation}
+\section{Observations and Motivation} % just find the problem and benefit
+\label{sec:background}
 
 \paragraph{Deduplication for improving storage capacity.}
 
@@ -40,7 +40,8 @@ We replayed the IBM registry workload \texttt{dal}~\cite{dockerworkload}
 randomly to our five registries and measured the latency. 
 %
 Figure~\ref{fig:avg_latency_dedup_nodedup} shows the average latency observed 
-across five registries\arb{average across what??}\NZ{addressed}.
+across five registries.
+%\arb{average across what??}\NZ{addressed}.
 Note that since 
 %the IBM registry workload 
 \texttt{dal} does not contain real layers,
@@ -52,7 +53,7 @@ The latency increases to 12~s when the above deduplication is implemented in the
 Furthermore, Docker registry performance drops down dramatically for larger layers.
 We observe that the average latency for requesting layers larger than 50~MB and smaller than 1~GB
 is about 128~s. The latency worsens when dedupliation is implemented, to on average about 800~s.
-\NZ{todo:graph: less than, }
+%\NZ{todo:graph: less than, }
 %\HA{running five registries, replaying dal trace using trace replayer-cite, and since the replayer doesn't use real layers we randomly match the request to our dataset downloaded from docker hub. describe how we got these numbers. for dedup, we simply implemented a decompress/compress + file-level deduplication on backend storage systems, we use a CHT based distributed storage system. Figure~\ref{fig:avg_latency_dedup_nodedup}}
 \input{fig:avg_latency_dedup_nodedup}
 

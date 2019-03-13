@@ -48,7 +48,9 @@ We address a set of unique challenges to enable this integration.
 %
 First, for caching layers, \texttt{pull} layer requests are difficult to
 predict because layers are accessed infrequently.
-In~\cref{sec:background}\arb{???}, we have observed that about half of the layers are not
+In~\cref{sec:background},
+%\arb{???}, 
+we have observed that about half of the layers are not
 accessed again for at least $1.3$~hours. This means that if we
 cache a layer, we may need to wait a long time before we observe a hit on that layer (as discussed in~\cref{sec:background}).  
 This is mainly 
@@ -70,7 +72,8 @@ requesting host will only pull the layers that are not locally stored.
 Second, we can not deduplicate compressed layers. For deduplication, each layer
 needs to be uncompressed, and only then can undergo file-level deduplication. Similarly,
 to restore a layer, we need to fetch files from multiple servers, and only then compress
-them in to a tar file to serve a \texttt{pull} layer request \arb{that can service the ??? request}\NZ{addressed}. 
+them in to a tar file to serve a \texttt{pull} layer request. 
+%\arb{that can service the ??? request}\NZ{addressed}. 
 This whole process can incur a 
 considerable performance overhead on \texttt{pull} layer requests.
 Deduplication also slows down
@@ -97,7 +100,7 @@ create separate caches for layers and \emph{unique} files, called {\em layer buf
 %Both caches comprise both
 %main memory and flash memory.
 %Layer buffer
-\arb{are main memory for one type and flash for the other type, or both for both types. I assumed both types of memory are used, and there are two caches. check previous sentence for correctness.}\NZ{addressed}
+%\arb{are main memory for one type and flash for the other type, or both for both types. I assumed both types of memory are used, and there are two caches. check previous sentence for correctness.}\NZ{addressed}
 Note that, layers are  compressed tarballs and buffered in layer buffer, and 
 %sent by users
  \emph{unique} files are uncompressed files from which duplicates have been removed and stored on flash-based storage. 

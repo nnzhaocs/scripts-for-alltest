@@ -1,5 +1,5 @@
-\section{Background}
-\label{sec:background}
+%\section{Background}
+%\label{sec:background}
 
 %==================removed because we described docker image layer in intro.
 %Docker~\cite{docker} is a containerization platform to develop, deploy, and run applications inside \emph{containers}.
@@ -20,25 +20,25 @@
 %If a user tries to launch a container from an image that is not available locally, the daemon \texttt{pulls} the required image from the Docker registry.
 %Additionally, the daemon supports \texttt{building} new images and \texttt{pushing} them to the registry.
 %\subsection{Docker registry and backend cloud storage systems}
-\paragraph{Docker registry.} 
-Docker registry~\cite{docker-hub} is a platform for storing and distributing container images.
-It stores images in \emph{repositories}, each containing different versions (\emph{tags}) of the same image, identified as \texttt{<repo-name:tag>}.
-For each image, the Docker registry stores a \emph{manifest} that describes, among other things, which layers constitute the image.
-%The manifest is a JSON file, which contains the runtime configuration for a container image (\eg target platform and environment variables) 
-%and the list of layers which make up the image.
-Layers are identified via a digest that is computed as a hash (SHA-256) over the uncompressed content of the layer and stored as compressed archival files.
-If a user tries to launch a container from an image that is not available locally, it will \texttt{pulls} the required image from the Docker registry.
-Additionally, the daemon supports \texttt{building} new images and \texttt{pushing} them to the registry.
+%\paragraph{Docker registry.} 
+%Docker registry~\cite{docker-hub} is a platform for storing and distributing container images.
+%It stores images in \emph{repositories}, each containing different versions (\emph{tags}) of the same image, identified as \texttt{<repo-name:tag>}.
+%For each image, the Docker registry stores a \emph{manifest} that describes, among other things, which layers constitute the image.
+%%The manifest is a JSON file, which contains the runtime configuration for a container image (\eg target platform and environment variables) 
+%%and the list of layers which make up the image.
+%Layers are identified via a digest that is computed as a hash (SHA-256) over the uncompressed content of the layer and stored as compressed archival files.
+%If a user tries to launch a container from an image that is not available locally, it will \texttt{pulls} the required image from the Docker registry.
+%Additionally, the daemon supports \texttt{building} new images and \texttt{pushing} them to the registry.
 %By using layer-level content addressable store, 
 %Image layers are stored as compressed archival files and image manifests as JSON files.
 
 %Docker registry is a web server that serves docker pull and docker push requests.
-\paragraph{Backend cloud storage system.}
-Although Docker registry is a layer-level content addressable storage system storing all the images,
-it delegates storage to drivers that interact with either a local file system or a remote cloud storage such as Amazon S3~\cite{s3}, Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, and Aliyun OSS~\cite{aliyun}. 
-For example, Google Container Registry~\cite{GoogleContainerRegistry} uses Google cloud 
-as its backend image store.
-Users \texttt{push} and \texttt{pull} Docker images to and from their repositories that are stored on cloud storage. 
+%\paragraph{Backend cloud storage system.}
+%Although Docker registry is a layer-level content addressable storage system storing all the images,
+%it delegates storage to drivers that interact with either a local file system or a remote cloud storage such as Amazon S3~\cite{s3}, Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, and Aliyun OSS~\cite{aliyun}. 
+%For example, Google Container Registry~\cite{GoogleContainerRegistry} uses Google cloud 
+%as its backend image store.
+%Users \texttt{push} and \texttt{pull} Docker images to and from their repositories that are stored on cloud storage. 
 %As pointed out in ~\cref{sec:intro}, service providers often use geographically distributed registries for faster access, e.g., IBM's Container Registry setup spans five regions~\cite{dockerworkload}. 
 
 %\input{fig-docker-architecture.tex}

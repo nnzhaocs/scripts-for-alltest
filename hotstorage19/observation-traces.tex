@@ -3,7 +3,8 @@
 
 \paragraph{Understanding layer access patterns.}
 We analyzed the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
-Figure~\ref{fig:sknewss} shows the registry accesses to layers and repositories, as well as users accesses to the layers and manifests \arb{layers??}\NZ{addressed}. 
+Figure~\ref{fig:sknewss} shows the registry accesses to layers and repositories, as well as users accesses to the layers and manifests.
+% \arb{layers??}\NZ{addressed}. 
 Layer accesses are heavily skewed. For example, 25\% of popular layers account for 80\% of all requests. 
 For repository accesses and accesses by users, the skew is more significant than it is for layers. %10\% most frequently accessed repositories account for 94\% of all requests
 94\% of all requests accessed only 10\% of the most frequently accessed repositories. Similarly, only 9\% of users, most active ones, issued 97\% of all requests. 
@@ -54,5 +55,5 @@ a \texttt{pull} request.
 %layer request.
 
 
-\arb{say something whether this is good or bad... or is very low and show that LRU is not an effective mechanism for managing the proposed caches}\NZ{addressed}
+%\arb{say something whether this is good or bad... or is very low and show that LRU is not an effective mechanism for managing the proposed caches}\NZ{addressed}
 
