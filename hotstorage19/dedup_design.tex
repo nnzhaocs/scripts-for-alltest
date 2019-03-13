@@ -83,7 +83,7 @@ Deduplication also slows down
 %\Ali{Explain how push layer requests are not effected?}\NZ{fixed}
 
 %\subsection{Design}
-To address these issues, we propose a new registry design. The key feature of our design is a user access history-based prefetch algorithm that helps mitigate the performance degradation due to the 
+To address these issues, we propose a new registry design. The key feature of our design is a user-access-history-based prefetch algorithm that helps mitigate the performance degradation due to the 
 backend dedup storage system (Figure~\ref{fig:sys-overview}). Based
 on layer access pattern we observed in~\cref{sec:background} and user access history information,
 \sysname precisely prefetch the layers that may be pulled shortly.

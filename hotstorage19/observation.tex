@@ -26,7 +26,7 @@ as the images are \emph{compressed archival files}.
 %This growth implies significant benefits to data deduplication. 
 
 
-As discussed in~\cref{sec:intro}, only $3\%$ of the files in a sample Docker hub image collection were found to be unique, mainly becuase 
+As discussed in~\cref{sec:intro}, only $3$\% of the files in a sample Docker hub image collection were found to be unique, mainly becuase 
  compressed files have a very low deduplication ratio~\cite{meister2012study}.
 Thus, 
 we can realize significant space savings if we can remove the 
@@ -48,11 +48,11 @@ Note that since
 we extract the layer digest from each request and match it with a layer randomly selected from our Docker Hub dataset to emulate realistic requests.
 
 Without deduplication,
-the average latency for requesting a layer is about $2~s$ for layers with sizes $\textless50~MB$.
-The latency increases to 12~s when the above deduplication is implemented in the backend storage system.
+the average latency for requesting a layer is about $2$~s for layers with sizes $\textless50$~MB.
+The latency increases to $12$~s when the above deduplication is implemented in the backend storage system.
 Furthermore, Docker registry performance drops down dramatically for larger layers.
-We observe that the average latency for requesting layers $\textgreater50~MB$ and $\textless1~GB$
-is about 128~s. The latency worsens with dedupliation to on average of about 800~s.
+We observe that the average latency for requesting layers $\textgreater50$~MB and $\textless1$~GB
+is about $128$~s. The latency worsens with dedupliation to on average of about $800$~s.
 %\NZ{todo:graph: less than, }
 %\HA{running five registries, replaying dal trace using trace replayer-cite, and since the replayer doesn't use real layers we randomly match the request to our dataset downloaded from docker hub. describe how we got these numbers. for dedup, we simply implemented a decompress/compress + file-level deduplication on backend storage systems, we use a CHT based distributed storage system. Figure~\ref{fig:avg_latency_dedup_nodedup}}
 \input{fig:avg_latency_dedup_nodedup}
