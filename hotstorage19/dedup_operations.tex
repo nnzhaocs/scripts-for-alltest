@@ -3,9 +3,9 @@
 
 %\paragraph{Workflow}
 %
-The proposed Docker registry API is very similar to the original registry.
+The proposed Docker registry API is very similar to the original API.
 %Interactions with the Docker client is unchanged: 
-a user simply pushes and pulls images to and from the registry. 
+A user simply pushes and pulls images to and from the registry. 
 In the following, we explain Docker operations integration with \sysname.
 
 %\sysname~ is composed of five main components(see Figure~\ref{onshareddir}):
@@ -105,7 +105,7 @@ cache replacement algorithm.
 A \texttt{pull} layer request that can be serviced from the 
 layer buffer is a layer buffer hit and does not need further action. 
 In case of a miss in the layer buffer, the needed files may be found in the 
-file cache. In this happens, 
+file cache. If this happens, 
  \sysname~\emph{reconstructs} the layer from the file cache according to the layer recipe.
 %
 %A pull request cannot be postponed to an off-line process as the
@@ -119,10 +119,13 @@ The layer reconstruction from the file cache involves the following steps that a
 	\item find the layer recipe using the layer digest and retrieve the 
 \emph{fingerprints} for the files associated with the layer;
 	\item lookup the \emph{fingerprints} in \emph{fingerprint index} to get a destination server list; and
-	\item forward the \texttt{pull slice} layer request and layer recipe to each server in the server list.
+	\item forward the \texttt{pull slice} %layer 
+	request and layer recipe to each server in the server list.
 \end{compactenumerate}
 
-Once the \texttt{pull slice} layer request is received, each destination server will initiate a layer slice restoring process. This process involves  
+Once the \texttt{pull slice} 
+%layer 
+request is received, each destination server will initiate a layer slice restoring process. This process involves  
 the following steps: 
 
 \begin{compactenumerate}

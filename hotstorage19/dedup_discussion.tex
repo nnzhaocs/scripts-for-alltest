@@ -32,7 +32,7 @@ However, this layer will be evicted from the cache after a short period of time 
 Prefetching is benefitial, but it is associated with the consumption of a lot of resources such as CPU, network bandwidth, and I/Os. 
 Moreover, prefetching a layer into the cache may trigger the eviction of layers from hot repositories.
 We will also quantify the performance gain by using a file cache.
-Although the file cache can increase space efficiency, a hit on the file cache,
+Although the file cache can increase space efficiency, a hit in the file cache,
 entails subsquent parallel compression operations that may cause considerable latency.
 
 %Our first question is if we prefetch layers from backend dedup storage system,
