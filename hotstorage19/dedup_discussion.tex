@@ -4,22 +4,22 @@
 \label{sec:discussion}
 While a lot of research has looked at the performance aspects of Docker containers on client side,
 we believe the current registry design is inefficient and 
-the massive amount of images will push registry become a bottleneck in the whole
+the massive amount of images will make the registry become a bottleneck in the whole
 container system.
 In this work, we have attempted to solve the redundant data issue 
-with seamlessly integrating caching and deduplication guided by user access pattern
+with seamlessly integrating caching and deduplication guided by user access patterns
 to showcase the benefits for both the Docker registry service providers as well as the clients.
 
-We believe that our paper will lead to discussion on the following points of interesting:
-(1) The need for a compatible deduplication on registry.
+We believe that our paper will lead to discussion on the following points of interest:
+(1) The need for a compatible deduplication approach for Docker registry.
 Since deduplication is a well-studied area, we believe that the paper will lead to 
-hot discussion on how the extant approaches 
-adapt to a diversity data format such as compressed file format.
-(2) Issues about how to effectively use cache by exploring user access pattern to improve the performance of whole container system,
-and where to place cache, for example, at registry side, remote cloud storage side, or Docker client side
-to efficiently benefit container performance. 
+hot discussion on how the extant approaches can be applied/adapted
+to diverse data formats such as compressed files.
+(2) Issues about how to effectively use caching by exploring user access pattern to improve the performance of whole container system,
+and where to place the cache (for example, at registry side, remote cloud storage side, or Docker client side)
+to benefit container performance. 
 (3) The role of layer and image.
-The redundant data issue stems from container's storage virtualization technique by using
+The redundant data issue stems from containers' storage virtualization technique by using
 union file systems to pack everything inside different layers used as a plugin OS image.
 An open aspect of our work is improving 
 the efficiency of current union file systems and container storage virtualization technique.
@@ -30,10 +30,10 @@ the efficiency of current union file systems and container storage virtualizatio
 %and additional optimizations to help speed up \sysname.
 
 An unexplored issue is that redundant data in Docker client side, which is
-greatly different with registry storage 
+greatly different from registry storage, 
 because registry stores compressed layers
 while client end host storage system stores uncompressed layers.
-Therefore, the redundant issue in Docker client side with limited local storage space is
+Therefore, the redundancy issue in Docker client side with limited local storage space is
  as much worse as registry storage system.
  However, applying current deduplication methods that are usually deployed on backup storage systems
   on
