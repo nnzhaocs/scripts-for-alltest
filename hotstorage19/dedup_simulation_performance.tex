@@ -1,10 +1,10 @@
 \section{Preliminary evaluation}
 \label{sec:Evaluation}
 
-Our two-tier heterogeneous cache in the registry can improve the performance of the entire system
-by hiding the long latency imposed by the backend dedup system.
-Next, we present the preliminary evaluation of our user access history-based cache algorithm
-and the space efficiency of file cache.
+%Our two-tier heterogeneous cache in the registry can improve the performance of the entire system
+%by hiding the long latency imposed by the backend dedup system.
+%Next, we present the preliminary evaluation of our user access history-based cache algorithm
+%and the space efficiency of file cache.
 
 \input{fig-eval-cachehitratio-spaceefficiency}
 \paragraph{Cache hit ratio}
@@ -14,8 +14,9 @@ by replaying the \texttt{dal} workload~\cite{dockerworkload}.
 %as shown in Figure~\ref{fig:hitratio}.
 %Our algorithm exhibits an enhanced cache performance, with a high hit ratio
 %up to 0.96.
-Figure~\ref{fig:hitratio}, shows the hit ratios. We observe a significant increase to the hit ratio from $74$\% to $95$\% as the duration threshold grows from $1$ to $10$ minutes and more layers are prefetched.
-The hit ratio stablizes at $96\%$ as the duration threshold increases from $15$ to $20$ minutes.
+Figure~\ref{fig:hitratio}, shows the hit ratios. We observe a significant increase to the hit ratio from $0.74$ to $0.95$ as the duration threshold grows from $1$ to $10$ minutes because
+ more prefetched layers can be kept in cache for a longer time.
+The hit ratio stablizes at $0.96$ as the duration threshold increases from $15$ to $20$ minutes.
 %Therefore,
 %the highest hit ratio of our algorithm is around 0.96,
 %and there are 0.4 of layers that are miss because 
@@ -29,7 +30,7 @@ We also see that the response time to \texttt{pull} layer requests is within $1$
 We next compare the prefetching hit ratio with the layer buffer hit ratio.
 We see, across different duration thresholds, 
 prefetching hit ratio is much higher than the layer buffer's hit ratio,
-confirming that it takes a longe time for a newly \emph{pushed} layer to be pulled.
+confirming that it takes a longer time for a newly \emph{pushed} layer to be pulled.
 
 %
 %In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while
@@ -55,13 +56,13 @@ compressed layer tarballs.
 %
 In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $4$ random samples drawn from the whole dataset and the size of the dataset in terms of layer count and capacity.
 For a traditional cache, the compressed layer tarballs will be kept as is.
-While for our cache, \sysname will store \emph{deduped} layers: 
+While \sysname will store \emph{deduped} layers: 
 unique files in the file cache.
 The y-axis shows how many more \emph{deduped} layers can fit in our file cache compared to naively storing compressed layer tarballs.
 For the first two samples of the dataset, with size less than $20$~GB, 
-there is no benefit to \emph{deduping} layers 
+there is no benefit to \emph{dedup} layers 
 because the deduplication ratio is very low.
-However, when the dataset's size is $3$~TB, we can store $56$\% more \emph{deduped} layers' in file cache.
+However, when the dataset's size is $3$~TB, we can store $56$\% more \emph{deduped} layers' unique files in file cache.
 The number of extra \emph{deduped} layers that can fit in the file cache increases almost linearly with the size of the layer dataset.
 %the bigger the dataset, the more deduped layers that can fit in the file cache.
 %The number of extra layers increases almost linearly with the layer dataset size.
