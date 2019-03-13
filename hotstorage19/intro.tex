@@ -1,5 +1,7 @@
 \section{Introduction}
  \label{sec:intro}
+
+\vspace{-2pt}
  
  Containers 
  have become an effective means for deploying modern applications because 
@@ -28,6 +30,8 @@ as their backend storage system~(Figure~\ref{fig:without-dedup}).
 %For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
 %IBM container registry uses IBM cloud to manage image storage.
 
+
+
 \paragraph{Is current registry deduplication effective?} 
 To guide our design, we downloaded and analyzed 
 $47$~TB ($167$~TB uncompressed) of Docker images 
@@ -39,7 +43,7 @@ many cloud storage systems implement deduplication to effectively eliminate redu
 For example,
 Google cloud and AWS, 
 employ in-line transparent data deduplication~\cite{storReduce}. %\NZ{use a new example}
-But the compressed layers reduce the opportunity for deduplication significantly. Effectively removing reduducncy from layers would entail decompressing them before performing deduplication.
+But the compressed layers reduce the opportunity for deduplication significantly. Effectively removing reduducncy from layers entails decompressing them before performing deduplication.
 
 The challenge is that decompressing layers can have overheads besides the obvious decompression/compression. 
 As shown in Figure~\ref{fig:with-dedup}, 
@@ -48,7 +52,7 @@ multiple servers.
 To restore a layer,
 the layer's files would need to be first fetched from multiple servers, then compressed as a layer (to preserve transparency and avoid client-side API modifications)
 and sent back to the client.
-The extra network, I/O, and computation latency will slow down the response time for retrieving (pulling) an image.
+The extra network, I/O, and computation will slow down the response time for retrieving (pulling) an image.
 
 %Without deduplication (Figure~\ref{fig:without-dedup}),
 %the average latency for requesting a layer is around~2\,s for layers with size less than~50\,MB.
@@ -91,8 +95,8 @@ The layer buffer stores layers in main memory. The file cache stores
 the \emph{deduped} unique files for the layers evicted from the layer buffer on a 
 flash-based storage system.
 The mix of main memory and flash memory can realize the needed large capacity for caching prefetched layers and files. 
-Our evaluation of the user access history-based prefetch algorithm yields a hit ratio of $96$\%. 
-Even more, our two-tier heterogeneous cache architecture, allows $56$\% more layers into the file cache.
+The user access history-based prefetch algorithm yields a hit ratio of $96$\%. 
+Moreover, our two-tier heterogeneous cache is able to store $56$\% more layers into the file cache.
 %Moreover, we propose a user-based cache algorithm to improve the cache hit ratio 
 %based on our Docker Hub image analysis that showed that user-active-time is more predictable.
 

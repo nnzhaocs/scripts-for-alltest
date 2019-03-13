@@ -1,11 +1,11 @@
 \begin{abstract}
 
-
-The rapidly growing number of container images and the associated
+\vspace{-6pt}
+The fast growing number of container images and the associated
 performance and storage capacity demands are key obstacles to
-sustaining and scaling Docker registries.  The challenge is the
-inability of the extant layer-level content addressable mechanism to
-effectively deduplicate the layers that are stored in a compressed format. 
+sustaining and scaling Docker registries.  
+The inability to effeciently and effectively deduplicate 
+layers that are stored in a compressed format is a major obstacle.
 %   Moreover, the layers  are not amenable to direct application of
 %   existing deduplication techniques efficiently.
 % 
@@ -16,7 +16,7 @@ performance overhead. \sysname uses a highly-effective
 user-access-history-based prefetch algorithm, and a two two-tier
 heterogeneous cache comprising memory and flash storage.
 Evaluation of the prefetching algorithm shows 
-a high hit ratio of 96\%. Moreover, the two-tier heterogeneous cache is able to store 56\% more layers into the file cache.
+a high hit ratio of 96\%. Moreover, the two-tier cache is able to store 56\% more layers into the file cache.
 
 %Based on our 
 
