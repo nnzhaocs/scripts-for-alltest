@@ -45,21 +45,21 @@ across five registries.
 Note that since 
 %the IBM registry workload 
 \texttt{dal} does not contain real layers,
-we extract the layer digest from each request and match it with a layer randomly selected from our Docker Hub dataset to emulate realistic registry requests.
+we extract the layer digest from each request and match it with a layer randomly selected from our Docker Hub dataset to emulate realistic requests.
 
 Without deduplication,
-the average latency for requesting a layer is about 2~s for layers with sizes less than~50~MB.
+the average latency for requesting a layer is about $2~s$ for layers with sizes $\textless50~MB$.
 The latency increases to 12~s when the above deduplication is implemented in the backend storage system.
 Furthermore, Docker registry performance drops down dramatically for larger layers.
-We observe that the average latency for requesting layers larger than 50~MB and smaller than 1~GB
-is about 128~s. The latency worsens when dedupliation is implemented, to on average about 800~s.
+We observe that the average latency for requesting layers $\textgreater50~MB$ and $\textless1~GB$
+is about 128~s. The latency worsens with dedupliation to on average of about 800~s.
 %\NZ{todo:graph: less than, }
 %\HA{running five registries, replaying dal trace using trace replayer-cite, and since the replayer doesn't use real layers we randomly match the request to our dataset downloaded from docker hub. describe how we got these numbers. for dedup, we simply implemented a decompress/compress + file-level deduplication on backend storage systems, we use a CHT based distributed storage system. Figure~\ref{fig:avg_latency_dedup_nodedup}}
 \input{fig:avg_latency_dedup_nodedup}
 
 \paragraph{Registry as a cache for improving performance.}
-Traditionally, caches are placed as close to the requesting client as possible. 
-Such caches are known as proxy caches, or web/HTTP caches for the temporary storage of 
+Traditionally, caches are placed as close to the requesting client as 
+proxy caches, or web/HTTP caches for the temporary storage of 
 frequently requested data to mitigate the remote server lag. 
 For example, Varnish~\cite{varnish} and Squid~\cite{squid} are high-performance web/HTTP caches that accelerate web applications and improve response times by caching frequently requested web content.
 %Examples of open-source web (HTTP) proxy caches include Nginx~\cite{?}, Squid~\cite{?}, and Varnish~\cite{?}. 

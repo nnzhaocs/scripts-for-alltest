@@ -3,7 +3,7 @@
 
 %\sysname\ performs file-level deduplication for a Docker registry.
 %
-\input{fig-sys-overview}
+
 %We designed \sysname\ so that the interface between the Docker clients and the
 %registry remains unchanged.
 %
@@ -91,6 +91,8 @@ on layer access pattern we observed in~\cref{sec:background} and user access his
 %a user's active time is predictable. 
 %Thus, we leverage users' behavior, \ie
 %when a user is most likely to be active, to drive layer evictions from the cache.
+
+\input{fig-sys-overview}
 
 Considering that layer sizes are typically about several MB~\cite{dockerworkload}, 
 a small main memory cache will be unable to accommodate
