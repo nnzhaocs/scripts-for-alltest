@@ -81,6 +81,10 @@ and compare against the layers that are already \emph{pulled} by the user by loo
 %previously accessed layers by lookup 
 %URLMap
 then prefetch the layers that have not been \emph{pulled}.
+
+To corporate prefetch algorithm with our two-tier heterogeneous cache,
+we \texttt{prefetch slices} in parallel from backend dedup storage system,
+and buffer them in layer buffer first, then evict them into file cache after they are \emph{cool down}.
 %    for the user later accesses.
 %To determine if a layer is a popular layer and need to be prefetched into cache,
 %we only consider the layers that was recently accessed with a time period 

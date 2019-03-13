@@ -23,7 +23,9 @@ In the following, we explain Docker operations integration with \sysname.
 
 \textbf{Push.}
 After receiving a \texttt{push} layer request from the client, 
-\sysname~first buffers the layer in the layer buffer for later accesses. 
+\sysname~first buffers the layer in the layer buffer for later accesses,
+which is part of our layer prefetching (detailed in algorithm~\ref{alg:prefetch}). 
+%Layer buffer also caches prefetched layers.
 The layer buffer can be implemented on a distributed in-memory store,~\eg Plasma~\cite{plasma}.
 At the same time, \sysname~will also submit the layer to the backend dedup storage system.
 Our layer buffer and file cache use write through policies. 
@@ -53,6 +55,7 @@ Fingerprint index and layer recipes are stored on Redis~\cite{redis}.
 File cache is a flash-based distributed cache that can be implemented on 
 distributed log structured store, \eg CORFU~\cite{180277}.
 The unique files are flash-friendly because there is no modification to these files.
+%Both layer buffer and file cache cache prefetched layers.
 %, meaning that there is no small write.?
 %
 %Usually, the underlying distributed flash-based stores such as CORFU transparently spread data among 

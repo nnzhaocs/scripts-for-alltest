@@ -29,9 +29,10 @@ The layers responsible for the $4$\% miss rate are the one being
 %within a minute and 
 %around 89\% of users can finished their \texttt{pull} layer request with less than 5 min. 
 We also see that the response time to \texttt{pull} layer requests is within $1$ minute for 74\% of users, and it is less than $5$ minutes for 89\% of users.
-Next, we compare the prefetching hit ratio with the layer buffer hit ratio.
+Since we prefetch newly put layers and old layer from backend dedup systems, 
+we compare the prefetching hit ratio from newly put layers and old layers.
 We see that, across different duration thresholds, 
-prefetching hit ratio is much higher than the layer buffer hit ratio,
+prefetching hit ratio for old layers is much higher than the newly put layer hit ratio,
 confirming that it takes a longer time for a newly \emph{pushed} layer to be pulled.
 
 %

@@ -20,15 +20,15 @@
 		{
 				\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
 				\texttt{update} \emph{RLMap[(r.repo, r.layer)]} \\
-				\emph{LayerBuffer} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
+				\emph{PrefetchedLayers} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
 				\texttt{set} \emph{L\_timer[r.layer]} \\
 				{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
 			}
 		\ElseIf{r = GET layer}
 		{
-				\eIf{r.layer in PrefetchedLayers or LayerBuffer}
+				\eIf{r.layer in PrefetchedLayers}
 				{
-					\emph{serve from PrefetchedLayers or LayerBuffer} \\
+					\emph{serve from PrefetchedLayers} \\
 					\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
 					\texttt{Reset} \emph{L\_timer[r.layer]}\\
 					\emph{hit++} 
