@@ -16,24 +16,23 @@ replaying the \texttt{dal} workload~\cite{dockerworkload}.
 %as shown in Figure~\ref{fig:hitratio}.
 %Our algorithm exhibits an enhanced cache performance, with a high hit ratio
 %up to 0.96.
-Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio from $74\%$ to $95\%$ as the duration threshold grows from $1$ to $10$ minutes. This is because
- more prefetched layers can be kept in cache for a longer time.
+Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio from $74\%$ to $95\%$ as the duration threshold grows from $1$ to $10$ minutes. This is because prefetched layers are kept in the cache for more time.
 The hit ratio stablizes at $96\%$ as the duration threshold increases from $15$ to $20$ minutes.
 %Therefore,
 %the highest hit ratio of our algorithm is around 0.96,
 %and there are 0.4 of layers that are miss because 
 %some users \emph{re-pull} the layers after they pull the same layers.
-The layers responsible for the $4$\% miss rate are the one being
+The layers responsible for the $4$\% miss rate are the ones being
 \emph{re-pulled} by the same user.
 %We also see that 74\% of users can finish their \texttt{pull} layer request
 %within a minute and 
 %around 89\% of users can finished their \texttt{pull} layer request with less than 5 min. 
 %We also see that the response time to \texttt{pull} layer requests is within $1$ minute for 74\% of users, and it is less than $5$ minutes for 89\% of users.
-Since we prefetch newly put layers and old layer from backend dedup systems, 
-we compare the prefetching hit ratio from newly put layers and old layers.
+Since we buffer layers upon a \texttt{push} layer request and prefetch layers from the backend dedup systems, 
+We compare the hits on prefetched layers and the hits on buffered layers.
 We see that, across different duration thresholds, 
-prefetching hit ratio for old layers is much higher than the newly put layer hit ratio,
-confirming that it takes a longer time for a newly \emph{pushed} layer to be pulled.
+the hit ratio for prefetching layer slices is much higher than the hit ratio of buffering layers,
+confirming that it takes a long time for a recently \emph{pushed} layer to be pulled.
 
 %
 %In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while
@@ -51,16 +50,16 @@ confirming that it takes a longer time for a newly \emph{pushed} layer to be pul
 %Our user-based cache exhibits an enhanced cache performance, with hit ratio improvements ranging from 
 %0.2 to 0.3 for all the three workloads compared to LRU.
 We analyze the space efficiency for the file cache compared to a cache that naively stores
-compressed layer.
+compressed layers.
 %for an increasing number of files stored in the file cache 
 %(see Figure~\ref{fig:dedup-ratio-growth}).
 %
 %Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth over the layer dataset size.
 %
-In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $4$ random samples drawn from the whole dataset and the size of the dataset in terms of layer count and capacity.
+In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $4$ random samples drawn from the whole dataset and the size of the dataset in terms of capacity and layer count.
 For a traditional cache, the compressed layer tarballs will be kept as is.
-While \sysname will store \emph{deduped} layers: 
-unique files in the file cache.
+While \sysname will store \emph{deduped} layers. 
+%unique files in the file cache.
 The y-axis shows how many more \emph{deduped} layers can fit in our file cache compared to naively storing compressed layer tarballs.
 For the first two samples of the dataset, with size less than $20$~GB, 
 there is no benefit to \emph{dedup} layers 
