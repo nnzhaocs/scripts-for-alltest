@@ -86,7 +86,7 @@ vary from a few MB to several GB and that a majority of layers sizes are around 
 \paragraph{\sysname to the rescue.}
 \sysname addresses the above challenges as follows. 
 First, it explores layer access pattern and uses a 
-user access history-based prefetch algorithm to accurately prefetch
+user-access-history-based prefetch algorithm to accurately prefetch
 the layers that will be accessed shortly.
 %
 Second, \sysname embodies a two-tier heterogeneous cache architecture 
@@ -95,7 +95,7 @@ The layer buffer stores layers in main memory. The file cache stores
 the \emph{deduped} unique files for the layers evicted from the layer buffer on a 
 flash-based storage system.
 The mix of main memory and flash memory can realize the needed large capacity for caching prefetched layers and files. 
-The user access history-based prefetch algorithm yields a hit ratio of $96$\%. 
+Our prefetch algorithm yields a hit ratio of $96$\%. 
 Moreover, our two-tier heterogeneous cache is able to store $56$\% more layers into the file cache.
 %Moreover, we propose a user-based cache algorithm to improve the cache hit ratio 
 %based on our Docker Hub image analysis that showed that user-active-time is more predictable.
