@@ -18,13 +18,13 @@ Containers are running instances of \emph{images} that encapsulate complete runt
 An image comprises a set of shareable and content addressable \emph{layers}.
 % and is stored in Docker \emph{registry}. 
 Each layer is made up of a set of files that are compressed in a single archive. 
-Docker images/layers are stored in an online store called Docker registry~\cite{docker-hub} and accessed by clients as needed.
+Docker images/layers are stored in an online store called Docker registry~\cite{docker-hub} and accessed by clients. % as needed.
 %As layers are the building blocks of images, they can be shared among multiple images. 
 Since a layer is uniquely identified by a collision-resistant hash of its content, 
 no duplicate layers are stored in the registry.
-Many container registries use remote cloud storage, e.g., S3~\cite{s3}, etc.,
+Many container registries use remote cloud storage, e.g., S3~\cite{s3}, 
 % Microsoft Azure~\cite{azure}, and OpenStack Swift~\cite{swift} 
-as their backend storage systems~(Figure~\ref{fig:without-dedup}).
+as their backend storage system~(Figure~\ref{fig:without-dedup}).
 %For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
 %IBM container registry uses IBM cloud to manage image storage.
 
@@ -38,7 +38,7 @@ to effectively remove data duplicates. This is despite the fact that
 many cloud storage systems implement deduplication to effectively eliminate redundant data.
 For example,
 Google cloud and AWS, 
-employ in-line transparent data deduplication~\cite{storReduce}.%\NZ{use a new example}
+employ in-line transparent data deduplication~\cite{storReduce}. %\NZ{use a new example}
 But the compressed layers reduce the opportunity for deduplication significantly. Effectively removing reduducncy from layers would entail decompressing them before performing deduplication.
 
 The challenge is that decompressing layers can have overheads besides the obvious decompression/compression. 
@@ -66,7 +66,7 @@ The extra network, I/O, and computation latency will slow down the response time
 % deduplication framework for Docker registries. 
 
 \paragraph{Can caching help?}
-Large container registry service providers such as Google and IBM use regional private registries across the world to facilitate a fast and highly-available service~\cite{GoogleContainerRegistry,ibmregistry}.  
+Large container registry service providers such as Google and IBM use regional private registries across the world to facilitate a fast and highly-available service~\cite{ibmregistry,GoogleContainerRegistry}.  
 This geographical distribution allows users to store images near their compute instances and experience a fast response time. 
 An intuitive solution is to 
 leverage these distributed registries as a cache to temporarily store popular layers and
@@ -88,14 +88,11 @@ the layers that will be accessed shortly.
 Second, \sysname embodies a two-tier heterogeneous cache architecture 
 comprising a {\em layer buffer} and a {\em file cache} to hold  prefetched layers.
 The layer buffer stores layers in main memory. The file cache stores 
-the \emph{deduped} unique files for the victim layers that are evicted from the layer buffer on a 
+the \emph{deduped} unique files for the layers evicted from the layer buffer on a 
 flash-based storage system.
-The mix of main memory and flash memory can realize the needed large capacity for caching prefetched
- layers and files.
- Our evaluation shows that our user access history-based prefetch algorithm can achieve 
- over a hit ratio of 0.96.
- And by using our two-tier heterogeneous cache architecture, 
- we can put up to 56\% more layers into file cache.
+The mix of main memory and flash memory can realize the needed large capacity for caching prefetched layers and files. 
+Our evaluation of the user access history-based prefetch algorithm yields a hit ratio of $96$\%. 
+Even more, our two-tier heterogeneous cache architecture, allows $56$\% more layers into the file cache.
 %Moreover, we propose a user-based cache algorithm to improve the cache hit ratio 
 %based on our Docker Hub image analysis that showed that user-active-time is more predictable.
 
