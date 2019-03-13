@@ -7,29 +7,30 @@
 %and the space efficiency of file cache.
 
 \input{fig-eval-cachehitratio-spaceefficiency}
-\paragraph{Cache hit ratio}
+\paragraph{Cache hit ratio.}
 
-We simulate the user access history-based cache to evaluate the hit ratio 
-by replaying the \texttt{dal} workload~\cite{dockerworkload}.
+We measure the hit ratio of our user access history-based cache via
+a simulation and 
+replaying the \texttt{dal} workload~\cite{dockerworkload}.
 %as shown in Figure~\ref{fig:hitratio}.
 %Our algorithm exhibits an enhanced cache performance, with a high hit ratio
 %up to 0.96.
-Figure~\ref{fig:hitratio}, shows the hit ratios. We observe a significant increase to the hit ratio from $0.74$ to $0.95$ as the duration threshold grows from $1$ to $10$ minutes because
+Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio from $74\%$ to $95\%$ as the duration threshold grows from $1$ to $10$ minutes. This is because
  more prefetched layers can be kept in cache for a longer time.
-The hit ratio stablizes at $0.96$ as the duration threshold increases from $15$ to $20$ minutes.
+The hit ratio stablizes at $96\%$ as the duration threshold increases from $15$ to $20$ minutes.
 %Therefore,
 %the highest hit ratio of our algorithm is around 0.96,
 %and there are 0.4 of layers that are miss because 
 %some users \emph{re-pull} the layers after they pull the same layers.
-The layers causing the $4$\% miss rate, are due to 
-\emph{re-pulls} by the same user.
+The layers responsible for the $4$\% miss rate are the one being
+\emph{re-pulled} by the same user.
 %We also see that 74\% of users can finish their \texttt{pull} layer request
 %within a minute and 
 %around 89\% of users can finished their \texttt{pull} layer request with less than 5 min. 
 We also see that the response time to \texttt{pull} layer requests is within $1$ minute for 74\% of users, and it is less than $5$ minutes for 89\% of users.
-We next compare the prefetching hit ratio with the layer buffer hit ratio.
-We see, across different duration thresholds, 
-prefetching hit ratio is much higher than the layer buffer's hit ratio,
+Next, we compare the prefetching hit ratio with the layer buffer hit ratio.
+We see that, across different duration thresholds, 
+prefetching hit ratio is much higher than the layer buffer hit ratio,
 confirming that it takes a longer time for a newly \emph{pushed} layer to be pulled.
 
 %
@@ -40,15 +41,14 @@ confirming that it takes a longer time for a newly \emph{pushed} layer to be pul
 %This confirms the high potential for file-level deduplication in large-scale
 %Docker registry deployments.
 
-\paragraph{Space efficiency}
-
+\paragraph{Space efficiency.}
 %As shown in Figure~\ref{xxx},
 %we compare the cache hit ratio of LRU, Prefetch~\cite{xxxx}, and our 
 %user-based cache replacement algorithm by replaying three IBM container registry workloads~\cite{dockerworkload}.
 %Our user-based cache exhibits an enhanced cache performance, with hit ratio improvements ranging from 
 %0.2 to 0.3 for all the three workloads compared to LRU.
 We analyze the space efficiency for the file cache compared to a cache that naively stores
-compressed layer tarballs.
+compressed layer.
 %for an increasing number of files stored in the file cache 
 %(see Figure~\ref{fig:dedup-ratio-growth}).
 %
@@ -62,13 +62,12 @@ The y-axis shows how many more \emph{deduped} layers can fit in our file cache c
 For the first two samples of the dataset, with size less than $20$~GB, 
 there is no benefit to \emph{dedup} layers 
 because the deduplication ratio is very low.
-However, when the dataset's size is $3$~TB, we can store $56$\% more \emph{deduped} layers' unique files in file cache.
+However, when the dataset size is $3$~TB, we can store $56$\% more \emph{deduped} layers' unique files in file cache.
 The number of extra \emph{deduped} layers that can fit in the file cache increases almost linearly with the size of the layer dataset.
 %the bigger the dataset, the more deduped layers that can fit in the file cache.
 %The number of extra layers increases almost linearly with the layer dataset size.
 %In this case, there is a high potential for file cache when the cache size is big.
-This verifies the high benefit of the file cache when the file cache size is large.
-We should carefully select the size of the file cache to save significant space.
+This verifies the benefit of the file cache when the cache size is large, which should be carefully selected to realize significant space savings.
 
 
 %In this experiment, we show how many more layers can be stored in the file cache 
