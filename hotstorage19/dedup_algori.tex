@@ -34,23 +34,21 @@
 To improve our cache hit ratio for \texttt{pull} layer request, we propose a user access history-based prefetch algorithm. The algorithm
 exploits the uniqueness of the registry's 
 %image %structure
-dataset hierarchy: repositories are comprised of a list of layers.
+dataset hierarchy: repositories comprise a list of layers.
 %or organization
 %Users create repositories in the registry, \texttt{push} layers to their own repositories,
 %and \texttt{pull} layers from their own repositories or other public repositories. 
 When a user \emph{pulls} an image from a repository, it will first \texttt{pull} the manifest of the image~\cite{docker}~\cite{dockerworkload} and 
-parse the manifest to get the layer digests from the manifest,
+parse the manifest to get the layer digests,
 then lookup each layer digest against a \emph{local layer digest index}.
 After that it only \emph{pulls} the layers that has \emph{not been stored locally}.
 %
 Based on the above 
 %behavior 
-pattern and hierarchy 
-%of image in Docker registry
-, we can record the users' repository and layer access history. 
-Theoretically, once a user starts to \texttt{pull} manifest from a repository, all the layers that belongs to this repository but have not been \emph{pulled} by this user should be prefetched into the cache.
+pattern and hierarchy, we can record the users' repository and layer access history. 
+Theoretically, once a user issues a \texttt{pull} manifest from a repository, all the layers that belong to this repository but have not been \emph{pulled} by this user should be prefetched into the cache.
 %when a new use connects to registry, we can prefetch all the layers that have been accessed by this user into cache ideally.
-In this case, cache hit ratio will reach 1.
+In this case, the cache hit ratio will reach 1.
 %However, because there is a limit to the cache size, %we won't be able to fit all the active users' layers into cache.
 %not all active user's layers will fit into the cache.
 %%But we can prefetch active users' popular layers in the cache based on the historical access information.
@@ -78,15 +76,16 @@ When either a GET manifest request is received or
 %a requested layer is not cached or prefetched  (
 a miss on a GET layer request happens,
 \sysname will lookup RLMap and get the requested repository's containing layers,
-and compare against the layers that are already \emph{pulled} by the user by lookup URLMap,
+and compare against the layers that are already \emph{pulled} by the user by looking up URLMap,
 %select a certain number of \emph{popular} layers from the client's 
 %previously accessed layers by lookup 
 %URLMap
 then prefetch the layers that have not been \emph{pulled}.
 
-To corporate prefetch algorithm with our two-tier heterogeneous cache,
-we \texttt{prefetch slices} in parallel from backend dedup storage system,
-and buffer them in layer buffer first, then evict them into file cache after they are \emph{cool down}.
+To incorporate the prefetch algorithm with our two-tier heterogeneous cache,
+we \texttt{prefetch slices} in parallel from backend servers,  
+%dedup storage system,
+and buffer them in the layer buffer first, then evict them into the file cache after they \emph{cool down}.
 %    for the user later accesses.
 %To determine if a layer is a popular layer and need to be prefetched into cache,
 %we only consider the layers that was recently accessed with a time period 

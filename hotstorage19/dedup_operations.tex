@@ -23,8 +23,8 @@ In the following, we explain Docker operations integration with \sysname.
 
 \textbf{Push.}
 After receiving a \texttt{push} layer request from the client, 
-\sysname~first buffers the layer in the layer buffer for later accesses,
-which is part of our layer prefetching (detailed in algorithm~\ref{alg:prefetch}). 
+\sysname~first buffers the layer in the layer buffer for later accesses.
+%which is part of our layer prefetching (detailed in algorithm~\ref{alg:prefetch}). 
 %Layer buffer also caches prefetched layers.
 The layer buffer can be implemented on a distributed in-memory store,~\eg Plasma~\cite{plasma}.
 At the same time, \sysname~will also submit the layer to the backend dedup storage system.
