@@ -1,37 +1,42 @@
 \begin{algorithm}
 	\scriptsize 
-	\caption{User Access History based Prefetching Algorithm.}
+	\caption{User access history based prefetch}
 	\label{alg:prefetch}
-	\SetAlgoLined
+	%\SetAlgoLined
 	\KwIn{
 		$U_{thresh}$: Threshold for duration to keep a prefetched layer.
 	}
 	\While{true}{
 		\emph{r} $\leftarrow$ \texttt{request received}\\
-		\uIf{r = GET manifest}{
+		\uIf{r = GET manifest}
+		{
 %			layerlst $\leftarrow$ URLMap[(r.client, r.repo)]
-			\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[(r.client, r.repo)]} \\
+			\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[r.client]} \\
 			\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
 			\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
 			{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
 			}
-		\uElseIf{r = PUT layer }{
-				\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
+		\uElseIf{r = PUT layer }
+		{
+				\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
 				\texttt{update} \emph{RLMap[(r.repo, r.layer)]} \\
 				\emph{LayerBuffer} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
 				\texttt{set} \emph{L\_timer[r.layer]} \\
 				{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
 			}
-		\uElseIf{r = GET layer}{
-				\eIf{r.layer in PrefetchedLayers or LayerBuffer}{
+		\ElseIf{r = GET layer}
+		{
+				\eIf{r.layer in PrefetchedLayers or LayerBuffer}
+				{
 					\emph{serve from PrefetchedLayers or LayerBuffer} \\
-					\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
+					\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
 					\texttt{Reset} \emph{L\_timer[r.layer]}\\
 					\emph{hit++} 
-				}{
+				}
+			   {
 					\emph{serve from backend storage system} \\
-					\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
-					\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[(r.client, r.repo)]} \\
+					\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
+					\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[r.client]} \\
 					\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
 					\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
 					{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}

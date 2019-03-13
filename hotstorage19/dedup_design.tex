@@ -47,8 +47,8 @@ backend storage system (\emph{backend dedup storage}) with Docker registries.
 We address a set of unique challenges to enable this integration.
 %
 First, for caching layers, \texttt{pull} layer requests are difficult to
-predict because some layers are only accessed infrequently.
-From \arb{???}, we have observed that about half of the cached layers are not
+predict because layers are accessed infrequently.
+In~\cref{sec:background}\arb{???}, we have observed that about half of the layers are not
 accessed again for at least $1.3$~hours. This means that if we
 cache a layer, we may need to wait a long time before we observe a hit on that layer (as discussed in~\cref{sec:background}).  
 This is mainly 
@@ -57,18 +57,6 @@ requesting host will only pull the layers that are not locally stored.
 %\Ali{I do not understand the following sentence.}
 %Moreover, we have to consider that a user might deploy an applications on
 %multiple machines, so it's not easy to predict when a user will access which layers. 
-Anwar et
-al. have proposed a prefetching method~\cite{dockerworkload} based on the
-\texttt{push}-\texttt{pull} relationship: whenever there is a \texttt{PUSH} layer
-request directly followed by a \texttt{GET} manifest request, with a high probability these will be followed by a \texttt{GET}
-layer request.
-However, based on our trace analysis in~\cref{sec:background},
-only half of the \texttt{GET} layer
-requests have a preceding \texttt{PUSH} layer request within the trace
-%collecting duration
-collection period of 75 days. This means that, after a user pushes a layer
-to the registry, it takes a few days, weeks, or even months for a user to make
-a \texttt{pull} request.
 %%\Ali{The above statement is incorrect. You have to distinguish between GET layer requests
 %that are issued after a (PUSH layer + GET manifest) request and a normal GET layer request.
 %FAST paper only talk about case 1. Whereas you are generalizing that any GET layer request
@@ -82,7 +70,7 @@ a \texttt{pull} request.
 Second, we can not deduplicate compressed layers. For deduplication, each layer
 needs to be uncompressed, and only then can undergo file-level deduplication. Similarly,
 to restore a layer, we need to fetch files from multiple servers, and only then compress
-them in to a tar file \arb{that can service the ??? request}. 
+them in to a tar file to serve a \texttt{pull} layer request \arb{that can service the ??? request}\NZ{addressed}. 
 This whole process can incur a 
 considerable performance overhead on \texttt{pull} layer requests.
 Deduplication also slows down
@@ -90,20 +78,29 @@ Deduplication also slows down
 %\Ali{Explain how push layer requests are not effected?}\NZ{fixed}
 
 %\subsection{Design}
-To address these issues, we propose a new registry design. The key feature of our design is a user-behavior-based cache that helps mitigate the performance degradation due to the 
-backend dedup storage system (Figure~\ref{fig:sys-overview}).  Based
-on our observation in~\cref{sec:background}, a user's active time is predictable. 
-Thus, we leverage users' behavior, \ie
-when a user is most likely to be active, to drive layer evictions from the cache.
+To address these issues, we propose a new registry design. The key feature of our design is a user access history-based prefetching cache that helps mitigate the performance degradation due to the 
+backend dedup storage system (Figure~\ref{fig:sys-overview}). Based
+on layer access pattern we observed in~\cref{sec:background} and user access history information,
+\sysname precisely prefetch the layers that will be pulled shortly.
+%has not been pulled in the requested repository
+%and the prefetched 
+%In this case, we can   
+%a user's active time is predictable. 
+%Thus, we leverage users' behavior, \ie
+%when a user is most likely to be active, to drive layer evictions from the cache.
 
-Considering that layer sizes are typically about several megabytes~\cite{dockerworkload}, a small main memory cache will be unable to accommodate
-active users' layers (for any reasonable/practical number of users). To address this issue, we 
-create separate caches for layers and \emph{unique} files, called {\em layer buffer} and {\em file cache}, respectively. Both caches comprise both
-main memory and flash memory.
-\arb{are main memory for one type and flash for the other type, or both for both types. I assumed both types of memory are used, and there are two caches. check previous sentence for correctness.}
-Note that, layers are  compressed tarballs, and 
+Considering that layer sizes are typically about several MB~\cite{dockerworkload}, 
+a small main memory cache will be unable to accommodate
+all prefetched layers for all active users. 
+To address this issue, we 
+create separate caches for layers and \emph{unique} files, called {\em layer buffer} and {\em file cache}, respectively. 
+%Both caches comprise both
+%main memory and flash memory.
+%Layer buffer
+\arb{are main memory for one type and flash for the other type, or both for both types. I assumed both types of memory are used, and there are two caches. check previous sentence for correctness.}\NZ{addressed}
+Note that, layers are  compressed tarballs and buffered in layer buffer, and 
 %sent by users
- \emph{unique} files are uncompressed files from which duplicates have been removed. 
+ \emph{unique} files are uncompressed files from which duplicates have been removed and stored on flash-based storage. 
 %We call compressed layer cache and \emph{deduped} files cache,
 %\emph{layer buffer} and \emph{file cache}, respectively.
 For 
@@ -121,7 +118,9 @@ file cache (detailed in~\cref{sec:design_operations}).
 If a layer is also not found in the
 file cache, the request is forwarded to the backend dedup storage system.
 Note that after layer deduplication, unique files are
-scattered across multiple servers. We define all the per-server files belonging to a layer as a {\em slice}. A server stores slices for many layers, and a layer is composed of slices stored on multiple servers.
+scattered across multiple servers. 
+We define all the per-server files belonging to a layer as a {\em slice}. 
+A server stores slices for many layers, and a layer is composed of slices stored on multiple servers.
 To avoid the network latency caused by fetching slices from different servers and
 assembling them into a whole compressed layer, we split a \texttt{pull} request 
 into several~\texttt{pull slice}~requests. Those requests will then be
