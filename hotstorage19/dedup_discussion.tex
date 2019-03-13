@@ -1,8 +1,53 @@
 \section{Discussion}
 \label{sec:discussion}
-In this section, we discuss issues and concerns 
-and additional optimizations to help speed up \sysname.
+While a lot of research has looked at the performance aspects of Docker containers on client side,
+we believe the current registry design is inefficient and 
+the massive amount of images will push registry become a bottleneck in the whole
+container system.
+In this work, we have attempted to solve the redundant data issue 
+with seamlessly integrating caching and deduplication guided by user access pattern
+to showcase the benefits for both the Docker registry service providers as well as the clients.
 
+We believe that our paper will lead to discussion on the following points of interesting:
+(1) The need for a compatible deduplication on registry.
+Since deduplication is a well-studied area, we believe that the paper will lead to 
+hot discussion on how the extant approaches 
+adapt to a diversity data format such as compressed file format.
+(2) Issues about how to effectively use cache by exploring user access pattern to improve the performance of whole container system,
+and where to place cache, for example, at registry side, remote cloud storage side, or Docker client side
+to efficiently benefit container performance. 
+(3) The role of layer and image.
+The redundant data issue stems from container's storage virtualization technique by using
+union file systems to pack everything inside different layers used as a plugin OS image.
+An open aspect of our work is improving 
+the efficiency of current union file systems and container storage virtualization technique.
+%the incompatible issue between current deduplication techniques
+%and registry with  
+%without mitigating overall performance. 
+%In this section, we discuss issues and concerns 
+%and additional optimizations to help speed up \sysname.
+
+An unexplored issue is that redundant data in Docker client side, which is
+greatly different with registry storage 
+because registry stores compressed layers
+while client end host storage system stores uncompressed layers.
+Therefore, the redundant issue in Docker client side with limited local storage space is
+ as much worse as registry storage system.
+ However, applying current deduplication methods that are usually deployed on backup storage systems
+  on
+ client side would largely affect the container runtime performance. 
+ This is because performing file-level deduplication on the Docker client side
+ requires intensive file fingerprint calculations, and file fingerprint lookup, 
+ which will slow down container runtime performance.
+ Furthermore, we believe our work can help to synchronize deduplication for both
+ client side deduplication with registry side deduplication
+ to yield desirable win-win solutions.
+ 
+% For future work, we will offload client-side deduplication to server-side, meaning that the 
+% Docker client doesn't need to do deduplication because
+% it can push all its created images to the registry and the registry eliminates duplicate files for the client. 
+% In this case, Docker clients use the registry as a duplicate file washing machine to 
+% remove duplicate files in their local file systems without a performance overhead.
 %1. File cache and layer buffer management 
 %We observed that although half of the users have only one repository with a few layers, there are some users who own many layers. 
 %For future work, we will focus on precisely predicting which layers will be accessed by active users and prefetch them in the cache for later accesses.
@@ -22,33 +67,33 @@ and additional optimizations to help speed up \sysname.
 %And its hit ratio largely depends on duration threshold.
 %If we set a higher duration threshold, we can keep more layers in cache 
 %but
-\paragraph{Seamlessly integrating backend dedup process with the prefetching algorithm}
-
-In future work, we will analyze the time it takes to fetch a layer from the backend storage system.
-A high latency for prefetching a layer may affect the response time of subsquent incoming \texttt{pull} layer requests.
-We will also analyze the cost-benefit of prefetching a layer.
-Prefetching a layer from cold repositories can serve an immediate pull request. 
-However, this layer will be evicted from the cache after a short period of time because it won't be accessed again by other users. 
-Prefetching is benefitial, but it is associated with the consumption of a lot of resources such as CPU, network bandwidth, and I/Os. 
-Moreover, prefetching a layer into the cache may trigger the eviction of layers from hot repositories.
-We will also quantify the performance gain by using a file cache.
-Although the file cache can increase space efficiency, a hit in the file cache,
-entails subsquent parallel compression operations that may cause considerable latency.
+%\paragraph{Seamlessly integrating backend dedup process with the prefetching algorithm}
+%
+%In future work, we will analyze the time it takes to fetch a layer from the backend storage system.
+%A high latency for prefetching a layer may affect the response time of subsquent incoming \texttt{pull} layer requests.
+%We will also analyze the cost-benefit of prefetching a layer.
+%Prefetching a layer from cold repositories can serve an immediate pull request. 
+%However, this layer will be evicted from the cache after a short period of time because it won't be accessed again by other users. 
+%Prefetching is benefitial, but it is associated with the consumption of a lot of resources such as CPU, network bandwidth, and I/Os. 
+%Moreover, prefetching a layer into the cache may trigger the eviction of layers from hot repositories.
+%We will also quantify the performance gain by using a file cache.
+%Although the file cache can increase space efficiency, a hit in the file cache,
+%entails subsquent parallel compression operations that may cause considerable latency.
 
 %Our first question is if we prefetch layers from backend dedup storage system,
 %there will a latency added to our prefetch requests, 
 
-\paragraph{Another approach to reduce redudant data in Docker registry: Docker client-side deduplication}
-
-Client-side deduplication affects the container runtime. 
-This is because performing inline file-level deduplication on the Docker client %side
-requires intensive file fingerprint calculations, and file fingerprint lookup, 
-which will slow down container runtime performance.
-For future work, we will offload client-side deduplication to server-side, meaning that the 
-Docker client doesn't need to do deduplication because
-it can push all its created images to the registry and the registry eliminates duplicate files for the client. 
-In this case, Docker clients use the registry as a duplicate file washing machine to 
-remove duplicate files in their local file systems without a performance overhead.
+%\paragraph{Another approach to reduce redudant data in Docker registry: Docker client-side deduplication}
+%
+%Client-side deduplication affects the container runtime. 
+%This is because performing inline file-level deduplication on the Docker client %side
+%requires intensive file fingerprint calculations, and file fingerprint lookup, 
+%which will slow down container runtime performance.
+%For future work, we will offload client-side deduplication to server-side, meaning that the 
+%Docker client doesn't need to do deduplication because
+%it can push all its created images to the registry and the registry eliminates duplicate files for the client. 
+%In this case, Docker clients use the registry as a duplicate file washing machine to 
+%remove duplicate files in their local file systems without a performance overhead.
 
 
 %
