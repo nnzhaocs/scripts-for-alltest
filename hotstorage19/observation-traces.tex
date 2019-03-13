@@ -1,10 +1,9 @@
 
 \input{fig-skewness-reusetime}
 
-
 \paragraph{Understanding layer access patterns.}
 We analyzed the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
-Figure~\ref{fig:sknewss} shows the registry accesses to layers and repositories, as well as users accesses to the \arb{layers??}. 
+Figure~\ref{fig:sknewss} shows the registry accesses to layers and repositories, as well as users accesses to the layers and manifests \arb{layers??}\NZ{addressed}. 
 Layer accesses are heavily skewed. For example, 25\% of popular layers account for 80\% of all requests. 
 For repository accesses and accesses by users, the skew is more significant than it is for layers. %10\% most frequently accessed repositories account for 94\% of all requests
 94\% of all requests accessed only 10\% of the most frequently accessed repositories. Similarly, only 9\% of users, most active ones, issued 97\% of all requests. 
@@ -21,15 +20,25 @@ The median reuse time of a layer is 1.3 hours. 80\% of repositories experience t
 %This is because users can access multiple layers and manifests.
 In other words, most of the layers stored in the
 registry are not frequently requested in a very short
-time period, while users remain active for a longer time.
-This is because users can request different layers or manifests.
+time period.
+%, while users remain active for a longer time.
+%This is because users can request different layers or manifests.
 
-To quantify the efficacy of traditional LRU and pull-push prefetching,
-we implemented an LRU algorithm and pull-push prefetching 
-and replayed different number of requests from
-IBM registry workload \texttt{dal} as shown in 
+To quantify the efficacy of traditional LRU and push-pull prefetching,
+we implemented an LRU algorithm and pull-push prefetching~\cite{dockerworkload} 
+and replayed 
+IBM registry workload \texttt{dal} with different cache size as shown in 
 Figure~\ref{fig:lru_prefetching_hits}.
-The hit ratio for LRU was found to be lower than $0.6$ 
-while pull-push prefetching slightly improved the hit ratio to up to $0.8.$
-\arb{say something whether this is good or bad... or is very low and show that LRU is not an effective mechanism for managing the proposed caches}
+The hit ratio for LRU was found to be lower than $0.6$ across different sizes.
+This is because layer accesses do not follow LRU temporal trend.
+Although pull-push prefetching slightly improved the hit ratio compared to LRU,
+the maximum hit ratio is still low and stays stable around $0.8$.
+This is because, first, push-pull prefetching predicts the future accesses based on  
+pushed layers but according to our above observations, layer reuse time
+is very long. 
+Second, we found in the traces only half of the pull layer requests have a precedent 
+push layer request and push-pull prefetching ignored the layers that were pushed 
+before data collection.
+
+\arb{say something whether this is good or bad... or is very low and show that LRU is not an effective mechanism for managing the proposed caches}\NZ{addressed}
 

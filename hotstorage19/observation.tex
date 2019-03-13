@@ -6,7 +6,8 @@
 On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. 
 For example, StorReduce~\cite{storReduce}, the deduplication software used by
 Google cloud and AWS, 
-performs in-line transparent data deduplication. StorReduce resides between the client's application and the hosting cloud storage.
+performs in-line transparent data deduplication. 
+%StorReduce resides between the client's application and the hosting cloud storage.
 %A number of deduplication methods focus on client-side data deduplication to ensure that only unique files are uploaded, 
 %to save network bandwidth, by having the client send a duplicate check request~\cite{xxx}~\cite{xxx}. 
 %For example, xxxx\NZ{Hadeel, can you add one example and few relatedwork citation?}. 
@@ -28,7 +29,7 @@ as the images are \emph{compressed archival files}.
 As discussed in~\cref{sec:intro}, only $3\%$ of the files in a sample Docker hub image collection were found to be unique, mainly becuase 
  compressed files have a very low deduplication ratio~\cite{meister2012study}.
 Thus, 
-we can save realize significant space savings if we can remove the 
+we can realize significant space savings if we can remove the 
 duplicate files. This entails decompressing files before performing deduplication, and collecting components of layers from multiple servers.
 %
 To quantify the performance overhead of such an approach involving decompressing, deduplication, and then re-compressing,
@@ -38,7 +39,8 @@ We replayed the IBM registry workload \texttt{dal}~\cite{dockerworkload}
 %by sending requests randomly 
 randomly to our five registries and measured the latency. 
 %
-Figure~\ref{fig:avg_latency_dedup_nodedup} shows the average latency observed \arb{average across what??}.
+Figure~\ref{fig:avg_latency_dedup_nodedup} shows the average latency observed 
+across five registries\arb{average across what??}\NZ{addressed}.
 Note that since 
 %the IBM registry workload 
 \texttt{dal} does not contain real layers,
@@ -50,7 +52,7 @@ The latency increases to 12~s when the above deduplication is implemented in the
 Furthermore, Docker registry performance drops down dramatically for larger layers.
 We observe that the average latency for requesting layers larger than 50~MB and smaller than 1~GB
 is about 128~s. The latency worsens when dedupliation is implemented, to on average about 800~s.
-
+\NZ{todo:graph: less than, }
 %\HA{running five registries, replaying dal trace using trace replayer-cite, and since the replayer doesn't use real layers we randomly match the request to our dataset downloaded from docker hub. describe how we got these numbers. for dedup, we simply implemented a decompress/compress + file-level deduplication on backend storage systems, we use a CHT based distributed storage system. Figure~\ref{fig:avg_latency_dedup_nodedup}}
 \input{fig:avg_latency_dedup_nodedup}
 
