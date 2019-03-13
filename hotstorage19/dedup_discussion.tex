@@ -22,39 +22,33 @@ and additional optimizations to help speed up \sysname.
 %And its hit ratio largely depends on duration threshold.
 %If we set a higher duration threshold, we can keep more layers in cache 
 %but
+\paragraph{Seamlessly integrating backend dedup process with the prefetching algorithm}
 
-1. Seamlessly integrate backend dedup process with prefetch cache algorithm
-
-In the future work, we will analyze how long it will take to fetch a layer from
-backend storage system.
-If the latency of prefetching a layer is longer,
-the incoming pull layer requests will not be served immediate.
-Next, we will analyze the cost-benefit of 
-prefetching a layer.
-Prefetching a layer from cold repositories can serve an immediate pull request,
-but this layer will be deleted from cache after a short period of time 
-because it won't be accessed again by other users 
-but prefetching this will consume a lot of resources, 
-for example, CPU, network bandwidth, I/Os. 
-Moreover, this layer staying in cache might trigger other layers from hot repositories to be evicted.
-Another question is how much is the performance again by using file cache.
-Although file cache can increase space efficiency, once layer request is hit in layer cache,
-we need to do parallel compression and it also cause a latency.
+In future work, we will analyze the time it takes to fetch a layer from the backend storage system.
+A high latency for prefetching a layer may affect the response time of subsquent incoming \texttt{pull} layer requests.
+We will also analyze the cost-benefit of prefetching a layer.
+Prefetching a layer from cold repositories can serve an immediate pull request. 
+However, this layer will be evicted from the cache after a short period of time because it won't be accessed again by other users. 
+Prefetching is benefitial, but it is associated with the consumption of a lot of resources such as CPU, network bandwidth, and I/Os. 
+Moreover, prefetching a layer into the cache may trigger the eviction of layers from hot repositories.
+We will also quantify the performance gain by using a file cache.
+Although the file cache can increase space efficiency, a hit on the file cache,
+entails subsquent parallel compression operations that may cause considerable latency.
 
 %Our first question is if we prefetch layers from backend dedup storage system,
 %there will a latency added to our prefetch requests, 
 
-2. Another angel to reduce redudant data in Docker registry: Docker client-side deduplication
+\paragraph{Another approach to reduce redudant data in Docker registry: Docker client-side deduplication}
 
 Client-side deduplication affects the container runtime. 
-This is because performing inline file-level deduplication on the Docker client side requires intensive file 
-fingerprint calculations, and file fingerprint lookup, 
+This is because performing inline file-level deduplication on the Docker client %side
+requires intensive file fingerprint calculations, and file fingerprint lookup, 
 which will slow down container runtime performance.
 For future work, we will offload client-side deduplication to server-side, meaning that the 
 Docker client doesn't need to do deduplication because
 it can push all its created images to the registry and the registry eliminates duplicate files for the client. 
 In this case, Docker clients use the registry as a duplicate file washing machine to 
-remove duplicate files in their local file systems without performance overhead.
+remove duplicate files in their local file systems without a performance overhead.
 
 
 %
