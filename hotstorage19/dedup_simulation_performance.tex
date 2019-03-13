@@ -12,6 +12,9 @@
 
 We simulate our user-access-history-based cache and 
 replay the \texttt{dal} workload~\cite{dockerworkload} to measure the hit ratio.
+We set our cache size is 20\%of ingress data and 
+within the cache, we use 10\%of cache for buffering incoming \texttt{put} layer requests
+ and the rest space in cache for caching prefetched layer slices from backend dedup system. 
 %as shown in Figure~\ref{fig:hitratio}.
 %Our algorithm exhibits an enhanced cache performance, with a high hit ratio
 %up to 0.96.
@@ -27,12 +30,19 @@ The layers responsible for the $4\%$ miss rate are the ones being
 %within a minute and 
 %around 89\% of users can finished their \texttt{pull} layer request with less than 5 min. 
 %We also see that the response time to \texttt{pull} layer requests is within $1$ minute for 74\% of users, and it is less than $5$ minutes for 89\% of users.
-Since we buffer layers upon a \texttt{push} layer request and prefetch layer {\em slices} from the backend servers, 
-we compare the hits on prefetched layer {\em slices} and the hits on buffered layers.
+%Since we buffer layers upon a \texttt{push} layer request and prefetch layer {\em slices} from the backend servers, 
+%we compare the hits on prefetched layer {\em slices} and the hits on buffered layers.
 We see that, across different duration thresholds, 
-the hit ratio for prefetching layer slices is much higher than the hit ratio of buffering layers,
+the hits upon buffering incoming put requests is very low,
 confirming that it takes a long time for a recently \emph{pushed} layer to be pulled.
-
+We also observe that our average cache utilization is only 22\%, which means that
+the cache only few peak periods is filled up because many users are connected 
+and the requested repositories contains many layers, which means 
+user accesses are non-uniform with peaks and troughs,
+and our algorithm can adapt to workload changes.
+%This trend is perfectly fit in our two-tier heterogeneous cache
+%and the evaluation results can guide us to carefully choose 
+%layer buffer size and file cache size.
 %
 %In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while
 %in terms of capacity, it increases from \textbf{1.9$\times$} to
