@@ -2,29 +2,30 @@
 
 %We did a deduplication analysis on around 50TB compressed image dataset and found that we can save about half of the storage space by doing file-level deduplication after decompressing all the images. However, deduplication affects Docker registry's performance especially for pulling performance because restoring layers require fetching files and compressing them into layers. To reduce deduplication restoring overhead(i.e., decompress/compression and additional networking and I/O), we propose a novel architecture that integrates compressed file-friendly deduplication and container user-friendly caching. 
 
- Container virtualization has become the de-facto standard 
-for deploying modern applications because 
-of its lightweight, tight isolation, and low overhead. 
-However,
-the rapidly increasing number of container images presents great challenges on Docker registry that already holds millions of container images.
-We performed a large-scale deduplication analysis on 47 TB (167 TB uncompressed) dataset, and find
-only 3\% of files are unique and the rest are duplicate files, 
-suggesting that current layer-level content addressable 
-mechanism is insufficient for Docker registry. 
-Despite the large deduplication potential, current deduplication techniques 
-are not compatible with registry dataset: compressed layers.
-Directly applying them on registry will
- suffer from either low deduplication ratio or large overhead. 
+%Container virtualization has become the de-facto standard 
+%for deploying modern applications because 
+%of its lightweight, tight isolation, and low overhead. 
+%However,
+The rapidly increasing number of container images present great challenges on
+Docker registry that already holds millions of container images.  To understand
+the characteristics of the Docker registry dataset, we performed a large-scale
+analysis on 167 TB of data, and find only 3\% of the files
+are unique and the rest are duplicate files, suggesting that current
+layer-level content addressable mechanism is insufficient for Docker registry.
+Despite the large deduplication potential, current deduplication techniques are
+not compatible with registry dataset: compressed layers. Directly applying
+them on registry will suffer from either low deduplication ratio or large
+overhead. 
 %This problem has so far remained largely unexplored.
 % 
-In this paper, we propose a new Docker registry architecture, \sysname,
-that integrates caching and deduplication with Docker registries to 
-help reduce the storage requirements while mitigating any performance overhead.
-\sysname uses a user access history-based prefetch algorithm to accurately 
-prefetch the layers that will be accessed shortly,
-and a two two-tier heterogeneous cache to improve cache space efficacy.
-Our evaluation of the user access history-based prefetch algorithm yields a hit ratio of 96\%. 
-Even more, our two-tier heterogeneous cache architecture, allows 56\% more layers into the file cache.
+In this paper, we propose a new Docker registry architecture, \sysname, that
+integrates caching and deduplication with Docker registries to help reduce the
+storage requirements while mitigating any performance overhead. \sysname uses
+a user access history-based prefetch algorithm to accurately prefetch the
+layers that will be accessed shortly, and a two two-tier heterogeneous cache to
+improve cache space efficacy. Our evaluation of the user access history-based
+prefetch algorithm yields a hit ratio of 96\%. Even more, our two-tier
+heterogeneous cache architecture, allows 56\% more layers into the file cache.
 %Based on our 
 
 %sustaining and scaling container systems in the face of exponential growth is challenging. 
