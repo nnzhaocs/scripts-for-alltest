@@ -6,7 +6,7 @@
 
 A number of studies investigated various dimensions of Docker storage
 performance~\cite{dockerssd,shifter,slacker,exoclones,docker-driver-eval,
-improve-cow-container-drivers}.
+improve-cow-container-drivers,cntr}.
 %
 Harter \etal~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics
 but not for data redundancy.
@@ -14,14 +14,14 @@ but not for data redundancy.
 %the push, pull, and run performance of Docker graph drivers based on the studied
 %images. Compared to Slacker, our analysis focuses on the entire Docker Hub dataset.
 %
-Cito \etal~\cite{analysisdockergithub} studied 70,000
-Dockerfiles and focused on the image build process not its contents.
+%Cito \etal~\cite{analysisdockergithub} studied 70,000
+%Dockerfiles and focused on the image build process not its contents.
 %of Docker ecosystem with a focus on prevalent quality issues, and the evolution of Docker 
 %files based on a data set of 70,000 Docker files.
 %However, their study did not focus on actual image data.
 %
-Shu \etal~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
-for 356,218 images.
+%Shu \etal~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
+%for 356,218 images.
 %
 Anwar \etal~\cite{dockerworkload} performed a detailed analysis
 of an IBM Docker registry workload but not the dataset.
@@ -39,7 +39,6 @@ of an IBM Docker registry workload but not the dataset.
 %Bhimani~\cite{dockerssd} \etal characterized the performance of persistent storage options
 %for I/O intensive containerized applications with NVMe SSDs.
 %
-
 Data deduplication is a well
 explored and widely applied technique~\cite{2009-sparse_indexing_inline_dedup_using_sampling-fast,
 2001-low_bandwidth_network_fs-sosp,
@@ -55,8 +54,9 @@ real-world datasets~\cite{2009-dedup_effectiveness_on_vm_disk_images-systor,
 msst16dedup-study,
 2012-charact_backup_workloads-fast,
 2013-charact_dedup_effic_big_data-iiswc}
-but to the best of our knowledge, we are the first to analyze a large-scale Docker
-registry dataset for its deduplication potential.
+ and their methods can be complementary to our approach.
+%but to the best of our knowledge, we are the first to analyze a large-scale Docker
+%registry dataset for its deduplication potential.
 %and propose to apply deduplication to it.
 
 
