@@ -13,7 +13,7 @@
 We simulate our user-access-history-based cache and 
 replay the \texttt{dal} workload~\cite{dockerworkload} to measure the hit ratio. We set the cache size to be $20$\% of the data ingress for \texttt{dal}. We set $10$\% of the cache for buffering incoming \texttt{put} layer requests, and 
 the rest for caching prefetched layer slices from backend servers. 
-Note that in this evaluation, the cache only contains layer buffer without file cache.
+Note that in this evaluation, the cache only contains the layer buffer without the file cache.
 %as shown in Figure~\ref{fig:hitratio}.
 %Our algorithm exhibits an enhanced cache performance, with a high hit ratio
 %up to 0.96.
@@ -34,7 +34,7 @@ The layers responsible for the $4$\% miss rate are the ones being
 We see that, across different duration thresholds, 
 the hits upon buffering newly put requests (denoted as buffering hit ratio) is very low,
 confirming that it takes a long time for a recently \emph{pushed} layer to be pulled.
-We also observe that our average cache utilization is only $22$\%. 
+We also observe that the average cache utilization is only $22$\%. 
 That is because our algorithm is based on users demand 
 so it adapts to workload changes.
 %This trend is perfectly fit in our two-tier heterogeneous cache
