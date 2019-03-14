@@ -3,7 +3,6 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: paper.aux
 The style file: acm.bst
 Database file #1: paper.bib
-Warning--I didn't find a database entry for "cntr"
 Warning--to sort, need author or key in docker
 Warning--to sort, need author or key in docker-hub
 Warning--to sort, need author or key in s3
@@ -37,45 +36,45 @@ Warning--empty year in 2012-charact_backup_workloads-fast
 Warning--empty year in improve-cow-container-drivers
 Warning--empty year in 2013-charact_dedup_effic_big_data-iiswc
 Warning--empty year in 2008-avoid_disk_bottleneck_data_domain_dedupfs-fast
-You've used 35 entries,
+You've used 36 entries,
             2253 wiz_defined-function locations,
-            660 strings with 9149 characters,
-and the built_in function-call counts, 10315 in all, are:
-= -- 831
-> -- 642
+            667 strings with 9358 characters,
+and the built_in function-call counts, 10827 in all, are:
+= -- 882
+> -- 664
 < -- 0
-+ -- 275
-- -- 234
-* -- 703
-:= -- 1617
-add.period$ -- 91
-call.type$ -- 35
-change.case$ -- 222
++ -- 284
+- -- 242
+* -- 741
+:= -- 1689
+add.period$ -- 94
+call.type$ -- 36
+change.case$ -- 229
 chr.to.int$ -- 0
-cite$ -- 68
-duplicate$ -- 441
-empty$ -- 894
-format.name$ -- 234
-if$ -- 2134
+cite$ -- 69
+duplicate$ -- 465
+empty$ -- 936
+format.name$ -- 242
+if$ -- 2249
 int.to.chr$ -- 0
-int.to.str$ -- 35
-missing$ -- 22
-newline$ -- 164
-num.names$ -- 44
-pop$ -- 447
+int.to.str$ -- 36
+missing$ -- 23
+newline$ -- 169
+num.names$ -- 46
+pop$ -- 457
 preamble$ -- 1
-purify$ -- 187
+purify$ -- 193
 quote$ -- 0
-skip$ -- 179
+skip$ -- 197
 stack$ -- 0
-substring$ -- 202
-swap$ -- 62
+substring$ -- 239
+swap$ -- 72
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 140
+type$ -- 144
 warning$ -- 33
-while$ -- 48
-width$ -- 37
-write$ -- 293
-(There were 34 warnings)
+while$ -- 53
+width$ -- 38
+write$ -- 304
+(There were 33 warnings)

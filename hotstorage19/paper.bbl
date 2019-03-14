@@ -165,6 +165,12 @@ Storreduce.
   Containers}.
 \newblock In {\em IEEE AMLCS'17}.
 
+\bibitem{cntr}
+{\sc Thalheim, J., Bhatotia, P., Fonseca, P., and Kasikci, B.}
+\newblock Cntr: Lightweight {OS} containers.
+\newblock In {\em 2018 {USENIX} Annual Technical Conference ({USENIX} {ATC}
+  18)\/} (Boston, MA, 2018), {USENIX} Association, pp.~199--212.
+
 \bibitem{2012-charact_backup_workloads-fast}
 {\sc Wallace, G., Douglis, F., Qian, H., Shilane, P., Smaldone, S., Chamness,
   M., and Hsu, W.}
