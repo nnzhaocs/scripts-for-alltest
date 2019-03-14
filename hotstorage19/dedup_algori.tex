@@ -82,7 +82,7 @@ and compare against the layers that are already \emph{pulled} by the user by loo
 %URLMap
 then prefetch the layers that have not been \emph{pulled}. 
 We set a timer for each cached layer and evict it when its timer is $>U_{thresh}$.
-To incorporate this algorithm with our cache,
+To incorporate the algorithm with \sysname,
 we prefetch \texttt{slices} in parallel from backend servers,  
 %dedup storage system,
 buffer them in the layer buffer first, then evict them into the file cache after they \emph{cool down}.
