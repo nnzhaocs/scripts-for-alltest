@@ -2,25 +2,25 @@
 \newpage
 \section{Discussion}
 \label{sec:discussion}
-While a lot of research has looked at the performance aspects of Docker containers on client side,
-we believe the current registry design is inefficient and 
-the massive amount of images will make the registry become a bottleneck in the whole
-container system.
-In this work, we have attempted to solve the redundant data issue 
-with a seamless integration of caching and deduplication guided by user access patterns
-to showcase the benefits for both the Docker registry service providers as well as the clients.
+While the performance aspects of Docker containers on client side have been studied extensively,
+we believe the current registry design is inefficient and will become 
+a bottleneck when handling the expected 
+ massive amount of images.
+In this work, we have attempted to solve the registry redundant data issue  
+using an integrated caching and deduplication approach that is guided by user access patterns. Our approach
+showcases the benefits for both the Docker registry service providers as well as the clients.
 
 We believe that our paper will lead to discussion on the following points of interest:
-(1) The need for a compatible deduplication approach for Docker registry.
+(1) The need for a deduplication approach tailored for Docker registry.
 Since deduplication is a well-studied area, we believe that the paper will lead to 
 hot discussion on how the extant approaches can be applied/adapted
 to diverse data formats such as compressed files.
-(2) Issues about how to effectively use caching by exploring user access pattern to improve the performance of whole container systems,
-and where to place the cache (for example, at registry side, remote cloud storage side, or Docker client side)
-to benefit container performance. 
+(2) Issues of how to effectively manage a layer/file cache by exploiting user access patterns, 
+and where to place the cache (e.g., at registry side, remote cloud storage side, or Docker client side)
+to benefit overall container performance. 
 (3) The role of layer and image.
-The redundant data issue stems from containers' storage virtualization technique by using
-union file systems to pack everything inside different layers used as a plugin OS image.
+The redundant data issue stems from containers' storage virtualization technique that use
+union file systems to pack everything inside different layers (that are used as a plugin OS image).
 An open aspect of our work is improving 
 the efficiency of current union file systems and container storage virtualization technique.
 %the incompatible issue between current deduplication techniques
@@ -29,19 +29,18 @@ the efficiency of current union file systems and container storage virtualizatio
 %In this section, we discuss issues and concerns 
 %and additional optimizations to help speed up \sysname.
 
-An unexplored issue is that redundant data in Docker client side, which is
-greatly different from registry storage, 
-because registry stores compressed layers
-while client end host storage system stores uncompressed layers.
-Therefore, the redundancy issue in Docker client side with limited local storage space is
- as much worse as registry storage system.
- However, applying current deduplication methods that are usually deployed on backup storage systems
-  on
- client side would largely affect the container runtime performance. 
+An unexplored issue is redundant data on the Docker client side, which differs
+greatly from registry storage. This is
+because the registry stores compressed layers,
+while client-end host-storage system stores uncompressed layers.
+Therefore, the client-side redundancy issue under limited local storage space is
+ just as bad or worse as the redundancy in the registry storage system.
+ However, applying current deduplication methods---that are usually deployed on backup storage systems---on
+ the client side would greatly impact the container runtime performance. 
  This is because performing file-level deduplication on the Docker client side
  requires intensive file fingerprint calculations, and file fingerprint lookup, 
- which will slow down container runtime performance.
- Furthermore, we believe our work can help  synchronize deduplication for both
+ which will slowdown performance.
+ Furthermore, we believe that our work can help  synchronize deduplication for both
  client side deduplication and registry side deduplication
  to yield desirable win-win solutions.
  
