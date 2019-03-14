@@ -26,14 +26,14 @@ $90$\% of users remain active for at least $0.06$ seconds, thus most layers are 
 %This is because users can request different layers or manifests.
 
 To quantify the efficacy of traditional LRU and push-pull prefetching,
-we implemented an LRU algorithm and pull-push prefetching~\cite{dockerworkload} 
+we implemented an LRU algorithm and push-pull prefetching~\cite{dockerworkload} 
 and replayed 
 IBM registry workload \texttt{dal} with different cache size as shown in 
 Figure~\ref{fig:lru_prefetching_hits}.
 The hit ratio for LRU was found to be lower than $60$\% across different sizes.
 This is because layer accesses do not follow LRU temporal trend:
 recently pulled layer will not be pulled again by the same user.
-Although pull-push prefetching slightly improved the hit ratio compared to LRU,
+Although push-pull prefetching slightly improved the hit ratio compared to LRU,
 the maximum hit ratio is still low and stays stable around $80$\%.
 This is because push-pull prefetching predicts the future accesses based on  
 pushed layers.
