@@ -1,4 +1,4 @@
-\section{Preliminary evaluation}
+\section{Preliminary Evaluation}
 \label{sec:Evaluation}
 
 %Our two-tier heterogeneous cache in the registry can improve the performance of the entire system
@@ -11,20 +11,18 @@
 \paragraph{Cache hit ratio.}
 
 We simulate our user-access-history-based cache and 
-replay the \texttt{dal} workload~\cite{dockerworkload} to measure the hit ratio.
-We set our cache size is 20\%of ingress data and 
-within the cache, we use 10\%of cache for buffering incoming \texttt{put} layer requests
- and the rest space in cache for caching prefetched layer slices from backend dedup system. 
+replay the \texttt{dal} workload~\cite{dockerworkload} to measure the hit ratio. We set the cache size to be $20$\% of the data ingress for \texttt{dal}. We set $10$\% of the cache for buffering incoming \texttt{put} layer requests, and 
+the rest for caching prefetched layer slices from backend servers. 
 %as shown in Figure~\ref{fig:hitratio}.
 %Our algorithm exhibits an enhanced cache performance, with a high hit ratio
 %up to 0.96.
-Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio, $74\%$ to $95\%$ as the duration threshold grows from $1$ to $10$ minutes. This is because prefetched layers are kept in the cache for more time.
-The hit ratio stablizes at $96\%$ as the duration threshold increases from $15$ to $20$ minutes.
+Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio, $74$\% to $95$\% as the duration threshold grows from $1$ to $10$ minutes. This is because prefetched layers are kept in the cache for more time.
+The hit ratio stablizes at $96$\% as the duration threshold increases from $15$ to $20$ minutes.
 %Therefore,
 %the highest hit ratio of our algorithm is around 0.96,
 %and there are 0.4 of layers that are miss because 
 %some users \emph{re-pull} the layers after they pull the same layers.
-The layers responsible for the $4\%$ miss rate are the ones being
+The layers responsible for the $4$\% miss rate are the ones being
 \emph{re-pulled} by the same user.
 %We also see that 74\% of users can finish their \texttt{pull} layer request
 %within a minute and 
@@ -35,11 +33,9 @@ The layers responsible for the $4\%$ miss rate are the ones being
 We see that, across different duration thresholds, 
 the hits upon buffering incoming put requests is very low,
 confirming that it takes a long time for a recently \emph{pushed} layer to be pulled.
-We also observe that our average cache utilization is only 22\%, which means that
-the cache only few peak periods is filled up because many users are connected 
-and the requested repositories contains many layers, which means 
-user accesses are non-uniform with peaks and troughs,
-and our algorithm can adapt to workload changes.
+We also observe that our average cache utilization is only $22$\%. 
+We observe that only a few peak periods fill the cache because of the increase in number of users connected and the highly populated repositories requested. 
+This means, user accesses are non-uniform with peaks and troughs, and our algorithm adapts to workload changes.
 %This trend is perfectly fit in our two-tier heterogeneous cache
 %and the evaluation results can guide us to carefully choose 
 %layer buffer size and file cache size.
