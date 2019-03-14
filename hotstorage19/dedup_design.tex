@@ -138,8 +138,7 @@ and directly sends it back to the user.
 We modify the Docker client
 interface such that when it receives all the compressed slices, it can
 decompress them into a single layer. 
-Furthermore, compressing slices
-of layers in parallel considerably mitigates the compression latency caused by
+Furthermore, compressing slices in parallel considerably mitigates the latency caused by
 compressing a whole layer, since compression time depends on the size of the
 uncompressed data.
 %to cache layers and cache unique files after decompression and deduplication,
