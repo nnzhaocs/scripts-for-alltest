@@ -80,7 +80,10 @@ and compare against the layers that are already \emph{pulled} by the user by loo
 %select a certain number of \emph{popular} layers from the client's 
 %previously accessed layers by lookup 
 %URLMap
-then prefetch the layers that have not been \emph{pulled}. To incorporate the prefetch algorithm with our two-tier heterogeneous cache,
+then prefetch the layers that have not been \emph{pulled}. 
+We set a timer for each cached layer and 
+we evict the layers when its timer $>$ $U_{thresh}$.
+To incorporate the prefetch algorithm with our two-tier heterogeneous cache,
 we \texttt{prefetch slices} in parallel from backend servers,  
 %dedup storage system,
 and buffer them in the layer buffer first, then evict them into the file cache after they \emph{cool down}.

@@ -13,10 +13,11 @@
 We simulate our user-access-history-based cache and 
 replay the \texttt{dal} workload~\cite{dockerworkload} to measure the hit ratio. We set the cache size to be $20$\% of the data ingress for \texttt{dal}. We set $10$\% of the cache for buffering incoming \texttt{put} layer requests, and 
 the rest for caching prefetched layer slices from backend servers. 
+Note that in this evaluation, the cache only contains layer buffer without file cache.
 %as shown in Figure~\ref{fig:hitratio}.
 %Our algorithm exhibits an enhanced cache performance, with a high hit ratio
 %up to 0.96.
-Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio, $74$\% to $95$\% as the duration threshold grows from $1$ to $10$ minutes. This is because prefetched layers are kept in the cache for more time.
+Figure~\ref{fig:hitratio} shows the results. We observe a significant increase in the hit ratio, $74$\% to $95$\% as the duration threshold grows from $1$ to $10$ minutes. This is because pref etched layers are kept in the cache for more time.
 The hit ratio stablizes at $96$\% as the duration threshold increases from $15$ to $20$ minutes.
 %Therefore,
 %the highest hit ratio of our algorithm is around 0.96,
@@ -31,11 +32,11 @@ The layers responsible for the $4$\% miss rate are the ones being
 %Since we buffer layers upon a \texttt{push} layer request and prefetch layer {\em slices} from the backend servers, 
 %we compare the hits on prefetched layer {\em slices} and the hits on buffered layers.
 We see that, across different duration thresholds, 
-the hits upon buffering incoming put requests is very low,
+the hits upon buffering newly put requests (denoted as buffering hit ratio) is very low,
 confirming that it takes a long time for a recently \emph{pushed} layer to be pulled.
 We also observe that our average cache utilization is only $22$\%. 
-We observe that only a few peak periods fill the cache because of the increase in number of users connected and the highly populated repositories requested. 
-This means, user accesses are non-uniform with peaks and troughs, and our algorithm adapts to workload changes.
+That is because our algorithm is based on users demand 
+so it adapts to workload changes.
 %This trend is perfectly fit in our two-tier heterogeneous cache
 %and the evaluation results can guide us to carefully choose 
 %layer buffer size and file cache size.
