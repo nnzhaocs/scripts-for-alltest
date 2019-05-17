@@ -1,10 +1,13 @@
 \begin{algorithm}
-	\scriptsize 
+\scriptsize 
 	\caption{User access history based prefetch}
 	\label{alg:prefetch}
 	%\SetAlgoLined
-	\KwIn{
-		$U_{thresh}$: Threshold for duration to keep a prefetched layer.
+	\KwIn{\\
+		$L_{thresh}$: Threshold for duration to keep a prefetched layer. \\
+		{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted or demoted to Flashcache */}}\\
+		$RLMap$: Repository to layers map.\\
+		$URLMap$: User to layers map. \\
 	}
 	\While{true}{
 		\emph{r} $\leftarrow$ \texttt{request received}\\
@@ -12,38 +15,43 @@
 		{
 %			layerlst $\leftarrow$ URLMap[(r.client, r.repo)]
 			\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[r.client]} \\
-			\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
+			\emph{OnTimelayers}, \emph{NotOnTimelayers} $\gets$ \emph{OnTimeCalculation(layers)} \\
+			\emph{MEMcache} $\gets$ \emph{Prefetch(OnTimelayers)} \\
+			\emph{FLASHcache} $\gets$ \emph{Prefetch(NotOnTimelayers)} \\
 			\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
-			{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
+			%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
 			}
 		\uElseIf{r = PUT layer }
 		{
 				\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
-				\texttt{update} \emph{RLMap[(r.repo, r.layer)]} \\
-				\emph{PrefetchedLayers} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
-				\texttt{set} \emph{L\_timer[r.layer]} \\
-				{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
+				\texttt{update} \emph{RLMap[(r.repo, r.layer, put)]} \\
+				\emph{MEMcache} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
+				\texttt{set} \emph{L\_PUT\_timer[r.layer]} \\
+				%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
 			}
 		\ElseIf{r = GET layer}
 		{
-				\eIf{r.layer in PrefetchedLayers}
+				\eIf{r.layer in MEMcache or r.layer in FLASHcache}
 				{
-					\emph{serve from PrefetchedLayers} \\
+					\emph{serve from MEMcache or FLASHcache} \\
 					\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
 					\texttt{Reset} \emph{L\_timer[r.layer]}\\
-					\emph{hit++} 
+					\emph{hit++} \\
+					{\tiny\texttt{/* if r.layer in FLASHcache, layer is promoted to MEMcache/}}	 \\
 				}
 			   {
 					\emph{serve from backend storage system} \\
-					\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
-					\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[r.client]} \\
-					\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
-					\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
-					{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
+					\texttt{update} \emph{URLMap[(r.client, r.repo, repulled)]} \\
+					\emph{RepulledLayers} $\gets$ \emph{RLMap[r.repo]} \\
+					\emph{FLASHcache} $\gets$ \emph{Prefetch(RepulledLayers)} \\
+					\texttt{set} \emph{L\_timer[layer] for each layer in RepulledLayers} \\
+					%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
 			}
 		}
 	}
 \end{algorithm}
+
+\input{eviction_algori}
 
 %U_thresh
 %

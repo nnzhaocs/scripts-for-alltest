@@ -1,61 +1,62 @@
-\section{Observations and Motivation} % just find the problem and benefit
-\label{sec:background}
 
-\paragraph{Deduplication for improving storage capacity.}
+\section{Registry workload analysis}
+\input{fig-skewness-reusetime}
 
-On-cloud global deduplication software is widely adopted by cloud enterprises for reducing cloud storage consumption and overall storage cost. 
-For example, StorReduce~\cite{storReduce}, the deduplication software used by
-Google cloud and AWS, 
-performs in-line transparent data deduplication. 
-%StorReduce resides between the client's application and the hosting cloud storage.
-%A number of deduplication methods focus on client-side data deduplication to ensure that only unique files are uploaded, 
-%to save network bandwidth, by having the client send a duplicate check request~\cite{xxx}~\cite{xxx}. 
-%For example, xxxx\NZ{Hadeel, can you add one example and few relatedwork citation?}. 
-Intuitively, such deduplication techniques can be leveraged to eliminate redundant data from the Docker image storage system.  
-Except, the Docker image dataset is not amenable to deduplication 
-as the images are \emph{compressed archival files}.
-%Intuitively, registries can be deployed as a proxy cache to host frequently requested layers to speedup image pulls and improve performance 
-%while the backend cloud storage can leverage deduplication to save storage space.
-%However, there are several unique problems concerning the integration of caching and deduplication to the unique Docker registries workload: \textbf{compressed layers}. 
-%We investigate the potential for data reduction in the Docker registry by estimating the efficacy of layer sharing and file-level deduplication.
-%We noticed that the number of public repositories is constantly increasing with a growth that amounts 
-%to around 1 million repositories annually. 
-%This corresponds to~130\,TB of annual growth in storage needs 
-%\HA{but it is actually less because of shared layers, right?}, 
-%costing around~\$15,000 a month if Google Cloud Storage is used~\cite{GoogleCloudStoragePricing}.
-%This growth implies significant benefits to data deduplication. 
+\paragraph{Understanding layer access patterns.}
+We analyzed the Dallas(\texttt{dal}) registry workload collected from IBM Container Registry over the course of 75 days~\cite{dockerworkload}. 
+Figure~\ref{fig:sknewss} shows the registry accesses to layers and repositories, as well as users accesses to the layers and manifests.
+% \arb{layers??}\NZ{addressed}. 
+Layer accesses are heavily skewed. For example, $25$\% of popular layers account for $80$\% of all requests. 
+For repository accesses and accesses by users, the skew is more significant than it is for layers. %10\% most frequently accessed repositories account for 94\% of all requests
+$94$\% of all requests accessed only $10$\% of the (popular) repositories. Similarly, only $9$\% of (most active) users issued $97$\% of all requests. 
+This means that only a few extremely active users create their repositories in the \texttt{dal} registry and issue the majority of requests to the registry.
+
+Figure~\ref{fig:reusetime} shows the reuse time of layers and repositories and users.
+Layer reuse time is the duration between two consecutive requests to the same layer or repository. Similarly,
+reuse time by user is duration between two consecutive same-user requests.
+The layer reuse time is long.
+The median reuse time of a layer is $1.3$ hours. $80$\% of repositories experience the highest request frequency, with a reuse time of $2$ minutes. 
+$90$\% of users remain active for at least $0.06$ seconds, thus most layers are not requested within a short time period.
+%So for a registry, most of its stored layers are not accessed frequently given a very short time period while
+%users can maintain active for a longer time. 
+%This is because users can access multiple layers and manifests.
+%   Thus, most of the layers stored in the
+%   registry are not frequently requested over very short
+%   time periods.
+%, while users remain active for a longer time.
+%This is because users can request different layers or manifests.
+
+To quantify the efficacy of traditional LRU and push-pull prefetching,
+we implemented an LRU algorithm and push-pull prefetching~\cite{dockerworkload} 
+and replayed 
+IBM registry workload \texttt{dal} with different cache size as shown in 
+Figure~\ref{fig:lru_prefetching_hits}.
+The hit ratio for LRU was found to be lower than $60$\% across different sizes.
+This is because layer accesses do not follow LRU temporal trend:
+recently pulled layer will not be pulled again by the same user.
+Although push-pull prefetching slightly improved the hit ratio compared to LRU,
+the maximum hit ratio is still low and stays stable around $80$\%.
+This is because push-pull prefetching predicts the future accesses based on  
+pushed layers.
+However, based on our above trace analysis,
+only half of the \texttt{pull} layer
+requests have a preceding \texttt{push} layer request within the trace
+%collecting duration
+collection period of 75 days. This means that, after a user pushes a layer
+to the registry, it takes a few days, weeks, or even months for a user to make
+a \texttt{pull} request. 
+%Second, we found in the traces only half of the pull layer requests have a preceding 
+%push layer request and push-pull prefetching ignored the layers that were pushed 
+%before data collection.
+
+%Anwar et
+%al. have proposed a prefetching method~\cite{dockerworkload} based on the
+%\texttt{push}-\texttt{pull} relationship: whenever there is a \texttt{PUSH} layer
+%request directly followed by a \texttt{GET} manifest request, with a high probability these will be followed by a \texttt{GET}
+%layer request.
 
 
-As discussed in~\cref{sec:intro}, only $3$\% of the files in a sample Docker hub image collection were found to be unique, mainly becuase 
- compressed files have a very low deduplication ratio~\cite{meister2012study}.
-Thus, 
-we can realize significant space savings if we can remove the 
-duplicate files. This entails decompressing files before performing deduplication, and collecting components of layers from multiple servers.
-%
-To quantify the performance overhead of such an approach involving decompressing, deduplication, and then re-compressing,
-we setup five registry instances. Each instance has a local file system as their backend storage system. We
-implemented file-level deduplication with decompression and compression operations.
-We replayed the IBM registry workload \texttt{dal}~\cite{dockerworkload} 
-%by sending requests randomly 
-randomly to our five registries and measured the latency. 
-%
-Figure~\ref{fig:avg_latency_dedup_nodedup} shows the average latency observed 
-across five registries.
-%\arb{average across what??}\NZ{addressed}.
-Note that since 
-%the IBM registry workload 
-\texttt{dal} does not contain real layers,
-we extract the layer digest from each request and match it with a layer randomly selected from our Docker Hub dataset to emulate realistic requests.
-
-Without deduplication,
-the average latency for requesting a layer is about $2$~s for layers with sizes $\textless50$~MB.
-The latency increases to $12$~s when the above deduplication is implemented in the backend storage system.
-Furthermore, Docker registry performance drops down dramatically for larger layers.
-We observe that the average latency for requesting layers $\textgreater50$~MB and $\textless1$~GB
-is about $128$~s. The latency worsens with dedupliation to on average of about $800$~s.
-%\NZ{todo:graph: less than, }
-%\HA{running five registries, replaying dal trace using trace replayer-cite, and since the replayer doesn't use real layers we randomly match the request to our dataset downloaded from docker hub. describe how we got these numbers. for dedup, we simply implemented a decompress/compress + file-level deduplication on backend storage systems, we use a CHT based distributed storage system. Figure~\ref{fig:avg_latency_dedup_nodedup}}
-\input{fig:avg_latency_dedup_nodedup}
+%\arb{say something whether this is good or bad... or is very low and show that LRU is not an effective mechanism for managing the proposed caches}\NZ{addressed}
 
 \paragraph{Registry as a cache for improving performance.}
 Traditionally, caches are placed as close to the requesting client as 
@@ -148,3 +149,5 @@ since the layer is now locally available to the user. Thus, we have to design in
 %%\subsection{} % what are the cost for a naive file-level deduplication
 %
 %\paragraph{Restoring performance breakdown}
+
+

@@ -1,0 +1,91 @@
+
+\begin{algorithm}
+	\scriptsize 
+	\caption{User access history based eviction.}
+	\label{alg:eviction}
+	\SetAlgoLined
+	\KwIn{\\
+		$T_{mem}$: Capacity threshold for MEM cache to trigger demotion. \\
+		$T_{flash}$: Capacity threshold for FLASH cache to trigger eviction. \\
+		$UsrLRU$: LRU of users.  \\
+		$LayerLRU[Usr]$: LRU of layers that are accessed by user $Usr$. \\
+		$RepoLRU$: LRU of repostiories. \\
+		$LayerLRU[Repo]$: LRU of layers that are associated with repository $Repo$.
+	}
+	\While{free\_MEM $<$ $T_{mem}$}{
+		\emph{last\_usr} $\gets$ \emph{UsrLRU.last\_item()}\\
+		\For{last\_layer $\gets$ \emph{LayerLRU[last\_usr].last\_item()}}{
+			\If{layer exclusively belongs to last\_usr}{
+				%{\scriptsize $/*$\textit{If layer is not shared with other users, layer is deleted}}\\
+			%	last\_layer $\gets$ \emph{LayerLRU[last\_usr]}\\			
+				FLASHcache $\gets$ \emph{Demote(last\_layer)} \\
+				\emph{free\_MEM} $+=$ \emph{sizeof(last\_layer)} \\
+			}
+		}
+	}
+
+	\While{free\_FLASH $<$ $T_{flash}$}{
+	\emph{last\_repo} $\gets$ \emph{RepoLRU.last\_item()}\\
+	\For{last\_layer $\gets$ \emph{LayerLRU[last\_repo].last\_item()}}{
+		\If{layer exclusively belongs to last\_repo}{
+			%{\scriptsize $/*$\textit{If layer is not shared with other users, layer is deleted}}\\
+			%	last\_layer $\gets$ \emph{LayerLRU[last\_usr]}\\			
+			\emph{Discard(last\_layer)} \\
+			\emph{free\_FLASH} $+=$ \emph{sizeof(last\_layer)} \\
+		}
+	}
+}
+
+\end{algorithm}
+
+
+%\begin{algorithm}
+%    \tiny 
+%	\caption{User access history based eviction}
+%	\label{alg:prefetch}
+%	%\SetAlgoLined
+%	\KwIn{\\
+%		$L_{thresh}$: Threshold for duration to keep a prefetched layer. \\
+%		$RLMap$: Repository to layers map.\\
+%		$URLMap$: User to layers map. \\
+%	}
+%	\While{true}{
+%		\emph{r} $\leftarrow$ \texttt{request received}\\
+%		\uIf{r = GET manifest}
+%		{
+%%			layerlst $\leftarrow$ URLMap[(r.client, r.repo)]
+%			\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[r.client]} \\
+%			\emph{OnTimelayers}, \emph{NotOnTimelayers} $\gets$ \emph{OnTimeCalculation(layers)} \\
+%			\emph{MEMcache} $\gets$ \emph{Prefetch(OnTimelayers)} \\
+%			\emph{FLASHcache} $\gets$ \emph{Prefetch(NotOnTimelayers)} \\
+%			\texttt{set} \emph{L\_timer[layer] for each layer in layer} \\
+%			{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
+%			}
+%		\uElseIf{r = PUT layer }
+%		{
+%				\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
+%				\texttt{update} \emph{RLMap[(r.repo, r.layer, put)]} \\
+%				\emph{MEMcache} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
+%				\texttt{set} \emph{L\_PUT\_timer[r.layer]} \\
+%				{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
+%			}
+%		\ElseIf{r = GET layer}
+%		{
+%				\eIf{r.layer in MEMcache or r.layer in FLASHcache}
+%				{
+%					\emph{serve from MEMcache or FLASHcache} \\
+%					\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
+%					\texttt{Reset} \emph{L\_timer[r.layer]}\\
+%					\emph{hit++} 
+%				}
+%			   {
+%					\emph{serve from backend storage system} \\
+%					\texttt{update} \emph{URLMap[(r.client, r.layer, repulled)]} \\
+%					\emph{RepulledLayers} $\gets$ \emph{RLMap[r.repo]} \\
+%					\emph{FLASHcache} $\gets$ \emph{Prefetch(RepulledLayers)} \\
+%					\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
+%					{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
+%			}
+%		}
+%	}
+%\end{algorithm}

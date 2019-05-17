@@ -9,9 +9,13 @@
  However,
  sustaining and scaling container systems in the face of exponential growth is challenging. 
  %
- For example, Docker Hub~\cite{docker-hub}---a popular public container registry---stores more than~$2$ million public repositories. These repositories have grown at the rate of about~$1$ million annually---requiring provisioning an additional $2.5$~TB of storage per week on average---and the rate is expected to increase.
+ For example, Docker Hub~\cite{docker-hub}---a popular public container registry---stores more than~$2$ million public repositories. 
+ These repositories have grown at the rate of about~$1$ million annually ---and the rate is expected to increase which
+ requires provisioning a large amount of new storage consistently.
  %
- This puts intense pressure on Docker registry storage infrastructure, but the problem has so far remained largely unexplored.
+ This puts intense pressure on the availability and scalability of Docker registry storage infrastructure 
+ because scaling-out involves data migration between existing storage serves and new storage servers, even among existing storage servers for load balancing,
+ which largely hurts performance.
  %
  In this paper, we propose a new Docker registry architecture, \sysname,
  that integrates caching and deduplication with Docker registries to help reduce the storage requirements while mitigating any performance overhead.
@@ -29,8 +33,6 @@ Many container registries use remote cloud storage, e.g., S3~\cite{s3},
 as their backend storage system~(Figure~\ref{fig:without-dedup}).
 %For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
 %IBM container registry uses IBM cloud to manage image storage.
-
-
 
 \paragraph{Is current registry deduplication effective?} 
 To guide our design, we downloaded and analyzed 
@@ -97,6 +99,8 @@ flash-based storage system.
 The mix of main memory and flash memory can realize the needed large capacity for caching prefetched layers and files. 
 Our prefetch algorithm yields a hit ratio of $96$\%. 
 Moreover, our two-tier heterogeneous cache is able to store $56$\% more layers into the file cache.
+
+\paragraph{\sysname use cases.}
 %Moreover, we propose a user-based cache algorithm to improve the cache hit ratio 
 %based on our Docker Hub image analysis that showed that user-active-time is more predictable.
 

@@ -1,0 +1,178 @@
+\subsection{Layer parallel deduplication and restoring}
+\label{sec:design_operations}
+
+%\paragraph{Workflow}
+%
+%The proposed Docker registry API is very similar to the original API.
+%%Interactions with the Docker client is unchanged: 
+%A user simply pushes and pulls images to and from the registry. 
+In the following, we describe our \sysname~layer parallel deduplication 
+and restoring (i.e., \sysname~dedup) design. 
+%explain Docker operations integration with \sysname.
+
+%\sysname~ is composed of five main components(see Figure~\ref{onshareddir}):
+%a modified Docker client,
+%layer buffer,
+%file cache,
+%registries,
+%backend storage system that implements deduplication.
+%The modified Docker client sends put or pull layer/manifest requests.
+%After it sends the pull layer requests.
+%it receives multiple partial layers and decompresses them together as a whole uncompressed layer, then verifies the
+%integrity of the uncompress layer by calculating the digest of the uncompress layer.
+%Layer buffer is used to buffer all the put layer requests and 
+%cache prefetched layers for later use.
+
+\subsubsection{Layer deduplication}
+After receiving a \texttt{push} layer request from the client, 
+\sysname~first caches the layer in \sysname~cache for later accesses.
+%and submit the layer to its backend \sysname~dedup storage system.
+%%which is part of our layer prefetching (detailed in algorithm~\ref{alg:prefetch}). 
+%%Layer buffer also caches prefetched layers.
+%The layer buffer can be implemented on a distributed in-memory store,~\eg Plasma~\cite{plasma}.
+At the same time, \sysname~will also submit the layer to the backend deduplication storage system as shown in Figure~\ref{fig:sys-overview}.
+Our \sysname~cache use write through policies. 
+Since there is no modification to the layer, 
+there is no data consistency issue between the cache and the backend dedup storage system.
+%A cold layer eviction may be triggered on layers stored in the layer buffer.
+%The cold layer will be evicted to the file cache, but before that can happen, it will be \emph{deduped}.
+%The deduplication process includes the following steps 
+%that are applied on every victim layer evicted from the layer buffer to the file cache:
+
+The deduplication process has tree major steps: layer decompression, file-level deduplication,
+and unique file distribution. 
+The first two steps are necessary for removing file duplicates from compressed layer tarballs.
+The last step unique file distribution is to balance the restoring load among registries so that later layer restoring process will achieve an optimal parallelism for each layer (detailed in~\ref{sec:cache-design}) and speedup layer restoring process.
+The deduplication process is detailed as follows:
+\begin{compactenumerate}
+	\item decompress and unpack the layer into files;
+	\item compute a \emph{fingerprint} for every file in the layer;
+	\item check every file's fingerprint in the \emph{fingerprint index} to
+	ensure an identical file is not already stored;
+	\item redistribute the unique files to the registry cluster by using round-robin, and;
+	 update the \emph{file index} with the unique files' fingerprints, host address;
+	\item create and store a \emph{layer recipe} comprising the file path, address,
+	metadata, and fingerprint of the layer's file; and
+	\item remove the layer's tarball.
+\end{compactenumerate}
+
+Layer recipes and file indexes are identified by layer digests and fingerprints, respectively, and 
+are used to address corresponding objects in the backend storage system. 
+Fingerprint index and layer recipes are stored on distributed NoSQL databases
+for reliability, consistency, and fast accesses.
+
+After layer deduplication, unique files are evenly distributed across multiple registry servers. 
+We define all the per-server files belonging to a layer as a {\em slice}. 
+A server stores slices for many layers, and a layer is composed of slices stored on multiple servers, which allows restoring a layer in parallel. 
+
+%File cache is a flash-based distributed cache that can be implemented on 
+%distributed log structured store, \eg CORFU~\cite{180277}.
+%The unique files are flash-friendly because there is no modification to these files.
+%Both layer buffer and file cache cache prefetched layers.
+%, meaning that there is no small write.?
+%
+%Usually, the underlying distributed flash-based stores such as CORFU transparently spread data among 
+%different servers and upper level applications are unaware of data host address. 
+%We modified CORFU's read and write interfaces so that the file locations and 
+%its host addresses are exposed to our ~\sysname.
+%
+%Similar to layer buffer, storing unique files in file cache might also trigger the eviction of cold layer's files.
+%The eviction of a cold layer from the layer buffer to file cache
+% may also trigger the eviction of unique files in file cache.
+%Since the backend dedup storage system already stores a backup of the layers, 
+%we can simply discard the victim files.
+%  from the file cache. Algorithm~\ref{alg:cache} presents our 
+% cache replacement algorithm.
+%\sysname\ handles push requests asynchronously.
+%\sysname 
+%does not immediately unpack the layer.
+%Instead, it reliably stores the layer's compressed tarball in a persistent
+%\emph{staging area}.
+%A separate \emph{off-line} deduplication process iterates over the layers in
+%the staging area and performs the following steps for every layer:
+%%
+%\begin{compactenumerate}
+%	\item decompress and unpack the layer's tarball into individual files;
+%	\item compute a \emph{fingerprint} for every file in the layer;
+%	\item check all file fingerprints against the \emph{file index} to
+%	identify if identical files are already stored in \sysname;
+%	\item store non-deduplicated files in \sysname's storage;
+%	\item create and store a \emph{layer recipe} that includes the path,
+%	metadata, and fingerprint of every file in the layer;
+%	\item remove the layer's tarball from the staging area.
+%\end{compactenumerate}
+
+%The advantage of off-line deduplication is that it keeps push
+%latencies perceived by the Docker clients low.
+%
+%The background deduplication process can be scheduled during the periods of low
+%load on the registry.
+%
+%Layer recipes are identified by layer digests (see Section~\ref{sec:background})
+%and files are identified by their fingerprints.
+%%
+%These identifiers are used to address corresponding objects in the
+%underlying storage.
+%
+%For example, if a file system is used as a backend storage, \sysname\ creates a
+%single file for every layer recipe (named by the digest) and a single file for
+%every in-layer file (named by the fingerprint).
+
+%\vspace{-4pt}
+\subsubsection{Layer restoring}
+A \texttt{pull} layer request that can be serviced from 
+\sysname~cache is a cache hit and does not need further action. 
+In case of a miss in the cache, 
+ \sysname~\emph{reconstructs} the layer from the backend deduplication
+ system according to the layer recipe.
+%
+%A pull request cannot be postponed to an off-line process as the
+%pulling client is actively waiting for the layer.
+%
+
+To avoid the network latency caused by fetching slices from different servers and
+assembling them into a whole compressed layer, we split a \texttt{pull} layer request 
+into several parallel~\texttt{pull slice}~requests. 
+Those requests will then be
+forwarded to all the registry servers that store the requested
+layer's slices as shown in Figure~\ref{fig:sys-overview}. 
+After a~\texttt{pull slice}~request is received, each backend server compresses the slice 
+and directly sends it back to the user.
+We modify the Docker client
+interface such that when it receives all the compressed slices, it can
+decompress them into a single layer. 
+%Furthermore, compressing slices in parallel considerably lowers the layer compression latency,
+%since compression time depends on the size of the
+%uncompressed data.
+
+The layer reconstruction involves the following steps that are performed \emph{inline}:
+
+\begin{compactenumerate}
+	%\item check if the requested layer is still in the staging area and if so,
+	%service it directly from there;
+	\item find the layer recipe using the layer digest and retrieve the 
+\emph{fingerprints} for the files associated with the layer;
+	\item lookup the \emph{fingerprints} in \emph{fingerprint index} to get a destination server list; and
+	\item forward the \texttt{pull slice} %layer 
+	request and layer recipe to each server in the server list.
+\end{compactenumerate}
+
+Once the \texttt{pull slice} 
+request is received, each destination server will initiate a layer slice restoring process. This process involves the following steps: 
+
+\begin{compactenumerate}
+	\item prepare a directory structure for the layer, based on the layer recipe;
+	\item copy the locally available files into the directory tree; 
+	\item compresses the layer's directory tree into a temporary tarball; and
+	\item send the layer tarball back to the client, and then discard the tarball.
+\end{compactenumerate}
+
+%If a \texttt{pull} layer request results in a miss in both the layer buffer and the file cache, 
+%the request will be forwarded to the backend dedup storage system.
+%The layer restoring process on the backend storage system is similar to restoring from the file cache.
+%Many modern storage systems with the deduplication feature can be used as our backend storage system, including GFS~\cite{ghemawat2003google}, HDFS~\cite{hdfs}, S3~\cite{s3}, and Swift~\cite{swift}.
+%We can modify the above systems so that they can recognize the compressed layer file type and decompress them before performing deduplication.
+%Moreover, these systems need to be modified to restore layer slices in parallel. 
+%Note that there is no consistency issue between either layer buffer, file cache or backend storage because layers won't be changed in the future.
+
+
