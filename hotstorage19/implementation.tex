@@ -1,0 +1,17 @@
+\section{Implementation}
+\label{sec:impl}
+We decoupled our \sysname~implementation into cache implementation and backend dedup storage implementation. 
+We first modify the Docker registry source code -- local file system driver part by implementing decompression/compression, file-level deduplication, and 
+unique file distribution modules to the local file system driver so that the driver decompresses the layers and removing the duplicate files once the registry receives a layer tarfile, and fetching and compress the files into layer slices once the registry receives a get layer request. 
+We also implemented a simple round-robin based distributed key-value object store by modifying the local file system driver. 
+Once the file-level deduplication is done, the driver will re-distributed the newly added unique files to different destination servers based on round-robin. 
+Besides, we uses Zookeeper as the cluster coordinator, and MongoDB to store dedup metadata.
+
+Our \sysname~cache is also implemented by modifying Docker registry source code -- cache part. 
+The original Docker registry only caches local layer digests to identify if a requested layer is stored locally or not. 
+We first deploy our cache cluster by using Redis cluster. 
+We add our \sysname~cache into Docker registry source code as a new cache module which makes prefetch decisions when a GET/PUT request is received and talks to Redis cache. The metadata tables used by cache is also stored in MongoDB. For cache demotion/eviction and monitoring cache space utilization/backend dedup storage system performance, we elect a master registry node to do that by using Zookeeper as the cluster coordinator. 
+
+Therefore, by modifying Docker registry source code, we can configure Docker registry to provide two different kinds of functionalities. It can be either used as a distributed backend layer dedup storage system with the same Docker registry APIs or used as a distributed user-oriented cache with the same Docker registry APIs.
+
+\paragraph{Gzip compression}

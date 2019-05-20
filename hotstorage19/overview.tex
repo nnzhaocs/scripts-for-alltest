@@ -95,6 +95,7 @@ on layer access pattern we observed in~\cref{sec:background} and user access his
 %when a user is most likely to be active, to drive layer evictions from the cache.
 
 \input{fig-sys-overview}
+\input{fig-sift-manifest}
 
 Considering that layer sizes are typically about several MB~\cite{dockerworkload}, 
 a small main memory cache will be unable to accommodate
@@ -147,6 +148,18 @@ uncompressed data.
 %memory is very fast, the size of main memory is limited. 
 %All the slices for a layer are fetched in parallel for performance improvement.
 
+After receiving a \texttt{push} layer request from the client, 
+\sysname~first caches the layer in \sysname~cache for later accesses.
+%and submit the layer to its backend \sysname~dedup storage system.
+%%which is part of our layer prefetching (detailed in algorithm~\ref{alg:prefetch}). 
+%%Layer buffer also caches prefetched layers.
+%The layer buffer can be implemented on a distributed in-memory store,~\eg Plasma~\cite{plasma}.
+At the same time, 
+\sysname~will also submit the layer to the backend deduplication storage system as shown in Figure~\ref{fig:sys-overview}.
+Our \sysname~cache use write through policies. 
+Since there is no modification to the layer, 
+there is no data consistency issue between the cache and the backend dedup storage system.
 
+\paragraph{Docker client modifications}
 
  
