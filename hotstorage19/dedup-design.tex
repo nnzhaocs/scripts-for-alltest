@@ -64,7 +64,8 @@ A server stores slices for many layers, and a layer is composed of slices stored
 Similar with traditional file-level deduplication, \dedupname~maintains file fingerprint indexes to address the corresponding files in the storage system. 
 Similar with traditional registry, \dedupname~maintains layer fingerprint indexes to address the corresponding layers stored in the system.
 Besides, \dedupname~creates a list of slice recipes identified by layer digest for each layer that is deduplicated. 
-Slice recipe contains partial of the layer tarball's directory tree structure, file digests, and file metadata information (such as, permission and attributes), which are needed for restoring a slice for the layer. Note that, layer deduplication process only deduplicate regular files.
+Slice recipe contains partial of the layer tarball's directory tree structure, file digests, and file metadata information 
+(such as, permission and attributes), which are needed for restoring a slice for the layer. Note that, layer deduplication process only deduplicate regular files.
 Figure~\ref{xxx} shows an example of layer fingerprint indexes, file fingerprint indexes, and slice recipe.
 Fingerprint indexes, layer recipes, and \sysname~manifest are stored on distributed NoSQL databases
 for reliability, consistency, and fast accesses.

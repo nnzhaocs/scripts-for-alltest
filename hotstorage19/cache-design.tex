@@ -1,36 +1,7 @@
-%\paragraph{User active time-based cache replacement algorithm}
-%%\label{sec:design_cache_algori}
-%
-%\input{cache_algori.tex}
-%
-%We leverage observations from our study of the user access patterns to guide our cache replacement. This is because
-%a user's active time is more predictable as discussed in~\cref{sec:background}.
-%%   In~\cref{sec:design}, the incoming \texttt{push} layer requests are first buffered in the layer buffer and later evicted to the file cache.
-%%   If there is a \texttt{pull} layer request miss in both the layer buffer and the file cache, 
-%%   \sysname~will fetch the layer from backend storage system and store it in the layer buffer.
-%We service requests from the layer buffer, then file cache, and then from the backend storage system. 
-%When a cache (layer buffer or file cache) is under pressure due to 
-%shortage of free space,
-%the layer buffer or the file cache will simply evict or delete some layers or files and reclaim space.
-%Since our layer buffer and file cache both share the same cache replacement algorithm, we only present
-%our user-based cache replacement algorithm for the layer buffer as shown in Algorithm~\ref{alg:cache}.
-%
-%Free space in the layer buffer is considered too low if ($free\_buffer$ $<$ $S_{thresh}$). 
-%In such a sitation, \sysname~will free the buffer space used by inactive users. 
-%\sysname~maintains two LRU lists: an LRU list of active users, and
-%an LRU list of recently accessed layers, referred to as \emph{UsrLRU} and \emph{LayerLRU}, respectively.
-%At first, \sysname~will select the least active user from \emph{UsrLRU}.
-%Next, \sysname~will \arb{what is???: reversely iterate} \emph{UsrLRU} until it finds a layer that is exclusively owned by that least active user. 
-%\sysname~then evicts this layer from the layer buffer. 
-% Note that layers are shared among different active users.
-% \sysname~will continue to evict until the free space in the layer buffer is above the specified capacity threshold.
-% 
-%%iteratively removes the least active users along with the least recently accessed layers 
-%% that exclusively owned by these users from the two LRU lists and evict the layers from layer buffer.
-%%, then   
+
 \subsection{User behavior based layer preconstruction cache}
 \label{sec:cache-design}
-\paragraph{User-access-history-based prefetch algorithm.}
+\subsubsection{User access patterns}
 %\label{sec:design_cache_algori}
 To improve our cache hit ratio for \texttt{pull} layer request, we propose a user-access-history-based prefetch algorithm. The algorithm
 exploits the uniqueness of the registry's 
@@ -44,6 +15,8 @@ parse the manifest to get the layer digests,
 then lookup each layer digest against a \emph{local layer digest index}.
 After that it only \emph{pulls} the layers that has \emph{not been stored locally}.
 %
+
+\paragraph{User profiles}
 Based on the above 
 %behavior 
 pattern and hierarchy, we can record the users' repository and layer access history. 
@@ -55,7 +28,6 @@ In this case, the cache hit ratio will reach 1.
 %%But we can prefetch active users' popular layers in the cache based on the historical access information.
 %To mitigate this, we can only prefetch the active user's top requested layers based on the historical access information.
 
-\input{prefetch_algori}
 As shown in algorithm~\ref{alg:prefetch}, \sysname maintains two maps: a RLMap for recording layer-repository
 relationship, and 
 a URLMap for recording 
@@ -101,4 +73,13 @@ buffer them in the layer buffer first, then evict them into the file cache after
 
  
 %We assume that users are independent with each other.
+
+\paragraph{User "Pull manifest" request as an indicator}
+\input{prefetch_algori}
+\subsubsection{Layer preconstruction}
+
+\subsubsection{Temporal trend}
+\input{eviction_algori}
+
+\paragraph{LRU of (user+repo) based cache eviction}
 
