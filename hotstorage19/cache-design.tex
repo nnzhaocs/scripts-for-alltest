@@ -1,22 +1,72 @@
 
 \subsection{User behavior based layer preconstruction cache}
 \label{sec:cache-design}
+In the following, we present our \sysname~\preconstructcachename design.
 \subsubsection{User access patterns}
 %\label{sec:design_cache_algori}
-To improve our cache hit ratio for \texttt{pull} layer request, we propose a user-access-history-based prefetch algorithm. The algorithm
-exploits the uniqueness of the registry's 
-%image %structure
-dataset hierarchy: repositories comprise a list of layers.
-%or organization
-%Users create repositories in the registry, \texttt{push} layers to their own repositories,
-%and \texttt{pull} layers from their own repositories or other public repositories. 
-When a user \emph{pulls} an image from a repository, it will first \texttt{pull} the manifest of the image~\cite{docker}~\cite{dockerworkload} and 
+
+Docker client stores images as lists of layers and layers are shared among different repositories, which is similar to Docker registry.
+When a user \emph{pulls} an image from a repository, 
+it will first \texttt{pull} the manifest of the image~\cite{docker}~\cite{dockerworkload} and 
 parse the manifest to get the layer digests,
 then lookup each layer digest against a \emph{local layer digest index}.
 After that it only \emph{pulls} the layers that has \emph{not been stored locally}.
-%
+Theoretically, users only pull layer once. 
+However, some users might delete some local images and \emph{repull} layers for these images.
+%Moreover, kubernetes allows users always \emph{repull} layers no matter these layers locally available or not~\cite{docker}.  
+Here, a \emph{repull layer} means users pull this layer multiple times,
+and a \emph{non-repull layer} means users only pull this layer once.
+
+Figure~\ref{xxx} shows the CDF of layer repull count.
+We see that majority of users don't \emph{repull} layers frequently.
+For \texttt{Syd}, only 4\% of layers are repulled by the same clients.
+\texttt{Dev} has the highest repull layer ratio of 36\% while 83\% of the repull layers are only repulled twice.
+Majority of layers are repulled infrequently.
+For example, only 3\% of layers from \texttt{Syd} are repulled more than twice.
+Layer from \texttt{Prestage} and \texttt{Lon} have the highest repull frequency.
+5\% of layers are pulled more than 6 times.
+We also observe that few clients \emph{repull} layers continuously.
+The highest layer repull count is 19,300 from \texttt{Lon}.
+We think these clients probably deploy containers on a shared platform such as Cloud,
+and run ephemeral jobs such as stateless microservices. 
+Once the applications are finished, the container images are automatically deleted.
+
+When different clients \texttt{pull} the same repository, 
+they will fetch different amount of layers from the repository based on the availability of their local layer dataset.
+Even the same clients \texttt{pull} the same repository at different times, 
+they will fetch different amount of layers from the repository because their local layer dataset changes over time.
+Therefore, a \texttt{pull manifest} requests doesn't usually result in pulling/repulling the layers in the repository. 
+Here, we define \emph{repulling repository} as 
+repulling the layer in the repository for the same client.
+Figure~\ref{xxx} shows the CDF of the probability of repository repulling.
+The probability of repository repulling is calculated 
+as the number of \texttt{pull manifest} resulting in repository repulling divided by 
+the total number of \texttt{pull manifest} requests issued by the same client for the same repository.
+We see that majority of repositories aren't repulled.
+The repull repository ratio ranges from 15\% for \texttt{Prestage} to 43\% for \texttt{Prestage}.
+Majority of repull repositories have a low repulling probability.
+Only 20\% of repositories from  \texttt{Prestage}, \texttt{Stage}, and 
+\texttt{Syd} have a repulling probability higher than 0.5.
+And only 20\% of repositories from the rest 4 workloads have a repulling probability higher than 0.33.
+We also observe that few repositories' repulling probability are 1, meaning 
+every time clients pull these repositories, they always repull the layers in these repositories. 
+ 
+Figure~\ref{xxx} shows the client repulling probability.
+Client repulling probability is calculated as the number of \emph{repull} layer requests divided by
+the number of \texttt{pull} layer requests issued by the same client.
+We see that majority of clients do repull layers but the probability is low.
+60\% of clients from \texttt{Prestage}, \texttt{Dev}, \texttt{Lon}, and \texttt{Fra} have a repulling probability lower than 0.1.
+55\% of clients from both \texttt{Dal} and \texttt{Stage} have a repulling probability lower than 0.1.
+Less clients have repulling probability range between 0.1 to 0.7.
+10\%-30\% of clients have a repulling probability ranged from 0.1-0.7 across 7 workloads.
+We find few clients repull layers continuously.
+2\%-12\% of clients have a repulling probability higher than 0.9 from workloads:
+\texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Prestage},
+\texttt{Stage}, \texttt{Syd}, and \texttt{Lon}.
 
 \paragraph{User profiles}
+client repull ratio
+repo repull ratio
 Based on the above 
 %behavior 
 pattern and hierarchy, we can record the users' repository and layer access history. 
@@ -59,26 +109,53 @@ To incorporate the algorithm with \sysname,
 we prefetch \texttt{slices} in parallel from backend servers,  
 %dedup storage system,
 buffer them in the layer buffer first, then evict them into the file cache after they \emph{cool down}.
-%    for the user later accesses.
-%To determine if a layer is a popular layer and need to be prefetched into cache,
-%we only consider the layers that was recently accessed with a time period 
-%We consider popular layers to be the layers accessed during the most recent~\emph{T\_thresh} 
-%seconds?
-%time period. In other words, the layers that satisfy the condition:
-%\emph{current\_time} $-$ \emph{last\_access\_time} $<$ \emph{T\_thresh}.
-%Then we calculate the layer popularity as: 
-%$\omega_{pull} \times Pull\_cnt + \omega_{push} \times Push\_cnt$.
-%Since recently \emph{pushed} layer has a higher chance to get \emph{pulled} in the future,
-%we give a higher weight ($\omega_{push} > \omega_{pull}$) for the layer if it has a \emph{Push\_cnt} equal to 1. 
 
- 
-%We assume that users are independent with each other.
+\subsubsection{Temporal trend}
+
+Figure~\ref{xxx} shows the CDF of layer popularity.
+We observe a heavy layer access skewness for \texttt{Fra}, \texttt{Syd}, \texttt{Dal}, \texttt{Stage}, 
+and \texttt{Lon}.
+We see that 80\%, 70\%, and 60\% of the \texttt{pull} layer requests access only 10\% of layers, 
+for \texttt{Fra}, \texttt{Syd}, \texttt{Dal}, \texttt{Stage}, 
+and \texttt{Lon}.
+Figure~\ref{xxx} shows the CDF of repository popularity.
+Compare to layer popularity, 
+repository access skewness is heavier acorss 7 workloads.
+~90\% of \texttt{pull} layer requests access only 10\% of repositories for 
+\texttt{Dev}, \texttt{Fra}, \texttt{Prestage}, \texttt{Syd}, and \texttt{Stage}.
+~75\% of \texttt{pull} layer requests access only 10\% of repositories for
+both \texttt{Dal} and \texttt{Lon}.
+Figure~\ref{xxx} shows the CDF of client popularity.
+\texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Lon}, \texttt{Prestage}, and \texttt{Stage}
+shows a heavey client access skewness.
+10\% of clients send 95\% \texttt{pull} layer requests for \texttt{Lon}.
+\texttt{Syd} shows a slight client skewness. 70\% of requests are sent by 36\% of clients.
+
+Figure~\ref{xxx} shows the CDF of layer reuse time. 
+Layer reuse time means the duration between two consecutive \texttt{pull} requests to the same layer.
+We see that layer reuse time distribution varies among different workloads.
+For \texttt{Fra}, \texttt{Syd}, and \texttt{Stage},
+half of the layers' reuse time is shorter than 6 minutes.
+While half of layers from \texttt{Dal} and \texttt{Lon} have a reuse time higher than 1 hour.
+Half of layers from both \texttt{Prestage} and \texttt{Dev} are not accessed for over 100 hours.
+
+Figure~\ref{xxx} shows the CDF of repository reuse time.
+Repository reuse time means the duration between two consecutive \texttt{pull manifest} requests to the same repository.
+We find that repository reuse time is much shorter than layer reuse time.
+80\% of repositories are re-accessed within 2-12 minutes for the 7 workloads.
+
+Figure~\ref{xxx} shows the CDF of client access intervals.
+Client access intervals are much shorter than repository reuse time.
+80\% of client are active for at least 1 - 3 minutes for the 7 workloads. 
+   
 
 \paragraph{User "Pull manifest" request as an indicator}
 \input{prefetch_algori}
 \subsubsection{Layer preconstruction}
 
-\subsubsection{Temporal trend}
+
+
+\subsubsection{Layer eviction}
 \input{eviction_algori}
 
 \paragraph{LRU of (user+repo) based cache eviction}
