@@ -1,53 +1,65 @@
 \begin{algorithm}
 \scriptsize 
-	\caption{User access history based prefetch}
+	\caption{Preconstruction}
 	\label{alg:prefetch}
-	%\SetAlgoLined
 	\KwIn{\\
-		$L_{thresh}$: Threshold for duration to keep a prefetched layer. \\
-		{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted or demoted to Flashcache */}}\\
-		$RLMap$: Repository to layers map.\\
-		$URLMap$: User to layers map. \\
+		%$\theta_{rp}$: Threshold for popular repulling clients. \\
+		%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted or demoted to Flashcache */}}\\
+		$\theta_{rpc}$: Threshold for repull layers to be preconstructed and cached. \\
+		%$\theta_{R}$: Threshold for popular repulling layers. \\
+		$RLmap$: Repository to layers map.\\
+		$URLmap$: User to user profile map. \\
 	}
 	\While{true}{
 		\emph{r} $\leftarrow$ \texttt{request received}\\
 		\uIf{r = GET manifest}
 		{
-%			layerlst $\leftarrow$ URLMap[(r.client, r.repo)]
-			\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[r.client]} \\
-			\emph{OnTimelayers}, \emph{NotOnTimelayers} $\gets$ \emph{OnTimeCalculation(layers)} \\
-			\emph{MEMcache} $\gets$ \emph{Prefetch(OnTimelayers)} \\
-			\emph{FLASHcache} $\gets$ \emph{Prefetch(NotOnTimelayers)} \\
-			\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
-			%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
+			newLayers $\gets$ \emph{RLmap[r.repo]} $-$ \emph{URLmap[r.client].layers} \\
+			oldLayers $\gets$ \emph{RLmap[r.repo]} $\bigcap$ \emph{URLmap[r.client].layers} \\
+			%\emph{layers} $\gets$ \emph{RLmap[r.repo]} $-$ \emph{URLmap[r.client]} \\
+			%\emph{OnTimelayers}, \emph{NotOnTimelayers} $\gets$ \emph{OnTimeCalculation(layers)} \\
+			%\emph{MEMcache} $\gets$ \emph{Prefetch(OnTimelayers)} \\
+			%\emph{FLASHcache} $\gets$ \emph{Prefetch(NotOnTimelayers)} \\
+			%\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
+			\emph{cache} $\leftarrow$ \texttt{Preconstruct} newLayers \\
+			\If{URLmap[r.client, r.repo, oldLayers].rp $>$ $\theta_{rpc}$} 
+			{ 
+				\emph{cache} $\leftarrow$ \texttt{Preconstruct} oldLayers \\
 			}
+		}
 		\uElseIf{r = PUT layer }
 		{
-				\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
-				\texttt{update} \emph{RLMap[(r.repo, r.layer, put)]} \\
-				\emph{MEMcache} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
-				\texttt{set} \emph{L\_PUT\_timer[r.layer]} \\
+				%\texttt{update} \emph{URLmap[(r.client, r.repo, r.layer)]} \\
+				\texttt{update} \emph{RLmap[r.repo, r.layer]} \\
+				\emph{cache} $\leftarrow$ \texttt{cache} \emph{r.layer} \\
+				%\texttt{set} \emph{L\_PUT\_timer[r.layer]} \\
 				%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
 			}
 		\ElseIf{r = GET layer}
 		{
-				\eIf{r.layer in MEMcache or r.layer in FLASHcache}
+				\uIf{r.layer in cache}
 				{
-					\emph{serve from MEMcache or FLASHcache} \\
-					\texttt{update} \emph{URLMap[(r.client, r.layer)]} \\
-					\texttt{Reset} \emph{L\_timer[r.layer]}\\
+					\emph{serve from cache} \\
 					\emph{hit++} \\
-					{\tiny\texttt{/* if r.layer in FLASHcache, layer is promoted to MEMcache/}}	 \\
+				} 
+			   %{ 
+			   	    {\tiny\texttt{/* Otherwise, it's a repull layer miss   /}}\\
+					\uElseIf{ files in r.layers are cached in file cache}
+					{
+						layer $\gets$ \texttt{Restoring from} \emph{file cache + Disks} 
+					}
+					\Else{
+						layer $\gets$ \texttt{Restoring from} \emph{Disks} \\
+					%\uIf{ $D_{rs}$ $>$ $\theta_{rs}$} 
+					%{ 
+						\emph{cache} $\gets$ layer
+					%}		
 				}
-			   {
-					\emph{serve from backend storage system} \\
-					\texttt{update} \emph{URLMap[(r.client, r.repo, repulled)]} \\
-					\emph{RepulledLayers} $\gets$ \emph{RLMap[r.repo]} \\
-					\emph{FLASHcache} $\gets$ \emph{Prefetch(RepulledLayers)} \\
-					\texttt{set} \emph{L\_timer[layer] for each layer in RepulledLayers} \\
-					%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
-			}
+			%}
+		
 		}
+	\texttt{update} \emph{URLmap[r.client, r.repo, r.layer]} \\
+	\texttt{set} \emph{Timer[r.client, r.repo, layer]} \\
 	}
 \end{algorithm}
 
@@ -58,25 +70,25 @@
 %while true do
 %	r <- request received
 %		if r = Get manifest then
-%			layerlst <- UrlMap[(r.client, r.repo)]
+%			layerlst <- Urlmap[(r.client, r.repo)]
 %			layers <- choose_popular(layerlst) 
 %			PrefetchedLayers <- Prefetch(layers) 
 %			set L_timer[layer] for each layer in layers
 %			/when L_timer[layer] > L_thresh, layer is evicted/
 %		if r = Put layer then
-%			update UrlMap[(r.client, r.repo, r.layer)]
+%			update Urlmap[(r.client, r.repo, r.layer)]
 %			Layerbuffer <- buffer r.layer
 %			set L_timer[r.layer] for r.layer
 %			/when L_timer[layer] > L_thresh, layer is evicted/		
 %		if r = Get layer then
 %			if r.layer in PrefetchedLayers then
 %				serve from PrefetchedLayers[r.layer]
-%				update UrlMap[(r.client, r.repo, r.layer)]
+%				update Urlmap[(r.client, r.repo, r.layer)]
 %				prefetch_hit++
 %			else
 %				server from backend storage system
-%				update UrlMap[(r.client, r.repo, r.layer)]
-%				layerlst <- UrlMap[(r.client, r.repo)]
+%				update Urlmap[(r.client, r.repo, r.layer)]
+%				layerlst <- Urlmap[(r.client, r.repo)]
 %				layers <- choose_popular(layerlst) 
 %				PrefetchedLayers <- Prefetch(layers) and 
 %				set L_timer[layer] for each layer in layers

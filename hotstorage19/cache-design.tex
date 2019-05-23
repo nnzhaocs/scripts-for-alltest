@@ -1,27 +1,34 @@
 
 \subsection{User behavior based layer preconstruction cache}
 \label{sec:cache-design}
+
 In the following, we present our \sysname~\preconstructcachename design.
-\subsubsection{User access patterns}
-%\label{sec:design_cache_algori}
+
+\subsubsection{User access pattern based preconstruction}
 
 Docker client stores images as lists of layers and layers are shared among different repositories, which is similar to Docker registry.
-When a user \emph{pulls} an image from a repository, 
+When a client \texttt{pull}s an image from a repository, 
 it will first \texttt{pull} the manifest of the image~\cite{docker}~\cite{dockerworkload} and 
 parse the manifest to get the layer digests,
 then lookup each layer digest against a \emph{local layer digest index}.
-After that it only \emph{pulls} the layers that has \emph{not been stored locally}.
-Theoretically, users only pull layer once. 
-However, some users might delete some local images and \emph{repull} layers for these images.
+After that it only \emph{pulls} the layers that have \emph{not been stored locally}.
+Theoretically, clients only pull layer once. 
+However, some clients may delete some local images and \emph{repull} layers for these images.
 %Moreover, kubernetes allows users always \emph{repull} layers no matter these layers locally available or not~\cite{docker}.  
 Here, a \emph{repull layer} means users pull this layer multiple times,
 and a \emph{non-repull layer} means users only pull this layer once.
 
+\preconstructcachename~starts layer restoring when a \texttt{pull} manifest request is received, which is called layer preconstruction.
+These preconstructed layers are temporally stored in the cache for later use.
+In this case, layer restoring process and overhead can be avoided if requested layer is found in the cache.
+Next, we analyze user access patterns to identify which layers in the repository will be pulled by users.
+
+\paragraph{User access patterns}
 Figure~\ref{xxx} shows the CDF of layer repull count.
 We see that majority of users don't \emph{repull} layers frequently.
 For \texttt{Syd}, only 4\% of layers are repulled by the same clients.
 \texttt{Dev} has the highest repull layer ratio of 36\% while 83\% of the repull layers are only repulled twice.
-Majority of layers are repulled infrequently.
+Majority of repulled layers are repulled infrequently.
 For example, only 3\% of layers from \texttt{Syd} are repulled more than twice.
 Layer from \texttt{Prestage} and \texttt{Lon} have the highest repull frequency.
 5\% of layers are pulled more than 6 times.
@@ -65,33 +72,33 @@ We find few clients repull layers continuously.
 \texttt{Stage}, \texttt{Syd}, and \texttt{Lon}.
 
 \paragraph{User profiles}
-client repull ratio
-repo repull ratio
-Based on the above 
-%behavior 
-pattern and hierarchy, we can record the users' repository and layer access history. 
-Theoretically, once a user issues a \texttt{pull} manifest from a repository, all the layers that belong to this repository but have not been \emph{pulled} by this user should be prefetched into the cache.
-%when a new use connects to registry, we can prefetch all the layers that have been accessed by this user into cache ideally.
-In this case, the cache hit ratio will reach 1.
-%However, because there is a limit to the cache size, %we won't be able to fit all the active users' layers into cache.
-%not all active user's layers will fit into the cache.
-%%But we can prefetch active users' popular layers in the cache based on the historical access information.
-%To mitigate this, we can only prefetch the active user's top requested layers based on the historical access information.
 
-As shown in algorithm~\ref{alg:prefetch}, \sysname maintains two maps: a RLMap for recording layer-repository
-relationship, and 
-a URLMap for recording 
-users' repository and layer access history information. 
-For example, if a user~\emph{U} \emph{pulls} a layer~\emph{L} from a repository~\emph{R},
-\sysname will add an new entry (\emph{U,L}) in URLMap.
+\preconstructcachename~maintains a RLMap for recording repository-layer relationship.
+If a user~\emph{u} \emph{pushes} a  layer~\emph{l} to a repository~\emph{r},
+\preconstructcachename~will add an new entry (\emph{l}) in RLMap[\emph{r}]. 
+Based on user access patterns,
+\preconstructcachename~ also maintains URLMap for keeping track of user access patterns.
+To identify a user, 
+we extract \emph{user end host address} (\emph{r.client}) from each request (\emph{r}). 
+If a user~\emph{u} \texttt{pull}s a layer~\emph{l} from a repository~\emph{r},
+\preconstructcachename will update entry URLMap[\emph{u}].
 %Each node records the following history information: (\emph{Get\_cnt}, \emph{Put\_cnt}, \emph{last\_access\_time}). a child node layer~\emph{L} to parent node~\emph{R}
-While if a user~\emph{U} \emph{pushes} a  layer~\emph{L} to a repository~\emph{R},
-\sysname~will add an new entry (\emph{R,L}) in RLMap. 
-Note that to identify which layers are locally available for a user, 
-we extract \emph{user end host address} (\emph{r.client}) 
-%as shown in Algorithm~\ref{alg:prefetch}
-from each request and define the user end host address as user,
-and keep track of all layers that have been downloaded by \emph{r.client}. 
+Each URLMap entry maintains a user profile for each client as shown in Figure~\ref{xxx}.
+User profile contains a list of repo profiles for each accessed repository,
+and each repo profile contains a list of accessed layer profiles.
+Note that layer profiles can be shared among different repo profiles for the same user.
+User profile records the user repulling probability $u.rp$ for client $u$.
+If $u.rp$ is greater than threshold $\theta_{crp}$, this user has a high probability of repulling layers.
+Repo profile records repository repulling probability $u.r.rp$ for repository $r$.
+If $u.r.rp$ is greater than threshold $\theta_{rrp}$, this repository is a popular repulling repository for this user.
+Layer profile records layer repull count $u.l.R$ for layer $l$.
+If $u.l.R$ is greater than threshold $\theta_{R}$, this layer is a popular repull layer for this user.
+
+\paragraph{Preconstruction algorithm}
+\input{prefetch_algori}
+As shown in algorithm~\ref{alg:prefetch}, 
+
+%keep track of all layers that have been downloaded by \emph{r.client}. 
 %Note that for a layer node, \emph{Put\_cnt} $=$ 1 or $=$ 0.
 %When a GET or PUT layer request is received, \sysname~will update the URLMap of the associating user, repository, and layer. 
 When either a GET manifest request is received or 
@@ -110,7 +117,9 @@ we prefetch \texttt{slices} in parallel from backend servers,
 %dedup storage system,
 buffer them in the layer buffer first, then evict them into the file cache after they \emph{cool down}.
 
-\subsubsection{Temporal trend}
+\subsubsection{User access pattern  based cache replacement}
+\input{eviction_algori}
+\paragraph{Temporal trend}
 
 Figure~\ref{xxx} shows the CDF of layer popularity.
 We observe a heavy layer access skewness for \texttt{Fra}, \texttt{Syd}, \texttt{Dal}, \texttt{Stage}, 
@@ -147,16 +156,7 @@ We find that repository reuse time is much shorter than layer reuse time.
 Figure~\ref{xxx} shows the CDF of client access intervals.
 Client access intervals are much shorter than repository reuse time.
 80\% of client are active for at least 1 - 3 minutes for the 7 workloads. 
-   
-
-\paragraph{User "Pull manifest" request as an indicator}
-\input{prefetch_algori}
-\subsubsection{Layer preconstruction}
 
 
 
-\subsubsection{Layer eviction}
-\input{eviction_algori}
-
-\paragraph{LRU of (user+repo) based cache eviction}
 
