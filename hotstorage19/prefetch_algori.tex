@@ -3,94 +3,86 @@
 	\caption{Preconstruction}
 	\label{alg:prefetch}
 	\KwIn{\\
-		%$\theta_{rp}$: Threshold for popular repulling clients. \\
-		%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted or demoted to Flashcache */}}\\
 		$\theta_{rpc}$: Threshold for repull layers to be preconstructed and cached. \\
-		%$\theta_{R}$: Threshold for popular repulling layers. \\
-		$RLmap$: Repository to layers map.\\
-		$URLmap$: User to user profile map. \\
+		$RLmap$: Repository to layers map. \\
+		$URLmap$: User to user profile map.  \\
 	}
-	\While{true}{
+%	\SetKwFunction{FMain}{Precontruction}
+%	\SetKwProg{Fn}{Function}{:}{}
+%	\Fn{\FMain{}}{
+	%\While{true}{
 		\emph{r} $\leftarrow$ \texttt{request received}\\
 		\uIf{r = GET manifest}
 		{
 			newLayers $\gets$ \emph{RLmap[r.repo]} $-$ \emph{URLmap[r.client].layers} \\
 			oldLayers $\gets$ \emph{RLmap[r.repo]} $\bigcap$ \emph{URLmap[r.client].layers} \\
-			%\emph{layers} $\gets$ \emph{RLmap[r.repo]} $-$ \emph{URLmap[r.client]} \\
-			%\emph{OnTimelayers}, \emph{NotOnTimelayers} $\gets$ \emph{OnTimeCalculation(layers)} \\
-			%\emph{MEMcache} $\gets$ \emph{Prefetch(OnTimelayers)} \\
-			%\emph{FLASHcache} $\gets$ \emph{Prefetch(NotOnTimelayers)} \\
-			%\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
-			\emph{cache} $\leftarrow$ \texttt{Preconstruct} newLayers \\
+			
+			%{\tiny\texttt{/* Restore slices if layer is deduped, otherwise fetch layer}} \\
+			
+			\emph{cache} $\leftarrow$ \texttt{Restore} newLayers.slices \\%\texttt{or} \texttt{Fetch} newLayers\\
 			\If{URLmap[r.client, r.repo, oldLayers].rp $>$ $\theta_{rpc}$} 
 			{ 
-				\emph{cache} $\leftarrow$ \texttt{Preconstruct} oldLayers \\
+				 %\\
+				%\emph{cache} $\leftarrow$ \texttt{Restore} oldLayers \\
+				%{\tiny\texttt{/* Restore slices if layer is deduped, otherwise fetch layer}} \\
+				\emph{cache} $\leftarrow$ \texttt{Restore} oldLayers.slices \\%\texttt{or} \texttt{Fetch} oldLayers\\
 			}
 		}
-		\uElseIf{r = PUT layer }
+		\uElseIf{r = PUT layer}
 		{
-				%\texttt{update} \emph{URLmap[(r.client, r.repo, r.layer)]} \\
-				\texttt{update} \emph{RLmap[r.repo, r.layer]} \\
 				\emph{cache} $\leftarrow$ \texttt{cache} \emph{r.layer} \\
-				%\texttt{set} \emph{L\_PUT\_timer[r.layer]} \\
-				%{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
-			}
-		\ElseIf{r = GET layer}
-		{
-				\uIf{r.layer in cache}
-				{
-					\emph{serve from cache} \\
-					\emph{hit++} \\
-				} 
-			   %{ 
-			   	    {\tiny\texttt{/* Otherwise, it's a repull layer miss   /}}\\
-					\uElseIf{ files in r.layers are cached in file cache}
-					{
-						layer $\gets$ \texttt{Restoring from} \emph{file cache + Disks} 
-					}
-					\Else{
-						layer $\gets$ \texttt{Restoring from} \emph{Disks} \\
-					%\uIf{ $D_{rs}$ $>$ $\theta_{rs}$} 
-					%{ 
-						\emph{cache} $\gets$ layer
-					%}		
-				}
-			%}
-		
+				\texttt{update} \emph{RLmap[r.repo, r.layer]} \\
 		}
-	\texttt{update} \emph{URLmap[r.client, r.repo, r.layer]} \\
-	\texttt{set} \emph{Timer[r.client, r.repo, layer]} \\
-	}
+		\uElseIf{r = GET layer} %GET
+		{
+			{\tiny\texttt{/* r.layer has not been deduplicated   /}} \\
+				\eIf{r.layer in cache}
+				{
+					\emph{cache hit for layer} \\
+					%\emph{serve from cache}
+				} 
+				{
+					%{\tiny\texttt{/* Otherwise, it's a repull layer miss   /}} \\
+					%\emph{serve from disk} \\
+					cache $\gets$ \texttt{Fetch} \emph{r.layer} 
+				}
+		}
+		\uElseIf{r = GET slice} %GET
+		{
+			{\tiny\texttt{/* r.layer has already been deduplicated   /}}
+			
+			\eIf{r.slice in cache}
+			{
+				%\emph{serve from cache} \\
+				\emph{cache hit for slice} \\
+			} 
+			{
+				%{\tiny\texttt{/* Otherwise, it's a repull layer miss   /}} \\
+				cache $\gets$ \texttt{Restore} \emph{r.slice} 
+			}
+		}
+		\texttt{update} \emph{URLmap[r.client, r.repo, r.layer]} \\
+		\texttt{set} \emph{Timer[r.client, r.repo, layer]} \\
+	%}
+
+%	\SetKwFunction{Fsub}{Restore}
+%	\SetKwProg{Fn}{Function}{:}{}
+%
+%	\Fn{\Fsub{r.slice}}{
+%		%{\tiny\texttt{/* Otherwise, it's a repull layer miss   /}}\\
+%		\eIf{files in r.slice are cached in file cache}
+%		{
+%			slice $\gets$ \texttt{RestoreSlice} \emph{r.slice} \texttt{From} \emph{file cache + disk} 
+%		}
+%		{
+%			slice, $D_{rs}$ $\gets$ \texttt{RestoreSlice} \emph{r.slice} \texttt{From} \emph{disk} \\
+%			\If{ $D_{rs} > \theta_{rsfc}$} 
+%			{ 
+%				\emph{file cache} $\gets$ \texttt{Cache} \texttt{Subsetof} \emph{r.slice.files}
+%			}		
+%		}
+%	}
+
 \end{algorithm}
 
-%\input{eviction_algori}
-
-%U_thresh
-%
-%while true do
-%	r <- request received
-%		if r = Get manifest then
-%			layerlst <- Urlmap[(r.client, r.repo)]
-%			layers <- choose_popular(layerlst) 
-%			PrefetchedLayers <- Prefetch(layers) 
-%			set L_timer[layer] for each layer in layers
-%			/when L_timer[layer] > L_thresh, layer is evicted/
-%		if r = Put layer then
-%			update Urlmap[(r.client, r.repo, r.layer)]
-%			Layerbuffer <- buffer r.layer
-%			set L_timer[r.layer] for r.layer
-%			/when L_timer[layer] > L_thresh, layer is evicted/		
-%		if r = Get layer then
-%			if r.layer in PrefetchedLayers then
-%				serve from PrefetchedLayers[r.layer]
-%				update Urlmap[(r.client, r.repo, r.layer)]
-%				prefetch_hit++
-%			else
-%				server from backend storage system
-%				update Urlmap[(r.client, r.repo, r.layer)]
-%				layerlst <- Urlmap[(r.client, r.repo)]
-%				layers <- choose_popular(layerlst) 
-%				PrefetchedLayers <- Prefetch(layers) and 
-%				set L_timer[layer] for each layer in layers
-%				/when L_timer[layer] > L_thresh, layer is evicted/
 

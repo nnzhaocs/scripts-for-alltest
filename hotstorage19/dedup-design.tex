@@ -175,6 +175,8 @@ and write data in RAMdisk to reduce disk IOs.
 This is because bigger slices contains more files and requires more disk IOs.
 %and slice file copying duration depends on slice size.
 
+\input{restore_algori}
+
 To reduce slice file copying overhead,
 \sysname~\filecachename~temporally cache a subset of files for bigger and popular slices that have a high slice restoring latency, ie., $D_{rs} > \theta_{rs}$. 
 Upon a pull slice request for those slices, 
