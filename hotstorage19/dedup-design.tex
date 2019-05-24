@@ -1,5 +1,5 @@
 \subsection{Layer restoring performance -- aware deduplication}
-\label{sec:design_operations}
+\label{sec:dedup-desgin}
 
 %\paragraph{Workflow}
 %
@@ -193,7 +193,7 @@ To know which slices have a high slice restoring latency,
 \dedupname~monitors slice restoring performance and 
 maintains a restoring performance  profile for each slice that has been restored as shown in Figure~\ref{xxx},
 which contains the latency breakdown of slice restoring (,and a decompression latency updated by layer decompression process) and its containing files' metadata, such as file size.
-All the slice restoring performance profiles are also stored in distributed NoSQL databases,
+All the slice restoring performance profiles are also stored in distributed  databases,
  and addressed by slice digests. 
 To estimate the restoring latency for a slice $i$ that hasn't been restored, 
 \dedupname~lookups the slice restoring performance profiles by slice size,
