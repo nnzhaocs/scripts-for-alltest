@@ -4,6 +4,16 @@
 
 In the following, we present our \sysname~\preconstructcachename design.
 
+%Each \texttt{pull layer} request has a precedent \texttt{pull manifest} request.
+%Upon receiving a \texttt{pull manifest} request, 
+%\sysname~sends the updated \sysname~manifest to client.
+%After receiving a \sysname~manifest, the client parses the manifest
+%and sends either a \texttt{pull layer} request if the layer hasn't been deduplicated,
+%or a list of \texttt{pull slice} requests if a list of corresponding slices presents in the manifest.
+%Those \texttt{pull slice} requests will then be
+%forwarded to all the registry servers that store the requested
+%layer's slices as shown in Figure~\ref{fig:sys-overview}. 
+
 \subsubsection{User access pattern based preconstruction}
 
 Docker client stores images as lists of layers and layers are shared among different repositories, which is similar to Docker registry.

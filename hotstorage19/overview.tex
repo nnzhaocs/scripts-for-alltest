@@ -69,6 +69,7 @@ These requests are forwarded to the servers that stores corresponding deduplicat
 %On \sysname~side, \textit{L2} is stored as deduplicated slices distributed among different servers.
 The servers will start to restore slices from local deduplicated slices and send individual slices back to client 
 in parallel as shown in Figure~\ref{fig:sys-overview}. 
+When client \textit{B} receives all the slices, it decompresses them together as an uncompressed layer.
 
 \paragraph{Docker client modifications}
  
@@ -76,7 +77,8 @@ To interact with \sysname, Docker client is modified to
 parse \sysname~manifest with additional attributes -- slice digests.
 If slice digests present in a layer object in the manifest JSON file, 
 client will replace ``\texttt{pull layer} request with multiple ``\texttt{pull slice}'' requests.
-  
+Besides, when client receives slices back from registry, 
+it decompresses these slices together into an uncompressed layer.  
 %When a user requests a
 %layer that is not present in the layer buffer, the request is forwarded to the
 %file cache (detailed in~\cref{sec:design_operations}). 
