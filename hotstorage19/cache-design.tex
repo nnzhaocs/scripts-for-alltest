@@ -14,27 +14,33 @@ In the following, we present our \sysname~\preconstructcachename design.
 %forwarded to all the registry servers that store the requested
 %layer's slices as shown in Figure~\ref{fig:sys-overview}. 
 
+\input{fig-repull-analysis}
+
 \subsubsection{User access pattern based preconstruction}
 
-Docker client stores images as lists of layers and layers are shared among different repositories, which is similar to Docker registry.
-When a client \texttt{pull}s an image from a repository, 
+Docker client stores images as lists of layers and layers are shared among different repositories, 
+which is similar to Docker registry.
+When a client pulls an image from a repository, 
 it will first \texttt{pull} the manifest of the image~\cite{docker}~\cite{dockerworkload} and 
 parse the manifest to get the layer digests,
-then lookup each layer digest against a \emph{local layer digest index}.
-After that it only \emph{pulls} the layers that have \emph{not been stored locally}.
+then lookup each layer digest against a \emph{local layer index}.
+After that it only pulls the layers that have \emph{not been stored locally}.
 Theoretically, clients only pull layer once. 
-However, some clients may delete some local images and \emph{repull} layers for these images.
+However, some clients may delete several local images and \emph{repull} layers for these images.
 %Moreover, kubernetes allows users always \emph{repull} layers no matter these layers locally available or not~\cite{docker}.  
-Here, a \emph{repull layer} means users pull this layer multiple times,
+Here, a \emph{repull layer} means same user pull this layer multiple times,
 and a \emph{non-repull layer} means users only pull this layer once.
 
-\preconstructcachename~starts layer restoring when a \texttt{pull} manifest request is received, which is called layer preconstruction.
-These preconstructed layers are temporally stored in the cache for later use.
-In this case, layer restoring process and overhead can be avoided if requested layer is found in the cache.
-Next, we analyze user access patterns to identify which layers in the repository will be pulled by users.
+\preconstructcachename~starts parallel slice restoring for layers 
+when a \texttt{pull manifest} request is received, 
+which is called layer preconstruction.
+These preconstructed layer slices are temporally stored in the cache for later \texttt{pull slice} requests.
+In this case, slice restoring process and its overhead can be avoided if the requested slice is found in the cache.
+Next, we analyze user access patterns to identify which layers in the repository will be pulled by users after 
+\texttt{pull manifest} requests.
 
 \paragraph{User access patterns}
-Figure~\ref{xxx} shows the CDF of layer repull count.
+Figure~\ref{fig:layer-repull-cdf} shows the CDF of layer repull count.
 We see that majority of users don't \emph{repull} layers frequently.
 For \texttt{Syd}, only 4\% of layers are repulled by the same clients.
 \texttt{Dev} has the highest repull layer ratio of 36\% while 83\% of the repull layers are only repulled twice.
@@ -47,15 +53,16 @@ The highest layer repull count is 19,300 from \texttt{Lon}.
 We think these clients probably deploy containers on a shared platform such as Cloud,
 and run ephemeral jobs such as stateless microservices. 
 Once the applications are finished, the container images are automatically deleted.
+So when users launch containers again, they will repull layers again.
 
 When different clients \texttt{pull} the same repository, 
 they will fetch different amount of layers from the repository based on the availability of their local layer dataset.
 Even the same clients \texttt{pull} the same repository at different times, 
 they will fetch different amount of layers from the repository because their local layer dataset changes over time.
-Therefore, a \texttt{pull manifest} requests doesn't usually result in pulling/repulling the layers in the repository. 
+Therefore, a \texttt{pull manifest} requests doesn't usually result in repulling the layers in the repository. 
 Here, we define \emph{repulling repository} as 
-repulling the layer in the repository for the same client.
-Figure~\ref{xxx} shows the CDF of the probability of repository repulling.
+repulling the layers in the repository for the same client.
+Figure~\ref{fig:repo-repull-cdf} shows the CDF of the probability of repository repulling.
 The probability of repository repulling is calculated 
 as the number of \texttt{pull manifest} resulting in repository repulling divided by 
 the total number of \texttt{pull manifest} requests issued by the same client for the same repository.
@@ -68,105 +75,137 @@ And only 20\% of repositories from the rest 4 workloads have a repulling probabi
 We also observe that few repositories' repulling probability are 1, meaning 
 every time clients pull these repositories, they always repull the layers in these repositories. 
  
-Figure~\ref{xxx} shows the client repulling probability.
+Figure~\ref{fig:client-repull-cdf} shows the client repulling probability.
 Client repulling probability is calculated as the number of \emph{repull} layer requests divided by
 the number of \texttt{pull} layer requests issued by the same client.
 We see that majority of clients do repull layers but the probability is low.
 60\% of clients from \texttt{Prestage}, \texttt{Dev}, \texttt{Lon}, and \texttt{Fra} have a repulling probability lower than 0.1.
 55\% of clients from both \texttt{Dal} and \texttt{Stage} have a repulling probability lower than 0.1.
 Less clients have repulling probability range between 0.1 to 0.7.
-10\%-30\% of clients have a repulling probability ranged from 0.1-0.7 across 7 workloads.
+10\%-30\% of clients have a repulling probability ranged from 0.2-0.7 across 7 workloads.
 We find few clients repull layers continuously.
 2\%-12\% of clients have a repulling probability higher than 0.9 from workloads:
 \texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Prestage},
 \texttt{Stage}, \texttt{Syd}, and \texttt{Lon}.
 
-\paragraph{User profiles}
-
-\preconstructcachename~maintains a RLMap for recording repository-layer relationship.
-If a user~\emph{u} \emph{pushes} a  layer~\emph{l} to a repository~\emph{r},
-\preconstructcachename~will add an new entry (\emph{l}) in RLMap[\emph{r}]. 
-Based on user access patterns,
-\preconstructcachename~ also maintains URLMap for keeping track of user access patterns.
+\paragraph{Monitor user access patterns}
+To monitor user access patterns,
+\preconstructcachename~first uses a RLmap to record repository-layer relationship.
+If user~\emph{u} \emph{pushes} a  layer~\emph{l} to a repository~\emph{r},
+\preconstructcachename~will add an new entry (\emph{l}) in RLmap denoted as RLmap[\emph{r, l}]. 
+%Based on user access patterns,
+\preconstructcachename~ also maintains a URLmap for keeping track of user access patterns.
 To identify a user, 
 we extract \emph{user end host address} (\emph{r.client}) from each request (\emph{r}). 
-If a user~\emph{u} \texttt{pull}s a layer~\emph{l} from a repository~\emph{r},
-\preconstructcachename will update entry URLMap[\emph{u}].
-%Each node records the following history information: (\emph{Get\_cnt}, \emph{Put\_cnt}, \emph{last\_access\_time}). a child node layer~\emph{L} to parent node~\emph{R}
-Each URLMap entry maintains a user profile for each client as shown in Figure~\ref{xxx}.
-User profile contains a list of repo profiles for each accessed repository,
-and each repo profile contains a list of accessed layer profiles.
+Each URLmap entry maintains a user profile for each user \emph{u} denoted as URLmap[\emph{u}]. %as shown in Figure~\ref{xxx}.
+User profile contains a list of repository profiles for each accessed repository \emph{repo} denoted as URLmap[\emph{u, repo}],
+and each repo profile contains a list of layer profiles for each accessed layer \emph{l}  denoted as URLmap[\emph{u, repo, l}].
 Note that layer profiles can be shared among different repo profiles for the same user.
-User profile records the user repulling probability $u.rp$ for client $u$.
-If $u.rp$ is greater than threshold $\theta_{crp}$, this user has a high probability of repulling layers.
-Repo profile records repository repulling probability $u.r.rp$ for repository $r$.
-If $u.r.rp$ is greater than threshold $\theta_{rrp}$, this repository is a popular repulling repository for this user.
-Layer profile records layer repull count $u.l.R$ for layer $l$.
-If $u.l.R$ is greater than threshold $\theta_{R}$, this layer is a popular repull layer for this user.
+If user~\emph{u} \texttt{pull}s a layer~\emph{l} from a repository~\emph{repo},
+\preconstructcachename will update layer profile URLmap[\emph{u, repo, l}] with the corresponding layer repull count, and calculate
+repository repulling probability and user repulling probability for the corresponding repository profile and user profile.
+%Each node records the following history information: (\emph{Get\_cnt}, \emph{Put\_cnt}, \emph{last\_access\_time}). a child node layer~\emph{L} to parent node~\emph{R}
+%User profile records the user repulling probability $u.rp$ for client $u$.
+%If $u.rp$ is greater than threshold $\theta_{crp}$, this user has a high probability of repulling layers.
+%Repo profile records repository repulling probability $u.r.rp$ for repository $r$.
+%If $u.r.rp$ is greater than threshold $\theta_{rrp}$, this repository is a popular repulling repository for this user.
+%Layer profile records layer repull count $u.l.R$ for layer $l$.
+%If $u.l.R$ is greater than threshold $\theta_{R}$, this layer is a popular repull layer for this user.
 
 \paragraph{Preconstruction algorithm}
 \input{prefetch_algori}
-As shown in algorithm~\ref{alg:prefetch}, 
 
-%keep track of all layers that have been downloaded by \emph{r.client}. 
-%Note that for a layer node, \emph{Put\_cnt} $=$ 1 or $=$ 0.
-%When a GET or PUT layer request is received, \sysname~will update the URLMap of the associating user, repository, and layer. 
-When either a GET manifest request is received or 
-%a GET layer request is miss,
-%a requested layer is not cached or prefetched  (
-a miss on a GET layer request happens,
-\sysname will lookup RLMap and get the requested repository's containing layers,
-and compare against the layers that are already \emph{pulled} by the user by looking up URLMap,
-%select a certain number of \emph{popular} layers from the client's 
-%previously accessed layers by lookup 
-%URLMap
-then prefetch the layers that have not been \emph{pulled}. 
-We set a timer for each cached layer and evict it when its timer is $>U_{thresh}$.
-To incorporate the algorithm with \sysname,
-we prefetch \texttt{slices} in parallel from backend servers,  
-%dedup storage system,
-buffer them in the layer buffer first, then evict them into the file cache after they \emph{cool down}.
+Algorithm~\ref{alg:prefetch} shows when to preconstruct slices for a layer
+based on observed user access pattern.
+When a \texttt{GET manifest} request \emph{r} is received,
+\preconstructcachename~lookups the requested repository \emph{r.repo}'s layers from RLmap
+and get a list of corresponding layers.
+After that, it compares against the layers lookuped from URLmap[\emph{r}] (denoted as URLmap[\emph{r}].layers)
+and gets two groups of layers: \emph{newLayers} and \emph{oldLayers}.
+\emph{newLayers} means the layers that belongs to \emph{r.repo} but haven't been pulled by client \emph{r.client}.
+While \emph{oldLayers} means the layers that belongs to both of them.
+\preconstructcachename~will first restore the slices for \emph{newLayers} because 
+they are not locally available to \emph{r.client}.    
+For \emph{oldLayers}, 
+if an \emph{oldLayer} has a higher repull count and \emph{r.repo} as well as \emph{r.client} have a higher repulling probability,
+then \preconstructcachename~will restore its slices and cache them.
+If a \emph{PUT} layer request is received, RLmap and URLmap will be updated accordingly.
+
+If a \emph{GET} layer request is received, it means that \emph{r.layer} has not been deduplicated.
+\preconstructcachename~will cache \emph{r.layer} if cache miss happens on \emph{GET} layer request as shown in Algorithm~\ref{alg:prefetch}.
+If a \emph{GET} slice request is received, meaning that \emph{r.layer} has already been deduplicated into deduplicated slices,
+\preconstructcachename~will check if the requested \emph{r.slice} exists in the cache.
+If not,
+\dedupname system~will start restoring \emph{r.slice} and also put it in cache.
+In the end, \preconstructcachename~will update URLmap with corresponding repull count and repull probability.
 
 \subsubsection{User access pattern  based cache replacement}
-\input{eviction_algori}
-\paragraph{Temporal trend}
+\input{fig-skewness}
+\input{fig-reusetime}
 
-Figure~\ref{xxx} shows the CDF of layer popularity.
+\preconstructcachename~starts cache eviction when free space is low.
+To decide which layer or slices need to be evicted to make space for new requests,
+we analyze the temporal trend of user accesses as follows.
+
+\paragraph{Temporal trend}
+Figure~\ref{fig:layer-skenwess} shows the CDF of layer popularity.
 We observe a heavy layer access skewness for \texttt{Fra}, \texttt{Syd}, \texttt{Dal}, \texttt{Stage}, 
 and \texttt{Lon}.
 We see that 80\%, 70\%, and 60\% of the \texttt{pull} layer requests access only 10\% of layers, 
 for \texttt{Fra}, \texttt{Syd}, \texttt{Dal}, \texttt{Stage}, 
-and \texttt{Lon}.
-Figure~\ref{xxx} shows the CDF of repository popularity.
+and \texttt{Lon} respectively.
+Figure~\ref{fig:repo-skewness} shows the CDF of repository popularity.
 Compare to layer popularity, 
 repository access skewness is heavier acorss 7 workloads.
-~90\% of \texttt{pull} layer requests access only 10\% of repositories for 
-\texttt{Dev}, \texttt{Fra}, \texttt{Prestage}, \texttt{Syd}, and \texttt{Stage}.
-~75\% of \texttt{pull} layer requests access only 10\% of repositories for
+Almost 90\% of \texttt{pull} layer requests access only 10\% of repositories for 
+\texttt{Dev}, \texttt{Fra}, \texttt{Prestage}, \texttt{Syd}, and \texttt{Stage} respectively.
+Almost 75\% of \texttt{pull} layer requests access only 10\% of repositories for
 both \texttt{Dal} and \texttt{Lon}.
-Figure~\ref{xxx} shows the CDF of client popularity.
+Figure~\ref{fig:client-skewness} shows the CDF of client popularity.
 \texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Lon}, \texttt{Prestage}, and \texttt{Stage}
 shows a heavey client access skewness.
 10\% of clients send 95\% \texttt{pull} layer requests for \texttt{Lon}.
 \texttt{Syd} shows a slight client skewness. 70\% of requests are sent by 36\% of clients.
+Overall, caching a layer with higher pull count will improve the hit ratio, 
+especially for popular repositories and active clients with higher repulling probability. 
 
-Figure~\ref{xxx} shows the CDF of layer reuse time. 
-Layer reuse time means the duration between two consecutive \texttt{pull} requests to the same layer.
+Next, we analyze the layer and repository reuse time.
+layer reuse time means the duration between two consecutive requests to the same layer
+while repository reuse time means the duration between two consecutive \emph{pull} manifest requests to the same repository.
+Figure~\ref{fig:layer-reuse} shows the CDF of layer reuse time. 
+%Layer reuse time means the duration between two consecutive \texttt{pull} requests to the same layer.
 We see that layer reuse time distribution varies among different workloads.
 For \texttt{Fra}, \texttt{Syd}, and \texttt{Stage},
 half of the layers' reuse time is shorter than 6 minutes.
 While half of layers from \texttt{Dal} and \texttt{Lon} have a reuse time higher than 1 hour.
 Half of layers from both \texttt{Prestage} and \texttt{Dev} are not accessed for over 100 hours.
-
-Figure~\ref{xxx} shows the CDF of repository reuse time.
-Repository reuse time means the duration between two consecutive \texttt{pull manifest} requests to the same repository.
-We find that repository reuse time is much shorter than layer reuse time.
-80\% of repositories are re-accessed within 2-12 minutes for the 7 workloads.
-
-Figure~\ref{xxx} shows the CDF of client access intervals.
+Consequently, for \texttt{Dal}, \texttt{Lon}, \texttt{Prestage}, and \texttt{Dev}, 
+it may take longer than 1 hour for at lease half newly requested layer to get a hit. 
+These layers or the slices for them are unnecessarily for caching since 
+their reuse time is too long and may cause other useful layers or slices to be evicted, called \emph{cache pollution}.
+%Consider popular skewness, 
+Figure~\ref{fig:repo-reuse} shows the CDF of repository reuse time.
+%Repository reuse time means the duration between two consecutive \texttt{pull manifest} requests to the same repository.
+We see that repository reuse time is much shorter than layer reuse time.
+80\% of repositories are requested within 2-12 minutes across the 7 workloads.
+Figure~\ref{fig:user-interval} shows the CDF of client access intervals.
+client access interval means the duration between two consective requests issued by the same client.
 Client access intervals are much shorter than repository reuse time.
-80\% of client are active for at least 1 - 3 minutes for the 7 workloads. 
+80\% of client are active within 1 - 3 minutes for the 7 workloads. 
+Hence, to eliminate \emph{cache pollution},
+we consider the reuse time of layer and repository as well as client access intervals during
+cache eviction.
+
+\paragraph{Eviction algorithm}
+As shown in algorithm~\ref{alg:eviction}, to exploit the temporal trend of clients and repositories, 
+\preconstructcachename~set timers for its hosted layers, clients, and repositories.
+Timeout happens when a layer along with its associated clients and repositories are all timeout.
+\preconstructcachename~will remove this layer from cache.
+Beside,
+\preconstructcachename~maintains a LFRU list of cached layers~\cite{xxx} to exploit layer temporal trend.
+If free space is low,
+\preconstructcachename~selects the least frequent recently used layer which has a lower repulling probability to evict.
 
 
-
+\input{eviction_algori}
 
