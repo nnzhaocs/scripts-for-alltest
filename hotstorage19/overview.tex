@@ -28,7 +28,7 @@ it first cache \textit{L2} in \preconstructcachename~for later accesses,
 and at the same time, 
 \sysname~will also submit \textit{L2} to the backend storage system as shown in Figure~\ref{fig:sys-overview}.
 \preconstructcachename~ uses write through policies. 
-Since there is no modification to the layer, 
+Since layers are immutable, 
 there is no data consistency issue between the cache and the backend storage system.
 Next, client \textit{A} pushes a new manifest \textit{M1:0} to the registry and finish image pushing.
 As shown, \textit{L2} is added to the manifest \textit{M1:0} for image \texttt{hello-world:new}.
