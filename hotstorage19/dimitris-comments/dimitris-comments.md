@@ -1,3 +1,5 @@
+### Section 3.1
+
 - Where does the acronym "LRPA" come from, is it LRLA?
   - layer restoring latency aware deduplication (LRPA deduplication)
 - "As shown in Figure 5, client *A* creates a new hello- world image hello-world:new from the official im- age which only contains a single layer *L1*"
