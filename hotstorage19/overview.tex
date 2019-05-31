@@ -6,14 +6,16 @@
 \input{fig-sys-overview}
 
 Figure~\ref{fig:sys-overview} shows the architecture of \sysname.
- \sysname is comprised of a distributed registry cluster and a distributed metadata database.
- Layers are stored on registry cluster and 
-Metadata, such as Docker image manifests, are stored on distributed NoSQL databases for 
+ \sysname comprises a cluster of registry servers and a distributed metadata database. 
+%Layers are stored in the registry cluster. 
+Each server in the \sysname~registry cluster uses part of its storage for storing assembled (\ie preconstructed) layers. 
+We name such storage: user behavior based layer preconstruct cache (\preconstructcachename).
+Another part, a layer restoring latency aware deduplication system (\dedupname system), is for storing deduplicated files. 
+Such files' metadata (\eg Docker image manifests) is kept in a metadata store; a distributed NoSQL database for 
 reliability, consistency, and fast accesses.
-Each \sysname~registry consists of a user behavior based layer preconstruct cache (\preconstructcachename),
-and a layer restoring latency aware deduplication (\dedupname) system.
 
-In the following, we describe how Docker clients interact with \sysname.
+We now describe how Docker clients interact with \sysname.
+
 \paragraph{Push}
 As shown in Figure~\ref{fig:sys-overview}, client \textit{A} creates a new hello-world image
 \texttt{hello-world:new}
