@@ -17,23 +17,22 @@ reliability, consistency, and fast accesses.
 We now describe how Docker clients interact with \sysname.
 
 \paragraph{Push}
-As shown in Figure~\ref{fig:sys-overview}, client \textit{A} creates a new hello-world image
+As shown in Figure~\ref{fig:sys-overview}, 
+client \textit{A} creates a new hello-world image
 \texttt{hello-world:new}
-from the official image which only contains a single layer \textit{L1}
-by 
-committing
-the modifications over \textit{L1} as a new layer \textit{L2}.  
-When client \textit{A} pushes \texttt{hello-world:new} to the registry,
-it only pushes the new layer \textit{L2} to the registry since registry already stores \textit{L1}.
+from the official image which only contains a single layer \textit{L1}. 
+Pushing a new version of hello-world image corresponds to performing a PUT of layer \textit{L2} to the registry and a PUT of manifest to the metadata store. 
+%first PUT
+Modifications to the hello-world image are committed as a new layer, \textit{L2}, since the registry already stores \textit{L1}.
 When \sysname~receives \textit{L2}, 
-it first cache \textit{L2} in \preconstructcachename~for later accesses,
-and at the same time, 
-\sysname~will also submit \textit{L2} to the backend storage system as shown in Figure~\ref{fig:sys-overview}.
-\preconstructcachename~ uses write through policies. 
-Since layers are immutable, 
-there is no data consistency issue between the cache and the backend storage system.
-Next, client \textit{A} pushes a new manifest \textit{M1:0} to the registry and finish image pushing.
-As shown, \textit{L2} is added to the manifest \textit{M1:0} for image \texttt{hello-world:new}.
+it will cache \textit{L2} in the \preconstructcachename~for later accesses,
+and at the same time submit \textit{L2} to the backend storage system as shown in Figure~\ref{fig:sys-overview}.
+The \preconstructcachename~uses write through policies. 
+Since layers are immutable, no data consistency issue exists between the \preconstructcachename~and the backend storage system.
+% Second PUT (manifest)
+The addition of layer \textit{L2} to the image is reflected in the manifest \textit{M1:0} which is PUT to the registry.
+Putting the new manifest \textit{M1:0} to the registry for the new image \texttt{hello-world:new} conlcudes the process of pushing it.
+
 
 
 \dedupname~process runs periodically to deduplicate compressed layer tarballs (detailed in~\cref{sec:dedup-desgin})
