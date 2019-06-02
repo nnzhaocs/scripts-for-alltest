@@ -23,14 +23,14 @@ client \textit{A} creates a new hello-world image
 from the official image which only contains a single layer \textit{L1}. 
 Pushing a new version of hello-world image corresponds to performing a PUT of layer \textit{L2} to the registry and a PUT of manifest to the metadata store. 
 %first PUT
-Modifications to the hello-world image are committed as a new layer, \textit{L2}, since the registry already stores \textit{L1}.
+Because the registry already stores \textit{L1}, only the modifications to the hello-world image that are commited as a new layer \textit{L2} is PUT to the registry.
 When \sysname~receives \textit{L2}, 
 it will cache \textit{L2} in the \preconstructcachename~for later accesses,
 and at the same time submit \textit{L2} to the backend storage system as shown in Figure~\ref{fig:sys-overview}.
 The \preconstructcachename~uses write through policies. 
 Since layers are immutable, no data consistency issue exists between the \preconstructcachename~and the backend storage system.
 % Second PUT (manifest)
-The addition of layer \textit{L2} to the image is reflected in the manifest \textit{M1:0} which is PUT to the registry.
+The addition of layer \textit{L2} to the hello-world image is reflected in the manifest \textit{M1:0} which is PUT to the registry.
 Putting the new manifest \textit{M1:0} to the registry for the new image \texttt{hello-world:new} conlcudes the process of pushing it.
 
 
