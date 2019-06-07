@@ -74,3 +74,24 @@ Comments:
 
 090. The paragraph on copy-on-write of image manifests is strange. Why do
   we need to do COW for manifest images? Why not just replace them?
+
+June 7
+------
+
+105. I'm not sure it is a good idea to call UBLP cache "a cache". It is non-volatile.
+     It also seems that Sift image manifests sometimes reference layers as a whole,
+     and, therefore, they are not stored in dedup system at all. Or maybe I'm wrong?
+
+110. LRLA is hard to pronounce.
+
+115. I think in overview, 3.1, we need to present another component of Sift - the clients.
+     Sift includes modified clients and, therefore, ther are also part of Sift design.
+
+120. I think we can say in 3.1 Push  that on the push path the client without
+     any no modifications to its logic (unlike the pull path).
+
+130. It is not clear if UBLP is write through or not. In one place we say
+     "The UBLP cache uses write through policies." but in the other
+     "LRLA deduplication process runs periodically to deduplicate compressed
+      layer tarballs (detailed in § 3.2) into unique files to save storage space"
+     Which one is true?
