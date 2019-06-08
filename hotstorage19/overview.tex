@@ -74,24 +74,25 @@ For example, when client \textit{B} pulls the \texttt{hello-world:new} image fro
 After receiving \textit{M1:1}, client \textit{B} 
 %first 
 parses \textit{M1:1} to get a list of slice digests for \textit{L2}.
-Then, instead of sending a ``\texttt{pull layer L2}'' request, client \textit{B} will send multiple ``\texttt{pull slice of L2}'' requests to the registry.
-As shown in Figure~\ref{fig:sys-overview}, client \textit{B} sends ``\texttt{pull slice S1}'', ``\texttt{pull slice S2}'', and 
-``\texttt{pull slice S3}'' to the registry 
+Then, instead of sending a ``\texttt{GET layer L2}'' request, client \textit{B} will send multiple ``\texttt{GET slice of L2}'' requests to the registry.
+As shown in Figure~\ref{fig:sys-overview}, client \textit{B} sends ``\texttt{GET slice S1}'', ``\texttt{GET slice S2}'', and 
+``\texttt{GET slice S3}'' to the registry 
 since \textit{L2} is comprised of the slices \textit{S1}, \textit{S2}, and \textit{S3}.
 These requests are forwarded to the servers that store the corresponding deduplicated slice of \textit{L2}.
 %On \sysname~side, \textit{L2} is stored as deduplicated slices distributed across different servers.
-The servers will start to restore slices, i.e. compose slice layers, from local deduplicated slices and send the compressed slices to the client 
+The servers will start to restore slices, \ie compose slice layers, from local deduplicated slices and send the compressed slices to the client 
 in parallel %as shown in Figure~\ref{fig:sys-overview}. 
 When client \textit{B} receives all the slices, it decompresses them together into an uncompressed layer.
 
 \paragraph{Docker client modifications}
  
-To interact with \sysname, Docker client is modified to 
-parse \sysname~manifest with additional attributes -- slice digests.
-If slice digests present in a layer object in the manifest JSON file, 
-client will replace ``\texttt{pull layer} request with multiple ``\texttt{pull slice}'' requests.
-Besides, when client receives slices back from registry, 
-it decompresses these slices together into an uncompressed layer.  
+To interact with \sysname, the Docker client is modified to 
+parse \sysname~manifests that include additional attributes, %-- 
+\ie slice digests.
+Also, if slice digests are present in a layer object in the manifest JSON file, 
+the client will replace ``\texttt{GET layer}'' request with multiple ``\texttt{GET slice}'' requests.
+Moreover, when the client receives the slices from registry, 
+the client decompresses these slices together into an uncompressed layer.  
 %When a user requests a
 %layer that is not present in the layer buffer, the request is forwarded to the
 %file cache (detailed in~\cref{sec:design_operations}). 
