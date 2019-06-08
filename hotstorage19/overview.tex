@@ -10,8 +10,7 @@ Figure~\ref{fig:sys-overview} shows the architecture of \sysname.
 %Layers are stored in the registry cluster. 
 Each server in the \sysname~registry cluster uses part of its storage for storing assembled (\ie preconstructed) layers. 
 We name such storage: user behavior based layer preconstruct cache (\preconstructcachename).
-Another part, a layer restoring performance %latency
-aware deduplication system (\dedupname system), is for storing deduplicated files. 
+Another part, a layer restoring performance--aware deduplication system (\dedupname system), is for storing deduplicated files. 
 Such files' metadata (\eg Docker image manifests) is kept in a metadata store; a distributed NoSQL database for 
 reliability, consistency, and fast accesses.
 
