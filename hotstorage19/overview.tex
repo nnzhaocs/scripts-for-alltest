@@ -47,11 +47,13 @@ This way, each server stores a
 %\textbf{deduplicated slice}
 unique \textbf{slice}
  of the deduplicated \textit{L2}, from which a layer comprising a \textbf{slice} of \textit{L2}
-can be constructed.
+can be constructed and cached in the \preconstructcachename. We define such layer as a {\em slice layer}.
 We define all the per-server files belonging to a layer as a {\em deduplicated slice}. 
 Each server stores deduplicated slices belonging to many layers. 
 A layer is represented as a set of deduplicated slices that are distributed across multiple servers.
-The layer can be restored to a compressed layer tarball from those distributed slices. 
+The layer can be restored 
+%to a compressed layer tarball 
+from those distributed slices. 
 Such distribution allows restoring a layer in parallel.
 %To do that, 
 %\dedupname~process uses copy-on-write to update the old manifest \textit{M1:0} by adding slices' digests into it 
@@ -63,22 +65,24 @@ The slice digest is calculated by hashing the slice content~\cite{xxx}.
 \paragraph{Pull}
 
 As shown in Figure~\ref{fig:sys-overview},
-when client \textit{C} pulls an official image \texttt{hello-world} from registry,
-\sysname~first check if the requested layer \textit{L1} presents in~\preconstructcachename.
-If so, the \texttt{pull} layer request will be served by cache.
-Otherwise, \dedupname~process starts parallel slice restoring process.
-For example, when client \textit{B} pulls image \texttt{hello-world:new} from registry,
-\sysname~sends the latest manifest \textit{M1:1} to client.
-After receiving the \textit{M1:1}, client \textit{B} first parses \textit{M1:1} and get a list of slice digests for \textit{L2}.
-Instead of sending ``\texttt{pull layer L2}'' request, client will send multiple ``\texttt{pull slice of L2}'' requests to registry.
-As shown, client \textit{B} sends ``\texttt{pull slice S1}'', ``\texttt{pull slice S2}'', and 
+when client \textit{C} pulls an official image \texttt{hello-world} from the registry,
+\sysname~first checks if the requested layer \textit{L1} is present in~\preconstructcachename.
+If so, the \texttt{GET} layer request will be served by the cache.
+Otherwise, the \dedupname~system starts a parallel layer restoring process by serving slice layers from their hosting servers.
+For example, when client \textit{B} pulls the \texttt{hello-world:new} image from the registry,
+\sysname~sends the latest manifest (\textit{M1:1}) to client \textit{B}.
+After receiving \textit{M1:1}, client \textit{B} 
+%first 
+parses \textit{M1:1} to get a list of slice digests for \textit{L2}.
+Then, instead of sending a ``\texttt{pull layer L2}'' request, client \textit{B} will send multiple ``\texttt{pull slice of L2}'' requests to the registry.
+As shown in Figure~\ref{fig:sys-overview}, client \textit{B} sends ``\texttt{pull slice S1}'', ``\texttt{pull slice S2}'', and 
 ``\texttt{pull slice S3}'' to the registry 
-since \textit{L2} is comprised of \textit{S1} , \textit{S2}, and \textit{S3}.
-These requests are forwarded to the servers that stores corresponding deduplicated slice of \textit{L2}.
-%On \sysname~side, \textit{L2} is stored as deduplicated slices distributed among different servers.
-The servers will start to restore slices from local deduplicated slices and send individual slices back to client 
-in parallel as shown in Figure~\ref{fig:sys-overview}. 
-When client \textit{B} receives all the slices, it decompresses them together as an uncompressed layer.
+since \textit{L2} is comprised of the slices \textit{S1}, \textit{S2}, and \textit{S3}.
+These requests are forwarded to the servers that store the corresponding deduplicated slice of \textit{L2}.
+%On \sysname~side, \textit{L2} is stored as deduplicated slices distributed across different servers.
+The servers will start to restore slices, i.e. compose slice layers, from local deduplicated slices and send the compressed slices to the client 
+in parallel %as shown in Figure~\ref{fig:sys-overview}. 
+When client \textit{B} receives all the slices, it decompresses them together into an uncompressed layer.
 
 \paragraph{Docker client modifications}
  
