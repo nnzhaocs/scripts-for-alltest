@@ -1,5 +1,10 @@
 \section{Implementation}
 \label{sec:impl}
+
+\paragraph{Cache implementation}
+We implemented our preconstruction cache and \filecachename file cache on Redis cluster
+deployed by using Docker swarm, denoted as cache service.
+
 We decoupled our \sysname~implementation into cache implementation and backend dedup storage implementation. 
 We first modify the Docker registry source code -- local file system driver part by implementing decompression/compression, file-level deduplication, and 
 unique file distribution modules to the local file system driver so that the driver decompresses the layers and removing the duplicate files once the registry receives a layer tarfile, and fetching and compress the files into layer slices once the registry receives a get layer request. 

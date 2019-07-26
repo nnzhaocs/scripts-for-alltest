@@ -4,18 +4,18 @@
 	\caption{Eviction}
 	\label{alg:eviction}
 	\KwIn{\\
-		$\theta_{C}$: Capacity threshold for cache to trigger replacement. \\
+		$\theta_{C}$: Capacity threshold for layer cache to trigger replacement. \\
 		%$T_{flash}$: Capacity threshold for FLASH cache to trigger eviction. \\
-		$\theta_{nrpe}$: Threshold for non-repull layer to be evicted.  \\
+		%$\theta_{nrpe}$: Threshold for non-repull layer to be evicted.  \\
 		$LFRUlayer$: LFRU of layers. \\
-		$URLmap$: User to user profile map. \\
-		$Timer$: Timer for clients, repos, and layers in cache.
+		%$URLmap$: User to user profile map. \\
+		$Timer$: Timer for layers in layer cache.
 	}
 	
 	\ForEach{layer in LFRUlayer} 
 	{
 		{\tiny $/*$\textit{Timeout eviction   /}} \\
-		\If{Timeout == Timer[clients, repos, layer]}
+		\If{Timeout == Timer[layer]}
 			{
 				\texttt{Evict} layer \\
 			}
@@ -25,11 +25,10 @@
 	{
 		{\tiny $/*$\textit{Replacement   /}} \\
 		layer $\gets$ \emph{LFRUlayer.last\_item()}\\
-		\If{URLmap[clients, repos, layer].rp $< \theta_{rpe}$}
-		{
-			\texttt{Evict} layer \\
-			\emph{freeSpace} $+=$ \texttt{sizeof} layer \\
-		}	
+
+		\texttt{Evict} layer \\
+		\emph{freeSpace} $+=$ \texttt{sizeof} layer \\
+
   }
 \end{algorithm}		
 %		if layer.rrp < x:

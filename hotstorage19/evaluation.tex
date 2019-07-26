@@ -8,7 +8,11 @@
 
 \subsection{Testbed}
 
-Our testbed includes two clusters: backend registry storage cluster and frontend registry cache cluster. Backend storage cluster includes 12 servers. Each server is equipped with 32 cores, 64 GB RAM, 500 GB SSD and 1 TB HDD. Our frontend cache cluster container 24 servers. Each server is equipped with 8 cores,16 GB RAM and 500 GB SSD. We implemented \sysname~cache on frontend cache cluster and installed \sysname~dedup on backend storage cluster. We use extra 5 machines and each machine launches different number of clients to emulate client requests.
+Our testbed includes two clusters: backend registry storage cluster and frontend registry cache cluster. 
+Backend storage cluster includes 8 servers. 
+Each server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, 1 TB HDD, and 10GbE. 
+Our frontend cache cluster container 24 servers. Each server is equipped with 8 cores,16 GB RAM and 500 GB SSD. We implemented \sysname~cache on frontend cache cluster and installed \sysname~dedup on backend storage cluster. 
+We use extra 5 machines and each machine launches different number of clients to emulate client requests.
 %Hulks and new hulks are used as backend.
 %Thors are used as frontend.
 \subsection{Workloads and dataset}
