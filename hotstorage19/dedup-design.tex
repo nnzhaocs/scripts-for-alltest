@@ -1,17 +1,18 @@
-\subsection{Layer restoring performance -- aware deduplication}
+\subsection{Layer restoring performance--aware deduplication}
 \label{sec:dedup-desgin}
 
-In the following, we describe our \sysname~layer restoring performance --aware deduplication
- (i.e., \sysname~\dedupname) design. 
+We now describe \sysname's layer restoring performance--aware deduplication 
+ (i.e., \sysname's~\dedupname) system design. 
 
 \subsubsection{When to deduplicate layers?}
 
 \input{fig-spaceefficiency-metadata-restoring-breakdown}
 
-Consider that deduplication incurs performance overhead and current registry already stores layers in compressed format to 
-save space and network transfer overhead, 
- we first analyze the space efficiency of a registry 
- that performs decompress and file-level deduplication compared to 
+Consider that deduplication incurs a performance overhead 
+and the current Docker registry already stores layers in compressed format to 
+save space and network transfer overhead. 
+We first analyze the space efficiency of a registry 
+ that performs decompression and file-level deduplication and compare it to 
  a registry that naively stores compressed layers.
 
 In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $5$ random samples 

@@ -6,79 +6,92 @@
 \input{fig-sys-overview}
 
 Figure~\ref{fig:sys-overview} shows the architecture of \sysname.
- \sysname is comprised of a distributed registry cluster and a distributed metadata database.
- Layers are stored on registry cluster and 
-Metadata, such as Docker image manifests, are stored on distributed NoSQL databases for 
+ \sysname comprises a cluster of registry servers and a distributed metadata database. 
+%Layers are stored in the registry cluster. 
+Each server in the \sysname~registry cluster uses part of its storage for storing assembled (\ie preconstructed) layers. 
+We name such storage: user behavior based layer preconstruct cache (\preconstructcachename).
+Another part, a layer restoring performance--aware deduplication system (\dedupname system), is for storing deduplicated files. 
+Such files' metadata (\eg Docker image manifests) is kept in a metadata store; a distributed NoSQL database for 
 reliability, consistency, and fast accesses.
-Each \sysname~registry consists of a user behavior based layer preconstruct cache (\preconstructcachename),
-and a layer restoring latency aware deduplication (\dedupname) system.
 
-In the following, we describe how Docker clients interact with \sysname.
+We now describe how Docker clients interact with \sysname.
+
 \paragraph{Push}
-As shown in Figure~\ref{fig:sys-overview}, client \textit{A} creates a new hello-world image
+
+%As shown in Figure~\ref{fig:sys-overview}, 
+Consider a Docker client, client \textit{A}, who creates a new hello-world image
 \texttt{hello-world:new}
-from the official image which only contains a single layer \textit{L1}
-by 
-committing
-the modifications over \textit{L1} as a new layer \textit{L2}.  
-When client \textit{A} pushes \texttt{hello-world:new} to the registry,
-it only pushes the new layer \textit{L2} to the registry since registry already stores \textit{L1}.
+from the official image which only contains a single layer \textit{L1}. 
+Pushing a new version of hello-world image corresponds to performing a PUT of layer \textit{L2} to the registry and a PUT of manifest to the metadata store as shown in Figure~\ref{fig:sys-overview}. 
+%first PUT
+Because the registry already stores \textit{L1}, 
+%only the modifications to the hello-world image that are commited as a new layer \textit{L2}, 
+only the compressed \textit{L2} tarball is PUT to the registry reflecting the modifications to the hello-world image.
 When \sysname~receives \textit{L2}, 
-it first cache \textit{L2} in \preconstructcachename~for later accesses,
-and at the same time, 
-\sysname~will also submit \textit{L2} to the backend storage system as shown in Figure~\ref{fig:sys-overview}.
-\preconstructcachename~ uses write through policies. 
-Since layers are immutable, 
-there is no data consistency issue between the cache and the backend storage system.
-Next, client \textit{A} pushes a new manifest \textit{M1:0} to the registry and finish image pushing.
-As shown, \textit{L2} is added to the manifest \textit{M1:0} for image \texttt{hello-world:new}.
+it will cache \textit{L2} in the \preconstructcachename~for later accesses,
+and at the same time submit \textit{L2} to the backend storage system (Figure~\ref{fig:sys-overview}).
+The \preconstructcachename~uses write through policies. 
+Since layers are immutable, no data consistency issue exists between the \preconstructcachename~and the backend storage system.
+% Second PUT (manifest)
+The addition of layer \textit{L2} to the hello-world image is reflected in the manifest \textit{M1:0} which is PUT to the registry.
+Putting the new manifest \textit{M1:0} to the registry for the new image \texttt{hello-world:new} conlcudes the process of pushing it.
 
 
-\dedupname~process runs periodically to deduplicate compressed layer tarballs (detailed in~\cref{sec:dedup-desgin})
+
+The \dedupname~process runs periodically to deduplicate compressed layer tarballs (detailed in~\cref{sec:dedup-desgin})
 into unique files to save storage space.
 As shown in Figure~\ref{fig:sys-overview}, cold layer \textit{L2} is selected to be deduplicated.
-\dedupname~process decompresses \texttt{L2} and removes the duplicated files from \emph{uncompressed} \texttt{L2}.
-After that, \dedupname~process evenly distributes the unique files to the registry servers.
-In this case, each server stores a \textbf{deduplicated slice} of \texttt{L2}, from which a layer \textbf{slice} of \texttt{L2}
-can be constructed.
+The \dedupname~process decompresses \textit{L2}, removes duplicate files from the \emph{uncompressed} \textit{L2}, and  evenly distributes the remaining unique files across the registry servers.
+This way, each server stores a 
+%\textbf{deduplicated slice}
+unique \textbf{slice}
+ of the deduplicated \textit{L2}, from which a layer comprising a \textbf{slice} of \textit{L2}
+can be constructed and cached in the \preconstructcachename. We define such layer as a {\em slice layer}.
 We define all the per-server files belonging to a layer as a {\em deduplicated slice}. 
-A server stores deduplicated slices for many layers, 
-and a layer is composed of \emph{slices} 
-that can be restored from the deduplicated slices stored on multiple servers, 
-which allows restoring a layer in parallel. 
-To do that, 
-\dedupname~process uses copy-on-write to update the old manifest \textit{M1:0} by adding slices' digests into it 
-and generates new manifest \textit{M1:1} as shown in Figure~\ref{fig:sys-overview}.
-Slice digest is calculated by hashing slice content~\cite{xxx}.
+Each server stores deduplicated slices belonging to many layers. 
+A layer is represented as a set of deduplicated slices that are distributed across multiple servers.
+The layer can be restored 
+%to a compressed layer tarball 
+from those distributed slices. 
+Such distribution allows restoring a layer in parallel.
+%To do that, 
+%\dedupname~process uses copy-on-write to update the old manifest \textit{M1:0} by adding slices' digests into it 
+%and generates new manifest \textit{M1:1} as shown in Figure~\ref{fig:sys-overview}.
+To do that, the \dedupname~process generates a new manifest \textit{M1:1} that holds, in addition to the contents of the old manifest \textit{M1:0}, the digests to the unique slices %comprising
+that make up the layer as shown in Figure~\ref{fig:sys-overview}.
+The slice digest is calculated by hashing the slice content~\cite{xxx}.
 
 \paragraph{Pull}
 
 As shown in Figure~\ref{fig:sys-overview},
-when client \textit{C} pulls an official image \texttt{hello-world} from registry,
-\sysname~first check if the requested layer \textit{L1} presents in~\preconstructcachename.
-If so, the \texttt{pull} layer request will be served by cache.
-Otherwise, \dedupname~process starts parallel slice restoring process.
-For example, when client \textit{B} pulls image \texttt{hello-world:new} from registry,
-\sysname~sends the latest manifest \textit{M1:1} to client.
-After receiving the \textit{M1:1}, client \textit{B} first parses \textit{M1:1} and get a list of slice digests for \textit{L2}.
-Instead of sending ``\texttt{pull layer L2}'' request, client will send multiple ``\texttt{pull slice of L2}'' requests to registry.
-As shown, client \textit{B} sends ``\texttt{pull slice S1}'', ``\texttt{pull slice S2}'', and 
-``\texttt{pull slice S3}'' to the registry 
-since \textit{L2} is comprised of \textit{S1} , \textit{S2}, and \textit{S3}.
-These requests are forwarded to the servers that stores corresponding deduplicated slice of \textit{L2}.
-%On \sysname~side, \textit{L2} is stored as deduplicated slices distributed among different servers.
-The servers will start to restore slices from local deduplicated slices and send individual slices back to client 
-in parallel as shown in Figure~\ref{fig:sys-overview}. 
-When client \textit{B} receives all the slices, it decompresses them together as an uncompressed layer.
+when client \textit{C} pulls an official image \texttt{hello-world} from the registry,
+\sysname~first checks if the requested layer \textit{L1} is present in~\preconstructcachename.
+If so, the \texttt{GET} layer request will be served by the cache.
+Otherwise, the \dedupname~system starts a parallel layer restoring process by serving slice layers from their hosting servers.
+For example, when client \textit{B} pulls the \texttt{hello-world:new} image from the registry,
+\sysname~sends the latest manifest (\textit{M1:1}) to client \textit{B}.
+After receiving \textit{M1:1}, client \textit{B} 
+%first 
+parses \textit{M1:1} to get a list of slice digests for \textit{L2}.
+Then, instead of sending a ``\texttt{GET layer L2}'' request, client \textit{B} will send multiple ``\texttt{GET slice of L2}'' requests to the registry.
+As shown in Figure~\ref{fig:sys-overview}, client \textit{B} sends ``\texttt{GET slice S1}'', ``\texttt{GET slice S2}'', and 
+``\texttt{GET slice S3}'' to the registry 
+since \textit{L2} is comprised of the slices \textit{S1}, \textit{S2}, and \textit{S3}.
+These requests are forwarded to the servers that store the corresponding deduplicated slice of \textit{L2}.
+%On \sysname~side, \textit{L2} is stored as deduplicated slices distributed across different servers.
+The servers will start to restore slices, \ie compose slice layers, from local deduplicated slices and send the compressed slices to the client 
+in parallel %as shown in Figure~\ref{fig:sys-overview}. 
+When client \textit{B} receives all the slices, it decompresses them together into an uncompressed layer.
 
 \paragraph{Docker client modifications}
  
-To interact with \sysname, Docker client is modified to 
-parse \sysname~manifest with additional attributes -- slice digests.
-If slice digests present in a layer object in the manifest JSON file, 
-client will replace ``\texttt{pull layer} request with multiple ``\texttt{pull slice}'' requests.
-Besides, when client receives slices back from registry, 
-it decompresses these slices together into an uncompressed layer.  
+To interact with \sysname, the Docker client is modified to 
+parse \sysname~manifests that include additional attributes, %-- 
+\ie slice digests.
+Also, if slice digests are present in a layer object in the manifest JSON file, 
+the client will replace ``\texttt{GET layer}'' request with multiple ``\texttt{GET slice}'' requests.
+Moreover, when the client receives the slices from registry, 
+the client decompresses these slices together into an uncompressed layer.  
 %When a user requests a
 %layer that is not present in the layer buffer, the request is forwarded to the
 %file cache (detailed in~\cref{sec:design_operations}). 
