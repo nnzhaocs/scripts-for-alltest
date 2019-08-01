@@ -1,22 +1,81 @@
 \section{Implementation}
 \label{sec:impl}
 
-\paragraph{Cache implementation}
-We implemented our preconstruction cache and \filecachename file cache on Redis cluster
-deployed by using Docker swarm, denoted as cache service.
+\paragraph{Metadata database implementation}
+We use Redis~\cite{xxx} as metadata database to save slice and layer recipes, file index, layer index, ULmap, and RLmap.
+To guarantee the durability of metadata, 
+we configure Redis to use an \emph{append-only file (AOF)} to log all changes.
+Thus, when Redis server stops, we can restart Redis and re-play the AOF to rebuild the dataset to prevent data loss.
+Moreover, we configure Redis to save RDB (Redis Database File) snapshots every few minutes to further improve metadata reliability. 
+To improve metadata availability, 
+we configure Redis to use three replicas.
+In this case, Redis will not become a performance bottleneck.
 
-We decoupled our \sysname~implementation into cache implementation and backend dedup storage implementation. 
-We first modify the Docker registry source code -- local file system driver part by implementing decompression/compression, file-level deduplication, and 
-unique file distribution modules to the local file system driver so that the driver decompresses the layers and removing the duplicate files once the registry receives a layer tarfile, and fetching and compress the files into layer slices once the registry receives a get layer request. 
-We also implemented a simple round-robin based distributed key-value object store by modifying the local file system driver. 
-Once the file-level deduplication is done, the driver will re-distributed the newly added unique files to different destination servers based on round-robin. 
-Besides, we uses Zookeeper as the cluster coordinator, and MongoDB to store dedup metadata.
+\paragraph{Distributed lock for distributed deduplication}
+We use Redis as a distributed lock to make sure that no file duplicate is stored in registry cluster.
+For file index, layer index, slice and layer recipes, each key can be set to hold its value only if the key does not exist in Redis database (i.e, SETNX~\cite{xxx}).
+When key already holds a value, a file duplicate or layer duplicate is identified and will be removed from registry cluster.
+ Besides, 
+ each registry instance maintains a  synchronization map for layer restoring to make sure that only a unique layer is restoring at a time.
+ While different layers can be constructed in parallel. 
+ In this case, redundant layer restoring can be avoid to save I/O and network bandwidth, and computation resources.
+ Slice restoring is the same.
 
-Our \sysname~cache is also implemented by modifying Docker registry source code -- cache part. 
-The original Docker registry only caches local layer digests to identify if a requested layer is stored locally or not. 
-We first deploy our cache cluster by using Redis cluster. 
-We add our \sysname~cache into Docker registry source code as a new cache module which makes prefetch decisions when a GET/PUT request is received and talks to Redis cache. The metadata tables used by cache is also stored in MongoDB. For cache demotion/eviction and monitoring cache space utilization/backend dedup storage system performance, we elect a master registry node to do that by using Zookeeper as the cluster coordinator. 
+\paragraph{Layer deduplication implementation}
+During layer deduplication, only \emph{regular} file duplicates are removed.
+\sysname does not deduplicate \emph{irregular} files.
+After removing regular file duplicates, the remaining unique files are saved in a local file store.
+File store is implemented by modifying Docker registry's file system driver~\cite{xxx}, 
+which is local storage driver 
+that uses a directory tree in the local file system.
+The default root directory in the local file system for registry storage system is `/var/lib/registry' (denoted as $rootdir$).
+Each layer is stored in directory `$rootdir$/docker/registry/v2/blobs/sha256/$\langle$first two hex bytes of layer digest$\rangle$/$\langle$hex layer digest$\rangle$/' (denoted as $layerdir$) as a file named `data'.
+We store the unique files for the layer in the same directory with layer as `$layerdir$/uniquefiles/$\langle$hex file digest$\rangle$'.
 
-Therefore, by modifying Docker registry source code, we can configure Docker registry to provide two different kinds of functionalities. It can be either used as a distributed backend layer dedup storage system with the same Docker registry APIs or used as a distributed user-oriented cache with the same Docker registry APIs.
+\paragraph{Layer restoring implementation}
+To speedup layer restoring performance,
+we utilize a parallel gzip compression/decompression library (pgzip)~\cite{xxx} to do layer or slice compression and decompression.
+Different from single-threaded standard gzip compression library~\cite{xxx},
+pgzip splits compression stream into blocks so that data can be compressed in parallel to speedup compression.
+pgzip is compatible with standard gzip library.
 
-\paragraph{Gzip compression}
+\paragraph{File cache and layer diskcache implementation}
+
+File cache is implemented on bigcache~\cite{xxx}, which can provide fast and concurrent cache access.
+Layer diskcache is implemented by using diskv~\cite{xxx}, which is a disk-backed key-value store.
+However, both bigcache and diskv do not use any cache algorithm. 
+Note that bigcache always evicts the oldest entries from cache without consider the entries' popularity.
+We build two ARC lists for bigcache and diskv respectively by using a golang cache library~\cite{xxx}, 
+which provides expirable cache with different cache algorithm, such as LFU, LRU and ARC~\cite{xxx}.
+Note that we select ARC with expiration as our cache algorithm.
+We combine ARC cache algorithm with bigcache as our file cache
+and ARC cache algorithm with diskv as our layer diskcache.
+
+\paragraph{Client implementation}
+For simply implementation,
+our clients implement consistent hashing algorithm (CHT)~\cite{xxx} to distribute layers and manifests.
+Registry clusters are known to clients.
+Note we use layer and manifest digests as keys.
+To fetch manifests and layers, clients also use CHT to calculate the destination server.
+If the layer is stored in layer stage area, the destination server will serve the client request.
+While if the layer is deduplicated, client \texttt{pull} layer request will be forwarded to its restoring master
+and the master server will serve the client request.
+
+%We implemented our preconstruction cache and \filecachename file cache on Redis cluster
+%deployed by using Docker swarm, denoted as cache service.
+%
+%We decoupled our \sysname~implementation into cache implementation and backend dedup storage implementation. 
+%We first modify the Docker registry source code -- local file system driver part by implementing decompression/compression, file-level deduplication, and 
+%unique file distribution modules to the local file system driver so that the driver decompresses the layers and removing the duplicate files once the registry receives a layer tarfile, and fetching and compress the files into layer slices once the registry receives a get layer request. 
+%We also implemented a simple round-robin based distributed key-value object store by modifying the local file system driver. 
+%Once the file-level deduplication is done, the driver will re-distributed the newly added unique files to different destination servers based on round-robin. 
+%Besides, we uses Zookeeper as the cluster coordinator, and MongoDB to store dedup metadata.
+%
+%Our \sysname~cache is also implemented by modifying Docker registry source code -- cache part. 
+%The original Docker registry only caches local layer digests to identify if a requested layer is stored locally or not. 
+%We first deploy our cache cluster by using Redis cluster. 
+%We add our \sysname~cache into Docker registry source code as a new cache module which makes prefetch decisions when a GET/PUT request is received and talks to Redis cache. The metadata tables used by cache is also stored in MongoDB. For cache demotion/eviction and monitoring cache space utilization/backend dedup storage system performance, we elect a master registry node to do that by using Zookeeper as the cluster coordinator. 
+%
+%Therefore, by modifying Docker registry source code, we can configure Docker registry to provide two different kinds of functionalities. It can be either used as a distributed backend layer dedup storage system with the same Docker registry APIs or used as a distributed user-oriented cache with the same Docker registry APIs.
+
+%\paragraph{Gzip compression}

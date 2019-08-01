@@ -73,12 +73,12 @@ As shown in Figure~\ref{fig:dedup-partition},
 a layer is loaded to layer deduplication process.
 First, the layer is decompressed and unpacked into files.
 Next, 
-the process computes a \emph{fingerprint} for every file denoted as \textbf{file Id}, 
+the process computes a \emph{fingerprint} for every file denoted as \textbf{file id}, 
 and checks every file's fingerprint in the file index.
 If the file is already stored, it will be discard. 
 Otherwise, it will be kept in file store.
 Meanwhile,
-\sysname  records the newly added \emph{file Id} to file index.
+\sysname  records the newly added \emph{file id} to file index.
 \paragraph{Layer partition}
 %Note that, layer deduplication process only deduplicates regular files., 
 After removing file duplicates,
