@@ -8,41 +8,40 @@
 
 Figure~\ref{fig:sys-overview} shows the architecture of \sysname.
  \sysname comprises a cluster of registry servers and a distributed metadata database. 
-Registry servers store and serve both mainfest and layer requests sent by clients.
+Registry servers store and serve both manifest and layer requests sent by clients.
 As shown in Figure~\ref{fig:architecture}, 
-each registry server local storage system is
+each registry server's local storage system is
 divided into three parts: layer stage area, layer diskcache, and file store.
 
-\emph{Layer stage area} temporally stores recently \texttt{pushed} layers by clients shown in Figure~\ref{fig:cache}.
+The \emph{Layer stage area} temporarily stores recently \texttt{PUT} layers by clients as shown in Figure~\ref{fig:cache}.
 After a layer is \texttt{deduplicated}, 
 the remaining unique files are stored in a content 
 addressable \emph{file store} with a small \emph{file cache}. 
-Then, the layer is deleted from layer stage area.
+The layer is then deleted from layer stage area.
 To improve layer restoring performance, 
-layer is evenly divided into several \textbf{slices} and distributed to different registry servers so that
+a layer is evenly divided into several \textbf{slices} and distributed across different registry servers so that
 the layer can be restored in parallel.
   
-\emph{Layer diskcache} is a on-disk layer cache which caches popular layers for later layer accesses.
+\emph{Layer diskcache} is an on-disk layer cache which caches popular layers for later layer accesses.
 As shown in Figure~\ref{fig:cache}, 
-if a \texttt{pull} layer request hits in layer stage area,
+if a \texttt{GET} layer request hits in layer stage area,
 the layer will be moved to \emph{layer diskcache}.
 %
-Upon a \texttt{pull} layer request miss, \sysname will rebuild the layer from file store
+Upon a \texttt{GET} layer request miss, \sysname will rebuild the layer from the file store
 based on its associated \textbf{layer recipe}. 
-After that, the restored layer is stored in layer diskcache as shown in Figure~\ref{fig:cache}.
-\sysname also preconstruct layers and save them into layer diskcache to improve cache hit ratio. 
-Layer diskcache is a write-through cache.
-So when layers are evicted from diskcache, they are simply discard.
+After that, the restored layer is stored in the layer diskcache as shown in Figure~\ref{fig:cache}.
+\sysname also preconstructs layers and caches them in the layer diskcache to improve the cache hit ratio. 
+The layer diskcache is a write-through cache; when layers are evicted from the diskcache, they are simply discarded.
 
-Deduplication related metadata such as layer recipe, \textbf{slice recipe}, and \textbf{file index} is kept in a \emph{distributed database} for 
-reliability, consistency, and fast accesses as shown in Figure~\ref{fig:architecture}. 
-Slice recipe and layer recipe are used to restore slices and rebuild layer.
-File index records \emph{file fingerprints} uniquely mapped to the associated physical files. %psychical file based on
-Besides, \sysname keeps track of user accesses and repository status, 
+Deduplication related metadata such as layer recipe, \textbf{slice recipe}, and \textbf{file index} is kept in a \emph{distributed database} (Figure~\ref{fig:architecture}) for 
+reliability, consistency, and fast accesses. 
+Slice recipe and layer recipe are used to restore slices and rebuild layers.
+The file index records \emph{file fingerprints} that are uniquely mapped to the associated physical files. %psychical file based on
+Moreover, \sysname keeps track of user accesses and repository status, 
 denoted as \textbf{ULmap} and \textbf{RLmap}, 
-and save them into distributed metadata database.
+and saves them into the distributed metadata database.
 
-In the following, we now describe how \sysname performs layer deduplication and layer restoring.
+In the following, we describe how \sysname performs layer deduplication and layer restoring.
 
 %\sysname uses a fast and reliable distributed database to 
 %%, and unique files after layer deduplication

@@ -31,13 +31,13 @@
 %\subsubsection{Layer deduplication and partition}
 
 
-Similar with traditional registry, 
+As with the traditional Docker registry, 
 \sysname maintains a \emph{layer index} to address the corresponding layers stored in the system.
-After receiving a \texttt{push} layer request,
+After receiving a \texttt{PUT} layer request,
 \sysname first checks the \textbf{layer fingerprint} in the \emph{layer index} to ensure 
 an identical layer is not already stored.
-Layer fingerprint is calculated by hashing the layer content, which is also used as layer identifier denoted as \textbf{layer id}.
-After that, \sysname~stores the layer in stage area and acknowledges back to client. 
+The layer fingerprint is calculated by hashing the layer content, which is also used as layer identifier denoted as \textbf{layer id}.
+After that, \sysname~stores the layer in stage area and acknowledges back to the client. 
 Meanwhile, \sysname will update \emph{RLmap} with the layer and its associated repository, where
 RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
 as shown in Figure~\ref{fig:dedup-partition}.
@@ -51,16 +51,15 @@ as shown in Figure~\ref{fig:dedup-partition}.
 %The process always stars with the cold layers that haven't been
 %access for a long time.
  
- \sysname initiates a lightweight layer deduplication process which collaborates with metadata database
- to remove the redundant files from layers. 
+ \sysname initiates a lightweight layer deduplication process which collaborates with the metadata database
+ to discard redundant files from layers. 
 The deduplication process has three major steps: 
 layer decompression and unpacking, 
 file-level deduplication,
-and \textbf{layer partition}. 
-The first two steps are necessary for removing file duplicates from compressed layer tarballs.
-The last step -- layer partition is to evenly distribute the I/O and computation load of layer restoring among multiple registry servers   
-so that layer restoring process can achieve the maximum parallelism for each layer to
-accelerate layer restoring process. 
+and \textbf{layer partitioning}. 
+The first two steps are necessary for removing duplicate files from compressed layer tarballs.
+The last step -- layer partitioning is to evenly distribute the I/O and computation load of layer restoring across multiple registry servers.   
+This makes the process of layer restoring achieve the maximum parallelism for each layer to accelerate the restoring process. 
 %(detailed in~\cref{subsubsec:slice-restoring}) 
 %After layer deduplication, unique files are evenly distributed across multiple registry servers. 
 %We define all the per-server files belonging to a layer as a {\em slice}. 
@@ -70,20 +69,32 @@ accelerate layer restoring process.
 %\input{fig-sift-metadata}
 \paragraph{Layer file-level deduplication}
 As shown in Figure~\ref{fig:dedup-partition}, 
-a layer is loaded to layer deduplication process.
-First, the layer is decompressed and unpacked into files.
-Next, 
+%<<<<<<< HEAD
+%a layer is loaded to layer deduplication process.
+%First, the layer is decompressed and unpacked into files.
+%Next, 
+%the process computes a \emph{fingerprint} for every file denoted as \textbf{file id}, 
+%and checks every file's fingerprint in the file index.
+%If the file is already stored, it will be discard. 
+%Otherwise, it will be kept in file store.
+%Meanwhile,
+%\sysname  records the newly added \emph{file id} to file index.
+%\paragraph{Layer partition}
+%=======
+following the staging area, the layer is loaded to the layer deduplication process.
+In this process, the layer is first decompressed and unpacked into files.
+Then, 
 the process computes a \emph{fingerprint} for every file denoted as \textbf{file id}, 
-and checks every file's fingerprint in the file index.
-If the file is already stored, it will be discard. 
-Otherwise, it will be kept in file store.
-Meanwhile,
-\sysname  records the newly added \emph{file id} to file index.
-\paragraph{Layer partition}
+and checks every file's fingerprint for presence in the file index.
+If the file is already stored, it will be discarded. 
+Otherwise, it will be kept in file store while
+\sysname records its \emph{file id} to the file index.
+\paragraph{Layer partitioning}
+%>>>>>>> 46966c15fd912b0b6c25fa956013590f2ae8e289
 %Note that, layer deduplication process only deduplicates regular files., 
-After removing file duplicates,
-deduplication process distributes the layer's remaining files to different registry servers
-so that each server is able to rebuild an $\sim$equal-sized slices for the layer from its local file store.
+After discarding duplicate files%file duplicates
+, the deduplication process distributes the layer's remaining files across different registry servers
+so that each server is able to rebuild an $\sim$equal-sized slice for the layer from its local file store.
 Then, the process sends slices to the corresponding registries.
 Finally, \sysname will add slice recipes and layer recipe to metadata database as shown in Figure~\ref{fig:dedup-partition}.
 
