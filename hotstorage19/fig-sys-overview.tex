@@ -1,18 +1,29 @@
-\begin{figure*}[t]
+%\begin{figure}[t]
+%	\centering
+%			\centering
+%			\includegraphics[width=0.40\textwidth]{graphs/sys-architecture.pdf}
+%			\caption{Architecture of \sysname.}
+%		\label{fig:sys-overview}
+%\end{figure}
+
+%\begin{figure}[t]
+%	\centering
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{graphs/sift-diskcache.pdf}
+%	\caption{Sift cache.}
+%	\label{fig:construct}
+%\end{figure}
+
+\begin{figure}[!t]
 	\centering
-		%\begin{minipage}{0.225\textwidth}
-			\centering
-			\includegraphics[width=0.9\textwidth]{graphs/sys-architecture.pdf}
-%\vspace{-4pt}
-			\caption{Architecture of \sysname.}
-			%\label{fig:ref_count}
-		%\end{minipage}
-%	\begin{minipage}{0.225\textwidth}
-%		\centering
-%		\includegraphics[width=1\textwidth]{graphs/slimmer-cache.png}
-%		\caption{CDF of compress. and uncompress. layer size.}
-%		\vspace{-3pt}
-		\label{fig:sys-overview}
-%\vspace{-4pt}
-%	\end{minipage}
-\end{figure*}
+	\subfigure[Architecture of \sysname]{
+		\includegraphics[width=0.35\textwidth]{graphs/sys-architecture.pdf}
+		\label{fig:architecture}
+	}
+	\subfigure[\sysname storage system]{
+		\includegraphics[width=0.5\textwidth]{graphs/sift-diskcache.pdf}
+		\label{fig:cache}
+	}
+	\caption{Architecture of \sysname.}
+	\label{fig:sys-overview}
+\end{figure}

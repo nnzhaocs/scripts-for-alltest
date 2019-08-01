@@ -1,0 +1,54 @@
+\begin{algorithm}
+\scriptsize 
+	\caption{Layer deduplication and partition}
+	\label{alg:dedup-partition}
+	\KwIn{\\	
+			$FileIndex$: File index. \\
+	}
+
+	\KwOut{\\
+			$LayerRecipe$: Layer recipe for layer $L$.\\
+			$SliceRecipes$: Slice recipes for layer $L$' slices.\\
+	}
+
+	archive $\leftarrow$ \texttt{Decompress} layer $L$ \\
+
+	\ForEach{header, content in archive} 
+	{ 
+		Id $\leftarrow$ \texttt{Hash} content \\
+		%destHeader $\leftarrow$ header \\
+		\eIf{ Id in FileIndex}{
+			host  $\leftarrow$ $FileIndex$[Id].host \\
+			src $\leftarrow$ $FileIndex$[Id].header \\
+			{\tiny\texttt{/* SliceRecipe is identified by `layerid::host'}}
+			SliceRecipe[$L::host$] $\leftarrow$  \texttt{Add} (header, src) \\
+			{\tiny\texttt{/* Skip redundant file.  }}\\
+		}{
+			{\tiny\texttt{/* create file with content in file store.  }}\\
+			file $\leftarrow$ \texttt{Create and write} content \\
+			src $\leftarrow$ \texttt{Stat} file \\
+			entries $\leftarrow$ (header, src)  \\
+		}
+	}
+	
+	\Do{entries}{
+		{\tiny\texttt{/* get file entry with maximum file size. }}\\
+		maxFile $\leftarrow$ \texttt{Max} entries \\
+		{\tiny\texttt{/* get smallest slice. }}\\
+		minSlice $\leftarrow$ \texttt{Min} SliceRecipes \\
+		{\tiny\texttt{/* assign biggest file to smallest slice. }}\\
+		minSlice $\leftarrow$ \texttt{Add} maxFile \\
+		{\tiny\texttt{/* Set maxFile to FileIndex}}\\
+		{\tiny\texttt{/* Remove maxFile from headers. }}\\
+	}
+	{\tiny\texttt{/* Send slices.}}\\
+	{\tiny\texttt{/* Set SliceRecipes.}}\\
+	{\tiny\texttt{/* Include all slices' hosts to workers.}}\\
+	{\tiny\texttt{/* Select biggest slice' host as master.}}\\
+	{\tiny\texttt{/* Set LayerRecipe.}}\\
+	
+	
+		
+\end{algorithm}
+
+

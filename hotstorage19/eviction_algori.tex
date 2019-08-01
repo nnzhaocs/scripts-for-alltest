@@ -4,18 +4,18 @@
 	\caption{Eviction}
 	\label{alg:eviction}
 	\KwIn{\\
-		$\theta_{C}$: Capacity threshold for layer cache to trigger replacement. \\
+		$\theta_{C}$: Capacity threshold for diskcache to trigger replacement. \\
 		%$T_{flash}$: Capacity threshold for FLASH cache to trigger eviction. \\
 		%$\theta_{nrpe}$: Threshold for non-repull layer to be evicted.  \\
-		$LFRUlayer$: LFRU of layers. \\
+		$LFRU$: LFRU list of layers. \\
 		%$URLmap$: User to user profile map. \\
-		$Timer$: Timer for layers in layer cache.
+		$\theta_{t}$: Expiration time determines for how long the layer stays in diskcache.
 	}
 	
 	\ForEach{layer in LFRUlayer} 
 	{
-		{\tiny $/*$\textit{Timeout eviction   /}} \\
-		\If{Timeout == Timer[layer]}
+		{\tiny $/*$\textit{Remove expired layer */}} \\
+		\If{layer.elapsed $>$ $\theta_{t}$}
 			{
 				\texttt{Evict} layer \\
 			}
@@ -23,7 +23,7 @@
 
 	\While{freeSpace $<$ $\theta_{C}$}
 	{
-		{\tiny $/*$\textit{Replacement   /}} \\
+		{\tiny $/*$\textit{Replacement */}} \\
 		layer $\gets$ \emph{LFRUlayer.last\_item()}\\
 
 		\texttt{Evict} layer \\
