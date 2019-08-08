@@ -94,6 +94,36 @@ and send the request to the destination server.
 %While if the layer is deduplicated, client \texttt{pull} layer request will be forwarded to its restoring master
 %and the master server will serve the client request.
 
+\paragraph{Redundancy implementation}
+
+To maintain reliability and fault-tolerance, 
+traditional registry maintains a certain level of redundancy for each layer 
+by delegating replication to backend
+distributed storage systems, such as S3 and Swift~\cite{xxx}.
+To implement the same level of redundancy for layers,
+Sift storage system stores $R$ replicas for each layer on $R$ registry servers 
+by using
+chain replication~\cite{xxx}.
+In this case, each layer has a primary replica and $R-1$ backup replicas.
+During layer deduplication, 
+only primary replica is dedupcated.
+After that,
+the remaining unique files
+will be $R$-way replicated.
+Then the layer will be
+partitioned to $N*R$ servers
+denoted as $N*R$ slices instead of $N$ slices(see Section~\cite{xxx}).
+Here, each slice for the layer 
+has a primary replica and $R-1$ replicas.
+Consequently, each unique file stored in cluster
+has $R$ replicas.
+For layer restoring,
+each layer has a primary restoring master and $R-1$ backup restoring master. 
+After layer deduplication, 
+the primary layer and its two backups are discard.
+ 
+
+
 %We implemented our preconstruction cache and \filecachename file cache on Redis cluster
 %deployed by using Docker swarm, denoted as cache service.
 %
