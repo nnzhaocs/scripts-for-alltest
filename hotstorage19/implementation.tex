@@ -20,6 +20,11 @@ When key already holds a value, a file duplicate or layer duplicate is identifie
  While different layers can be constructed in parallel. 
  In this case, redundant layer restoring can be avoid to save I/O and network bandwidth, and computation resources.
  Slice restoring is the same.
+ 
+ \textbf{GET-DEDUP LOCK} for fast layer dedup.
+ layer stage area delay 1-2 seconds.
+ \textbf{GET-RESTORING LOCK} for fast layer restoring.
+ sync.map and delay 5 seconds, and buffer
 
 \paragraph{Layer deduplication implementation}
 During layer deduplication, only \emph{regular} file duplicates are removed.
@@ -52,14 +57,42 @@ We combine ARC cache algorithm with bigcache as our file cache
 and ARC cache algorithm with diskv as our layer diskcache.
 
 \paragraph{Client implementation}
-For simply implementation,
-our clients implement consistent hashing algorithm (CHT)~\cite{xxx} to distribute layers and manifests.
-Registry clusters are known to clients.
-Note we use layer and manifest digests as keys.
-To fetch manifests and layers, clients also use CHT to calculate the destination server.
-If the layer is stored in layer stage area, the destination server will serve the client request.
-While if the layer is deduplicated, client \texttt{pull} layer request will be forwarded to its restoring master
-and the master server will serve the client request.
+%For simply implementation,
+Client is comprised of a trace replayer and 
+a proxy emulator.
+The trace replayer is implemented by modifying IBM cloud registry trace replayer~\cite{xxx}.
+Instead of generating a random layer~\cite{xxx},
+our trace replayer first matches IBM cloud registry trace with 
+the real layers from our dataset downloaded from Docker Hub~\cite{xxx, xxx}.
+Specially, we extract layer digest from layer request recorded in IBM traces~\cite{xxx}.
+Then, 
+we randomly match each layer digest to a layer in our dataset. 
+Consequently, each layer request from IBM traces \texttt{pulls} or \texttt{pushs} a real layer.
+For manifest requests recorded in IBM traces, we generate a random file to emulate a manifest file.
+This is because sift do not deduplicate manifest file.
+The trace replayer uses Docker registry client emulator Python-dxf~\cite{xxx} to 
+\texttt{pull} or \texttt{push} layers or manifests to registry.
+%In this case, each layer request 
+%will \texttt{pull} or \texttt{push} a real layer.
+
+In addition, client uses a proxy emulator to decide the destination registry server for each request.
+The proxy emulator uses
+consistent hashing algorithm (CHT)~\cite{xxx} to distribute layers and manifests.
+ Proxy emulator maintains a CHT ring of registry servers
+ and calculates a destination registry server for each \texttt{push} layer or manifest request
+ by hashing its digest.% as a key.
+%Registry clusters are known to.
+%Proxy emulator uses layer and manifest digests as keys.
+For \texttt{pull} manifest requests, 
+proxy emulator also uses CHT to calculate the destination server.
+While for \texttt{pull} layer requests, 
+proxy emulator will first consult the metadata database to get the layer recipe.
+If the recipe  presents, 
+the emulator will send the request to the restoring master.
+Otherwise, the emulator will calculate the destination server by using CHT,
+and send the request to the destination server.
+%While if the layer is deduplicated, client \texttt{pull} layer request will be forwarded to its restoring master
+%and the master server will serve the client request.
 
 %We implemented our preconstruction cache and \filecachename file cache on Redis cluster
 %deployed by using Docker swarm, denoted as cache service.

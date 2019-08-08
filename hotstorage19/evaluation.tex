@@ -6,21 +6,38 @@
 %Next, we present the preliminary evaluation of our user access history-based cache algorithm
 %and the space efficiency of file cache.
 
+We first present our testbed and workloads.
+Then we present our evaluation results.
 \subsection{Testbed}
 
-Our testbed includes two clusters: backend registry storage cluster and frontend registry cache cluster. 
-Backend storage cluster includes 8 servers. 
-Each server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, 1 TB HDD, and 10GbE. 
-Our frontend cache cluster container 24 servers. Each server is equipped with 8 cores,16 GB RAM and 500 GB SSD. We implemented \sysname~cache on frontend cache cluster and installed \sysname~dedup on backend storage cluster. 
-We use extra 5 machines and each machine launches different number of clients to emulate client requests.
+Our testbed includes three clusters: 
+5-node client cluster (Amaranths),
+8-node registry cluster (Hulks), and
+24-node registry cluster(Thors).
+Each client Amaranth server is equipped with 8 cores, 64 GB RAM, 1 TB HDD, and 1000Mb/s NIC.
+%backend registry storage cluster and frontend registry cache cluster. 
+%Backend storage cluster includes 8 servers. 
+Each registry Hulk server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, 1 TB HDD, and 10,000Mb/s NIC. 
+Each registry Thor server is equipped with 8 cores,16 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
+%We implemented \sysname~cache on frontend cache cluster and installed \sysname~dedup on backend storage cluster. 
+%We use extra 5 machines and each machine launches different number of clients to emulate client requests.
 %Hulks and new hulks are used as backend.
 %Thors are used as frontend.
 \subsection{Workloads and dataset}
-We emulated a real-world workloads by combining IBM traces and an image dataset downloaded from Docker Hub. 
+\cite{xxx} presents an comprehensive analysis of our whole dataset downloaded from Docker Hub. 
+Docker image popularity distribution shows a heavy skewness~\cite{xxx}.
+To evaluate how our sift works for frequently accessed images,
+we select a subset of 74,000 popular images (i.e., image with a pull count greater than 100) from the whole dataset 
+as our evaluation dataset, 
+totally 12.5 TB with 507,023 layers.
+After decompressing,  the total size of our dataset is 27.7 TB.
+With file-level deduplication ratio applying to our decompressed dataset, 
+the total size of unique files is only 7.2 TB, with a dedup ratio of 0.42.
+
+\cite{xxx} presents IBM cloud registry workload traces spanning $\sim$80 days for 7 different registry clusters. 
+To evaluate how our sift performs for real-wold workloads,
+we emulated a real-world workload replayer by randomly matching IBM traces~\cite{xxx} and our dataset(see section~\cite{xxx}). 
 
 
-
-
-
+\input{eval-performance}
 \input{eval-dedup}
-\input{eval-cache}
