@@ -1,0 +1,31 @@
+\subsection{Deduplication modes}
+\label{sec:dedup-mode}
+
+To satisfy different space saving and performance requirements,
+\sysname provides two kinds of deduplication modes:
+Basic deduplication modes and selective deduplication modes, denoted as \emph{B-modes} and \emph{S-modes}.
+B-mode mantains a certain amount of layer replicas for each layer and deduplicates the rest layer replicas.
+While s-mode mantains a number of layer replicas for different layer proportionate to their popularity.
+
+\subsubsection{Basic deduplication modes}
+Assume that the storage system uses R-way replication.
+Consider that layer dataset deduplication analysis~\cite{xxx} shows a file-level deduplication ratio of 2$\times$.
+Thus, we assume the average layer deduplication ratio is 2$\times$.
+
+B-mode \emph{r} is defined as keeping \emph{r} layer replicas and deduplicating the rest of layer replicas. 
+The space saving is calculated by following equation~\ref{eq:b-savings}.
+\begin{equation}\label{eq:b-savings}
+S = \frac{R-(r+0.5(R-r))}{R} = \frac{R-r}{2R}
+\end{equation}
+
+%Layer pulling performance is depends on layer access parallelism.
+
+\subsubsection{Selective deduplication modes}
+S-mode
+
+$r = R \times \frac{\emph{W}_{pcnt}}{L} \times \delta$
+
+S-mode ($\delta$, $\emph{f}_{pcnt}$) is defined as keeping \emph{r} layer replicas for the top-$\delta$ hot layers.
+\begin{equation}\label{eq:s-savings}
+S = \frac{R-(r+0.5(R-r))}{R} = \frac{R-r}{2R}
+\end{equation}
