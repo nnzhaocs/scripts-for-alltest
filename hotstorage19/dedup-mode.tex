@@ -8,24 +8,49 @@ B-mode mantains a certain amount of layer replicas for each layer and deduplicat
 While s-mode mantains a number of layer replicas for different layer proportionate to their popularity.
 
 \subsubsection{Basic deduplication modes}
-Assume that the storage system uses R-way replication.
+Assume that registry storage system uses R-way replication.
 Consider that layer dataset deduplication analysis~\cite{xxx} shows a file-level deduplication ratio of 2$\times$.
-Thus, we assume the average layer deduplication ratio is 2$\times$.
+Thus, the average layer deduplication ratio for the layer dataset~\cite{xxx} is 2$\times$.
 
-B-mode \emph{r} is defined as keeping \emph{r} layer replicas and deduplicating the rest of layer replicas. 
+B-mode \emph{r} is defined as keeping \emph{r} layer replicas and deduplicating the rest of layer replicas, where $r \leq R$. 
 The space saving is calculated by following equation~\ref{eq:b-savings}.
 \begin{equation}\label{eq:b-savings}
-S = \frac{R-(r+0.5(R-r))}{R} = \frac{R-r}{2R}
+Space savings = \frac{R-(r+\frac{1}{2}(R-r))}{R} = \frac{R-r}{2R}
 \end{equation}
 
-%Layer pulling performance is depends on layer access parallelism.
+Layer pulling performance largely depends on registry server load.
+Assume that the total number of P-servers and D-servers are \emph{P} and \emph{D} especially.
+The total \texttt{pull} layer request load is \emph{L}.
+Consequently, the average server load is $\frac{L}{P}$ and $\frac{L}{P+D}$ for \sysname and original registry respectively.
+Note that original registry is \sysname's B-mode \emph{R}, which represents the best pulling layer performance with no space savings.
+The performance degradation can be calculated as:
+%$$
+ %$\emph{f}_\frac{L}{P} \times \theta_{r}$. 
+ 
+ \begin{equation}\label{eq:c-pull}
+Performance degradation =  \Delta(\frac{L}{P} - \frac{L}{(P+D)})\times \delta_{R-r}
+ \end{equation}
+ where $\Delta(\frac{L}{P} - \frac{L}{(P+D)})$ denotes the performance degradation caused by server load increases.
+ $\delta_{R-r}$ means the performance degradation caused by load variance among different servers impacted by replication level.
 
 \subsubsection{Selective deduplication modes}
-S-mode
+In S-mode, the number of kept layer replicas \emph{r} is proportional to their popularity ($r \leq R$).
+Layer popularity is calculated as $\frac{\emph{l}_{pcnt}}{L}$, 
+where $\emph{l}_{pcnt}$ is the total number of pulling request count to layer \emph{l}.  
+Consequently, the number of kept layer replicas $r_{l}$ for layer \emph{l} is
+%\emph{r} ($r \leq R$) is calculated as:
+$r_{l} = R \times \Phi (\frac{\emph{l}_{pcnt}}{L})$, 
+where $\Phi (\frac{\emph{l}_{pcnt}}{L})$ denotes a replication factor.
 
-$r = R \times \frac{\emph{W}_{pcnt}}{L} \times \delta$
-
-S-mode ($\delta$, $\emph{f}_{pcnt}$) is defined as keeping \emph{r} layer replicas for the top-$\delta$ hot layers.
+The space savings for S-mode is calculated as following equation~\ref{eq:s-savings}.
 \begin{equation}\label{eq:s-savings}
-S = \frac{R-(r+0.5(R-r))}{R} = \frac{R-r}{2R}
+Space savings = \frac{R-(\sum\limits_{l=1}^n(r_{l}+\frac{1}{2}(R-r_{l})))}{R} 
 \end{equation}
+
+The performance degradation is:
+  \begin{equation}\label{eq:s-pull}
+Performance degradation =  \Delta(\frac{L}{P} - \frac{L}{(P+D)})\times \prod\limits_{l=1}^n\delta_{R-r_{l}}
+ \end{equation}
+where $\prod\limits_{l=1}^n\delta_{R-r_{l}}$ means 
+the performance degradation caused by load variance among different servers impacted by different replication levels.
+ 
