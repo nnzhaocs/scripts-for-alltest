@@ -37,10 +37,14 @@ After receiving a \texttt{PUT} layer request,
 \sysname first checks the \textbf{layer fingerprint} in the \emph{layer index} to ensure 
 an identical layer is not already stored.
 The layer fingerprint is calculated by hashing the layer content, which is also used as layer identifier denoted as \textbf{layer id}.
-After that, \sysname~stores the layer in stage area and acknowledges back to the client. 
-Meanwhile, \sysname will update \emph{RLmap} with the layer and its associated repository, where
+After that, \sysname~replicates $r$ layer replicas on P-servers. 
+Meanwhile, \sysname~submits $R-r$ layer replicas to D-servers.
+ % and acknowledges back to the client. 
+ After D-servers receive the layer replicas,
+ \sysname will update \emph{RLmap} with the layer and its associated repository, where
 RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
 as shown in Figure~\ref{fig:dedup-partition}.
+
 %After the layer is deduplicated, it will be removed from stage area.
 %\dedupname system~initiates layer deduplication process only if 
 %layer deduplication will achieve significant space savings and 
@@ -56,10 +60,15 @@ as shown in Figure~\ref{fig:dedup-partition}.
 The deduplication process has three major steps: 
 layer decompression and unpacking, 
 file-level deduplication,
+file replication,
 and \textbf{layer partitioning}. 
 The first two steps are necessary for removing duplicate files from compressed layer tarballs.
-The last step -- layer partitioning is to evenly distribute the I/O and computation load of layer restoring across multiple registry servers.   
-This makes the process of layer restoring achieve the maximum parallelism for each layer to accelerate the restoring process. 
+The last two step -- file replication and layer partitioning is 
+to evenly distribute the I/O and computation load of layer restoring across multiple registry servers 
+while maintain the same redundant level with layer replication.  
+Note that only one layer replica is selected among $R-r$ layer replicas to do layer deduplication.
+After that, all the layer replicas will be discarded.  
+%This makes the process of layer restoring achieve the maximum parallelism for each layer to accelerate the restoring process. 
 %(detailed in~\cref{subsubsec:slice-restoring}) 
 %After layer deduplication, unique files are evenly distributed across multiple registry servers. 
 %We define all the per-server files belonging to a layer as a {\em slice}. 
@@ -69,7 +78,6 @@ This makes the process of layer restoring achieve the maximum parallelism for ea
 %\input{fig-sift-metadata}
 \paragraph{Layer file-level deduplication}
 As shown in Figure~\ref{fig:dedup-partition}, 
-%<<<<<<< HEAD
 %a layer is loaded to layer deduplication process.
 %First, the layer is decompressed and unpacked into files.
 %Next, 
@@ -80,7 +88,6 @@ As shown in Figure~\ref{fig:dedup-partition},
 %Meanwhile,
 %\sysname  records the newly added \emph{file id} to file index.
 %\paragraph{Layer partition}
-%=======
 following the staging area, the layer is loaded to the layer deduplication process.
 In this process, the layer is first decompressed and unpacked into files.
 Then, 
@@ -89,8 +96,9 @@ and checks every file's fingerprint for presence in the file index.
 If the file is already stored, it will be discarded. 
 Otherwise, it will be kept in file store while
 \sysname records its \emph{file id} to the file index.
-\paragraph{Layer partitioning}
-%>>>>>>> 46966c15fd912b0b6c25fa956013590f2ae8e289
+
+\paragraph{File replication and layer partitioning}
+
 %Note that, layer deduplication process only deduplicates regular files., 
 After discarding duplicate files%file duplicates
 , the deduplication process distributes the layer's remaining files across different registry servers
@@ -98,9 +106,28 @@ so that each server is able to rebuild an $\sim$equal-sized slice of the layer f
 Then, the process sends slices to the corresponding registries.
 Finally, \sysname will add slice recipes and layer recipe to metadata database as shown in Figure~\ref{fig:dedup-partition}.
 
+Figure~\ref{fig:replication-partition} shows an example of file replication and layer partition.
+Each file has two replicas distributed on different servers,
+\emph{r1, r2, r3,} and \emph{r4} are four primary file replicas that were already stored in the system.
+and \emph{r1', r2', r3',} and \emph{r4'} are their associated backup file replicas. 
+A layer \emph{L} that contains files \emph{r1, r2, r3, r4, r5, r6, r7,} and \emph{r8} is removed.
+Its containing files \emph{r1, r2, r3,} and \emph{r4} are deduplicated
+while unique files
+\emph{r5, r6, r7,} and \emph{r8} will be added to the system, 
+As shown, \emph{r5, r6, r7,} and \emph{r8} are replicated and distributed to registry \emph{A, B, C,} and \emph{D} 
+as primary file replicas and backup file replicas.
+Consequently,
+primary file replicas \emph{r1} and \emph{r5} stored on registry \emph{A} comprise one of layer \emph{L'}s partitions, 
+denoted as \textbf{primary slice}:
+\emph{layerid:A}.
+The rest two backup file replicas \emph{r4'} and \emph{r8'} stored on registry \emph{A} comprise a \textbf{backup slice} for primary slice stored 
+on registry \emph{D} (i.e., \emph{r4} and \emph{r8}).
+
+%primary file replicas
+\input{fig-replication}
 \input{algori-partition-dedup.tex}
 
-Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning.
+Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning algorithm.
 After layer decompression, 
 each file entry in the layer archive is represented as a \textbf{file header} and a \textbf{file content}.
 The file header contains the file name, path, size, mode, owner information, etc.
@@ -143,16 +170,18 @@ its corresponding physical file's status $src$.
 
  %its host' slice
 %to get identical files' server addresses.
-To distribute the newly added unique files,
+To distribute the newly added unique files' primary replicas,
 \sysname uses a greedy partition algorithm to 
-assign the biggest file to the smallest slices
+assign the biggest file to the smallest primary slices
 such that layer can be evenly partitioned among registry servers.
 %After layer partition,.
-All the slices' hosts are denoted as layer restoring \textbf{workers}. 
+All the primary slices' hosts are denoted as layer restoring \textbf{primary workers}. 
 Next, \sysname stores slice recipes in metadata database after successfully
 sending slices to their corresponding workers.
-\sysname selects the biggest slice' host as layer restoring \textbf{master}.
-Layer recipe records the workers and master information for layer restoring.
+\sysname selects the biggest slice' host as layer restoring \textbf{primary master}.
+Layer recipe records the primary workers and master information for layer restoring.
+After that, \sysname~distributes primary slices' corresponding backup slices.
+Their hosts are denoted as \textbf{backup workers}.
 Finally, \sysname stores layer recipe in metadata database.
 %Layer recipe 
 
@@ -185,8 +214,9 @@ Finally, \sysname stores layer recipe in metadata database.
 
 \input{fig-layer-restoring}
 
-When a~\texttt{pull} layer request is received, 
-\sysname will first search layer diskcache.
+When a~\texttt{pull} layer request is received and 
+P-servers fail, 
+\sysname will first search layer diskcache on D-servers.
 If not found,
 \sysname will rebuild the layer from file store according to its layer recipe. 
 %the \dedupname~system 
