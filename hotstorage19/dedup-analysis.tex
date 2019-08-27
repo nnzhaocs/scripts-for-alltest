@@ -35,7 +35,7 @@ duplicate files. This entails decompressing files before performing deduplicatio
 To quantify the performance overhead of such an approach involving decompressing, deduplication, and then re-compressing,
 we setup five registry instances. Each instance has a local file system as their backend storage system. We
 implemented file-level deduplication with decompression and compression operations.
-We replayed the IBM registry workload \texttt{dal}~\cite{dockerworkload} 
+We replayed the IBM registry workload \texttt{Dal}~\cite{dockerworkload} 
 %by sending requests randomly 
 randomly to our five registries and measured the latency. 
 %
@@ -44,7 +44,7 @@ across five registries.
 %\arb{average across what??}\NZ{addressed}.
 Note that since 
 %the IBM registry workload 
-\texttt{dal} does not contain real layers,
+\texttt{Dal} does not contain real layers,
 we extract the layer digest from each request and match it with a layer randomly selected from our Docker Hub dataset to emulate realistic requests.
 
 Without deduplication,
