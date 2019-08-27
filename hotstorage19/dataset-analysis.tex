@@ -8,6 +8,9 @@
 %\subsection{Redundant file distribution}
 
 %\input{dedup-analysis}
+
+\input{fig-eval-cachehitratio-spaceefficiency}
+
 Before describing Sift, we must understand the trends in the access patterns of the Docker registries at the layer and repository level. INSERT DESCRIPTION OF DATASET HERE.
 
 %Consider that deduplication incurs a performance overhead 
@@ -17,7 +20,7 @@ Before describing Sift, we must understand the trends in the access patterns of 
 % that performs decompression and file-level deduplication and compare it to 
 % a registry that naively stores compressed layers.
 %
-%In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $5$ random samples 
+In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $5$ random samples. 
 %drawn from the whole dataset (detailed in~\cref{sec:dataset-analysis}). %and the size of the dataset in terms of capacity and layer count.
 %For a traditional registry, the compressed layer tarballs will be kept as is.
 %While a registry with file-level deduplication will store \emph{deduplicated} layers (i.e., unique files). 
