@@ -16,14 +16,13 @@ Before describing Sift, we must understand the storage pressure and trends in th
 \subsection{Space efficiency}
 Consider that deduplication incurs a performance overhead and the current Docker registry already stores layers in compressed format to save space and network transfer overhead. We first analyze the space efficiency of a registry that performs decompression and file-level deduplication and compare it to a registry that naively stores compressed layers.
 
-In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $5$ random samples of registry data of varying sizes. For a traditional registry, the compressed layer tarballs will be kept as is.
+In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $5$ samples of registry data of varying sizes with traditional layer compression. For a traditional registry, the compressed layer tarballs will be kept as is.
 While a registry with file-level deduplication will store \emph{deduplicated} layers (i.e., unique files). 
-The y-axis shows how much space a registry with file-level deduplication can save compared to naively storing compressed layer tarballs.
+The y-axis shows how much space a registry with file-level deduplication can save over compressed layer tarballs.
 For the first two samples of the dataset, with size less than $20$~GB, 
-there is no benefit to \emph{deduplicate} layers 
-because the deduplication ratio is very low.
+there is no benefit to \emph{deduplicate} layers because the deduplication ratio is very low.
 However, when the dataset size is $200$~GB and over, we can save over $40\%$ more space increasing almost linearly with the size of the layer dataset.
-This verifies the benefit of deduplicating layers when the dataset is large.
+This verifies the benefit of deduplicating layers as the registry size increases.
 
 %\subsubsection{User access pattern based preconstruction}
 %
