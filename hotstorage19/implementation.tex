@@ -124,7 +124,15 @@ After layer deduplication,
 the primary layer and its two backups are discard.
  
 
-
+\paragraph{Dealing with big layers}
+Due to our testbed cluster scale constrain,
+we set a layer size limitation (i.e., 1GB) to reduce their restoring overhead.
+If a layer that exceeds the size limitation is received,
+\sysname will first divide the big layer into sub-layers and update its associated manifests.
+After that,
+the sub-layers are deduplicated and restored as normal layers.
+After a client receives sub-layers,   
+it will decompress all the sub-layers together into a whole big layer.
 %We implemented our preconstruction cache and \filecachename file cache on Redis cluster
 %deployed by using Docker swarm, denoted as cache service.
 %
