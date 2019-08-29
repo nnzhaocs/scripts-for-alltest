@@ -13,10 +13,21 @@
 %forwarded to all the registry servers that store the requested
 %layer's slices as shown in Figure~\ref{fig:sys-overview}. 
 
-\input{fig-layer-preconstruct}
+%\input{fig-layer-preconstruct}
 
 Based on the observations made in xxxx,
 \sysname preconstructs layers before layer accesses to save layer construction time.
+
+ After D-servers receive the backup replicas,
+\sysname will first update \emph{RLmap} with the layer and its associated repository, where
+RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
+as shown in Figure~\ref{fig:dedup-partition}.
+
+When a~\texttt{pull} layer request is received, 
+\sysname will first update \emph{ULmap} as shown in Figure~\ref{fig:restoring}. 
+ULmap records user access status,
+which maps a \textbf{user Id} to its accessed layers with its corresponding access count,
+where user id is defined as client request address.
 
 \paragraph{User behavior based layer preconstruction}
 \input{preconstruct_algori.tex}
