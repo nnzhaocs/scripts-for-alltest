@@ -9,20 +9,20 @@
 \sysname provides different \emph{deduplication modes} by deduplicating different number of layer replicas
 (see \ref{sec:dedup-mode}).
 Figure~\ref{fig:sift-original} shows a simple deduplication mode of \sysname registry cluster compared with original registry cluster.
-As shown, upon a \texttt{push} layer request, 
-registry \emph{A} in original registry cluster stores the layer locally, denoted as \emph{primary layer replica}.
+In the original registry cluster upon  a \texttt{push} request, 
+registry \emph{A} stores the layer locally, denoted as \emph{primary layer replica}.
 Meanwhile \emph{A} replicates the layer to other two servers: \emph{B} and \emph{C}, denoted as \emph{backup layer replicas}.
-The \texttt{pull} layer request can be served by any of the three layer replicas.
+The subsequent \texttt{pull} layer requests can be served by any of the three layer replicas.
 Similar to original registry cluster, 
 \sysname first stores three layer replicas for newly \texttt{pushed} layers on three different servers: \emph{A}, \emph{B}, and \emph{C}.
-Then, one layer replica is \emph{deduplicated} into unique files, denoted as \emph{primary file replicas}.
-After that, each unique file is replicated and stored on two different servers: \emph{B} and \emph{C} (denoted as backup file replica).
+Then, one layer replica (say, at server) is \emph{deduplicated} into unique files, denoted as \emph{primary file replicas}.
+After that, each unique file is replicated and stored on two different servers: \emph{B} and \emph{C} (denoted as primary and backup file replicas respectively).
 In the end, 
-two layer replicas are discard from server: \emph{B} and \emph{C}.
+two layer replicas are discarded from server: \emph{B} and \emph{C}.
 \texttt{pull} layer request is sent to registry \emph{A} which stores the primary layer replica.
-When registry \emph{A} crashes,
+If registry \emph{A} crashes,
 Registry \emph{B} or \emph{C} can restore a layer for incoming \texttt{pull} layer request.
-In this case, \sysname has the same level of redundancy. 
+In this case, \sysname has the same level of redundancy as the original registry cluster. 
 
 Figure~\ref{fig:sift} shows the architecture of \sysname.
  \sysname comprises a cluster of registry servers and a distributed metadata database. 
