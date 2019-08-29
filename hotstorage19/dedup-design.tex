@@ -3,13 +3,10 @@
 
 %We now describe \sysname's layer restoring performance--aware deduplication 
 % (i.e., \sysname's~\dedupname) system design. 
-
 %\subsubsection{When to deduplicate layers?}
 %
-
 %
 %\subsubsection{Layer deduplication and partition}
-
 
 As with the traditional Docker registry, 
 \sysname maintains a \emph{layer index}.
@@ -76,10 +73,10 @@ As shown in Figure~\ref{fig:dedup-partition},
 %\sysname  records the newly added \emph{file id} to file index.
 %\paragraph{Layer partition}
 following the staging area, the layer tarball is loaded to the layer deduplication process.
-In this process, the layer tarball is first decompressed into an archive file.
+In this process, the layer tarball is first decompressed into a \textbf{layer archive file}.
 %Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning. 
-After layer decompression, 
-each file entry in the layer archive is represented as a \textbf{file header} and the associated \textbf{file content}.
+%After layer decompression, 
+Each file entry in the layer archive is represented as a \textbf{file header} and the associated \textbf{file content}.
 The file header contains the file name, path, size, mode, owner information, etc.
 The file header is needed to rebuild the \emph{file header} for 
 the associated file entry in the layer archive.
@@ -132,12 +129,14 @@ Layer \emph{L} that contains files \emph{f1, f2, f3, f4, f5, f6, f7,} and \emph{
 is decompressed, unpacked, and \emph{file-level deduplicated}.
 Its containing duplicate files \emph{f1, f2, f3,} and \emph{f4} are discard
 while unique files
-\emph{f5, f6, f7,} and \emph{f8} are added to the system, 
+\emph{f5, f6, f7,} and \emph{f8} are added to the system.
+ \emph{f1, f2, f3,} and \emph{f4} are shared among \emph{L} and other layers, denoted as \textbf{shared files}.
 As shown, \emph{f5, f6, f7,} and \emph{f8} are replicated and distributed to D-servers \emph{A, B, C,} and \emph{D}.
 Consequently,
 primary backup file replicas \emph{f1} and \emph{f5} stored on \emph{A} comprise a partition of \emph{L},
 denoted as \textbf{primary slice}.
 The rest two secondary backup file replicas \emph{f4'} and \emph{f8'} stored on \emph{A} comprise a \textbf{backup slice} for \emph{L}.
+
 %=======
 %After discarding duplicate files
 %, the deduplication process distributes the layer's remaining files across different registry servers
@@ -167,7 +166,7 @@ The rest two secondary backup file replicas \emph{f4'} and \emph{f8'} stored on 
 
 %primary file replicas
 \input{fig-replication}
-\input{algori-partition-dedup.tex}
+%\input{algori-partition-dedup.tex}
 
 %<<<<<<< HEAD
 %Then, the process sends slices to the corresponding registries.
@@ -181,11 +180,11 @@ After unique file replication and layer partitioning,
 \sysname will add slice recipes 
 to metadata database as shown in Figure~\ref{fig:dedup-partition}.
 A slice recipe represents a layer slice and
-is used to construct a partial layer.
+is used to construct a \emph{partial layer archive}.
 % 
 %
 As mentioned earlier, 
-\sysname records every file header in an layer archive.
+\sysname records every file header in a layer archive.
 During layer partitioning,
 %calculates the file id by hashing the file content.
 %the file index maps a \emph{file id} to its associated physical file that is stored in the file store.
@@ -200,7 +199,9 @@ During layer partitioning,
 %
 %The file index is updated accordingly.
 \sysname
-assigns every file header and
+assigns every file header in layer archive to
+the associate slice recipe 
+along with a content pointer pointing to the corresponding physical file as shown in Figure~\ref{fig:dedup-partition}. 
 %=======
 %Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning algorithm.
 %After layer decompression, 
@@ -232,37 +233,56 @@ assigns every file header and
 %A slice recipe represents a layer partition and
 %is used to construct a partial layer,
 %>>>>>>> ab86d0a4767bfcfcbb58baf9bd7b2e81e54d7e51
-which
-records each file entry' $header$ in the layer archive partition and 
-its corresponding physical file's status $src$. 
-In this case, 
-each file is represented as a $header$ in the layer archive and
-its corresponding physical file's status $src$. 
+%which
+%records each file entry' $header$ in the layer archive partition and 
+%its corresponding physical file's status . 
+%In this case, 
+%each file is represented as a $header$ in the layer archive and
+%its corresponding physical file's status $src$. 
 
 
 
-Finally, layer recipe 
+Finally, 
+\sysname creates a
+layer recipe for \emph{L} and stores in database as shown in Figure~\ref{fig:dedup-partition}.
+Layer recipe records all the D-servers that stores \emph{L}'s slices, denoted as \textbf{restoring workers}.
+One worker is selected as \textbf{restoring master} responsible for gathering all slices and rebuilding \emph{L} (detailed in Section~\ref{sec:restore-desgin}).
 %During layer deduplication process,
 %After unpacking the layer archive, 
-
+%
 %Note that destHeader can be used to rebuild the \textbf{file header} for 
 %associated file entry in the layer archive.
-
+%
  %its host' slice
 %to get identical files' server addresses.
-To distribute the newly added unique files' primary replicas,
-\sysname uses a greedy partition algorithm to 
-assign the biggest file to the smallest primary slices
-such that layer can be evenly partitioned among registry servers.
+
+As shown in Figure~\ref{fig:replication-partition},
+layer \emph{L} is evenly partitioned among D-servers 
+since its shared files and unique files are evenly distributed to D-servers. 
+However,
+due to the diversity of real layer dataset,
+shared files are usually not evenly distributed for all layers. 
+To evenly distribute and partition layer's containing files,
+%
+%To distribute the newly added unique files' primary replicas,
+\sysname uses a \emph{greedy partition algorithm with shared file constrains} to 
+distribute the newly added unique files in a way such that
+each D-server stores relatively equal-sized slice for the layer:
+\sysname first assigns the shared files that are already stored on D-servers into 
+their corresponding slices. 
+Next,
+\sysname
+assigns the biggest unique file to the smallest slices
+til all the unique files are assigned.
 %After layer partition,.
-All the primary slices' hosts are denoted as layer restoring \textbf{primary workers}. 
-Next, \sysname stores slice recipes in metadata database after successfully
-sending slices to their corresponding workers.
-\sysname selects the biggest slice' host as layer restoring \textbf{primary master}.
-Layer recipe records the primary workers and master information for layer restoring.
-After that, \sysname~distributes primary slices' corresponding backup slices.
-Their hosts are denoted as \textbf{backup workers}.
-Finally, \sysname stores layer recipe in metadata database.
+%All the primary slices' hosts are denoted as layer restoring \textbf{primary workers}. 
+%Next, \sysname stores slice recipes in metadata database after successfully
+%sending slices to their corresponding workers.
+%\sysname selects the biggest slice' host as layer restoring \textbf{primary master}.
+%Layer recipe records the primary workers and master information for layer restoring.
+%After that, \sysname~distributes primary slices' corresponding backup slices.
+%Their hosts are denoted as \textbf{backup workers}.
+%Finally, \sysname stores layer recipe in metadata database.
 %Layer recipe 
 
 %Here, we use the metadata database as a distributed lock for file index.
@@ -287,6 +307,7 @@ Finally, \sysname stores layer recipe in metadata database.
 %based on layer recipe, it updates image manifests.
 %The layer's tarball and file duplicates are removed after deduplication.
 
+<<<<<<< HEAD
 \subsection{Layer restoring}
 \label{sec:restore-design}
 %\paragraph{Parallel slice restoring}
@@ -446,3 +467,5 @@ File cache uses Adaptive Replacement(ARC)~\cite{xxx}.
 
 
 
+=======
+>>>>>>> bbd2a10a262cf8b3e024fa09e3b0f5ca8afb21c3

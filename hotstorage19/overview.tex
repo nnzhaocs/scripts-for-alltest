@@ -51,7 +51,7 @@ If the \texttt{pull} layer request has a hit in the D-server's layer stage area 
 the request will be served from layer stage area.
 
 Upon a \texttt{pull} layer request miss, D-server will rebuild the layer from file store
-based on its associated \textbf{layer recipe}(see section~\ref{sec:restore-design}). 
+based on its associated \textbf{layer recipe} (see section~\ref{sec:restore-design}). 
 .
 The preconstruct cache is a write-through cache; when layers are evicted from the diskcache, they are simply discarded.
 
