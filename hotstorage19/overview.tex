@@ -14,15 +14,14 @@ registry \emph{A} stores the layer locally, denoted as \emph{primary layer repli
 Meanwhile \emph{A} replicates the layer to other two servers: \emph{B} and \emph{C}, denoted as \emph{backup layer replicas}.
 The subsequent \texttt{pull} layer requests can be served by any of the three layer replicas.
 Similar to original registry cluster, 
-\sysname first stores three layer replicas for newly \texttt{pushed} layers on three different servers: \emph{A}, \emph{B}, and \emph{C}.
-Then, one layer replica (say, at server) is \emph{deduplicated} into unique files, denoted as \emph{primary file replicas}.
-After that, each unique file is replicated and stored on two different servers: \emph{B} and \emph{C} (denoted as primary and backup file replicas respectively).
-In the end, 
-two layer replicas are discarded from server: \emph{B} and \emph{C}.
-\texttt{pull} layer request is sent to registry \emph{A} which stores the primary layer replica.
+\sysname first stores three layer replicas for newly \texttt{pushed} layers on three different servers: \emph{A}, \emph{B}, and \emph{C}. \emph{A} serves to store the primary layer replica, \emph{B} and \emph{C} store the backup layer replicas.
+Then, one of the backup layer replicas (say, at server B) is \emph{deduplicated} into unique files, denoted as \emph{primary file replica}.
+After that, each unique file is replicated and stored onto the remaining servers (in this case, \emph{C}), denoted as the \emph{backup file replicas}.
+In the end, the two backup layer replicas at \emph{B} and \emph{C} are discarded while the primary layer replica at \emph{A} remains.
+A \texttt{pull} layer request is first sent to registry \emph{A} which stores the primary layer replica.
 If registry \emph{A} crashes,
-Registry \emph{B} or \emph{C} can restore a layer for incoming \texttt{pull} layer request.
-In this case, \sysname has the same level of redundancy as the original registry cluster. 
+Registry \emph{B} or \emph{C} can be used to reconstruct and serve the layer for the incoming \texttt{pull} layer request.
+As a result, \sysname has the same level of redundancy as the original registry cluster. 
 
 Figure~\ref{fig:sift} shows the architecture of \sysname.
  \sysname comprises a cluster of registry servers and a distributed metadata database. 
@@ -30,41 +29,36 @@ Registry servers store and serve both manifest and layer requests sent by client
 Registry servers are divided into two groups:
 \emph{primary cluster} and \emph{deduplication cluster}, denoted as \emph{P-servers} and \emph{D-servers}.
 P-server mainly stores layer replicas and manifest replicas.
-While D-server deduplicates backup layer replicas and  stores file replicas.
+While D-server deduplicates the backup layer replicas at the file level and  stores replicates them.
 
 As shown in Figure~\ref{fig:sift}, 
 each D-server's local storage system is
-divided into three parts: layer stage area, layer diskcache, and file store.
-The \emph{Layer stage area} temporarily stores newly added backup layer replicas as shown in Figure~\ref{fig:sift-original}.
+divided into three parts: layer stage area, preconstruct cache, and file store. The \emph{Layer stage area} temporarily stores newly added layer replicas as shown in Figure~\ref{fig:sift-original}.
 After a layer replica is \texttt{deduplicated}, 
 the remaining unique files are stored as primary file replicas in a content 
 addressable \emph{file store} with a small \emph{file cache}. 
-Meanwhile, each unique file is replicated to the peer servers to maintain the same level of redundancy.
+Meanwhile, each unique file is replicated to the peer servers to provide redundancy.
 The layer replica is then deleted from layer stage area.
 To improve layer restoring performance, 
 a layer replica is evenly divided into several \textbf{slices} and distributed across different registry servers so that
 the layer can be restored in parallel (see section~\ref{sec:dedup-desgin}).
   
-\emph{Layer diskcache} on a D-server is an on-disk layer cache which caches popular layers for later layer accesses
-to save restoring latency.
+\emph{Preconstruct cache} on a D-server is an on-disk layer cache which contains preconstructed popular layers for later layer accesses to reduce latency in restoring (see section~\ref{sec:cache-design}).
 %As shown in Figure~\ref{fig:cache}, 
 When a P-server crashes,
 the \texttt{pull} layer request will be served from a D-server.
-If the \texttt{pull} layer request hits in D-server's layer stage area,
+If the \texttt{pull} layer request has a hit in the D-server's layer stage area (i.e. a layer replica has not been deleted yet),
 the request will be served from layer stage area.
-%the layer will be moved to \emph{layer diskcache}.
-%
-Upon a \texttt{pull} layer request miss, D-server will rebuild the layer from file store
-based on its associated \textbf{layer recipe}(see section~\ref{sec:restore-desgin}). 
-%After that, the restored layer is stored in the layer diskcache as shown in Figure~\ref{fig:cache}.
-\sysname also preconstructs layers and caches them in the layer diskcache to improve the cache hit ratio (see section~\ref{sec:cache-design}). 
-The layer diskcache is a write-through cache; when layers are evicted from the diskcache, they are simply discarded.
 
-Deduplication related metadata such as layer recipe, \textbf{slice recipe}, \textbf{layer index}, and \textbf{file index} is kept in a \emph{distributed database} (Figure~\ref{fig:sift}) for 
+Upon a \texttt{pull} layer request miss, D-server will rebuild the layer from file store
+based on its associated \textbf{layer recipe}(see section~\ref{sec:restore-design}). 
+.
+The preconstruct cache is a write-through cache; when layers are evicted from the diskcache, they are simply discarded.
+
+Deduplication related metadata such as \textbf{layer recipe}, \textbf{slice recipe}, \textbf{layer index}, and \textbf{file index} is kept in a \emph{distributed database} (Figure~\ref{fig:sift}) for 
 reliability, consistency, and fast accesses. 
 Slice recipe and layer recipe are used to restore slices and rebuild layers.
-Layer index  
-and file index records \emph{content fingerprints} that are uniquely mapped to the associated physical layers and files respectively. %psychical file based on
+Layer index and file index records \emph{content fingerprints} that are uniquely mapped to the associated physical layers and files respectively. %psychical file based on
 Moreover, \sysname keeps track of user accesses and repository status, 
 denoted as \textbf{ULmap} and \textbf{RLmap}, 
 and saves them into the distributed metadata database.
