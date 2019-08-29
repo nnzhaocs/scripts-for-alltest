@@ -12,16 +12,16 @@
 
 
 As with the traditional Docker registry, 
-\sysname maintains a \emph{layer index} to address the corresponding layers stored in the system.
+\sysname maintains a \emph{layer index}.
 After receiving a \texttt{PUT} layer request,
 \sysname first checks the \textbf{layer fingerprint} in the \emph{layer index} to ensure 
 an identical layer is not already stored.
 The layer fingerprint is calculated by hashing the layer content, which is also used as layer identifier denoted as \textbf{layer id}.
-After that, \sysname~replicates $r$ layer replicas on P-servers. 
-Meanwhile, \sysname~submits $R-r$ layer replicas to D-servers.
+After that, \sysname~replicates $r$ primary layer replicas on P-servers. 
+Meanwhile, \sysname~submits $R-r$ backup layer replicas to D-servers and temporally stored on layer stage areas.
  % and acknowledges back to the client. 
- After D-servers receive the layer replicas,
- \sysname will update \emph{RLmap} with the layer and its associated repository, where
+ After D-servers receive the backup replicas,
+ \sysname will first update \emph{RLmap} with the layer and its associated repository, where
 RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
 as shown in Figure~\ref{fig:dedup-partition}.
 
@@ -36,18 +36,17 @@ as shown in Figure~\ref{fig:dedup-partition}.
 %access for a long time.
  
  \sysname initiates a lightweight layer deduplication process which collaborates with the metadata database
- to discard redundant files from layers. 
+ to remove redundant files from layers. 
 The deduplication process has three major steps: 
 layer decompression and unpacking, 
 file-level deduplication,
-file replication,
-and \textbf{layer partitioning}. 
+\textbf{unique file replication} and \textbf{layer partitioning}. 
 The first two steps are necessary for removing duplicate files from compressed layer tarballs.
-The last two step -- file replication and layer partitioning is 
-to evenly distribute the I/O and computation load of layer restoring across multiple registry servers 
-while maintain the same redundant level with layer replication.  
-Note that only one layer replica is selected among $R-r$ layer replicas to do layer deduplication.
-After that, all the layer replicas will be discarded.  
+The last step -- unique file replication and layer partitioning is 
+to evenly distribute the I/O and computation load of layer restoring across D-servers 
+while maintain a certain level of fault-tolerance.  
+Note that only one layer replica is selected from $R-r$ backup replicas to do layer deduplication.
+After the layer replica is \emph{deduplicated}, all the backup layer replicas stored on D-servers will be discarded.  
 %This makes the process of layer restoring achieve the maximum parallelism for each layer to accelerate the restoring process. 
 %(detailed in~\cref{subsubsec:slice-restoring}) 
 %After layer deduplication, unique files are evenly distributed across multiple registry servers. 
@@ -68,73 +67,94 @@ As shown in Figure~\ref{fig:dedup-partition},
 %Meanwhile,
 %\sysname  records the newly added \emph{file id} to file index.
 %\paragraph{Layer partition}
-following the staging area, the layer is loaded to the layer deduplication process.
-In this process, the layer is first decompressed and unpacked into files.
-Then, 
-the process computes a \emph{fingerprint} for every file denoted as \textbf{file id}, 
-and checks every file's fingerprint for presence in the file index.
-If the file is already stored, it will be discarded. 
-Otherwise, it will be kept in file store while
-\sysname records its \emph{file id} to the file index.
+following the staging area, the layer tarball is loaded to the layer deduplication process.
+In this process, the layer tarball is first decompressed into an archive file.
+%Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning. 
+After layer decompression, 
+each file entry in the layer archive is represented as a \textbf{file header} and the associated \textbf{file content}.
+The file header contains the file name, path, size, mode, owner information, etc.
+The file header is needed to rebuild the \emph{file header} for 
+the associated file entry in the layer archive.
+Thus, 
+the process records each file header for every \emph{deduplicated} layers. 
+After that,
+the process computes a \emph{fingerprint} by hashing the file content denoted as \textbf{file Id}, 
+and checks the file Id for presence in the file index.
+If the file Id is already stored, the file content will be discarded. 
+Otherwise, it will be saved physically in file store.
+Meanwhile
+\sysname records the file Id to the file index.
+As shown, %each entry in file index contains file id, \textbf{backup level}, , and \textbf{file status}.
+%
+to address a physical file, 
+each file Id holds 
+\textbf{file status} of the physical file which mainly contains file name, path, and size.
+%\sysname stores the file content as a physical file in the file store
+%and retrieves the file status of the physical file.
+Besides, 
+each file Id in the file index also holds its \emph{host address} with the associated \textbf{backup level}.
+Backup level denotes whether the host stores a primary backup file replica (i.e., \texttt{P}) or the $n^{th}$ backup replica (ie., \texttt{B}\emph{n}) detailed as following.
+%detailed as following.
 
-\paragraph{File replication and layer partitioning}
+
+\paragraph{Unique file replication and layer partitioning}
 
 %Note that, layer deduplication process only deduplicates regular files., 
 After discarding duplicate files%file duplicates
-, the deduplication process distributes the layer's remaining files across different registry servers
-so that each server is able to rebuild an $\sim$equal-sized slice of the layer from its local file store.
-Then, the process sends slices to the corresponding registries.
-Finally, \sysname will add slice recipes and layer recipe to metadata database as shown in Figure~\ref{fig:dedup-partition}.
+, the deduplication process first replicates and distributes newly added unique file replicas across D-servers.
+%in a way such that
+%each server is able to rebuild an $\sim$equal-sized slice of the layer from its local file store.
 
-Figure~\ref{fig:replication-partition} shows an example of file replication and layer partition.
-Each file has two replicas distributed on different servers,
-\emph{r1, r2, r3,} and \emph{r4} are four primary file replicas that were already stored in the system.
-and \emph{r1', r2', r3',} and \emph{r4'} are their associated backup file replicas. 
-A layer \emph{L} that contains files \emph{r1, r2, r3, r4, r5, r6, r7,} and \emph{r8} is removed.
-Its containing files \emph{r1, r2, r3,} and \emph{r4} are deduplicated
+Figure~\ref{fig:replication-partition} shows an example of unique file replication and layer partition.
+Each file has two replicas distributed on two different servers.
+\emph{f1, f2, f3,} and \emph{f4} are four \emph{primary backup file replicas} that are already stored in the system,
+and \emph{f1', f2', f3',} and \emph{f4'} are their associated \emph{secondary backup file replicas}. 
+Layer \emph{L} that contains files \emph{f1, f2, f3, f4, f5, f6, f7,} and \emph{f8} 
+is decompressed, unpacked, and \emph{file-level deduplicated}.
+Its containing duplicate files \emph{f1, f2, f3,} and \emph{f4} are discard
 while unique files
-\emph{r5, r6, r7,} and \emph{r8} will be added to the system, 
-As shown, \emph{r5, r6, r7,} and \emph{r8} are replicated and distributed to registry \emph{A, B, C,} and \emph{D} 
-as primary file replicas and backup file replicas.
+\emph{f5, f6, f7,} and \emph{f8} are added to the system, 
+As shown, \emph{f5, f6, f7,} and \emph{f8} are replicated and distributed to D-servers \emph{A, B, C,} and \emph{D}.
 Consequently,
-primary file replicas \emph{r1} and \emph{r5} stored on registry \emph{A} comprise one of layer \emph{L'}s partitions, 
-denoted as \textbf{primary slice}:
-\emph{layerid:A}.
-The rest two backup file replicas \emph{r4'} and \emph{r8'} stored on registry \emph{A} comprise a \textbf{backup slice} for primary slice stored 
-on registry \emph{D} (i.e., \emph{r4} and \emph{r8}).
+primary backup file replicas \emph{f1} and \emph{f5} stored on \emph{A} comprise a partition of \emph{L},
+denoted as \textbf{primary slice}.
+The rest two secondary backup file replicas \emph{f4'} and \emph{f8'} stored on \emph{A} comprise a \textbf{backup slice} for \emph{L}.
 
 %primary file replicas
 \input{fig-replication}
 \input{algori-partition-dedup.tex}
 
-Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning algorithm.
-After layer decompression, 
-each file entry in the layer archive is represented as a \textbf{file header} and a \textbf{file content}.
-The file header contains the file name, path, size, mode, owner information, etc.
-%Note that 
-The file header is needed to rebuild the \emph{file header} for 
-the associated file entry in the layer archive.
-
-%During layer deduplication process,
-\sysname records each file entry's file header and 
-calculates the file id by hashing the file content.
-As mentioned earlier, the file index maps a \emph{file id} to its associated physical file that is stored in the file store.
-To address a physical file,
-each file id in the file index holds its 
+%Then, the process sends slices to the corresponding registries.
+Slice is identified by a simple combination of the layer id and its host address 
+with the associated backup level,
+denoted as $layerid::host::backuplevel$. % as shown in Algorithm~\ref{alg:dedup-partition}.
+As shown in Figure~\ref{fig:replication-partition},
+the primary slice stored on \emph{A} is denoted as \emph{L::}\emph{A::}\texttt{P}
+while the rest backup slice is denoted as \emph{L::}\emph{A::}\texttt{B2}.
+After unique file replication and layer partitioning, 
+\sysname will add slice recipes 
+to metadata database as shown in Figure~\ref{fig:dedup-partition}.
+A slice recipe represents a layer slice and
+is used to construct a partial layer.
+% 
+%
+As mentioned earlier, 
+\sysname records every file header in an layer archive.
+During layer partitioning,
+%calculates the file id by hashing the file content.
+%the file index maps a \emph{file id} to its associated physical file that is stored in the file store.
+%To address a physical file,
+%each file id in the file index holds its 
 %denoted by a combination of its 
-\emph{host address} and \textbf{file status} of the physical file which mainly contains file name, path, and size.
-As shown in Algorithm~\ref{alg:dedup-partition}, 
-if a file's file id already exists in file index, 
-this file will be added to its host's corresponding partition (i.e, slice). 
-Otherwise,
-\sysname stores the file content as a physical file in the file store
-and retrieves the file status of the physical file.
-The file index is updated accordingly.
-
-The slice recipe is identified by a simple combination of the layer id and its host registry address,
-denoted as $layerid::host$ as shown in Algorithm~\ref{alg:dedup-partition}.
-A slice recipe represents a layer partition and
-is used to construct a partial layer,
+%\emph{host address} and \textbf{file status} of the physical file which mainly contains file name, path, and size.
+%As shown in Algorithm~\ref{alg:dedup-partition}, 
+%If a file's file id already exists in file index, 
+%this file will be added to its host's corresponding partition (i.e, slice). 
+%Otherwise,
+%
+%The file index is updated accordingly.
+\sysname
+assigns every file header and
 which
 records each file entry' $header$ in the layer archive partition and 
 its corresponding physical file's status $src$. 
@@ -143,6 +163,9 @@ each file is represent as a $header$ in the layer archive and
 its corresponding physical file's status $src$. 
 
 
+
+Finally, layer recipe 
+%During layer deduplication process,
 %After unpacking the layer archive, 
 
 %Note that destHeader can be used to rebuild the \textbf{file header} for 
