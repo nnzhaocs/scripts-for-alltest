@@ -38,36 +38,25 @@ as shown in Figure~\ref{fig:dedup-partition}.
  \sysname initiates a lightweight layer deduplication process which collaborates with the metadata database
  to discard redundant files from layers. 
 The deduplication process has three major steps: 
-layer decompression and unpacking, 
+layer decompression, 
 file-level deduplication,
 file replication,
 and \textbf{layer partitioning}. 
 The first two steps are necessary for removing duplicate files from compressed layer tarballs.
 The last two step -- file replication and layer partitioning is 
 to evenly distribute the I/O and computation load of layer restoring across multiple registry servers 
-while maintain the same redundant level with layer replication.  
-Note that only one layer replica is selected among $R-r$ layer replicas to do layer deduplication.
+while also maintaining a level of redundancy.  
+Note that only one layer replica is selected among $R-r$ layer replicas to do layer deduplication. % subil: NEED CLARIFICATION ON WHAT THIS MEANS
 After that, all the layer replicas will be discarded.  
 %This makes the process of layer restoring achieve the maximum parallelism for each layer to accelerate the restoring process. 
 %(detailed in~\cref{subsubsec:slice-restoring}) 
 %After layer deduplication, unique files are evenly distributed across multiple registry servers. 
-%We define all the per-server files belonging to a layer as a {\em slice}. 
-%A server stores slices for many layers, and a layer is composed of slices stored on multiple servers, which allows restoring a layer in parallel. 
+
 \input{fig-dedup-partition}
 
 %\input{fig-sift-metadata}
 \paragraph{Layer file-level deduplication}
 As shown in Figure~\ref{fig:dedup-partition}, 
-%a layer is loaded to layer deduplication process.
-%First, the layer is decompressed and unpacked into files.
-%Next, 
-%the process computes a \emph{fingerprint} for every file denoted as \textbf{file id}, 
-%and checks every file's fingerprint in the file index.
-%If the file is already stored, it will be discard. 
-%Otherwise, it will be kept in file store.
-%Meanwhile,
-%\sysname  records the newly added \emph{file id} to file index.
-%\paragraph{Layer partition}
 following the staging area, the layer is loaded to the layer deduplication process.
 In this process, the layer is first decompressed and unpacked into files.
 Then, 
@@ -80,27 +69,29 @@ Otherwise, it will be kept in file store while
 \paragraph{File replication and layer partitioning}
 
 %Note that, layer deduplication process only deduplicates regular files., 
-After discarding duplicate files%file duplicates
+After discarding duplicate files
 , the deduplication process distributes the layer's remaining files across different registry servers
-so that each server is able to rebuild an $\sim$equal-sized slice of the layer from its local file store.
-Then, the process sends slices to the corresponding registries.
+so that each server is able to build an $\sim$equal-sized % subil: is the \sim necessary?
+ slice of the layer from its local file store when needed.
+ We define the collection of files that belong to a layer as a \emph{slice} of that layer stored on the registry server. 
+A server stores slices for many layers, and a layer is composed of slices stored on multiple servers, which allows restoring a layer in parallel. 
 Finally, \sysname will add slice recipes and layer recipe to metadata database as shown in Figure~\ref{fig:dedup-partition}.
 
 Figure~\ref{fig:replication-partition} shows an example of file replication and layer partition.
 Each file has two replicas distributed on different servers,
 \emph{r1, r2, r3,} and \emph{r4} are four primary file replicas that were already stored in the system.
 and \emph{r1', r2', r3',} and \emph{r4'} are their associated backup file replicas. 
-A layer \emph{L} that contains files \emph{r1, r2, r3, r4, r5, r6, r7,} and \emph{r8} is removed.
-Its containing files \emph{r1, r2, r3,} and \emph{r4} are deduplicated
-while unique files
+A layer \emph{L} that contains files \emph{r1, r2, r3, r4, r5, r6, r7,} and \emph{r8} is pushed.
+Files \emph{r1, r2, r3,} and \emph{r4} are deduplicated
+while new files
 \emph{r5, r6, r7,} and \emph{r8} will be added to the system, 
 As shown, \emph{r5, r6, r7,} and \emph{r8} are replicated and distributed to registry \emph{A, B, C,} and \emph{D} 
 as primary file replicas and backup file replicas.
 Consequently,
-primary file replicas \emph{r1} and \emph{r5} stored on registry \emph{A} comprise one of layer \emph{L'}s partitions, 
+primary file replicas \emph{r1} and \emph{r5} stored on registry \emph{A} comprise one of layer \emph{L'}s slices, 
 denoted as \textbf{primary slice}:
 \emph{layerid:A}.
-The rest two backup file replicas \emph{r4'} and \emph{r8'} stored on registry \emph{A} comprise a \textbf{backup slice} for primary slice stored 
+The two backup file replicas \emph{r4'} and \emph{r8'} stored on registry \emph{A} comprise a \textbf{backup slice} for the primary slice stored 
 on registry \emph{D} (i.e., \emph{r4} and \emph{r8}).
 
 %primary file replicas
@@ -109,10 +100,11 @@ on registry \emph{D} (i.e., \emph{r4} and \emph{r8}).
 
 Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning algorithm.
 After layer decompression, 
-each file entry in the layer archive is represented as a \textbf{file header} and a \textbf{file content}.
-The file header contains the file name, path, size, mode, owner information, etc.
-%Note that 
-The file header is needed to rebuild the \emph{file header} for 
+each file entry in the layer archive % subil: what is the layer archive referring to?
+ is represented as a \textbf{file header} and a \textbf{file content}.
+The file header contains the file name, path, size, mode, owner information, etc. % subil: should elaborate on structure of the header, how is it constructed?
+The file header is needed to rebuild the \emph{file header} % subil: how are the two file headers different?
+for 
 the associated file entry in the layer archive.
 
 %During layer deduplication process,
@@ -124,8 +116,8 @@ each file id in the file index holds its
 %denoted by a combination of its 
 \emph{host address} and \textbf{file status} of the physical file which mainly contains file name, path, and size.
 As shown in Algorithm~\ref{alg:dedup-partition}, 
-if a file's file id already exists in file index, 
-this file will be added to its host's corresponding partition (i.e, slice). 
+if a file's id already exists in file index (i.e. it's present in a registry server), 
+this file will be added to its host's corresponding slice for that layer. 
 Otherwise,
 \sysname stores the file content as a physical file in the file store
 and retrieves the file status of the physical file.
@@ -139,7 +131,7 @@ which
 records each file entry' $header$ in the layer archive partition and 
 its corresponding physical file's status $src$. 
 In this case, 
-each file is represent as a $header$ in the layer archive and
+each file is represented as a $header$ in the layer archive and
 its corresponding physical file's status $src$. 
 
 
@@ -242,10 +234,10 @@ Before writing file content to the archive buffer, slice constructor first build
 associated 
 file header into the archive buffer according to the slice recipe. 
 After archiving all the files in the slice,
-the archive buffer will be divide into few chunks and compressed in parallel,
+the archive buffer will be divided into few chunks and compressed in parallel,
 then concatenated into a single compressed slice stream.
 Through network transfer, multiple slice streams will be concatenated into a single layer.
-No intermediate file will be created or stored on disk.
+No intermediate file will be created or stored on disk. % subil: whoa!
 \sysname uses a small file inmemory cache to reduce file I/Os. 
 File cache uses Adaptive Replacement(ARC)~\cite{xxx}.
 
