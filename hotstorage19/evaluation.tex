@@ -38,8 +38,13 @@ the total size of unique files is only 7.2 TB, with a dedup ratio of 0.42.
 To evaluate how our sift performs for real-wold workloads,
 we emulated a real-world workload replayer by randomly matching IBM traces~\cite{xxx} and our dataset(see section~\cite{xxx}). 
 
+Due to our testbed cluster scale constrain, we set the layer size limitation equal to 1GB. 
+Layers that are bigger than 1 GB are split into sub-layers.
 Based on our dataset analysis~\cite{xxx} and workload analysis~\cite{xxx},
-more than 90\% of layers are smaller than 50MB.
+more than 90\% of layers are smaller than 50MB. 
+Therefore, we divided our sample dataset into two groups:
+smaller layers (layer size $\leq$ 50 MB) and big layers ( 50MB $\leq$ layer size $\leq$ 1 GB).
 
 \input{eval-performance}
+\input{eval-restore-performance}
 \input{eval-dedup}
