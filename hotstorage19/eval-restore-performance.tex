@@ -1,0 +1,27 @@
+\subsection{Restoring performance}
+
+In this section, we evaluated D-server cluster's layer restoring performance.
+Before we replay traces on the D-server cluster, 
+we first warmup the cluster with different amount of layers according to the traces.
+After receiving the layers, D-server cluster performs layer deduplication
+and save each unique file with three file replicas.
+After all warmup layers are deduplicated and discarded,
+we replay the traces on D-server cluster 
+and measure the \texttt{pull} layer performance as layer restoring performance.
+
+\subsubsection{Preconstruct cache hit ratio}
+
+\subsubsection{Breakdown performance}
+
+%\subsubsection{Performance with different parameters}
+
+\paragraph{Layer size impact}
+
+\paragraph{Cache size impact}
+
+\paragraph{D-servers scale impact}
+
+%\paragraph{Repull threshold}
+
+%\paragraph{Compression level}
+

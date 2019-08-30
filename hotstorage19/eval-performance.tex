@@ -6,21 +6,33 @@ Next, we present the layer restoring performance.
 \label{sec:eval-dedup}
 
 \input{tab-eval-overall}
-We replayed 5000 requests from each traces. 
-
+We replay 5000 requests from each trace as shown in Table~\ref{tab:eval-overall}.
+%We map the traces with two different layer groups: 
+%small layers (layer size $\leq$ 50 MB)
+In this experiment,
+we set layer replication level equal to 3.
+We test two schemes: \sysname and original registry~\cite{xxx}.
+\sysname is evaluated by configuring different deduplication modes.
+The number of P-servers and D-servers for \sysname are set to 6 and 15 respectively.
+In addition, 
+we speedup trace replaying by using different speedup factors
+so that each trace can be finished within 30 minutes.
+Before we replay each trace,
+we first warmup P-servers and D-servers with different amount of layers according to the traces.
+We use 100 clients distributed on client cluster to replay traces to P-servers and D-servers. 
 
 
 \subsubsection{Overall performance}
 
 
+Figure~\ref{label} shows the average performance for 
+\texttt{pull layer, push layer, pull manifest, and push manifest}
+requests.
+
 
 
 
 %\subsubsection{Performance }
-
-
-
-
 %\section{Deduplication performance}
 %\label{sec:Evaluation}
 %
