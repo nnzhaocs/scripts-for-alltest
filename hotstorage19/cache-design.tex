@@ -24,7 +24,7 @@ RLmap maps a \textbf{repository id} (i.e., repository name) to its containing la
 as shown in Figure~\ref{fig:dedup-partition}.
 
 When a~\texttt{pull} layer request is received, 
-\sysname will first update \emph{ULmap} as shown in Figure~\ref{fig:restoring}. 
+\sysname will first update \emph{ULmap}. 
 ULmap records user access status,
 which maps a \textbf{user Id} to its accessed layers with its corresponding access count,
 where user id is defined as client request address.
@@ -71,9 +71,9 @@ For each layer in target set,
 \sysname gets the restoring master from its layer recipe,
 and sends a notification of \texttt{preconsturct layer} to the master.
 After the master receives the notification,
-it first check if the requested layer is in the diskcache.
+it first checks if the requested layer is in the preconstruct cache.
 If not, 
-it starts layer construction and saves the preconstructed layer in diskcache.
+it starts layer construction and saves the preconstructed layer in the preconstruct cache.
  
 %and gets two groups of layers: \emph{newLayers} and \emph{oldLayers}.
 %\emph{newLayers} means the layers that belongs to \emph{r.repo} but haven't been pulled by client \emph{r.client}.
@@ -92,15 +92,13 @@ it starts layer construction and saves the preconstructed layer in diskcache.
 %If not,
 %\dedupname system~will start restoring \emph{r.slice} and also put it in cache.
 %In the end, \preconstructcachename~will update URLmap with corresponding repull count and repull probability.
-
-
-\paragraph{Layer diskcache eviction}
+\paragraph{Preconstruct cache eviction}
 To exploit the temporal trend of clients and repositories, 
 \sysname sets timer for each cached layers.
 Once a layer is expired,
-it will be simply deleted from diskcache.
+it will be simply deleted from the preconstruct cache.
 
-Layer diskcache replacement is triggered when the free space in diskcache is
+Preconstruct cache replacement is triggered when the free space in the cache is
 lower than threshold $\theta_{C}$.
 As shown in Algorithm~\ref{alg:eviction}, 
 \sysname~maintains a LFRU list~\cite{xxx} of cached layers to exploit 
