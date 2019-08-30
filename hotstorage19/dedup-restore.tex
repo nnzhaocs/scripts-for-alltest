@@ -22,9 +22,7 @@ If not found,
 
 %Upon a \texttt{pull} layer request fails on P-servers,
 %\sysname initiates a layer restoring process on D-servers for it.
-The layer restoring process has two parts: slice constructor and layer constructor.
-As shown in Figure~\ref{fig:restoring}, % shows an example of parallel layer restoring when a \texttt{pull} layer request failure happens.
-first, 
+The layer restoring process has two parts: slice constructor and layer constructor. First, 
 layer constructor fetches the layer recipe from metadata database.
 As shown in \emph{L1}'s layer recipe, 
 the restoring workers contains D-server \emph{A, B,} and \emph{C}.

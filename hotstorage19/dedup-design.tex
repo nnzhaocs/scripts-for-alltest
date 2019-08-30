@@ -35,13 +35,13 @@ layer decompression,
 file-level deduplication,
 \textbf{unique file replication} and \textbf{layer partitioning}. 
 The first two steps are necessary for removing duplicate files from compressed layer tarballs.
-%<<<<<<< HEAD
+
 The last step -- unique file replication and layer partitioning is 
 to evenly distribute the I/O and computation load of layer restoring across D-servers 
 while maintain a certain level of fault-tolerance.  
 Note that only one layer replica is selected from $R-r$ backup replicas to do layer deduplication.
-After the layer replica is \emph{deduplicated}, all the backup layer replicas stored on D-servers will be discarded.  
-%=======
+After the layer replica is \emph{deduplicated}, all the backup layer replicas stored on D-servers in the layer stage area will be discarded.  
+
 %The last two step -- file replication and layer partitioning is 
 %to evenly distribute the I/O and computation load of layer restoring across multiple registry servers 
 %while also maintaining a level of redundancy.  
@@ -56,19 +56,7 @@ After the layer replica is \emph{deduplicated}, all the backup layer replicas st
 
 %\input{fig-sift-metadata}
 \paragraph{Layer file-level deduplication}
-As shown in Figure~\ref{fig:dedup-partition}, 
-%<<<<<<< HEAD
-%a layer is loaded to layer deduplication process.
-%First, the layer is decompressed and unpacked into files.
-%Next, 
-%the process computes a \emph{fingerprint} for every file denoted as \textbf{file id}, 
-%and checks every file's fingerprint in the file index.
-%If the file is already stored, it will be discard. 
-%Otherwise, it will be kept in file store.
-%Meanwhile,
-%\sysname  records the newly added \emph{file id} to file index.
-%\paragraph{Layer partition}
-following the staging area, the layer tarball is loaded to the layer deduplication process.
+As shown in Figure~\ref{fig:dedup-partition}, following the staging area, the layer tarball is loaded to the layer deduplication process.
 In this process, the layer tarball is first decompressed into a \textbf{layer archive file}.
 %Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning. 
 %After layer decompression, 
@@ -77,41 +65,26 @@ The file header contains the file name, path, size, mode, owner information, etc
 The file header is needed to rebuild the \emph{file header} for 
 the associated file entry in the layer archive.
 Thus, 
-the process records each file header for every \emph{deduplicated} layers. 
+the process records each file header for every unique file in the \emph{deduplicated} layers. 
 After that,
 the process computes a \emph{fingerprint} by hashing the file content denoted as \textbf{file Id}, 
 and checks the file Id for presence in the file index.
 If the file Id is already stored, the file content will be discarded. 
-Otherwise, it will be saved physically in file store.
-Meanwhile
-\sysname records the file Id to the file index.
-As shown, %each entry in file index contains file id, \textbf{backup level}, , and \textbf{file status}.
-%
+Otherwise, it will be saved physically in file store and the file Id is recorded in the file index.
+As shown,
 to address a physical file, 
-each file Id holds 
+each file Id in the file index is mapped to the 
 \textbf{file status} of the physical file which mainly contains file name, path, and size.
-%\sysname stores the file content as a physical file in the file store
-%and retrieves the file status of the physical file.
-Besides, 
-each file Id in the file index also holds its \emph{host address} with the associated \textbf{backup level}.
-Backup level denotes whether the host stores a primary backup file replica (i.e., \texttt{P}) or the $n^{th}$ backup replica (ie., \texttt{B}\emph{n}) detailed as following.
+Besides, each file Id in the file index is also mapped to its \emph{host address} with the associated \textbf{backup level}.
+Backup level denotes whether the host stores a primary backup file replica (i.e., \texttt{P}) or the $n^{th}$ backup replica (ie., \texttt{B}\emph{n}) detailed as follows.
 %detailed as following.
 
-%=======
-%following the staging area, the layer is loaded to the layer deduplication process.
-%In this process, the layer is first decompressed and unpacked into files.
-%Then, 
-%the process computes a \emph{fingerprint} for every file denoted as \textbf{file id}, 
-%and checks every file's fingerprint for presence in the file index.
-%If the file is already stored, it will be discarded. 
-%Otherwise, it will be kept in file store while
-%\sysname records its \emph{file id} to the file index.
-%>>>>>>> ab86d0a4767bfcfcbb58baf9bd7b2e81e54d7e51
+
 
 \paragraph{Unique file replication and layer partitioning}
 
 %Note that, layer deduplication process only deduplicates regular files., 
-%<<<<<<< HEAD
+
 After discarding duplicate files%file duplicates
 , the deduplication process first replicates and distributes newly added unique file replicas across D-servers.
 %in a way such that
@@ -123,8 +96,7 @@ Each file has two replicas distributed on two different servers.
 and \emph{f1', f2', f3',} and \emph{f4'} are their associated \emph{secondary backup file replicas}. 
 Layer \emph{L} that contains files \emph{f1, f2, f3, f4, f5, f6, f7,} and \emph{f8} 
 is decompressed, unpacked, and \emph{file-level deduplicated}.
-Its containing duplicate files \emph{f1, f2, f3,} and \emph{f4} are discard
-while unique files
+Its containing duplicate files \emph{f1, f2, f3,} and \emph{f4} are discarded while unique files
 \emph{f5, f6, f7,} and \emph{f8} are added to the system.
  \emph{f1, f2, f3,} and \emph{f4} are shared among \emph{L} and other layers, denoted as \textbf{shared files}.
 As shown, \emph{f5, f6, f7,} and \emph{f8} are replicated and distributed to D-servers \emph{A, B, C,} and \emph{D}.
@@ -177,26 +149,13 @@ After unique file replication and layer partitioning,
 to metadata database as shown in Figure~\ref{fig:dedup-partition}.
 A slice recipe represents a layer slice and
 is used to construct a \emph{partial layer archive}.
-% 
-%
+
 As mentioned earlier, 
-\sysname records every file header in a layer archive.
+\sysname records every file header from a layer archive.
 During layer partitioning,
-%calculates the file id by hashing the file content.
-%the file index maps a \emph{file id} to its associated physical file that is stored in the file store.
-%To address a physical file,
-%each file id in the file index holds its 
-%denoted by a combination of its 
-%\emph{host address} and \textbf{file status} of the physical file which mainly contains file name, path, and size.
-%As shown in Algorithm~\ref{alg:dedup-partition}, 
-%If a file's file id already exists in file index, 
-%this file will be added to its host's corresponding partition (i.e, slice). 
-%Otherwise,
-%
-%The file index is updated accordingly.
 \sysname
-assigns every file header in layer archive to
-the associate slice recipe 
+assigns every file header in the layer archive to
+the associated slice recipe 
 along with a content pointer pointing to the corresponding physical file as shown in Figure~\ref{fig:dedup-partition}. 
 %=======
 %Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning algorithm.
@@ -261,7 +220,7 @@ shared files are usually not evenly distributed for all layers.
 To evenly distribute and partition layer's containing files,
 %
 %To distribute the newly added unique files' primary replicas,
-\sysname uses a \emph{greedy partition algorithm with shared file constrains} to 
+\sysname uses a \emph{greedy partition algorithm with shared file constraints} to 
 distribute the newly added unique files in a way such that
 each D-server stores relatively equal-sized slice for the layer:
 \sysname first assigns the shared files that are already stored on D-servers into 
