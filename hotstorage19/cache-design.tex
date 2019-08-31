@@ -1,5 +1,5 @@
 
-\subsection{Layer preconstruction}
+\subsection{Superfetch cache and preconstruct cache}
 \label{sec:cache-design}
 
 %In the following, we present our \sysname~\preconstructcachename design.
@@ -15,21 +15,34 @@
 
 %\input{fig-layer-preconstruct}
 
-Based on the observations made in xxxx,
-\sysname preconstructs layers before layer accesses to save layer construction time.
+Based on the user access patterns observed in Section~\ref{sec:dataset-analysis},
+\sysname predicts what layers will be accessed and prepares the layers before \texttt{pull} layer requests.
+To improve the performance of primary cluster,
+\sysname \emph{superfetches} the layers that will be accessed later into \textbf{superfetch cache}.
+Moreover, 
+to improve the layer restoring performance of deduplication cluster,
+\sysname preconstructs layers before \texttt{pull} layer requests 
+and put them into \textbf{preconstruct cache} to save restoring latency.
 
- After D-servers receive the backup replicas,
-\sysname will first update \emph{RLmap} with the layer and its associated repository, where
-RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
-as shown in Figure~\ref{fig:dedup-partition}.
+\paragraph{User access pattern based prediction}
+The first user access pattern is that before a user sends a \texttt{pull} layer request,
+the user will sends
 
-When a~\texttt{pull} layer request is received, 
-\sysname will first update \emph{ULmap}. 
-ULmap records user access status,
-which maps a \textbf{user Id} to its accessed layers with its corresponding access count,
-where user id is defined as client request address.
+%difference $\gets$ \emph{RLmap[r.repo]} $-$ \emph{ULmap[r.client]} \\
+%intersection $\gets$ \emph{RLmap[r.repo]} $\bigcap$ \emph{ULmap[r.client]} \\
+%
+%targets $\leftarrow$ difference \\
+%\ForEach{layer in intersection} 
+%{ \If{ layer.rpcnt $>$ $\theta_{rpc}$}{
+%		targets	$\leftarrow$ layer
+%	}
+%}
 
-\paragraph{User behavior based layer preconstruction}
+\paragraph{Superfetch cache  on primary cluster} 
+
+
+
+\paragraph{Preconstruct cache on deduplication cluster}
 \input{preconstruct_algori.tex}
 
 Figure~\ref{fig:preconstruct}
@@ -66,6 +79,19 @@ $repulled$ by client,
 If the layer's repull count is greater than $\theta_{rpc}$,
 which means this layer will be repulled with high probability.
 Thus, it is included in target layer set.
+
+\sysname preconstructs layers before layer accesses to save layer construction time.
+
+After D-servers receive the backup replicas,
+\sysname will first update \emph{RLmap} with the layer and its associated repository, where
+RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
+as shown in Figure~\ref{fig:dedup-partition}.
+
+When a~\texttt{pull} layer request is received, 
+\sysname will first update \emph{ULmap}. 
+ULmap records user access status,
+which maps a \textbf{user Id} to its accessed layers with its corresponding access count,
+where user id is defined as client request address.
 
 For each layer in target set, 
 \sysname gets the restoring master from its layer recipe,
