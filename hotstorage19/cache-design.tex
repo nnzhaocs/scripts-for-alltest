@@ -25,8 +25,16 @@ to improve the layer restoring performance of deduplication cluster,
 and put them into \textbf{preconstruct cache} to save restoring latency.
 
 \paragraph{User access pattern based prediction}
-The first user access pattern is that before a user sends a \texttt{pull} layer request,
-the user will sends
+Typically, when a user 
+ \texttt{pulls} an image,
+it will first \texttt{pulls} the image's manifest and extract the image's layers from the manifest, 
+Next, it compares these layers against a \emph{local layer index}.
+If a layer presents in the \emph{local layer index}, meaning the layer is already stored locally,
+the user won't \texttt{pull} the layer.
+Otherwise, the user will start pulling the layer.
+Based on the above access pattern, 
+\sysname records user access information.
+ 
 
 %difference $\gets$ \emph{RLmap[r.repo]} $-$ \emph{ULmap[r.client]} \\
 %intersection $\gets$ \emph{RLmap[r.repo]} $\bigcap$ \emph{ULmap[r.client]} \\

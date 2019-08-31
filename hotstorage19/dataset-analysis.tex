@@ -1,4 +1,4 @@
-\section{Storage and workload analysis}
+\section{Observations}
 \label{sec:dataset-analysis}
 
 %\subsection{Layer size distribution}
@@ -11,9 +11,95 @@
 
 \input{fig-eval-cachehitratio-spaceefficiency}
 
-Before describing Sift, we must understand the storage pressure and trends in the access patterns of the Docker registries at the layer and repository level.
+%Before describing Sift, we must understand the storage pressure and trends in the access patterns of the Docker registries at the layer and repository level.
 
-\subsection{Space efficiency}
+\subsection{User access is predictable}
+\input{fig-repull-analysis}
+
+\paragraph{User access patterns.}
+
+\paragraph{Pull once VS. Always pull.}
+
+Figure~\ref{fig:layer-repull-cdf} shows the CDF of layer repull count. Here, \emph{repulling} indicates the act of pulling layers that have been pulled by the user before because they are no longer present on the user side.
+We see that majority of users don't \emph{repull} layers frequently.
+For \texttt{Syd}, only 4\% of layers are repulled by the same clients. 83\% of the repull layers are only repulled twice.
+Majority of repulled layers are repulled infrequently.
+For example, only 3\% of layers from \texttt{Syd} are repulled more than twice.
+We also observe that few clients \emph{repull} layers continuously.
+We think these clients probably deploy containers on a shared platform such as Cloud,
+and run ephemeral jobs such as stateless microservices, causing them to repull every time the service restarts.
+
+When different clients \texttt{pull} the same repository, 
+they will fetch different amount of layers from the repository based on the contents of their local layer dataset. The local layers can vary with time due to clearing of the data so the same clients can fetch different amounts of layers at different times.
+Therefore, a \texttt{pull manifest} requests doesn't usually result in repulling all the layers in the repository. 
+Here, we define \emph{repulling a repository} as repulling the layers in the repository for the same client.
+Figure~\ref{fig:repo-repull-cdf} shows the CDF of the probability of repository repulling, calculated 
+as the number of \texttt{pull manifest} resulting in repository repulling divided by 
+the total number of \texttt{pull manifest} requests issued by the same client for the same repository.
+We see that majority of repositories aren't repulled.
+The percentage of repositories whose repull probability is zero (i.e. are pulled only once by a client) ranges from 57\% for \texttt{Prestage} to 85\% for \texttt{Syd}.
+Only 20\% of repositories from  \texttt{Prestage}, \texttt{Stage}, and 
+\texttt{Syd} have a repulling probability higher than 0.5.
+We also observe that few repositories' repulling probability is 1, indicating repulls everytime by the clients.
+
+Figure~\ref{fig:client-repull-cdf} shows the client repulling probability, calculated as the number of \emph{repull} layer requests divided by
+the number of all \texttt{pull} layer requests issued by the same client.
+We see that majority of clients do repull layers but the probability is low.
+60\% of clients from \texttt{Prestage}, \texttt{Dev}, \texttt{Lon}, and \texttt{Fra} have a repulling probability lower than 0.1.
+10\%-30\% of clients have a repulling probability ranged from 0.2-0.7 across 7 workloads.
+We find few clients repull layers continuously.
+2\%-12\% of clients have a repulling probability higher than 0.9 from workloads:
+\texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Prestage},
+\texttt{Stage}, \texttt{Syd}, and \texttt{Lon}.
+
+These findings indicate that there is a subset of layers, repositories, and users to identify for prefetching and caching to make effective improvements over latency resulting from deduplication.
+
+\subsection{Temporal access patterns}
+\input{fig-skewness}
+\input{fig-reusetime}
+
+\paragraph{Skewness}
+Figure~\ref{fig:layer-skewness} shows the CDF of layer popularity.
+We observe a heavy layer access skewness for \texttt{Fra}, \texttt{Syd}, \texttt{Dal}, \texttt{Stage}, and \texttt{Lon} with 60-80\%  of the \texttt{pull} layer requests accessing only 10\% of layers.
+Figure~\ref{fig:repo-skewness} shows the CDF of repository popularity.
+Compare to layer popularity, 
+repository access skewness is heavier across 7 workloads.
+Almost 90\% of \texttt{pull} layer requests access only 10\% of repositories for 
+\texttt{Dev}, \texttt{Fra}, \texttt{Prestage}, \texttt{Syd}, and \texttt{Stage}.
+Figure~\ref{fig:client-skewness} shows the CDF of client popularity.
+\texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Lon}, \texttt{Prestage}, and \texttt{Stage} shows a heavy client access skewness with
+10\% of clients send 95\% \texttt{pull} layer requests for \texttt{Lon}.
+Overall, caching a layer with higher pull count will improve the hit ratio, 
+especially for popular repositories and targeting active clients with higher repulling probability.
+
+\paragraph{Reuse time}
+Next, we analyze the layer and repository reuse time.
+Layer reuse time means the duration between two consecutive requests to the same layer
+while repository reuse time means the duration between two consecutive \emph{pull} manifest requests to the same repository.
+Figure~\ref{fig:layer-reuse} shows the CDF of layer reuse time. 
+%Layer reuse time means the duration between two consecutive \texttt{pull} requests to the same layer.
+We see that layer reuse time distribution varies among different workloads.
+For \texttt{Fra}, \texttt{Syd}, and \texttt{Stage},
+half of the layers' reuse time is shorter than 6 minutes.
+Half of layers from \texttt{Dal} and \texttt{Lon} have a reuse time higher than 1 hour and is higher than 100 hours for \texttt{Prestage} and \texttt{Dev}.
+Consequently, for \texttt{Dal}, \texttt{Lon}, \texttt{Prestage}, and \texttt{Dev}, 
+it may take longer than 1 hour for at least half newly requested layer to get a hit. 
+These layers shouldn't be cached since their reuse time is too long and may cause other useful layers or slices to be evicted, called \emph{cache pollution}.
+%Consider popular skewness, 
+Figure~\ref{fig:repo-reuse} shows the CDF of repository reuse time.
+%Repository reuse time means the duration between two consecutive \texttt{pull manifest} requests to the same repository.
+We see that repository reuse time is much shorter than layer reuse time.
+80\% of repositories are requested within 2-12 minutes across the 7 workloads.
+Figure~\ref{fig:user-interval} shows the CDF of client access intervals.
+client access interval means the duration between two consective requests issued by the same client.
+Client access intervals are much shorter than repository reuse time.
+80\% of client are active within 1 - 3 minutes for the 7 workloads. 
+Hence, to eliminate \emph{cache pollution},
+we consider the reuse time of layer and repository as well as client access intervals during cache eviction.
+
+\subsection{Layer deduplication}
+
+\paragraph{Redundant files shared among layers}
 Consider that deduplication incurs a performance overhead and the current Docker registry already stores layers in compressed format to save space and network transfer overhead. We first analyze the space efficiency of a registry that performs decompression and file-level deduplication and compare it to a registry that naively stores compressed layers.
 
 In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of $5$ samples of registry data of varying sizes with traditional layer compression. For a traditional registry, the compressed layer tarballs will be kept as is.
@@ -24,6 +110,7 @@ there is no benefit to \emph{deduplicate} layers because the deduplication ratio
 However, when the dataset size is $200$~GB and over, we can save over $40\%$ more space increasing almost linearly with the size of the layer dataset.
 This verifies the benefit of deduplicating layers as the registry size increases.
 
+\paragraph{Layer preconstruction.}
 %\subsubsection{User access pattern based preconstruction}
 %
 %Docker client stores images as lists of layers and layers are shared among different repositories, 
@@ -47,42 +134,7 @@ This verifies the benefit of deduplicating layers as the registry size increases
 %Next, we analyze user access patterns to identify which layers in the repository will be pulled by users after 
 %\texttt{pull manifest} requests.
 
-\subsection{User access patterns}
-\input{fig-repull-analysis}
 
-Figure~\ref{fig:layer-repull-cdf} shows the CDF of layer repull count. Here, \emph{repulling} indicates the act of pulling layers that have been pulled by the user before because they are no longer present on the user side.
-We see that majority of users don't \emph{repull} layers frequently.
-For \texttt{Syd}, only 4\% of layers are repulled by the same clients. 83\% of the repull layers are only repulled twice.
-Majority of repulled layers are repulled infrequently.
-For example, only 3\% of layers from \texttt{Syd} are repulled more than twice.
-We also observe that few clients \emph{repull} layers continuously.
-We think these clients probably deploy containers on a shared platform such as Cloud,
-and run ephemeral jobs such as stateless microservices, causing them to repull every time the service restarts.
-
-When different clients \texttt{pull} the same repository, 
-they will fetch different amount of layers from the repository based on the contents of their local layer dataset. The local layers can vary with time due to clearing of the data so the same clients can fetch different amounts of layers at different times.
-Therefore, a \texttt{pull manifest} requests doesn't usually result in repulling all the layers in the repository. 
-Here, we define \emph{repulling a repository} as repulling the layers in the repository for the same client.
-Figure~\ref{fig:repo-repull-cdf} shows the CDF of the probability of repository repulling, calculated 
-as the number of \texttt{pull manifest} resulting in repository repulling divided by 
-the total number of \texttt{pull manifest} requests issued by the same client for the same repository.
-We see that majority of repositories aren't repulled.
-The percentage of repositories whose repull probability is zero (i.e. are pulled only once by a client) ranges from 57\% for \texttt{Prestage} to 85\% for \texttt{Syd}.
-Only 20\% of repositories from  \texttt{Prestage}, \texttt{Stage}, and 
-\texttt{Syd} have a repulling probability higher than 0.5.
-We also observe that few repositories' repulling probability is 1, indicating repulls everytime by the clients.
- 
-Figure~\ref{fig:client-repull-cdf} shows the client repulling probability, calculated as the number of \emph{repull} layer requests divided by
-the number of all \texttt{pull} layer requests issued by the same client.
-We see that majority of clients do repull layers but the probability is low.
-60\% of clients from \texttt{Prestage}, \texttt{Dev}, \texttt{Lon}, and \texttt{Fra} have a repulling probability lower than 0.1.
-10\%-30\% of clients have a repulling probability ranged from 0.2-0.7 across 7 workloads.
-We find few clients repull layers continuously.
-2\%-12\% of clients have a repulling probability higher than 0.9 from workloads:
-\texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Prestage},
-\texttt{Stage}, \texttt{Syd}, and \texttt{Lon}.
-
-These findings indicate that there is a subset of layers, repositories, and users to identify for prefetching and caching to make effective improvements over latency resulting from deduplication.
 
 %\paragraph{Monitor user access patterns}
 %To monitor user access patterns,
@@ -117,43 +169,3 @@ These findings indicate that there is a subset of layers, repositories, and user
 %To decide which layer or slices need to be evicted to make space for new requests,
 %we analyze the temporal trend of user accesses as follows.
 
-\subsection{Skewness and temporal access patterns}
-\input{fig-skewness}
-\input{fig-reusetime}
-
-Figure~\ref{fig:layer-skewness} shows the CDF of layer popularity.
-We observe a heavy layer access skewness for \texttt{Fra}, \texttt{Syd}, \texttt{Dal}, \texttt{Stage}, and \texttt{Lon} with 60-80\%  of the \texttt{pull} layer requests accessing only 10\% of layers.
-Figure~\ref{fig:repo-skewness} shows the CDF of repository popularity.
-Compare to layer popularity, 
-repository access skewness is heavier across 7 workloads.
-Almost 90\% of \texttt{pull} layer requests access only 10\% of repositories for 
-\texttt{Dev}, \texttt{Fra}, \texttt{Prestage}, \texttt{Syd}, and \texttt{Stage}.
-Figure~\ref{fig:client-skewness} shows the CDF of client popularity.
-\texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Lon}, \texttt{Prestage}, and \texttt{Stage} shows a heavy client access skewness with
-10\% of clients send 95\% \texttt{pull} layer requests for \texttt{Lon}.
-Overall, caching a layer with higher pull count will improve the hit ratio, 
-especially for popular repositories and targeting active clients with higher repulling probability.
-
-Next, we analyze the layer and repository reuse time.
-Layer reuse time means the duration between two consecutive requests to the same layer
-while repository reuse time means the duration between two consecutive \emph{pull} manifest requests to the same repository.
-Figure~\ref{fig:layer-reuse} shows the CDF of layer reuse time. 
-%Layer reuse time means the duration between two consecutive \texttt{pull} requests to the same layer.
-We see that layer reuse time distribution varies among different workloads.
-For \texttt{Fra}, \texttt{Syd}, and \texttt{Stage},
-half of the layers' reuse time is shorter than 6 minutes.
-Half of layers from \texttt{Dal} and \texttt{Lon} have a reuse time higher than 1 hour and is higher than 100 hours for \texttt{Prestage} and \texttt{Dev}.
-Consequently, for \texttt{Dal}, \texttt{Lon}, \texttt{Prestage}, and \texttt{Dev}, 
-it may take longer than 1 hour for at least half newly requested layer to get a hit. 
-These layers shouldn't be cached since their reuse time is too long and may cause other useful layers or slices to be evicted, called \emph{cache pollution}.
-%Consider popular skewness, 
-Figure~\ref{fig:repo-reuse} shows the CDF of repository reuse time.
-%Repository reuse time means the duration between two consecutive \texttt{pull manifest} requests to the same repository.
-We see that repository reuse time is much shorter than layer reuse time.
-80\% of repositories are requested within 2-12 minutes across the 7 workloads.
-Figure~\ref{fig:user-interval} shows the CDF of client access intervals.
-client access interval means the duration between two consective requests issued by the same client.
-Client access intervals are much shorter than repository reuse time.
-80\% of client are active within 1 - 3 minutes for the 7 workloads. 
-Hence, to eliminate \emph{cache pollution},
-we consider the reuse time of layer and repository as well as client access intervals during cache eviction.

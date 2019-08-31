@@ -33,17 +33,22 @@ totally 12.5 TB with 507,023 layers.
 After decompressing,  the total size of our dataset is 27.7 TB.
 With file-level deduplication ratio applying to our decompressed dataset, 
 the total size of unique files is only 7.2 TB, with a dedup ratio of 0.42.
+The size distribution of our sample layer dataset is the same with the size distribution of whole layer dataset.
+87.5\% of layers are smaller than 50 MB.
+12.3\% of layers fall between 50 MB and 1 GB.
+0.2\% of layers are bigger than 1 GB.
+Due to our testbed cluster scale constrain, we set the layer size limitation equal to 1GB. 
+Layers that are bigger than 1 GB are split into sub-layers.
+Based on our dataset analysis~\cite{xxx} and workload analysis~\cite{xxx},
+%more than 90\% of layers are smaller than 50MB. 
+Therefore, we divided our sample dataset into two groups:
+smaller layers (layer size $\leq$ 50 MB) and big layers ( 50MB $\leq$ layer size $\leq$ 1 GB).
 
 \cite{xxx} presents IBM cloud registry workload traces spanning $\sim$80 days for 7 different registry clusters. 
 To evaluate how our sift performs for real-wold workloads,
 we emulated a real-world workload replayer by randomly matching IBM traces~\cite{xxx} and our dataset(see section~\cite{xxx}). 
 
-Due to our testbed cluster scale constrain, we set the layer size limitation equal to 1GB. 
-Layers that are bigger than 1 GB are split into sub-layers.
-Based on our dataset analysis~\cite{xxx} and workload analysis~\cite{xxx},
-more than 90\% of layers are smaller than 50MB. 
-Therefore, we divided our sample dataset into two groups:
-smaller layers (layer size $\leq$ 50 MB) and big layers ( 50MB $\leq$ layer size $\leq$ 1 GB).
+
 
 \input{eval-performance}
 \input{eval-restore-performance}
