@@ -1,4 +1,4 @@
-\subsection{Deduplication modes}
+\paragraph{Deduplication modes}
 \label{sec:dedup-mode}
 
 To satisfy different space saving and performance requirements,
@@ -7,7 +7,7 @@ Basic deduplication modes and selective deduplication modes, denoted as \emph{B-
 B-mode mantains a certain amount of layer replicas for each layer and deduplicates the rest layer replicas.
 While S-mode mantains a number of layer replicas for different layer proportionate to their popularity.
 
-\subsubsection{Basic deduplication modes}
+%\subsubsection{Basic deduplication modes}
 Assume that registry storage system uses R-way replication.
 Consider that layer dataset deduplication analysis~\cite{xxx} shows a file-level deduplication ratio of 2$\times$.
 Thus, the average layer deduplication ratio for the layer dataset~\cite{xxx} is 2$\times$.
@@ -33,7 +33,7 @@ Performance degradation =  F(L, P, D, \delta_{R-r})
  \end{equation}
  $\delta_{R-r}$ means the performance degradation caused by load variance among different servers impacted by replication level.
 
-\subsubsection{Selective deduplication modes}
+%\subsubsection{Selective deduplication modes}
 In S-mode, the number of layer replicas \emph{r} is proportional to their popularity ($r \leq R$).
 Layer popularity is calculated as $\frac{\emph{l}_{pcnt}}{L}$, 
 where $\emph{l}_{pcnt}$ is the total number of pulling request count to layer \emph{l}.  

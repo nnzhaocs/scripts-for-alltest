@@ -1,4 +1,4 @@
-\subsection{Layer deduplication}
+\subsection{Layer deduplication and replication}
 \label{sec:dedup-desgin}
 
 %We now describe \sysname's layer restoring performance--aware deduplication 
@@ -6,7 +6,8 @@
 %\subsubsection{When to deduplicate layers?}
 %
 %
-%\subsubsection{Layer deduplication and partition}
+
+\subsubsection{Layer deduplication, replication, and partitioning}
 
 As with the traditional Docker registry, 
 \sysname maintains a \emph{layer index}.
@@ -231,6 +232,9 @@ Next,
 \sysname
 assigns the biggest unique file to the smallest slices
 til all the unique files are assigned.
+
+\input{dedup-restore}
+
 %After layer partition,.
 %All the primary slices' hosts are denoted as layer restoring \textbf{primary workers}. 
 %Next, \sysname stores slice recipes in metadata database after successfully
