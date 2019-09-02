@@ -17,6 +17,8 @@
 \input{fig-repull-analysis}
 
 \paragraph{User access patterns.} 
+
+\paragraph{Pull once VS. Always pull.}
 Figure~\ref{fig:layer-repull-cdf} shows the CDF of layer repull count. Here, \emph{repulling} indicates the act of pulling layers that have been pulled by the user before because they are no longer present on the user side.
 Majority of repulled layers are repulled infrequently.
 83\% of the repull layers are only repulled twice.
@@ -42,7 +44,6 @@ the number of all \texttt{pull} layer requests issued by the same client.
 \texttt{Dal}, \texttt{Dev}, \texttt{Fra}, \texttt{Prestage},
 \texttt{Stage}, \texttt{Syd}, and \texttt{Lon}.
 
-\paragraph{Pull once VS. Always pull.}
 From the probability distribution of the clients repulling, we can observe that a significant chunk of the clients have very low repulling probability and another chunk of the clients have a very high repulling probability, with few clients in the middle. For simplicity of implementation, the high probability clients can be classified as always repulling clients, and the low probability clients as never repulling (i.e. they pull only once). The few clients in the middle are considered as \emph{erratic} and no classification is made for them.
 
 

@@ -2,7 +2,33 @@
  \label{sec:intro}
 
 \vspace{-2pt}
- 
+
+
+%Coupled with microservices, the container ecosystem has changed the way resources are deployed into the cloud.
+%Kubernetes engine, cloud storage.
+%Docker registry, cloud storage, gzip compressed tarfiles
+%Redundant data stored among compressed tarfiles
+%Cannot directly apply blk or file-level dedup, and restoring overhead
+%Restoring overhead slows down normal layer access.
+
+% 1. Containerization and microservices grow more than faster.
+ %Amazon, Netflix, and eBay, container as a service
+The rise of containerization and microservices have been a remarkable advancement in 
+cloud environment and architectures,
+allowing applications to build, deploy and manage faster and easier.
+At their core, containers 
+refactor a traditional, monolithic architectures into a flexible, portable microservices platform 
+to organize and distribute applications. 
+%break down web applications and provide businesses This model is a departure from traditional, monolithic architectures that use virtual machines and physical servers to run the entire application ecosystem on one centralized machine.
+%application development and deployment.
+%Each microservice is self-contained, each maintains its own data store (which has significant implications), and each can be updated independently of others.
+%Refactoring a Monolith into Microservices Architecture
+%Moving to a microservices-based approach makes app development faster and easier to manage, requiring fewer people to implement more new features. Changes can be made and deployed faster and easier. 
+%Many organizations, such as Amazon, eBay, and Netflix, have solved this problem by adopting what is now known as the Microservices Architecture pattern. Instead of building a single monstrous, monolithic application, the idea is to split your application into set of smaller, interconnected services.
+%At runtime, each instance is often a cloud virtual machine (VM) or a Docker container.
+
+Docker registry
+  
  Containers 
  have become an effective means for deploying modern applications because 
  of desirable features such as tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}. 
@@ -17,7 +43,7 @@
  because scaling-out involves data migration between existing storage serves and new storage servers, even among existing storage servers for load balancing,
  which largely hurts performance.
  %
- In this paper, we propose a new Docker registry architecture, \sysname,
+% In this paper, we propose a new Docker registry architecture, \sysname,
  that integrates caching and deduplication with Docker registries to help reduce the storage requirements while mitigating any performance overhead.
  
 Containers are running instances of \emph{images} that encapsulate complete runtime environment for an application.

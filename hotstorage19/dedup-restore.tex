@@ -6,10 +6,10 @@
 \input{fig-layer-restoring}
 
 When a~\texttt{pull} layer request is received and its associated 
-P-servers fail, D-servers will serve the request.
-\sysname will first search layer preconstruct cache on D-servers.
-If not found,
-\sysname will rebuild the layer according to the layer recipe. 
+P-servers fail, D-servers will rebuild a layer for the request.
+%\sysname will first search layer preconstruct cache on D-servers.
+%If not found,
+%\sysname will rebuild the layer according to the layer recipe. 
 %the \dedupname~system 
 %first prepares a directory structure for the slice, based on the slice recipe.
 %Then, it copies the files into the directory tree.
@@ -20,9 +20,10 @@ If not found,
 
 %Upon a \texttt{pull} layer request fails on P-servers,
 %\sysname initiates a layer restoring process on D-servers for it.
-The layer restoring process has two parts: slice constructor and layer constructor. First, 
+The layer restoring process involves two modules: slice constructor and layer constructor. 
+First, 
 layer constructor fetches the layer recipe from metadata database.
-As shown in \emph{L1}'s layer recipe, 
+As shown in Figure~\ref{fig:construct}, according to \emph{L1}'s layer recipe, 
 the restoring workers contains D-server \emph{A, B,} and \emph{C}.
 Since \emph{A} is the restoring master,
 \emph{A} sends ``\texttt{Get primary slice for L1}" requests to its peer workers: \emph{B} and \emph{C}.

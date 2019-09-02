@@ -24,20 +24,40 @@ to improve the layer restoring performance of deduplication cluster,
 \sysname preconstructs layers before \texttt{pull} layer requests 
 and put them into \textbf{preconstruct cache} to save restoring latency.
 
-\paragraph{User access pattern based prediction}
+\paragraph{Future request prediction based on user access pattern}
 Typically, when a user 
  \texttt{pulls} an image,
 it will first \texttt{pulls} the image's manifest and extract the image's layers from the manifest, 
 Next, it compares these layers against a \emph{local layer index}.
-If a layer presents in the \emph{local layer index}, meaning the layer is already stored locally,
-the user won't \texttt{pull} the layer.
-Otherwise, the user will start pulling the layer.
-Based on the above access pattern, 
-\sysname records user access information.
- 
+If a layer isn't presents in the \emph{local layer index}, meaning the layer hasn't been stored locally,
+the user will \texttt{pull} the layer.
+%Otherwise, the user will start pulling the layer.
 
-%difference $\gets$ \emph{RLmap[r.repo]} $-$ \emph{ULmap[r.client]} \\
-%intersection $\gets$ \emph{RLmap[r.repo]} $\bigcap$ \emph{ULmap[r.client]} \\
+Based on the above access pattern, 
+\sysname uses to two maps for recording image-layer architecture and user's layer access information:
+\textbf{RLmap} and \textbf{ULmap}.
+ RLmap maps an image to its containing \emph{layer set}.
+ Image is identified as \textless Repository name@manifest digest\textgreater.
+ %Layer is identified as layer digest.
+ULmap maps a user to its accessed layer set with the corresponding \emph{pull count}.
+ User is identified by extracting the network address that sent the request. 
+ When a \texttt{GET manifest} request \emph{r} is received,
+\sysname first calculates a set of image layers that haven't been \texttt{pulled} by the user \emph{r.client} by 
+calculating the difference $S_{\Delta}$ between the image layer set and user layer set ULmap:
+$ S_{\Delta} = \emph{RLmap[r.img]} - \emph{ULmap[r.client]}$.
+The layers in $S_{\Delta}$ will be accessed later.
+
+Recall that some users \emph{always pull} layers no matter if the layers have been \texttt{pulled} previously.
+To distinguish this behavior,  
+\sysname first gets a set of image layers that have already been \texttt{pulled} by the user by calculating the 
+intersection $S_{\bigcap}$ between the image layer set and the user layer set as follows:
+$S_{\bigcap} = \emph{RLmap[r.img]} \bigcap \emph{ULmap[r.client]} $.
+Next, 
+\sysname compares the client repull probability $\gamma[r.client]$ with a predefined client repull threshold $\varepsilon_{c}$.
+If $\gamma[r.client] > \varepsilon_{c}$, 
+then \sysname classifies the user as a repull user.
+The layers in $S_{\bigcap}$ will be accessed later.
+
 %
 %targets $\leftarrow$ difference \\
 %\ForEach{layer in intersection} 
@@ -47,67 +67,110 @@ Based on the above access pattern,
 %}
 
 \paragraph{Superfetch cache  on primary cluster} 
+\sysname \texttt{prefetches} layers on primary cluster based on the above user request prediction theory.
+After P-servers receive the primary layer replicas,
+\sysname will save the layer replicas into \emph{superfetch cache} as shown in Figure~\ref{fig:sift}.
+Meanwhile, it updates \emph{RLmap} with the layer and its associated image. 
 
+When a~\texttt{pull} layer request is received, 
+\sysname will first search superfetch cache for the request layer.
+If the layer presents in cache, the request will be served from cache.
+Otherwise,
+the request will be served from layer store.
+Meanwhile, it updates \emph{ULmap} with the request sender and its associated layer. 
+
+%ULmap records user access status,
+%which maps a \textbf{user Id} to its accessed layers with its corresponding access count,
+%where user id is defined as client request address.
 
 
 \paragraph{Preconstruct cache on deduplication cluster}
-\input{preconstruct_algori.tex}
-
-Figure~\ref{fig:preconstruct}
-shows how to preconstruct layers for later accesses.
-When a \texttt{GET manifest} request is received by registry $A$,
-it gets the requested repository information and client information from RLmap and ULmap respectively, 
-and computes a list of target layers that will be accessed later by this client.
-As shown, to preconstruct target layer $L1$, 
-registry $A$ gets $L1$'s layer recipe from metadata database
-and sends a notification of \texttt{preconstruct layer} $L1$ to 
-$L1$'s restoring master: registry $B$. 
+%\input{preconstruct_algori.tex}
+To improve layer restoring performance,
+\sysname \texttt{preconstructs} layers before \texttt{pull} layer requests to save layer construction time.
+Upon each \texttt{pull} manifest request,
+\sysname will predict a \emph{target layer set} that will be requested later based on above prediction theory.
+%
+%Meanwhile,
+%\sysname will update \emph{RLmap} with the layer and its associated repository, where
+%RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
+%as shown in Figure~\ref{fig:dedup-partition}.
+After that,
+\sysname gets each layer's layer recipe from metadata database
+and extracts each layer's restoring master.
+Next,
+\sysname sends a notification of \texttt{preconstruct layer} to
+each restoring master.
 After receiving the notification, 
-$B$ sends \texttt{get slice} requests to its peer workers: $C$ and $D$.
-When $B$, $C$, and $D$ finished slice constructions for $L$,
-three slices are concatenated by $B$ and saved in $B$'s layer diskcache. 
-
-Algorithm~\ref{alg:prefetch} shows how to determine target layers 
-based on observed user access pattern.
-When a \texttt{GET manifest} request \emph{r} is received,
-\sysname~gets a set of layers associated with the requested repository \emph{r.repo} from RLmap, 
-denoted as $RLmap[r.repo]$.
-Meanwhile, it also gets a set of layers associated with the client \emph{r.client} from ULmap,
-denoted as $ULmap[r.client]$.
-After that, it calculates a list of layers in the requested repository 
-that have not been \texttt{pulled} by the client by
-computing the difference set between $RLmap[r.repo]$ and $ULmap[r.client]$ (denoted as $difference$).
-All the layers in $difference$ are included in target set.
-\sysname also calculates a intersection set between 
-$RLmap[r.repo]$ and $ULmap[r.client]$ (denoted as $intersection$).
-The layers in $intersection$ are already pulled by client.
-To determine whether a layer in $intersection$ will be
-$repulled$ by client,
-\sysname compares its repull count against a predefined threshold $\theta_{rpc}$.
-If the layer's repull count is greater than $\theta_{rpc}$,
-which means this layer will be repulled with high probability.
-Thus, it is included in target layer set.
-
-\sysname preconstructs layers before layer accesses to save layer construction time.
-
-After D-servers receive the backup replicas,
-\sysname will first update \emph{RLmap} with the layer and its associated repository, where
-RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
-as shown in Figure~\ref{fig:dedup-partition}.
+the restoring master starts layer restoring process and stores the preconstructed layer into \emph{preconstruct cache}.
 
 When a~\texttt{pull} layer request is received, 
-\sysname will first update \emph{ULmap}. 
-ULmap records user access status,
-which maps a \textbf{user Id} to its accessed layers with its corresponding access count,
-where user id is defined as client request address.
+\sysname will first search requested layer from preconstruct cache.
+If the layer presents in cache, the request will be served from cache.
+Otherwise,
+\sysname will rebuild a layer from file store.
 
-For each layer in target set, 
-\sysname gets the restoring master from its layer recipe,
-and sends a notification of \texttt{preconsturct layer} to the master.
-After the master receives the notification,
-it first checks if the requested layer is in the preconstruct cache.
-If not, 
-it starts layer construction and saves the preconstructed layer in the preconstruct cache.
+Note that it's possible when a \texttt{pull} layer request comes 
+before layer restoring is finished.
+In this case, \texttt{pull} layer request \emph{waits} until the restoring is finished
+(detailed in Section~\ref{xxx}).
+ 
+%the request will be served from layer store.
+%\sysname will first update \emph{ULmap}. 
+%ULmap records user access status,
+%which maps a \textbf{user Id} to its accessed layers with its corresponding access count,
+%where user id is defined as client request address.
+
+%Figure~\ref{fig:preconstruct}
+%shows how to preconstruct layers for later accesses.
+%When a \texttt{GET manifest} request is received by registry $A$,
+%it gets the requested repository information and client information from RLmap and ULmap respectively, 
+%and computes a list of target layers that will be accessed later by this client.
+%As shown, to preconstruct target layer $L1$, 
+%registry $A$ gets $L1$'s layer recipe from metadata database
+%and sends a notification of \texttt{preconstruct layer} $L1$ to 
+%$L1$'s restoring master: registry $B$. 
+%After receiving the notification, 
+%$B$ sends \texttt{get slice} requests to its peer workers: $C$ and $D$.
+%When $B$, $C$, and $D$ finished slice constructions for $L$,
+%three slices are concatenated by $B$ and saved in $B$'s layer diskcache. 
+
+
+%
+%Algorithm~\ref{alg:prefetch} shows how to determine target layers 
+%based on observed user access pattern.
+%When a \texttt{GET manifest} request \emph{r} is received,
+%\sysname~gets a set of layers associated with the requested repository \emph{r.repo} from RLmap, 
+%denoted as $RLmap[r.repo]$.
+%Meanwhile, it also gets a set of layers associated with the client \emph{r.client} from ULmap,
+%denoted as $ULmap[r.client]$.
+%After that, it calculates a list of layers in the requested repository 
+%that have not been \texttt{pulled} by the client by
+%computing the difference set between $RLmap[r.repo]$ and $ULmap[r.client]$ (denoted as $difference$).
+%All the layers in $difference$ are included in target set.
+%\sysname also calculates a intersection set between 
+%$RLmap[r.repo]$ and $ULmap[r.client]$ (denoted as $intersection$).
+%The layers in $intersection$ are already pulled by client.
+%To determine whether a layer in $intersection$ will be
+%$repulled$ by client,
+%\sysname compares its repull count against a predefined threshold $\theta_{rpc}$.
+%If the layer's repull count is greater than $\theta_{rpc}$,
+%which means this layer will be repulled with high probability.
+%Thus, it is included in target layer set.
+
+%After D-servers receive the backup replicas,
+%\sysname will first update \emph{RLmap} with the layer and its associated repository, where
+%RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
+%as shown in Figure~\ref{fig:dedup-partition}.
+
+%
+%For each layer in target set, 
+%\sysname gets the restoring master from its layer recipe,
+%and sends a notification of \texttt{preconsturct layer} to the master.
+%After the master receives the notification,
+%it first checks if the requested layer is in the preconstruct cache.
+%If not, 
+%it starts layer construction and saves the preconstructed layer in the preconstruct cache.
  
 %and gets two groups of layers: \emph{newLayers} and \emph{oldLayers}.
 %\emph{newLayers} means the layers that belongs to \emph{r.repo} but haven't been pulled by client \emph{r.client}.
@@ -126,22 +189,22 @@ it starts layer construction and saves the preconstructed layer in the preconstr
 %If not,
 %\dedupname system~will start restoring \emph{r.slice} and also put it in cache.
 %In the end, \preconstructcachename~will update URLmap with corresponding repull count and repull probability.
-\paragraph{Preconstruct cache eviction}
-To exploit the temporal trend of clients and repositories, 
-\sysname sets timer for each cached layers.
-Once a layer is expired,
-it will be simply deleted from the preconstruct cache.
+%\paragraph{Preconstruct cache eviction}
+%To exploit the temporal trend of clients and repositories, 
+%\sysname sets timer for each cached layers.
+%Once a layer is expired,
+%it will be simply deleted from the preconstruct cache.
+%
+%Preconstruct cache replacement is triggered when the free space in the cache is
+%lower than threshold $\theta_{C}$.
+%As shown in Algorithm~\ref{alg:eviction}, 
+%\sysname~maintains a LFRU list~\cite{xxx} of cached layers to exploit 
+%layer temporal trend.
+%If the free space is low,
+%\sysname~selects the least frequent recently used layer to evict.
 
-Preconstruct cache replacement is triggered when the free space in the cache is
-lower than threshold $\theta_{C}$.
-As shown in Algorithm~\ref{alg:eviction}, 
-\sysname~maintains a LFRU list~\cite{xxx} of cached layers to exploit 
-layer temporal trend.
-If the free space is low,
-\sysname~selects the least frequent recently used layer to evict.
 
-
-\input{eviction_algori}
+%\input{eviction_algori}
 
 %\input{fig-repull-analysis}
 

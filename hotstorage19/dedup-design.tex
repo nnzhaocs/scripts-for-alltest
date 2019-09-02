@@ -28,6 +28,8 @@ Meanwhile, \sysname~submits $R-r$ backup layer replicas to D-servers and tempora
 %The process always stars with the cold layers that haven't been
 %access for a long time.
  
+ After D-servers receive the backup replicas,
+ replicas will be temporally saved into layer stage areas as shown in Figure~\ref{fig:sift}.
  \sysname initiates a lightweight layer deduplication process which collaborates with the metadata database
  to remove redundant files from layers. 
 The deduplication process has three major steps: 
