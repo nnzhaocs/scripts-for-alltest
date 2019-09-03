@@ -13,123 +13,193 @@
 
 % 1. Containerization and microservices grow more than faster.
  %Amazon, Netflix, and eBay, container as a service
-The rise of containerization and microservices have been a remarkable advancement in 
+ %(memory and cpu resource limits), (pid, networking namespace, mount namespace, etc.)
+The rise of \emph{containerization} has been a remarkable advancement in 
 cloud environment and architectures,
 allowing applications to build, deploy and manage faster and easier.
-At their core, containers 
+At its core, containers 
 refactor a traditional, monolithic architectures into a flexible, portable microservices platform 
 to organize and distribute applications. 
 
-Docker, an enterprise container platform, 
- leverages LXC (Linux Containers), which consists of Linux kernel features such as cgroups and namespaces for efficient process isolation and resource control, support multitenancy. 
- Docker leverages a copy-on-write file system and this allows Docker to instantiate containers quickly because it leverages the pointers to the existing files. Copy-on-write file system also provides layering of containers, thus you can create a base container and then have another container which is based on the base container. 
-
-kubernetes self- healing, auto restarting, replication and rescheduling mechanisms make it more robust and suitable for container based application.
-Docker registry
-
-%%%%%%%%%%%%%%%%%%% old intro %%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
- Containers 
- have become an effective means for deploying modern applications because 
- of desirable features such as tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}. 
- However,
- sustaining and scaling container systems in the face of exponential growth is challenging. 
- %
- For example, Docker Hub~\cite{docker-hub}---a popular public container registry---stores more than~$2$ million public repositories. 
- These repositories have grown at the rate of about~$1$ million annually ---and the rate is expected to increase which
- requires provisioning a large amount of new storage consistently.
- %
- This puts intense pressure on the availability and scalability of Docker registry storage infrastructure 
- because scaling-out involves data migration between existing storage serves and new storage servers, even among existing storage servers for load balancing,
- which largely hurts performance.
- %
-% In this paper, we propose a new Docker registry architecture, \sysname,
- that integrates caching and deduplication with Docker registries to help reduce the storage requirements while mitigating any performance overhead.
+As a popular and successful example of container advances,
+Docker leverages \emph{LXC} (Linux Containers), which utilizes linux kernel features -- 
+cgroups and namespaces -- for 
+efficient process isolation, resource control, and supporting multitenancy.
+Compared with hypervisor-based virtualization,
+containers share the OS kernel,
+therefore container deployments are significantly smaller in size and faster.
+Moreover, 
+Docker provides a systematic way to 
+automate the faster deployment of applications inside portable containers.
+Docker containers managed by Kubernetes orchestration system
+are clustered together to provide high available, scalable, and secure services.
+Many cloud platforms endorse Kubernetes and Docker 
+as core cloud deployment technologies,
+such as Google (Google Cloud Engine),
+Microsoft (Microsoft Azure),
+IBM (Softlayer and OpenStack),
+ and
+Red Hat (OpenStack distribution).
  
-Containers are running instances of \emph{images} that encapsulate complete runtime environment for an application.
-An image comprises a set of shareable and content addressable \emph{layers}.
-% and is stored in Docker \emph{registry}. 
-Each layer is made up of a set of files that are compressed in a single archive. 
-Docker images/layers are stored in an online store called Docker registry~\cite{docker-hub} and accessed by clients. % as needed.
-%As layers are the building blocks of images, they can be shared among multiple images. 
-Since a layer is uniquely identified by a collision-resistant hash of its content, 
-no duplicate layers are stored in the registry.
-Many container registries use remote cloud storage, e.g., S3~\cite{s3}, 
-% Microsoft Azure~\cite{azure}, and OpenStack Swift~\cite{swift} 
-as their backend storage system~(Figure~\ref{fig:without-dedup}).
-%For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
-%IBM container registry uses IBM cloud to manage image storage.
+Docker containers are created using base \emph{Docker images}. 
+A Docker image may include OS fundamentals, system libraries, dependencies, or executable codes. 
+When building images with Docker, 
+each action taken (that is, 
+command executed, such as \texttt{apt-get install}) forms a new pluggable \emph{layer} on top of the previous one. 
+Docker leverages a COW (copy-on-write) file system 
+which allows Docker to instantiate containers quickly. 
+COW mechanism also improves Docker storage system efficiency. 
+%by minimizes I/O and the size of each of the subsequent layers.
+%because it leverages 
+%the pointers to the existing files. 
+%Copy-on-write file system also provides layering of containers, thus you can create a 
+%base container and then have another container which is based on the base container. 
+%Commands can be executed manually or automatically using Dockerfiles.
 
-\paragraph{Is current registry deduplication effective?} 
-To guide our design, we downloaded and analyzed 
-$47$~TB ($167$~TB uncompressed) of Docker images 
-from Docker Hub (containing over~$5$ billion files). We found 
-that only~$3$\% of the stored files across the layers are unique; the remaining are redundant copies. 
-This clearly shows that the current layer-based sharing mechanism is unable 
-to effectively remove data duplicates. This is despite the fact that
-many cloud storage systems implement deduplication to effectively eliminate redundant data.
-For example,
-Google cloud and AWS, 
-employ in-line transparent data deduplication~\cite{storReduce}. %\NZ{use a new example}
-But the compressed layers reduce the opportunity for deduplication significantly. Effectively removing reduducncy from layers entails decompressing them before performing deduplication.
+Docker images are stored as a set of shareable and content addressable \emph{compressed layer tarballs} 
+and content distributed by Docker registry like Docker Hub.
+Docker registry delegates storage to different drivers using content addressable store-like API.
+A layer is uniquely identified by a collision-resistant hash of its content.
+No duplicate layers are stored in registry.
+Drivers include methods of reading, writing, and deleting content of 
+the \emph{backend storage systems}
+such as \emph{local file system} or \emph{Cloud storage systems} (e.g., S3, Azure, Swift, OSS, GCS).
 
-The challenge is that decompressing layers can have overheads besides the obvious decompression/compression. 
-As shown in Figure~\ref{fig:with-dedup}, 
-after decompression and simple file-level deduplication, the unique files may become scattered on
+Cloud storage systems usually use \emph{replication} to maintain high availability and tolerant server failure.
+Each layer has multiple \emph{layer replicas}.
+As container market grows rapidly, 
+more images and layers are built, \emph{replicated}, and stored in Docker registry.
+This puts intense pressure on the availability and scalability of Docker registry's backend storage infrastructure 
+because scaling-out involves data migration between existing storage servers and new storage servers, 
+even among existing storage servers for load balancing,
+which largely hurts performance.
+
+Many cloud storage systems utilize deduplication to remove duplicate data and better storage allocation, resulting in
+a significant cost savings on hardware upgrades and scale-out effectively.
+As shown in our previous deduplication analysis of $47$~TB ($167$~TB uncompressed) 
+Docker image/layer dataset downloaded from Docker Hub~\ref{xxx},
+97\% of files across the \emph{compressed layers} are duplicate files.
+If decompression and file-level deduplication is applied on the dataset,
+we can save half of the storage space.
+
+The challenge of applying deduplication on Docker registry 
+is that decompressing layers can have overheads besides the obvious decompression/compression. 
+%As shown in Figure~\ref{fig:with-dedup}, 
+After decompression and simple file-level deduplication, 
+the unique files may become scattered on
 multiple servers. 
 To restore a layer,
-the layer's files would need to be first fetched from multiple servers, then compressed as a layer (to preserve transparency and avoid client-side API modifications)
+the layer's files would need to be first fetched from multiple servers, 
+then compressed as a layer (to preserve transparency and avoid client-side API modifications)
 and sent back to the client.
-The extra network, I/O, and computation will slow down the response time for retrieving (pulling) an image.
+The extra network, I/O, and computation will slow down the response time for retrieving (\texttt{pulling}) an image.
 
-%Without deduplication (Figure~\ref{fig:without-dedup}),
-%the average latency for requesting a layer is around~2\,s for layers with size less than~50\,MB.
-%The latency increases to~12\,s when deduplication is implemented in the backend storage system.
-%Furthermore, Docker registry performance drops down dramatically for bigger layers.
+In this paper, we propose \sysname, a fast and lightweight Docker registry.
 
-%We observe that the average latency for requesting layers larger than~50\,MB and smaller than~1\,GB
-%is around~128\,s. The latency worsens when dedupliation is implemented, with an average around~800\,s.
-%incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time. 
-%A solution would be to decompress the layers before applying deduplication on Docker registries.
- 
-%Therefore, in this paper, we propose a new Docker registry architecture,~\sysname,
-%that integrates caching and deduplication with Docker registries to address the aforementioned obstacles.
-%low restore latency %adaptive%
-% deduplication framework for Docker registries. 
-
-\paragraph{Can caching help?}
-Large container registry service providers such as Google and IBM use regional private registries across the world to facilitate a fast and highly-available service~\cite{ibmregistry,GoogleContainerRegistry}.  
-This geographical distribution allows users to store images near their compute instances and experience a fast response time. 
-An intuitive solution is to 
-leverage these distributed registries as a cache to temporarily store popular layers and
-improve pull latency.
-The challenge here is that the layer access pattern is greatly different with traditional workloads 
-since once a layer is pulled by a user, the layer won't be pulled again by this user because
-the layer is locally available to this user. 
-This pattern has been observed by our registry workload analysis. 
-The inter-access time for layer pulls can range from minutes to hours to months, making it difficult to manage the cache using traditional approaches such as LRU.
-Moreover, our Docker Hub image analysis shows that the layer sizes 
-vary from a few MB to several GB and that a majority of layers sizes are around several MB. A small main memory cache cannot accommodate many layers, and thus is ineffective. 
-
-\paragraph{\sysname to the rescue.}
-\sysname addresses the above challenges as follows. 
-First, it explores layer access pattern and uses a 
-user-access-history-based prefetch algorithm to accurately prefetch
-the layers that will be accessed shortly.
+%Docker image dataset is unique while treated equally as objects, files, or blocks.
+%%%%%%%%%%%%%%%%%%% old intro %%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+% Containers 
+% have become an effective means for deploying modern applications because 
+% of desirable features such as tight isolation, low overhead, and efficient packaging of the execution environment~\cite{docker}. 
+% However,
+% sustaining and scaling container systems in the face of exponential growth is challenging. 
+% %
+% For example, Docker Hub~\cite{docker-hub}---a popular public container registry---stores more than~$2$ million public repositories. 
+% These repositories have grown at the rate of about~$1$ million annually ---and the rate is expected to increase which
+% requires provisioning a large amount of new storage consistently.
+% %
+% This puts intense pressure on the availability and scalability of Docker registry storage infrastructure 
+% because scaling-out involves data migration between existing storage serves and new storage servers, even among existing storage servers for load balancing,
+% which largely hurts performance.
+% %
+%% In this paper, we propose a new Docker registry architecture, \sysname,
+% that integrates caching and deduplication with Docker registries to help reduce the storage requirements while mitigating any performance overhead.
+% 
+%Containers are running instances of \emph{images} that encapsulate complete runtime environment for an application.
+%An image comprises a set of shareable and content addressable \emph{layers}.
+%% and is stored in Docker \emph{registry}. 
+%Each layer is made up of a set of files that are compressed in a single archive. 
+%Docker images/layers are stored in an online store called Docker registry~\cite{docker-hub} and accessed by clients. % as needed.
+%%As layers are the building blocks of images, they can be shared among multiple images. 
+%Since a layer is uniquely identified by a collision-resistant hash of its content, 
+%no duplicate layers are stored in the registry.
+%Many container registries use remote cloud storage, e.g., S3~\cite{s3}, 
+%% Microsoft Azure~\cite{azure}, and OpenStack Swift~\cite{swift} 
+%as their backend storage system~(Figure~\ref{fig:without-dedup}).
+%%For example, Google container Registry~\cite{GoogleContainerRegistry} stores images on Google cloud storage while
+%%IBM container registry uses IBM cloud to manage image storage.
 %
-Second, \sysname embodies a two-tier heterogeneous cache architecture 
-comprising a {\em layer buffer} and a {\em file cache} to hold  prefetched layers.
-The layer buffer stores layers in main memory. The file cache stores 
-the \emph{deduped} unique files for the layers evicted from the layer buffer on a 
-flash-based storage system.
-The mix of main memory and flash memory can realize the needed large capacity for caching prefetched layers and files. 
-Our prefetch algorithm yields a hit ratio of $96$\%. 
-Moreover, our two-tier heterogeneous cache is able to store $56$\% more layers into the file cache.
+%\paragraph{Is current registry deduplication effective?} 
+%To guide our design, we downloaded and analyzed 
+%$47$~TB ($167$~TB uncompressed) of Docker images 
+%from Docker Hub (containing over~$5$ billion files). We found 
+%that only~$3$\% of the stored files across the layers are unique; the remaining are redundant copies. 
+%This clearly shows that the current layer-based sharing mechanism is unable 
+%to effectively remove data duplicates. This is despite the fact that
+%many cloud storage systems implement deduplication to effectively eliminate redundant data.
+%For example,
+%Google cloud and AWS, 
+%employ in-line transparent data deduplication~\cite{storReduce}. %\NZ{use a new example}
+%But the compressed layers reduce the opportunity for deduplication significantly. Effectively removing reduducncy from layers entails decompressing them before performing deduplication.
+%
+%The challenge is that decompressing layers can have overheads besides the obvious decompression/compression. 
+%As shown in Figure~\ref{fig:with-dedup}, 
+%after decompression and simple file-level deduplication, the unique files may become scattered on
+%multiple servers. 
+%To restore a layer,
+%the layer's files would need to be first fetched from multiple servers, then compressed as a layer (to preserve transparency and avoid client-side API modifications)
+%and sent back to the client.
+%The extra network, I/O, and computation will slow down the response time for retrieving (pulling) an image.
+%
+%%Without deduplication (Figure~\ref{fig:without-dedup}),
+%%the average latency for requesting a layer is around~2\,s for layers with size less than~50\,MB.
+%%The latency increases to~12\,s when deduplication is implemented in the backend storage system.
+%%Furthermore, Docker registry performance drops down dramatically for bigger layers.
+%
+%%We observe that the average latency for requesting layers larger than~50\,MB and smaller than~1\,GB
+%%is around~128\,s. The latency worsens when dedupliation is implemented, with an average around~800\,s.
+%%incurs a considerable additional overhead on layer pull time and thus affecting the overall container startup time. 
+%%A solution would be to decompress the layers before applying deduplication on Docker registries.
+% 
+%%Therefore, in this paper, we propose a new Docker registry architecture,~\sysname,
+%%that integrates caching and deduplication with Docker registries to address the aforementioned obstacles.
+%%low restore latency %adaptive%
+%% deduplication framework for Docker registries. 
+%
+%\paragraph{Can caching help?}
+%Large container registry service providers such as Google and IBM use regional private registries across the world to facilitate a fast and highly-available service~\cite{ibmregistry,GoogleContainerRegistry}.  
+%This geographical distribution allows users to store images near their compute instances and experience a fast response time. 
+%An intuitive solution is to 
+%leverage these distributed registries as a cache to temporarily store popular layers and
+%improve pull latency.
+%The challenge here is that the layer access pattern is greatly different with traditional workloads 
+%since once a layer is pulled by a user, the layer won't be pulled again by this user because
+%the layer is locally available to this user. 
+%This pattern has been observed by our registry workload analysis. 
+%The inter-access time for layer pulls can range from minutes to hours to months, making it difficult to manage the cache using traditional approaches such as LRU.
+%Moreover, our Docker Hub image analysis shows that the layer sizes 
+%vary from a few MB to several GB and that a majority of layers sizes are around several MB. A small main memory cache cannot accommodate many layers, and thus is ineffective. 
+%
+%\paragraph{\sysname to the rescue.}
+%\sysname addresses the above challenges as follows. 
+%First, it explores layer access pattern and uses a 
+%user-access-history-based prefetch algorithm to accurately prefetch
+%the layers that will be accessed shortly.
+%%
+%Second, \sysname embodies a two-tier heterogeneous cache architecture 
+%comprising a {\em layer buffer} and a {\em file cache} to hold  prefetched layers.
+%The layer buffer stores layers in main memory. The file cache stores 
+%the \emph{deduped} unique files for the layers evicted from the layer buffer on a 
+%flash-based storage system.
+%The mix of main memory and flash memory can realize the needed large capacity for caching prefetched layers and files. 
+%Our prefetch algorithm yields a hit ratio of $96$\%. 
+%Moreover, our two-tier heterogeneous cache is able to store $56$\% more layers into the file cache.
 
-\paragraph{\sysname use cases.}
+%\paragraph{\sysname use cases.}
 
-on-prem registry.
-public-cloud registry.
+%on-prem registry.
+%public-cloud registry.
 %Moreover, we propose a user-based cache algorithm to improve the cache hit ratio 
 %based on our Docker Hub image analysis that showed that user-active-time is more predictable.
 
@@ -149,7 +219,7 @@ public-cloud registry.
 %%by conducting a preliminary simulation-based study. Our study aims to explore the feasibility/benefits of deduplication and quantify the overhead it introduces.
 %\HA{plz add preliminary results}.  
 
-\input{fig-nodedupvsdedup}
+%\input{fig-nodedupvsdedup}
 
 %\HA{need to mention Figure~\ref{fig:without-dedup} and Figure~\ref{fig:with-dedup}}
 
