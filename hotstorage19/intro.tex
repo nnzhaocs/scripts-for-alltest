@@ -16,39 +16,32 @@
  %(memory and cpu resource limits), (pid, networking namespace, mount namespace, etc.)
 The rise of \emph{containerization} has been a remarkable advancement in 
 cloud environment and architectures,
-allowing applications to build, deploy and manage faster and easier.
-At its core, containers 
-refactor a traditional, monolithic architectures into a flexible, portable microservices platform 
-to organize and distribute applications. 
+allowing applications to be built, deployed and managed easier and faster.
+At its core, the use of containers target the breaking up of traditional, monolithic architectures into flexible, portable microservices. 
 
-As a popular and successful example of container advances,
+As a popular and successful example of container technology,
 Docker leverages \emph{LXC} (Linux Containers), which utilizes linux kernel features -- 
 cgroups and namespaces -- for 
 efficient process isolation, resource control, and supporting multitenancy.
 Compared with hypervisor-based virtualization,
 containers share the OS kernel,
 therefore container deployments are significantly smaller in size and faster.
-Moreover, 
-Docker provides a systematic way to 
-automate the faster deployment of applications inside portable containers.
-Docker containers managed by Kubernetes orchestration system
-are clustered together to provide high available, scalable, and secure services.
+Moreover, Docker provides a systematic way to automate the faster deployment of applications while providing portability. Multiple running containers can be managed by an orchestrator like Kubernetes to provide highly available, scalable, and secure services.
 Many cloud platforms endorse Kubernetes and Docker 
 as core cloud deployment technologies,
 such as Google (Google Cloud Engine),
-Microsoft (Microsoft Azure),
+Microsoft (Azure),
 IBM (Softlayer and OpenStack),
  and
-Red Hat (OpenStack distribution).
+Red Hat (OpenShift).
  
 Docker containers are created using base \emph{Docker images}. 
-A Docker image may include OS fundamentals, system libraries, dependencies, or executable codes. 
+A Docker image may include OS and system libraries, dependencies, and executable code. 
 When building images with Docker, 
-each action taken (that is, 
-command executed, such as \texttt{apt-get install}) forms a new pluggable \emph{layer} on top of the previous one. 
+each action taken (that is, each command executed, such as \texttt{apt-get install}) forms a new \emph{layer} on top of the previous one. 
 Docker leverages a COW (copy-on-write) file system 
 which allows Docker to instantiate containers quickly. 
-COW mechanism also improves Docker storage system efficiency. 
+Utilizing COW also improves storage system efficiency. 
 %by minimizes I/O and the size of each of the subsequent layers.
 %because it leverages 
 %the pointers to the existing files. 
@@ -57,29 +50,28 @@ COW mechanism also improves Docker storage system efficiency.
 %Commands can be executed manually or automatically using Dockerfiles.
 
 Docker images are stored as a set of shareable and content addressable \emph{compressed layer tarballs} 
-and content distributed by Docker registry like Docker Hub.
-Docker registry delegates storage to different drivers using content addressable store-like API.
-A layer is uniquely identified by a collision-resistant hash of its content.
-No duplicate layers are stored in registry.
-Drivers include methods of reading, writing, and deleting content of 
-the \emph{backend storage systems}
+and are distributed through a \emph{registry} like Docker Hub.
+A Docker registry delegates the storage responsibility to different drivers using a content addressable store API.
+A layer is uniquely identified by a collision-resistant hash of its content and so no duplicate layers are stored in a registry.
+%Drivers provide a means of interfacingun
+The drivers interface with the \emph{backend storage systems}
 such as \emph{local file system} or \emph{Cloud storage systems} (e.g., S3, Azure, Swift, OSS, GCS).
 
-Cloud storage systems usually use \emph{replication} to maintain high availability and tolerant server failure.
-Each layer has multiple \emph{layer replicas}.
-As container market grows rapidly, 
-more images and layers are built, \emph{replicated}, and stored in Docker registry.
-This puts intense pressure on the availability and scalability of Docker registry's backend storage infrastructure 
-because scaling-out involves data migration between existing storage servers and new storage servers, 
-even among existing storage servers for load balancing,
-which largely hurts performance.
+Cloud storage systems usually use \emph{replication} to maintain high availability and tolerate server failure.
+Each layer can have multiple \emph{replicas}.
+As the container market grows rapidly, 
+more and more images and layers are built, \emph{replicated}, and stored in Docker registries.
+This puts intense pressure on the availability and scalability aspects of a Docker registry's backend storage infrastructure. 
+Scaling-out involves data migration between existing storage servers and new storage servers, 
+and even between existing storage servers for load balancing,
+which greatly hurts performance.
 
-Many cloud storage systems utilize deduplication to remove duplicate data and better storage allocation, resulting in
-a significant cost savings on hardware upgrades and scale-out effectively.
+Many cloud storage systems utilize deduplication to remove duplicate data and improve storage allocation, resulting in
+effective scale-out and a significant cost savings on hardware upgrades.
 As shown in our previous deduplication analysis of $47$~TB ($167$~TB uncompressed) 
 Docker image/layer dataset downloaded from Docker Hub~\ref{xxx},
 97\% of files across the \emph{compressed layers} are duplicate files.
-If decompression and file-level deduplication is applied on the dataset,
+If decompression and file-level deduplication is applied on the dataset, % subil: citation needed
 we can save half of the storage space.
 
 The challenge of applying deduplication on Docker registry 
@@ -89,12 +81,13 @@ After decompression and simple file-level deduplication,
 the unique files may become scattered on
 multiple servers. 
 To restore a layer,
-the layer's files would need to be first fetched from multiple servers, 
-then compressed as a layer (to preserve transparency and avoid client-side API modifications)
+the layer's files would need to be first fetched from multiple servers, then compressed into a layer (to preserve transparency and avoid client-side API modifications)
 and sent back to the client.
 The extra network, I/O, and computation will slow down the response time for retrieving (\texttt{pulling}) an image.
 
-In this paper, we propose \sysname, a fast and lightweight Docker registry.
+In this paper, we propose \sysname, a fast and lightweight Docker registry that provides significant storage improvements over standard registry deployments through the use of file-level deduplication, while mitigating the associated performance cost. It does this through caching based on user behavior and layer popularity, and parallelizing layer construction across servers.
+
+This paper is organized into the following sections: Section 2 talks about observed behaviors and access patterns in Docker registries, Section 3 covers the design of our registry, Section 4 details the implementation of the registry, Section 5 evaluates the performance of the registry, Section 6 talks about similar work done in the field, and Section 7 concludes. 
 
 %Docker image dataset is unique while treated equally as objects, files, or blocks.
 %%%%%%%%%%%%%%%%%%% old intro %%%%%%%%%%%%%%%%%%%%%%%%%%%
