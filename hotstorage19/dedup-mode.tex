@@ -11,6 +11,8 @@ While S-mode mantains a number of layer replicas for different layer proportiona
 Assume that registry storage system uses R-way replication.
 Consider that layer dataset deduplication analysis~\cite{xxx} shows a file-level deduplication ratio of 2$\times$.
 Thus, the average layer deduplication ratio for the layer dataset~\cite{xxx} is 2$\times$.
+\LR{Was it just 2$\times$? I thought it was larger. Can we use a variable for the deduplication ratio, e.g. $d$?
+We would need to substitute that in the formulas.}
 % subil: need clarification here. where is the 2x coming from
 
 B-mode \emph{r} is defined as keeping \emph{r} layer replicas and deduplicating the rest of layer replicas, where $r \leq R$. 
@@ -18,6 +20,9 @@ The space saving is calculated by following equation~\ref{eq:b-savings}.
 \begin{equation}\label{eq:b-savings}
 Space savings = \frac{R-(r+\frac{1}{2}(R-r))}{R} = \frac{R-r}{2R}
 \end{equation}
+
+\LR{Not sure if I understand this correctly but the space savings here look like they're per layer
+while the space savings in Eq. 3 seem to be for all layers? If that's true, can we make it consistent?}
 
 Layer pulling performance largely depends on registry server load.
 Assume that the total number of P-servers and D-servers are \emph{P} and \emph{D} especially.
@@ -27,6 +32,8 @@ Note that original registry is \sysname's B-mode \emph{R}, which represents the 
 The performance degradation can be calculated as:
 %$$
  %$\emph{f}_\frac{L}{P} \times \theta_{r}$. 
+ 
+\LR{The following equation is unclear. What is F? How does it operate on the parameters?} 
  
  \begin{equation}\label{eq:c-pull}
 Performance degradation =  F(L, P, D, \delta_{R-r})
@@ -41,6 +48,7 @@ Consequently, the number of layer replicas $r_{l}$ for layer \emph{l} is
 %\emph{r} ($r \leq R$) is calculated as:
 $r_{l} = R \times \Phi (\frac{\emph{l}_{pcnt}}{L})$, 
 where $\Phi (\frac{\emph{l}_{pcnt}}{L})$ denotes a replication factor.
+\LR{How is $\Phi (\frac{\emph{l}_{pcnt}}{L})$ defined?}
 
 The space savings for S-mode is calculated as following equation~\ref{eq:s-savings}.
 \begin{equation}\label{eq:s-savings}

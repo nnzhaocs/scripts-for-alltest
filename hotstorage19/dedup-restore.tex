@@ -16,6 +16,9 @@ P-servers fail, D-servers will rebuild a layer for the request.
 %Next, it compresses the slice's directory tree into a slice tarball,
 %and directly sends it back to the client.
 
+\LR{Are we only considering the case when a P-server fails or
+are we also considering, if a P-server gets overloaded?}
+
 \paragraph{Parallel layer construction}
 
 %Upon a \texttt{pull} layer request fails on P-servers,
@@ -49,6 +52,9 @@ by reading the corresponding physical file addressed by the content pointer.
 %and builds a slice archive.
 Finally, the slice constructor compresses the slice archive and send it to the layer constructor on restoring master.
 
+\LR{The following paragraph is a little bit out of context. Why are we suddenly talking about
+stateless streaming layer construction? Need to tie it in better with the rest of the text and
+motivate our design decisions better.}
 
 \paragraph{Streaming layer construction}
 Figure~\ref{fig:construct} details the stateless streaming layer construction process.

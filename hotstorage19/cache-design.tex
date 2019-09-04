@@ -15,6 +15,8 @@
 
 %\input{fig-layer-preconstruct}
 
+\LR{Why are we calling it `superfetch cache'? Isn't that just a prefetch cache?}
+
 Based on the user access patterns observed in Section~\ref{sec:dataset-analysis},
 \sysname predicts what layers will be accessed and prepares the layers before \texttt{pull} layer requests.
 To improve the performance of primary cluster,
@@ -25,6 +27,10 @@ to improve the layer restoring performance of deduplication cluster,
 and put them into \textbf{preconstruct cache} to save restoring latency.
 
 \paragraph{Future request prediction based on user access pattern}
+%
+\LR{The following paragraph should be part of the background. By now,
+the reader should be familiar with the pull process.}
+%
 Typically, when a user 
  \texttt{pulls} an image,
 it will first \texttt{pulls} the image's manifest and extract the image's layers from the manifest, 

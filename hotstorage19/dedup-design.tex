@@ -6,6 +6,8 @@
 %\subsubsection{When to deduplicate layers?}
 %
 %
+\LR{There should always be some text after a heading and before the
+next heading.}
 
 \subsubsection{Layer deduplication, replication, and partitioning}
 
@@ -39,6 +41,8 @@ file-level deduplication,
 \textbf{unique file replication} and \textbf{layer partitioning}. 
 The first two steps are necessary for removing duplicate files from compressed layer tarballs.
 
+\LR{Need to make this more clear. Are we just deduplicating one layer but then copy the
+resulting unique files to $R-r$ D-servers?}
 The last step -- unique file replication and layer partitioning is 
 to evenly distribute the I/O and computation load of layer restoring across D-servers 
 while maintain a certain level of fault-tolerance.  
@@ -59,6 +63,9 @@ After the layer replica is \emph{deduplicated}, all the backup layer replicas st
 
 %\input{fig-sift-metadata}
 \paragraph{Layer file-level deduplication}
+\LR{Is the following just how the .tar format is structured or are we doing anything
+additional to the headers and the content? If not, we should just mention that this is
+how tar is creating archives.}
 As shown in Figure~\ref{fig:dedup-partition}, following the staging area, the layer tarball is loaded to the layer deduplication process.
 In this process, the layer tarball is first decompressed into a \textbf{layer archive file}.
 %Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning. 
@@ -74,10 +81,14 @@ the process computes a \emph{fingerprint} by hashing the file content denoted as
 and checks the file Id for presence in the file index.
 If the file Id is already stored, the file content will be discarded. 
 Otherwise, it will be saved physically in file store and the file Id is recorded in the file index.
-As shown,
+As shown \LR{where?},
 to address a physical file, 
 each file Id in the file index is mapped to the 
-\textbf{file status} of the physical file which mainly contains file name, path, and size.
+\textbf{file status}
+%
+\LR{Is the file status the same as the file header?}
+%
+of the physical file which mainly contains file name, path, and size.
 Besides, each file Id in the file index is also mapped to its \emph{host address} with the associated \textbf{backup level}.
 Backup level denotes whether the host stores a primary backup file replica (i.e., \texttt{P}) or the $n^{th}$ backup replica (ie., \texttt{B}\emph{n}) detailed as follows.
 %detailed as following.
@@ -107,6 +118,10 @@ Consequently,
 primary backup file replicas \emph{f1} and \emph{f5} stored on \emph{A} comprise a partition of \emph{L},
 denoted as \textbf{primary slice}.
 The rest two secondary backup file replicas \emph{f4'} and \emph{f8'} stored on \emph{A} comprise a \textbf{backup slice} for \emph{L}.
+%
+\LR{Why are \emph{f4'} and \emph{f8'} only a backup slice?}
+\LR{Instead of putting the fX in emph environments, we should use math mode and put numbers in the index, e.g.
+$f_{4}'$.}
 
 %=======
 %After discarding duplicate files
@@ -214,6 +229,8 @@ One worker is selected as \textbf{restoring master} responsible for gathering al
  %its host' slice
 %to get identical files' server addresses.
 
+\LR{The following needs to be reformulated to be more clear.}
+%
 As shown in Figure~\ref{fig:replication-partition},
 layer \emph{L} is evenly partitioned among D-servers 
 since its shared files and unique files are evenly distributed to D-servers. 
@@ -232,6 +249,9 @@ Next,
 \sysname
 assigns the biggest unique file to the smallest slices
 til all the unique files are assigned.
+
+\LR{As a general note, it seems like we generate quite a bit of metadata to keep track
+of the slices etc. Are we planning to evaluate how much metadata we generate?}
 
 \input{dedup-restore}
 

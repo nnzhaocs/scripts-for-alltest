@@ -6,6 +6,11 @@
 \input{fig-sys-overview}
 %\input{fig-diskcache}
 
+\LR{For example, here we need to first motivate, why those replication modes are there. What are the
+objectives of Sift? We want to deduplicate layers but we don't want latencies to suffer. So what is
+the problem then? Reconstructing layers is expensive. That's why we choose to have replication modes
+to trade-off storage space for performance.}
+
 \sysname provides different \emph{deduplication modes} by deduplicating different number of layer replicas
 (see \ref{sec:dedup-mode}).
 Figure~\ref{fig:sift-original} shows a simple deduplication mode of \sysname registry cluster compared with original registry cluster.
@@ -30,10 +35,17 @@ Registry servers are divided into two groups:
 \emph{primary cluster} and \emph{deduplication cluster}, denoted as \emph{P-servers} and \emph{D-servers}.
 P-server mainly stores layer replicas and manifest replicas.
 While D-server deduplicates the backup layer replicas at the file level and  stores replicates them.
+\LR{It would be good to briefly mention here, how we split servers into P- and D-servers, or make a forward
+reference to the place, where we actually discuss it in detail.}
 
 As shown in Figure~\ref{fig:sift}, 
 each D-server's local storage system is
-divided into three parts: layer stage area, preconstruct cache, and file store. The \emph{Layer stage area} temporarily stores newly added layer replicas as shown in Figure~\ref{fig:sift-original}.
+divided into three parts: layer stage area, preconstruct cache, and file store.
+%
+\LR{Should it be 4 parts? Why do we not include the file cache? I think file cache should also
+be explained here.}
+%
+The \emph{Layer stage area} temporarily stores newly added layer replicas as shown in Figure~\ref{fig:sift-original}.
 After a layer replica is \texttt{deduplicated}, 
 the remaining unique files are stored as primary file replicas in a content 
 addressable \emph{file store} with a small \emph{file cache}. 
@@ -47,12 +59,17 @@ the layer can be restored in parallel (see section~\ref{sec:dedup-desgin}).
 %As shown in Figure~\ref{fig:cache}, 
 When a P-server crashes,
 the \texttt{pull} layer request will be served from a D-server.
+%
+\LR{The following is a bit unclear. Is the stage area the same as the preconstruction cache?}
+%
 If the \texttt{pull} layer request has a hit in the D-server's layer stage area (i.e. a layer replica has not been deleted yet),
 the request will be served from layer stage area.
+\LR{Now that we also store non-deduplicated layers, we need to make sure that the preconstruction cache still
+makes sense. For example, if we have a `fully deduplicated` mode, in which we only store deduplicated layers
+(i.e. number of P-servers = 0), then the preconstruction cache would be useful.}
 
 Upon a \texttt{pull} layer request miss, D-server will rebuild the layer from file store
 based on its associated \textbf{layer recipe} (see section~\ref{sec:restore-design}). 
-.
 The preconstruct cache is a write-through cache; when layers are evicted from the diskcache, they are simply discarded.
 
 Deduplication related metadata such as \textbf{layer recipe}, \textbf{slice recipe}, \textbf{layer index}, and \textbf{file index} is kept in a \emph{distributed database} (Figure~\ref{fig:sift}) for 
