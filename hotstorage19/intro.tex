@@ -55,24 +55,24 @@ A Docker registry delegates the storage responsibility to different drivers usin
 A layer is uniquely identified by a collision-resistant hash of its content and so no duplicate layers are stored in a registry.
 %Drivers provide a means of interfacingun
 The drivers interface with the \emph{backend storage systems}
-such as \emph{local file system} or \emph{Cloud storage systems} (e.g., S3, Azure, Swift, OSS, GCS).
+such as \emph{local file systems} or \emph{Cloud storage systems} (\eg S3, Azure, Swift, OSS, GCS).
 
 Cloud storage systems usually use \emph{replication} to maintain high availability and tolerate server failure.
 Each layer can have multiple \emph{replicas}.
 As the container market grows rapidly, 
 more and more images and layers are built, \emph{replicated}, and stored in Docker registries.
-This puts intense pressure on the availability and scalability aspects of a Docker registry's backend storage infrastructure. 
+This puts intense pressure on the availability and scalability requirements of a Docker registry's backend storage infrastructure. 
 Scaling-out involves data migration between existing storage servers and new storage servers, 
 and even between existing storage servers for load balancing,
-which greatly hurts performance.
+which is detrimental to performance.
 
 Many cloud storage systems utilize deduplication to remove duplicate data and improve storage allocation, resulting in
 effective scale-out and a significant cost savings on hardware upgrades.
 As shown in our previous deduplication analysis of $47$~TB ($167$~TB uncompressed) 
 Docker image/layer dataset downloaded from Docker Hub~\ref{xxx},
-97\% of files across the \emph{compressed layers} are duplicate files.
+About $97$\% of files across \emph{compressed layers} are duplicate files.
 If decompression and file-level deduplication is applied on the dataset, % subil: citation needed
-we can save half of the storage space.
+half of the storage space can be saved.
 
 The challenge of applying deduplication on Docker registry 
 is that decompressing layers can have overheads besides the obvious decompression/compression. 
@@ -80,12 +80,14 @@ is that decompressing layers can have overheads besides the obvious decompressio
 After decompression and simple file-level deduplication, 
 the unique files may become scattered on
 multiple servers. 
-To restore a layer,
-the layer's files would need to be first fetched from multiple servers, then compressed into a layer (to preserve transparency and avoid client-side API modifications)
-and sent back to the client.
+To restore a %requested 
+layer,
+the layer's files would need to be first fetched from multiple servers then compressed into a layer (to preserve transparency and avoid client-side API modifications).
+%and sent back to the client.
 The extra network, I/O, and computation will slow down the response time for retrieving (\texttt{pulling}) an image.
 
-In this paper, we propose \sysname, a fast and lightweight Docker registry that provides significant storage improvements over standard registry deployments through the use of file-level deduplication, while mitigating the associated performance cost. It does this through caching based on user behavior and layer popularity, and parallelizing layer construction across servers.
+In this paper, we propose \sysname, a fast and lightweight Docker registry that provides significant storage improvements over standard registry deployments through the use of file-level deduplication while mitigating the associated performance cost. To do this, \sysname uses a cache that takes into consideration the user behavior and layer popularity, and parallelizing layer construction across %HA?
+servers.
 
 This paper is organized into the following sections: Section 2 talks about observed behaviors and access patterns in Docker registries, Section 3 covers the design of our registry, Section 4 details the implementation of the registry, Section 5 evaluates the performance of the registry, Section 6 talks about similar work done in the field, and Section 7 concludes. 
 
