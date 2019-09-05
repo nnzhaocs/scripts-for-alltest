@@ -86,7 +86,7 @@ the layer's files would need to be first fetched from multiple servers then comp
 %and sent back to the client.
 The extra network, I/O, and computation will slow down the response time for retrieving (\texttt{pulling}) an image.
 
-In this paper, we propose \sysname, a fast and lightweight Docker registry that provides significant storage improvements over standard registry deployments through the use of file-level deduplication while mitigating the associated performance cost. To do this, \sysname uses a cache that takes into consideration the user behavior and layer popularity, and parallelizing layer construction across %HA?
+In this paper, we propose \sysname, a fast and lightweight Docker registry that provides significant storage improvements over standard registry deployments through the use of file-level deduplication while mitigating the associated performance cost. To do this, \sysname uses a cache that takes into consideration the user behavior and layer popularity, in addition to parallelizing layer construction across %HA?
 servers.
 
 This paper is organized into the following sections: Section 2 talks about observed behaviors and access patterns in Docker registries, Section 3 covers the design of our registry, Section 4 details the implementation of the registry, Section 5 evaluates the performance of the registry, Section 6 talks about similar work done in the field, and Section 7 concludes. 
