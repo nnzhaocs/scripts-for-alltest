@@ -5,23 +5,52 @@
 	\caption{Workload parameters}
 	\begin{tabular}{| c | c | c | c | c | c | c | c | c |c |} 
 		\hline
-	Trace    & $\sharp$ Reqs & $\sharp$ GET L & $\sharp$ GET M & $\sharp$ PUT L & $\sharp$ PUT M & L dataset (GB) & $\sharp$ Uniq L & $\sharp$ Uniq M & Duration (Hr)  \\ 
+	Trace    &   \# GET L & \# GET M & \# PUT L & \# PUT M & Dataset (GB) & \# Uniq L & \# Uniq M & Duration (Hr)/Speedup  \\ 
 		\hline\hline
-		Dal    & 5000 & 2867  & 2000   & 124  & 9    & 6.6    & 1278 & 88  & 6    \\ 
+		Dal    &  2867  & 2000   & 124  & 9    & 20    & 1278 & 88  & 6/12    \\ 
+%		\hline
+%		Dev    &  980   & 3987   & 29   & 4    & 13     & 872 & 93  & 60/120    \\
 		\hline
-		Dev    & 5000 & 980   & 3987   & 29   & 4    & 4.7     & 872 & 93  & 60    \\
+		Fra     &  1602  & 3278   & 111  & 9     & 6   & 420 & 43  & 24 /48   \\
 		\hline
-		Fra     & 5000 & 1602  & 3278   & 111  & 9     & 2.4   & 420 & 43  & 24    \\
-		\hline
-		Lon    & 5000 & 924    & 3972   & 98  & 6     & 4       & 698 & 88  & 6    \\
-		\hline
-		Pre    & 5000 & 3901  & 1016   & 79   & 4     & 20.2  & 3908 & 284  & 11    \\  
-		\hline
-		Sta   & 5000 & 2585 & 2306  & 99   & 10   & 2.8   & 502 & 64  & 6     \\
+		Lon    &  924    & 3972   & 98  & 6     & 10      & 698 & 88  & 6/12    \\
+%		\hline
+%		Pre    &  3901  & 1016   & 79   & 4     & 60  & 3908 & 284  & 11/22    \\  
+%		\hline
+%		Sta   &  2585 & 2306  & 99   & 10   & 7   & 502 & 64  & 6/12     \\
 		\hline 
-		Syd      & 5000 & 1310   & 3653   & 35 & 2    & 0.9    & 154 & 18  & 30    \\  
+		Syd      &  1310   & 3653   & 35 & 2    & 2    & 154 & 18  & 30/60    \\  
 		\hline
 	\end{tabular}
 
 \label{tab:eval-overall}
 \end{table*}
+
+\begin{table}[h!]
+	%\centering
+	{\tiny }
+	\caption{Space savings VS. performance}
+	\begin{tabular}{| l | l | p{3cm}| } %p{3.5cm}
+		\hline
+		Modes    & Space savings & GET L latency degradation  \\ 
+		\hline\hline
+		B-mode 0    &   0.5   &     \\ 
+		\hline
+		B-mode 1    &   0.33   &     \\ 
+		\hline
+		B-mode 2    &   0.17   &     \\
+		\hline
+		B-mode 3     &   0   &    0\\
+		\hline
+		S-mode    &  0.42    &     \\
+		%		\hline
+		%		Pre    &  3901  & 1016   & 79   & 4     & 60  & 3908 & 284  & 11/22    \\  
+		%		\hline
+		%		Sta   &  2585 & 2306  & 99   & 10   & 7   & 502 & 64  & 6/12     \\
+		%		\hline 
+		%		Syd      &  1310   & 3653   & 35 & 2    & 2    & 154 & 18  & 30/60    \\  
+		\hline
+	\end{tabular}
+	
+	\label{tab:eval-schemes}
+\end{table}

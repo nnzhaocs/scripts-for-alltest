@@ -1,27 +1,31 @@
 \subsection{Restoring performance}
 
-In this section, we evaluated D-server cluster's layer restoring performance.
-Before we replay traces on the D-server cluster, 
-we first warmup the cluster with different amount of layers according to the traces.
-After receiving the layers, D-server cluster performs layer deduplication
-and save each unique file with three file replicas.
+We evaluated \sysname's layer restoring performance by using different number of D-servers.
+%Before we replay traces on the D-server cluster, 
+We first warmup D-servers with a certain amount of layers for each workload as shown in Table~\ref{tab:eval-overall}.
+%After that,
+%and save each unique file with three file replicas.
 After all warmup layers are deduplicated and discarded,
-we replay the traces on D-server cluster 
-and measure the \texttt{pull} layer performance as layer restoring performance.
+we use 32 clients to replay the workloads on D-server cluster 
+and measure the \texttt{GET layer} performance as layer restoring performance.
+%We use 32 clients.
+Figure~\ref{xxx} shows layer restoring performance changes with different number of D-servers.
+%the layer restoring performance compared with the layer \texttt{pulling} performance of original registry
 
-\subsubsection{Preconstruct cache hit ratio}
+%\paragraph{Cluster scale impact}
 
-\subsubsection{Breakdown performance}
+\paragraph{Metadata size}
 
-%\subsubsection{Performance with different parameters}
+\paragraph{Cache impact}
+
+\paragraph{Preconstruct cache hit ratio}
 
 \paragraph{Layer size impact}
 
-\paragraph{Cache size impact}
+\paragraph{Breakdown performance}
 
-\paragraph{D-servers scale impact}
+%\paragraph{Client concurrency impact}
 
-%\paragraph{Repull threshold}
 
-%\paragraph{Compression level}
+
 

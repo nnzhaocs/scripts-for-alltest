@@ -126,7 +126,7 @@ the primary layer and its two backups are discard.
 
 \paragraph{Dealing with big layers}
 Due to our testbed cluster scale constrain,
-we set a layer size limitation (i.e., 1GB) to reduce their restoring overhead.
+we set a layer size limitation (i.e., 250 MB) to reduce their restoring overhead.
 If a layer that exceeds the size limitation is received,
 \sysname will first divide the big layer into sub-layers and update its associated manifests.
 After that,
