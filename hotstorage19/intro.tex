@@ -57,6 +57,8 @@ A layer is uniquely identified by a collision-resistant hash of its content and 
 The drivers interface with the \emph{backend storage systems}
 such as \emph{local file systems} or \emph{Cloud storage systems} (\eg S3, Azure, Swift, OSS, GCS).
 
+%This is a radical departure from the traditional “backup to the graveyard” approach which is written as a serial stream of incremental or full backups.
+
 Cloud storage systems usually use \emph{replication} to maintain high availability and tolerate server failure.
 Each layer can have multiple \emph{replicas}.
 As the container market grows rapidly, 
