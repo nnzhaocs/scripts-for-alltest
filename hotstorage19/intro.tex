@@ -15,7 +15,7 @@
  %Amazon, Netflix, and eBay, container as a service
  %(memory and cpu resource limits), (pid, networking namespace, mount namespace, etc.)
 The rise of \emph{containerization} has been a remarkable advancement in 
-cloud environment and architectures,
+cloud environment and architectures~\cite{dockerbook},
 allowing applications to be built, deployed and managed easier and faster.
 At its core, the use of containers target the breaking up of traditional, monolithic architectures into flexible, portable microservices. 
 
@@ -88,8 +88,31 @@ the layer's files would need to be first fetched from multiple servers then comp
 %and sent back to the client.
 The extra network, I/O, and computation will slow down the response time for retrieving (\texttt{pulling}) an image.
 
-In this paper, we propose \sysname, a fast and lightweight Docker registry that provides significant storage improvements over standard registry deployments through the use of file-level deduplication while mitigating the associated performance cost. To do this, \sysname uses a cache that takes into consideration the user behavior and layer popularity, in addition to parallelizing layer construction across %HA?
-servers.
+In this paper, we propose \sysname, a layer deduplication aware Docker registry 
+that provides significant storage improvements over standard registry deployments while maintaining a good performance. 
+To do this, \sysname first exploits two kinds of redundancies: redundant data among layers, and redundancy policy used by Cloud storage system.
+\sysname maintains a certain number of \emph{layer replicas} for layer accesses while
+\emph{deduplicates} the rest \emph{layer replicas} into \emph{unique files} to save space.
+In this case, 
+by deduplicating different number of layer replicas,
+\sysname provides different \textbf{basic deduplication modes} to meet different capacity and performance requirements
+while maintaining the same failure-tolerance ability.
+Besides,
+\sysname also provides \textbf{selective deduplication mode} to 
+deduplicate a certain number of layer replicas inversely proportional to their \emph{popularity} to achieve significant space savings while maintaining a good performance.
+Moreover, \sysname also explores user access patterns 
+and preconstructs layers before \texttt{pulling} layer requests arrive to save layer restoring latency. 
+Finally, 
+\sysname does not just simply uses decompression and file-level deduplication to remove duplicate files from layer dataset.
+\sysname \emph{splits} a layer into \textbf{slices} during layer deduplication
+to enable \emph{parallel streaming layer construction}
+for fast layer restoring performance.
+
+We implemented and deployed \sysname on a 21-node cluster and evaluated with real-world workloads and real layers.
+The evaluation results show that
+%uses a cache that takes into consideration the user behavior and layer popularity, 
+%in addition to parallelizing layer construction across %HA?
+%servers.
 
 This paper is organized into the following sections: Section 2 talks about observed behaviors and access patterns in Docker registries, Section 3 covers the design of our registry, Section 4 details the implementation of the registry, Section 5 evaluates the performance of the registry, Section 6 talks about similar work done in the field, and Section 7 concludes. 
 
