@@ -54,7 +54,7 @@ From the probability distribution of the clients repulling, we can observe that 
 \input{fig-skewness}
 \input{fig-reusetime}
 
-\paragraph{Skewness}
+\paragraph{Skewness.}
 Figure~\ref{fig:layer-skewness} shows the CDF of layer popularity.
 We observe a heavy layer access skewness for \texttt{Fra}, \texttt{Syd}, \texttt{Dal}, \texttt{Stage}, and \texttt{Lon} workloads with $60$-$80$\%  of the \texttt{pull} layer requests accessing only $10$\% of the layers.
 Figure~\ref{fig:repo-skewness} shows the CDF of repository popularity.
@@ -68,7 +68,7 @@ For example, only $10$\% of clients issue $95$\% of the \texttt{pull} layer requ
 Therefore, caching a layer with a high pull count will improve the hit ratio, 
 especially for popular repositories and targeting active clients with high repulling probability.
 
-\paragraph{Reuse time}
+\paragraph{Reuse time.}
 Next, we analyze the layer and repository reuse time.
 Layer reuse time means the duration between two consecutive requests to the same layer
 while repository reuse time means the duration between two consecutive \emph{pull} manifest requests to the same repository.
@@ -95,7 +95,7 @@ we consider both the reuse time of layer and repository as well as client access
 
 \subsection{Layer Deduplication}
 
-\paragraph{Redundant files shared among layers}
+\paragraph{Redundant files shared among layers.}
 Consider that deduplication incurs a performance overhead and the current Docker registry already stores layers in compressed format to save space and network transfer overhead. We first analyze the space efficiency of a registry that performs decompression and file-level deduplication and compare it to a registry that naively stores compressed layers.
 
 In Figure~\ref{fig:cacheefficiency}, the x-axis values correspond to the sizes of 5 samples of registry data of varying sizes with traditional layer compression. For a traditional registry, the compressed layer tarballs will be kept as is.
