@@ -22,26 +22,26 @@ At its core, the use of containers target the breaking up of traditional, monoli
 As a popular and successful example of container technology,
 Docker leverages \emph{LXC} (Linux Containers), which utilizes linux kernel features -- 
 cgroups and namespaces -- for 
-efficient process isolation, resource control, and supporting multitenancy.
+efficient process isolation, resource control, and supporting multitenancy~\cite{slacker, 7158965, cntr}.
 Compared with hypervisor-based virtualization,
 containers share the OS kernel,
-therefore container deployments are significantly smaller in size and faster.
-Moreover, Docker provides a systematic way to automate the faster deployment of applications while providing portability. Multiple running containers can be managed by an orchestrator like Kubernetes to provide highly available, scalable, and secure services.
+therefore container deployments are significantly smaller in size and faster~\cite{7819678}.
+Moreover, Docker provides a systematic way to automate the faster deployment of applications while providing portability~\cite{docker}. Multiple running containers can be managed by an orchestrator like Kubernetes~\cite{kubernetes} to provide highly available, scalable, and secure services.
 Many cloud platforms endorse Kubernetes and Docker 
 as core cloud deployment technologies,
-such as Google (Google Cloud Engine),
-Microsoft (Azure),
-IBM (Softlayer and OpenStack),
+such as Google (Google Compute Engine)~\cite{googlecengine},
+Microsoft (Azure)~\cite{azurec},
+IBM (Softlayer~\cite{softlayer} and IBM Cloud Kubernetes Service~\cite{ibmkube}),
  and
 Red Hat (OpenShift).
  
 Docker containers are created using base \emph{Docker images}. 
 A Docker image may include OS and system libraries, dependencies, and executable code. 
 When building images with Docker, 
-each action taken (that is, each command executed, such as \texttt{apt-get install}) forms a new \emph{layer} on top of the previous one. 
+each action taken (that is, each command executed, such as \texttt{apt-get install}) forms a new \emph{layer} on top of the previous one~\cite{docker}. 
 Docker leverages a COW (copy-on-write) file system 
 which allows Docker to instantiate containers quickly. 
-Utilizing COW also improves storage system efficiency. 
+Utilizing COW also improves storage system efficiency~\cite{docker, UnionFS}. 
 %by minimizes I/O and the size of each of the subsequent layers.
 %because it leverages 
 %the pointers to the existing files. 
@@ -50,28 +50,31 @@ Utilizing COW also improves storage system efficiency.
 %Commands can be executed manually or automatically using Dockerfiles.
 
 Docker images are stored as a set of shareable and content addressable \emph{compressed layer tarballs} 
-and are distributed through a \emph{registry} like Docker Hub.
-A Docker registry delegates the storage responsibility to different drivers using a content addressable store API.
-A layer is uniquely identified by a collision-resistant hash of its content and so no duplicate layers are stored in a registry.
+and are distributed through a \emph{registry} like Docker Hub~\cite{docker-hub}.
+A Docker registry delegates the storage responsibility to 
+different drivers using a content addressable store API.
+A layer is uniquely identified by a collision-resistant hash of its content and 
+so no duplicate layers are stored in a registry~\cite{docker-hub}.
 %Drivers provide a means of interfacingun
 The drivers interface with the \emph{backend storage systems}
-such as \emph{local file systems} or \emph{Cloud storage systems} (\eg S3, Azure, Swift, OSS, GCS).
+such as \emph{local file systems} or \emph{Cloud storage systems} (\eg S3~\cite{s3}, Azure~\cite{azuredriver}, Swift~\cite{swift}, OSS~\cite{oss}, GCS~\cite{gcs}).
 
 %This is a radical departure from the traditional “backup to the graveyard” approach which is written as a serial stream of incremental or full backups.
 
-Cloud storage systems usually use \emph{replication} to maintain high availability and tolerate server failure.
+Cloud storage systems usually use \emph{replication} to maintain high availability and tolerate server failure~\cite{Bonvin:2010:SFS:1807128.1807162}.
 Each layer can have multiple \emph{replicas}.
 As the container market grows rapidly, 
 more and more images and layers are built, \emph{replicated}, and stored in Docker registries.
-This puts intense pressure on the availability and scalability requirements of a Docker registry's backend storage infrastructure. 
+This puts intense pressure on the availability and scalability requirements of a Docker registry's backend storage infrastructure~\cite{5655241}. 
 Scaling-out involves data migration between existing storage servers and new storage servers, 
 and even between existing storage servers for load balancing,
 which is detrimental to performance.
 
 Many cloud storage systems utilize deduplication to remove duplicate data and improve storage allocation, resulting in
-effective scale-out and a significant cost savings on hardware upgrades.
-As shown in our previous deduplication analysis of $47$~TB ($167$~TB uncompressed) 
-Docker image/layer dataset downloaded from Docker Hub~\ref{xxx},
+effective scale-out and a significant cost savings on hardware upgrades
+~\cite{Ng:2012:PDD:2245276.2245361, 6753819, 5655241}.
+As shown in deduplication analysis of $47$~TB ($167$~TB uncompressed) 
+Docker image/layer dataset downloaded from Docker Hub~\cite{dedupanalysis},
 About $97$\% of files across \emph{compressed layers} are duplicate files.
 If decompression and file-level deduplication is applied on the dataset, % subil: citation needed
 half of the storage space can be saved.

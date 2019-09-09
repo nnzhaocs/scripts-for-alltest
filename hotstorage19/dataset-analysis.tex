@@ -17,7 +17,7 @@
 Although Docker uses COW file system to minimize redundant data inside each image and
  supports the sharing of layers among different images to remove redundant data in Docker registry backend storage system,
  a large amount of duplicated files are observed among layers within different images.  
-According to the deduplication analysis on Docker Hub dataset~\cite{xxx},
+According to the deduplication analysis on Docker Hub dataset~\cite{dedupanalysis},
 only 3.2\% of files are unique, resulting in deduplication ratio of 2x in terms of capacity. 
 These large amount of duplicated files %shared among different layers associated with different images
 are mainly executables, object codes, libraries, and source codes probably
@@ -27,7 +27,7 @@ The file-level duplication among different layers cannot be \emph{deduplicated}
 by using layer-level content addressable storage system adopted by current registry.
 
 \paragraph{Layer deduplication}
-As containerization frameworks like Docker and Kubernetes keep gaining in popularity~\cite{xxxs},
+As containerization frameworks like Docker and Kubernetes keep gaining in popularity,
 more applications are encapsulated into images, pushed into registry, and stored on Cloud.
 By using \emph{R}-way replication, the amount of layers grows exponentially and will explode in future.
 This is not just a requirement of more disks.
@@ -187,6 +187,16 @@ For example, 80\% of intervals from \texttt{lon} are greater than 1 s.
 60\% of intervals from \texttt{syd} are greater than 5 s.
 Hence,
 there is a relatively long gap between a \texttt{pulling} manifest request and the subsequent \texttt{pulling} layer requests.
+This is because, first,
+when fetching an image from registry,
+Docker client \emph{downloads} a certain number layers in parallel (3 by default)
+starting from the lowest or base layers.
+In this case, if the image contains more than 3 layers, then the \emph{upper} layers have to 
+wait til the \emph{lower} layers are downloaded, which varies
+\texttt{pulling} layer request arrive time on registry.
+Second, network delay between clients and registries 
+often accounts for a greater proportion of pulling latency in Cloud environment, especially for
+large layers.
 Consequently,
 we can use this long gap to predict which layers will be pulled by the user
 when a \texttt{pulling} manifest request is received,
