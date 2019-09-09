@@ -1,22 +1,31 @@
 \begin{abstract}
 
 \vspace{-6pt}
-The fast growing number of container images and the associated
-performance and storage capacity demands are key obstacles to
-sustaining and scaling Docker registries.  
-The inability to efficiently and effectively deduplicate 
-Docker image layers that are stored in a compressed format is a major obstacle.
-%   Moreover, the layers  are not amenable to direct application of
-%   existing deduplication techniques efficiently.
-% 
-In this paper, we propose a new Docker registry architecture,
-\sysname, that integrates caching and deduplication with Docker
-registries to increase deduplication efficacy and reduce storage needs
-while mitigating any
-performance overhead. \sysname uses a highly-effective
-user-access-history-based prefetch algorithm, and a two-tier
-heterogeneous cache comprising memory and flash storage. The approach enables it to achieve 
-a $96$\% hit ratio and save $56$\% more cache space.
+%
+The rapidly growing number of container images and the associated storage
+performance and capacity requirements are the key obstacles to efficiently
+scaling Docker registries.
+%
+Though the real-world images contain a tremendous amount of duplicate data,
+modern registries cannot effectively eliminate the duplicates due to the
+compressed format of the images.
+%
+In this paper, we propose a new Docker registry architecture, \emph{\sysname},
+that integrates deduplication into the Docker registry.
+%
+\sysname supports several configurable deduplication modes that provide
+different levels of storage efficiency, durability, and performance, as desired
+by different use cases.
+%
+Further, to mitigate the negative impact of deduplication on the image download
+and upload times, \sysname introduces a two-tier cache with a novel
+user-access-history-based prefetch algorithm. 
+%
+Under real workloads, \sysname saves up to XXX\% of storage space while keeping
+the latencies within the XXX\% of the original registry.
+
+%The approach enables it to achieve a $96$\% hit ratio and save $56$\% more
+%cache space.
 
 %Based on our 
 
@@ -26,7 +35,6 @@ a $96$\% hit ratio and save $56$\% more cache space.
 %%
 %This puts intense pressure on Docker registry storage infrastructure, but the problem has so far remained largely unexplored.
 %
-
 
 \end{abstract}
 
