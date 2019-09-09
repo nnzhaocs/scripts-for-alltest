@@ -78,7 +78,8 @@ then the client will not \texttt{pull} this layer again.
 However, for Kubernetes,
 users can configure different \emph{pull policies}, 
 such as \emph{IfNotPresent (i.e, pulling if not present)} or \emph{Always pulling}.
-We observe these two kinds of user behaviors in the real world workloads~\cite{xxx} as follows:
+\cite{dockerworkload} presents IBM cloud registry workload traces spanning $\sim$80 days for 7 different registry clusters: \texttt{Syd}, \texttt{Dal}, \texttt{Fra}, \texttt{Lon}, \texttt{Dev}, \texttt{Pre}, and \texttt{Sta}. 
+We observe these two kinds of user behaviors in these 7 real world registry workloads as follows:
 %we observe that few clients pull the same layers multiple time
 
 \paragraph{Pull once VS. Always pull}
@@ -86,7 +87,7 @@ Figure~\ref{fig:layer-repull-cdf} shows the CDF of layer \texttt{pull} count by 
 %Here, \emph{repulling} indicates the act of pulling layers that have been pulled by the user before because they are no longer present on the user side.
 Majority of layers are only pulled once by the same clients.
 %83\% of the layers are only pulled twice.
-For example, only 97\% of layers from \texttt{Syd} are only pulled once by the same clients.
+For example, 97\% of layers from \texttt{Syd} are only pulled once by the same clients.
 We also observe that few clients \emph{pull} the same layers continuously.
 For example, a client from \texttt{Lon} pulls the same layer 19,300 times.
 %When different clients \texttt{pull} the same repository, 
