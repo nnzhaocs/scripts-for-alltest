@@ -13,7 +13,7 @@ Then we present our evaluation results.
 Our testbed includes two clusters: 
 4-node client cluster and
 %8-node registry cluster (Hulks), and
-21-node registry cluster(Thors).
+21-node registry cluster.
 Each client server is equipped with 8 cores, 64 GB RAM, 1 TB HDD, and 1000Mb/s NIC.
 %During evaluation,
 We instantiate multiple clients on each client server.
@@ -22,6 +22,8 @@ We instantiate multiple clients on each client server.
 %Each registry Hulk server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, 1 TB HDD, and 10,000Mb/s NIC. 
 Each registry server is equipped with 8 cores,16 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
 We launch a single registry container on each registry server.
+Besides,
+we deploy a distributed redis cluster on 21 registry servers as our database.
 %We implemented \sysname~cache on frontend cache cluster and installed \sysname~dedup on backend storage cluster. 
 %We use extra 5 machines and each machine launches different number of clients to emulate client requests.
 %Hulks and new hulks are used as backend.
