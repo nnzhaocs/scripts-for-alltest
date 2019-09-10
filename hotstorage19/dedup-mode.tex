@@ -4,18 +4,20 @@
 To satisfy different space saving and performance requirements,
 \sysname provides two kinds of deduplication modes:
 Basic deduplication modes and selective deduplication modes, denoted as \emph{B-modes} and \emph{S-modes}.
-B-mode mantains a certain amount of layer replicas for each layer and deduplicates the rest layer replicas.
-While S-mode mantains a number of layer replicas for different layer proportionate to their popularity.
+B-mode maintains a certain amount of layer replicas for each layer and deduplicates the remaining layer replicas.
+S-mode, on the other hand, maintains a number of layer replicas for different layers 
+%in proportionate 
+based to their popularity.
 
 %\subsubsection{Basic deduplication modes}
 Assume that registry storage system uses R-way replication.
-Consider that layer dataset deduplication analysis~\cite{xxx} shows a file-level deduplication ratio of 2$\times$.
+A layer dataset deduplication analysis~\cite{xxx} shows a file-level deduplication ratio of 2$\times$.
 Thus, the average layer deduplication ratio for the layer dataset~\cite{xxx} is 2$\times$.
 \LR{Was it just 2$\times$? I thought it was larger. Can we use a variable for the deduplication ratio, e.g. $d$?
 We would need to substitute that in the formulas.}
 % subil: need clarification here. where is the 2x coming from
 
-B-mode \emph{r} is defined as keeping \emph{r} layer replicas and deduplicating the rest of layer replicas, where $r \leq R$. 
+B-mode \emph{r} is defined as keeping \emph{r} layer replicas and deduplicating the rest of the layer replicas, where $r \leq R$. 
 The space saving is calculated by following equation~\ref{eq:b-savings}.
 \begin{equation}\label{eq:b-savings}
 Space savings = \frac{R-(r+\frac{1}{2}(R-r))}{R} = \frac{R-r}{2R}
