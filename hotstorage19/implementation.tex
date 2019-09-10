@@ -1,8 +1,8 @@
 \section{Implementation}
 \label{sec:impl}
 
-\paragraph{Metadata database implementation}
-We use Redis~\cite{xxx} as metadata database to save slice and layer recipes, file index, layer index, ULmap, and RLmap.
+\paragraph{Handling metadata}
+We use Redis~\cite{redis} as metadata database to save slice and layer recipes, file index, layer index, ULmap, and RLmap.
 To guarantee the durability of metadata, 
 we configure Redis to use an \emph{append-only file (AOF)} to log all changes.
 Thus, when Redis server stops, we can restart Redis and re-play the AOF to rebuild the dataset to prevent data loss.
@@ -11,121 +11,77 @@ To improve metadata availability,
 we configure Redis to use three replicas.
 In this case, Redis will not become a performance bottleneck.
 
-\paragraph{Distributed lock for distributed deduplication}
-We use Redis as a distributed lock to make sure that no file duplicate is stored in registry cluster.
-For file index, layer index, slice and layer recipes, each key can be set to hold its value only if the key does not exist in Redis database (i.e, SETNX~\cite{xxx}).
-When key already holds a value, a file duplicate or layer duplicate is identified and will be removed from registry cluster.
- Besides, 
- each registry instance maintains a  synchronization map for layer restoring to make sure that only a unique layer is restoring at a time.
- While different layers can be constructed in parallel. 
- In this case, redundant layer restoring can be avoid to save I/O and network bandwidth, and computation resources.
- Slice restoring is the same.
+\paragraph{Distributed deduplication}
+We use Redis to make sure that no file duplicates are stored in registry cluster.
+For file index, layer index, slice and layer recipes, each key can be set to hold its value only if the key does not exist in Redis database (i.e, SETNX~\cite{SETNX}).
+When key already holds a value, a file duplicate or layer duplicate is identified and will be removed from registry cluster. Each registry instance maintains a synchronization map for layer restoring to make sure that multiple registry instances don't attempt to restore the same layer simultaneously.
+ Different layers, however, can be constructed in parallel. 
+ In this case, redundant layer restoring can be avoided to save I/O and network bandwidth, and computation resources.
+ Slice restoring is the same. Another synchronization technique present is a lock acquirable on a layer recipe that forces incoming requests to a D-server to wait if it is requesting a layer which has not fully deduplicated. Deduplication must complete before the restoring request can be served.
  
- \textbf{GET-DEDUP LOCK} for fast layer dedup.
- layer stage area delay 1-2 seconds.
- \textbf{GET-RESTORING LOCK} for fast layer restoring.
- sync.map and delay 5 seconds, and buffer
- Stage area to layer cache
 
 \paragraph{Layer deduplication implementation}
 During layer deduplication, only \emph{regular} file duplicates are removed.
 \sysname does not deduplicate \emph{irregular} files.
 After removing regular file duplicates, the remaining unique files are saved in a local file store.
-File store is implemented by modifying Docker registry's file system driver~\cite{xxx}, 
-which is local storage driver 
+File store is implemented by modifying Docker registry's file system driver~\cite{dockerfs}, 
+which is a local storage driver 
 that uses a directory tree in the local file system.
 The default root directory in the local file system for registry storage system is `/var/lib/registry' (denoted as $rootdir$).
-Each layer is stored in directory `$rootdir$/docker/registry/v2/blobs/sha256/$\langle$first two hex bytes of layer digest$\rangle$/$\langle$hex layer digest$\rangle$/' (denoted as $layerdir$) as a file named `data'.
-We store the unique files for the layer in the same directory with layer as `$layerdir$/uniquefiles/$\langle$hex file digest$\rangle$'.
+Each layer is stored in directory `$rootdir$/docker/registry/v2/blobs/sha256/$\langle$ first two hex bytes of layer digest$\rangle$/$\langle$hex layer digest$\rangle$/' (denoted as $layerdir$) as a file named `data'.
+We also store the unique files for the layer in $layerdir$ as `$layerdir$/uniquefiles/$\langle$hex file digest$\rangle$'.
 
 \paragraph{Layer restoring implementation}
 To speedup layer restoring performance,
-we utilize a parallel gzip compression/decompression library (pgzip)~\cite{xxx} to do layer or slice compression and decompression.
-Different from single-threaded standard gzip compression library~\cite{xxx},
+we utilize a parallel gzip compression/decompression library (pgzip)~\cite{pgzip} to do layer or slice compression and decompression.
+Different from Go's single-threaded standard gzip compression library~\cite{gogzip},
 pgzip splits compression stream into blocks so that data can be compressed in parallel to speedup compression.
 pgzip is compatible with standard gzip library.
 
-\paragraph{File cache and layer diskcache implementation}
+\paragraph{File cache and layer cache implementation}
 
-File cache is implemented on bigcache~\cite{xxx}, which can provide fast and concurrent cache access.
-Layer diskcache is implemented by using diskv~\cite{xxx}, which is a disk-backed key-value store.
-However, both bigcache and diskv do not use any cache algorithm. 
-Note that bigcache always evicts the oldest entries from cache without consider the entries' popularity.
-We build two ARC lists for bigcache and diskv respectively by using a golang cache library~\cite{xxx}, 
-which provides expirable cache with different cache algorithm, such as LFU, LRU and ARC~\cite{xxx}.
+File cache is implemented on BigCache~\cite{bigcache}, which can provide fast and concurrent cache access.
+Layer cache is implemented by using Diskv~\cite{diskv}, which is a disk-backed key-value store.
+However, both BigCache and Diskv do not use any cache algorithm. 
+Note that BigCache always evicts the oldest entries from cache without considering the entries' popularity.
+We build two ARC lists for BigCache and Diskv respectively by using a golang cache library~\cite{xxx}, 
+which provides expirable cache with different cache algorithm, such as LFU, LRU and ARC~\cite{megiddo2003arc}.
 Note that we select ARC with expiration as our cache algorithm.
 We combine ARC cache algorithm with bigcache as our file cache
 and ARC cache algorithm with diskv as our layer diskcache.
+
+\paragraph{Cluster Management}
+
+Apache Zookeeper is used to manage the registry server membership in the cluster. It is used to detect failures in the P-servers and handle failover to the D-servers, which are used to restore and serve the layers when the P-servers are down.
 
 \paragraph{Client implementation}
 %For simply implementation,
 Client is comprised of a trace replayer and 
 a proxy emulator.
-The trace replayer is implemented by modifying IBM cloud registry trace replayer~\cite{xxx}.
-Instead of generating a random layer~\cite{xxx},
+The trace replayer is implemented by modifying the IBM cloud registry trace replayer~\cite{dockerworkload}.
+Instead of generating a random layer,
 our trace replayer first matches IBM cloud registry trace with 
-the real layers from our dataset downloaded from Docker Hub~\cite{xxx, xxx}.
-Specially, we extract layer digest from layer request recorded in IBM traces~\cite{xxx}.
+the real layers from our dataset downloaded from Docker Hub~\cite{dedupanalysis}.
+Specially, we extract layer digest from layer request recorded in the IBM traces~\cite{dockerworkload}.
 Then, 
 we randomly match each layer digest to a layer in our dataset. 
-Consequently, each layer request from IBM traces \texttt{pulls} or \texttt{pushs} a real layer.
+Consequently, each layer request from IBM traces \texttt{pull}s or \texttt{push}es a real layer.
 For manifest requests recorded in IBM traces, we generate a random file to emulate a manifest file.
-This is because sift do not deduplicate manifest file.
-The trace replayer uses Docker registry client emulator Python-dxf~\cite{xxx} to 
+%This is because Sift does not deduplicate manifest file.
+The trace replayer uses Docker registry client emulator Python-dxf~\cite{pydxf} to 
 \texttt{pull} or \texttt{push} layers or manifests to registry.
 %In this case, each layer request 
 %will \texttt{pull} or \texttt{push} a real layer.
 
-In addition, client uses a proxy emulator to decide the destination registry server for each request.
+In addition, client uses a proxy emulator to decide the destination among the P-servers for each request.
 The proxy emulator uses
-consistent hashing algorithm (CHT)~\cite{xxx} to distribute layers and manifests.
- Proxy emulator maintains a CHT ring of registry servers
- and calculates a destination registry server for each \texttt{push} layer or manifest request
- by hashing its digest.% as a key.
-%Registry clusters are known to.
-%Proxy emulator uses layer and manifest digests as keys.
-For \texttt{pull} manifest requests, 
-proxy emulator also uses CHT to calculate the destination server.
-While for \texttt{pull} layer requests, 
-proxy emulator will first consult the metadata database to get the layer recipe.
-If the recipe  presents, 
-the emulator will send the request to the restoring master.
-Otherwise, the emulator will calculate the destination server by using CHT,
-and send the request to the destination server.
-%While if the layer is deduplicated, client \texttt{pull} layer request will be forwarded to its restoring master
-%and the master server will serve the client request.
-
-\paragraph{Redundancy implementation}
-
-To maintain reliability and fault-tolerance, 
-traditional registry maintains a certain level of redundancy for each layer 
-by delegating replication to backend
-distributed storage systems, such as S3 and Swift~\cite{xxx}.
-To implement the same level of redundancy for layers,
-Sift storage system stores $R$ replicas for each layer on $R$ registry servers 
-by using
-chain replication~\cite{xxx}.
-In this case, each layer has a primary replica and $R-1$ backup replicas.
-During layer deduplication, 
-only primary replica is dedupcated.
-After that,
-the remaining unique files
-will be $R$-way replicated.
-Then the layer will be
-partitioned to $N*R$ servers
-denoted as $N*R$ slices instead of $N$ slices(see Section~\cite{xxx}).
-Here, each slice for the layer 
-has a primary replica and $R-1$ replicas.
-Consequently, each unique file stored in cluster
-has $R$ replicas.
-For layer restoring,
-each layer has a primary restoring master and $R-1$ backup restoring master. 
-After layer deduplication, 
-the primary layer and its two backups are discard.
- 
+consistent hashing ~\cite{kargercons} to distribute layers and manifests.
+Proxy emulator maintains a ring of registry servers
+and calculates a destination registry server for each \texttt{push} layer or manifest request
+ by hashing its digest. For \texttt{pull} manifest requests, the proxy emulator maintains two consistent hashing rings, one for the P-servers, and one for the D-servers. It primarily queries the P-servers but if they are all down, it will switch to \texttt{pull}ing from the D-servers.
 
 \paragraph{Dealing with big layers}
-Due to our testbed cluster scale constrain,
+Due to our testbed cluster scale constraint,
 we set a layer size limitation (i.e., 250 MB) to reduce their restoring overhead.
 If a layer that exceeds the size limitation is received,
 \sysname will first divide the big layer into sub-layers and update its associated manifests.
