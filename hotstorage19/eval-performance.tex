@@ -36,6 +36,8 @@ we also evaluate \emph{original registry} with 3-way replication on 21 servers.
 Figure~\ref{label} shows the average response time for 
 \texttt{GET} layer, \texttt{PUT} layer, \texttt{GET} manifest, and \texttt{PUT} manifest
 requests for \sysname with different deduplication modes and original registry across different workloads.
+Note that for \emph{B-mode 0},
+the \texttt{GET} layer latency is \emph{layer restoring latency}.
 
 Overall, \texttt{PUT} requests have much higher average response time than \texttt{GET} requests.
 For example, the average response time of 
@@ -120,7 +122,8 @@ While \texttt{Dal} has the lowest hit ratio 0.77
 because of 
 low prediction accuracy for \emph{users' repull behaviors} 
 and heavy workload.
- 
+
+\paragraph{Metadata size} 
 
 \paragraph{Client concurrency impact}
 
