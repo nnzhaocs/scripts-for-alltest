@@ -1,38 +1,57 @@
 
-\begin{table*}[h!]
-	\centering
-	{\tiny }
-	\caption{Workload parameters}
-	\begin{tabular}{| c | c | c | c | c | c | c | c | c |c |} 
+\begin{table}[h!]
+	%\centering
+	%\tiny 
+	\scriptsize
+	\caption{Workload parameters.}
+	\begin{tabular}{| p{0.38cm} | p{0.5cm} | p{0.5cm} | p{0.5cm} | p{0.5cm}| p{0.5cm}| p{0.5cm}| p{1.25cm} |} 
 		\hline
-	Trace    &   \# GET L & \# GET M & \# PUT L & \# PUT M & Dataset (GB) & \# Uniq L & \# Uniq M & Duration (Hr)/Speedup  \\ 
+	Trace    &   \#GET L & \#GET M & \#PUT L & \#PUT M & \#Uniq L & \#Uniq M & Duration (Hr)/Speedup \\ 
 		\hline\hline
-		Dal    &  2867  & 2000   & 124  & 9    & 20    & 1278 & 88  & 6/12    \\ 
-%		\hline
-%		Dev    &  980   & 3987   & 29   & 4    & 13     & 872 & 93  & 60/120    \\
+		Dal    &  2867  & 2000   & 124  & 9     & 1278 & 88  & 6/12    \\ 
 		\hline
-		Fra     &  1602  & 3278   & 111  & 9     & 6   & 420 & 43  & 24 /48   \\
+		Fra     &  1602  & 3278   & 111  & 9     & 420 & 43  & 24 /48   \\
 		\hline
-		Lon    &  924    & 3972   & 98  & 6     & 10      & 698 & 88  & 6/12    \\
-%		\hline
-%		Pre    &  3901  & 1016   & 79   & 4     & 60  & 3908 & 284  & 11/22    \\  
-%		\hline
-%		Sta   &  2585 & 2306  & 99   & 10   & 7   & 502 & 64  & 6/12     \\
+		Lon    &  924    & 3972   & 98  & 6      & 698 & 88  & 6/12    \\
 		\hline 
-		Syd      &  1310   & 3653   & 35 & 2    & 2    & 154 & 18  & 30/60    \\  
+		Syd      &  1310   & 3653   & 35 & 2     & 154 & 18  & 30/60    \\  
 		\hline
 	\end{tabular}
 
 \label{tab:eval-overall}
-\end{table*}
+\end{table}
+
 
 \begin{table}[h!]
 	%\centering
-	{\tiny }
+	\scriptsize 
+	\caption{Testing Dataset.}
+	\begin{tabular}{| c | c | c | c | c | } 
+		\hline
+		Trace  (GB)  &   Dataset  & Data transferred  & GET L size  & PUT L size  \\ 
+		\hline\hline
+		Dal   & 20  & 37 & 35 & 2    \\ 
+		\hline
+		Fra     & 6  & 16 & 14 & 2   \\
+		\hline
+		Lon    &10   &  14 &12  & 2      \\
+		\hline 
+		Syd      &  2  &  9 & 8 & 1      \\  
+		\hline
+	\end{tabular}
+	
+	\label{tab:eval-dataset}
+\end{table}
+
+
+
+\begin{table}[h!]
+	%\centering
+	\scriptsize
 	\caption{Space savings VS. performance}
 	\begin{tabular}{| l | l | p{3cm}| } %p{3.5cm}
 		\hline
-		Modes    & Space savings & GET L latency degradation  \\ 
+		Modes    & Space savings & GET L latency improvements or degradation  \\ 
 		\hline\hline
 		B-mode 0    &   0.5   &     \\ 
 		\hline

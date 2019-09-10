@@ -33,11 +33,32 @@ distributed on client cluster to replay traces to P-servers and D-servers.
 Besides,
 we also evaluate \emph{original registry} with 3-way replication on 21 servers. 
 
-Figure~\ref{label} shows the average performance for 
-\texttt{GET layer, PUT layer, GET manifest, and PUT manifest}
+Figure~\ref{label} shows the average response time for 
+\texttt{GET} layer, \texttt{PUT} layer, \texttt{GET} manifest, and \texttt{PUT} manifest
 requests for \sysname with different deduplication modes and original registry across different workloads.
 
-\paragraph{Cache impact}
+Overall, \texttt{PUT} requests have much higher average response time than \texttt{GET} requests.
+For example, the average response time of 
+\texttt{PUT} layer requests is almost twice higher than that of \texttt{GET} layer requests.
+Note that registry servers use SSDs as secondary storage devices.
+The different response time of \texttt{PUT} and \texttt{GET} requests are mainly caused by
+the difference throughput between writes and reads of SSDs. 
+
+Next, comparing \emph{original} with \emph{B-mode 3},
+we see that \emph{B-mode 3} improves the overall performance by using a \emph{superfetch cache}.
+\emph{B-mode 3}.
+\emph{B-mode 3} reduces 5\% of average \texttt{GET} layer latency
+and 32\% of average \texttt{PUT} layer latency compared with \emph{original} for workload \texttt{Dal}.
+Next we compare \emph{B-mode 0} with \emph{original}.
+Although \emph{B-mode 0} saves half of the storage space
+by \emph{deduplicates} all layer replicas,
+it slightly reduce \texttt{GET} layer latency by 6\%.
+This is because of the high preconstruct cache hit ratio (detailed in Fgirue~\cite{xxx}), 
+which saves a lot of layer restoring latency.
+
+
+
+\paragraph{Layer cache hit ratio}
 
 \paragraph{P-server cluster scale impact}
 
