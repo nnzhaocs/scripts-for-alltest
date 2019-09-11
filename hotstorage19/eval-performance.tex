@@ -26,7 +26,8 @@ the number of P-servers and D-servers are set to 14 and 7 respectively.
 %we speedup trace replaying by using different speedup factors
 %so that each trace can be finished within 30 minutes.
 Before we replay each workload,
-we first warmup P-servers and D-servers with a certain amount of layers as shown in Table~\ref{tab:eval-overall}.
+we first warmup P-servers and D-servers with a certain amount of layers as shown in Table~\ref{tab:eval-overall},
+which roughly takes 10 minutes.
 Then,
 we use 32 clients spreading on 4 client servers 
 distributed on client cluster to replay traces to P-servers and D-servers.
@@ -123,6 +124,19 @@ because of
 low prediction accuracy for \emph{users' repull behaviors} 
 and heavy workload.
 
+Figure~\ref{xxx} shows file cache hit ratio during layer restoring in \emph{B-mode 0}.
+The file cache size is also set to 20\% of ingress data.
+Overall, we see that file cache hit ratio is fair.
+The hit ratio is lower than 60\% across all workloads,
+which means less files are shared among layers during a \emph{pulling} image request.
+It also means that the amount of shared/deduplicate files among layers is less when 
+the accessed layer dataset is smaller.
+Consequently,
+to get a higher deduplication ratio,
+deploying layer deduplication on a big layer dataset is a better choice, which aligns with
+~\cite{dedupanalysis}
+
+
 \paragraph{Metadata size} 
 Figure~\ref{xxx} shows
 average metadata size on each registry server measured by using the size of Redis~\cite{redis} used memory in \emph{B-mode 0}.
@@ -136,9 +150,13 @@ Compared with 16 GB memory on each registry server,
 metadata size is negligible.
 
 \paragraph{Client concurrency impact}
+Figure~\ref{label} shows the average response time for different deduplication modes and original registry
+with 8 clients and 64 clients respectively.
 
 \paragraph{Primary cluster size  impact}
-
+Figure~\ref{label} shows the average response time for different deduplication modes and original registry
+with 7-node cluster and 14-node cluster.
+The number of concurrent clients are set to 32.
 %\paragraph{Layer size impact}
 
 

@@ -1,15 +1,16 @@
 \subsection{Restoring performance breakdown}
 
-We evaluated \sysname's layer restoring performance by using different number of D-servers.
+We breakdown \sysname's layer restoring performance in \emph{B-mode 0}
+with 32 clients on 21-node cluster as shown in Figure~\ref{xxx}.% by using different number of D-servers.
 %Before we replay traces on the D-server cluster, 
-We first warmup D-servers with a certain amount of layers for each workload as shown in Table~\ref{tab:eval-overall}.
+%We first warmup D-servers with a certain amount of layers for each workload as shown in Table~\ref{tab:eval-overall}.
 %After that,
 %and save each unique file with three file replicas.
-After all warmup layers are deduplicated and discarded,
-we use 32 clients to replay the workloads on D-server cluster 
-and measure the \texttt{GET layer} performance as layer restoring performance.
+%After all warmup layers are deduplicated and discarded,
+%we use 32 clients to replay the workloads on D-server cluster 
+%and measure the \texttt{GET layer} performance as layer restoring performance.
 %We use 32 clients.
-Figure~\ref{xxx} shows layer restoring performance changes with different number of D-servers.
+%Figure~\ref{xxx} shows layer restoring performance changes with different number of D-servers.
 %the layer restoring performance compared with the layer \texttt{pulling} performance of original registry
 
 %\paragraph{Cluster scale impact}
@@ -17,8 +18,6 @@ Figure~\ref{xxx} shows layer restoring performance changes with different number
 %\paragraph{Deduplication cluster size impact}
 
 %\paragraph{Client concurrency impact}
-
-
 
 %\paragraph{Cache impact}
 
@@ -28,6 +27,7 @@ Figure~\ref{xxx} shows layer restoring performance changes with different number
 
 %\paragraph{Client concurrency impact}
 
+\paragraph{Waiting layer latency}
 
-%\paragraph{Layer size impact}
+\paragraph{Layer size impact}
 

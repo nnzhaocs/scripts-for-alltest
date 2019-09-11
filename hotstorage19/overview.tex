@@ -6,13 +6,14 @@
 \input{fig-sys-overview}
 %\input{fig-diskcache}
 
-\LR{For example, here we need to first motivate, why those replication modes are there. What are the
-objectives of Sift? We want to deduplicate layers but we don't want latencies to suffer. So what is
-the problem then? Reconstructing layers is expensive. That's why we choose to have replication modes
-to trade-off storage space for performance.}
+%\LR{For example, here we need to first motivate, why those replication modes are there. What are the
+%objectives of Sift? We want to deduplicate layers but we don't want latencies to suffer. So what is
+%the problem then? Reconstructing layers is expensive. That's why we choose to have replication modes
+%to trade-off storage space for performance.}
+We first consider
 
-\sysname provides different \emph{deduplication modes} by deduplicating a different number of layer replicas
-(see \ref{sec:dedup-mode}).
+
+
 Figure~\ref{fig:sift-original} shows a simple deduplication mode of \sysname's registry cluster compared with original registry cluster.
 In the original registry cluster upon  a \texttt{push} request, 
 registry \emph{A} stores the layer locally, such layer is denoted as \emph{primary layer replica}.
@@ -28,7 +29,8 @@ If registry \emph{A} crashes,
 either registry \emph{B} or \emph{C} can reconstruct and serve the layer. %for the incoming \texttt{pull} layer request.
 %As a result, 
 \sysname thus provides the same level of redundancy as the original registry cluster. 
-
+\sysname provides different \emph{deduplication modes} by deduplicating a different number of layer replicas
+(see \ref{sec:dedup-mode}).
 Figure~\ref{fig:sift} shows the architecture of \sysname.
  \sysname comprises a cluster of registry servers and a distributed metadata database. 
 Registry servers store and serve both manifest and layer requests sent by clients.

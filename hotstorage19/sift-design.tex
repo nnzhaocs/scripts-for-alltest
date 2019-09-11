@@ -17,15 +17,35 @@
 %Next, we discuss our design goals and finally present the design of~\sysname. 
 %Then we present the design of~\sysname. 
 %O are to improve Docker registry performance and to decrease the backend storage requirements such as ???.
-In this section, we present an overview of \sysname.
-Then, we present how \sysname performs layer deduplication and layer restoring. 
-Finally, we present our user-behavior based layer preconstruct diskcache. % (\preconstructcachename).
+
+
+The goal of \sysname is to improve the storage efficacy of registry backend storage system.
+In addition to eliminates excessive duplicate data and 
+significantly decreases storage capacity requirements,
+\sysname more focuses on the impact of layer deduplication on \texttt{pulling} layer performance
+and how to improve layer \texttt{pulling} performance while \emph{deduplicating} layers.
+
+In this section, we outline the design of \sysname.
+We present how \sysname achieves 
+a maximum performance, 
+a maximum data deduplication ratio, 
+a trade-off between performance and data deduction
+by utilizing deduplication, replication, and user behavior patterns.
+
+% To speedup layer restoring,
+% \sysname uses a parallel streaming layer deduplication and restoring process
+% .
+% Moreover, \sysname exploit the observed user access patterns
+% and uses a user behavior based layer cache.
+%In this section, we outline the design of \sysname.
+%Then, we present how \sysname performs layer deduplication and layer restoring. 
+%Finally, we present our user-behavior based layer preconstruct diskcache. % (\preconstructcachename).
 %a latency aware deduplication system (\dedupname system) and
 
-\LR{In general, we need to structure this section more top-down, i.e. first introduce what are the
-challenges/difficulties that we were facing when designing Sift and then explaining how we addressed
-them and why we chose to address them that way. Otherwise, the text is just describing, how Sift
-works but the readers don't know why it works that way and why the different features are there.}
+%\LR{In general, we need to structure this section more top-down, i.e. first introduce what are the
+%challenges/difficulties that we were facing when designing Sift and then explaining how we addressed
+%them and why we chose to address them that way. Otherwise, the text is just describing, how Sift
+%works but the readers don't know why it works that way and why the different features are there.}
 
 \input{overview}
 
