@@ -104,6 +104,9 @@ If again not found, \sysname will rebuild a layer to serve the request.
 Note that both superfetch cache and preconstruct cache are write-through caches.
 When the layers are evicted, 
 it will simply be discard since there will be no updates to layers.
+Layer replicas temporally stored layer stage area
+will be first evicted to preconstruct cache after the layer is deduplicated
+and then discard from preconstruct cache after it's replaced.
 For preconstruct cache,
 it's possible when a \texttt{pull} layer request comes 
 before layer restoring is finished, meaning the layer cannot be preconstructed \emph{on time}.

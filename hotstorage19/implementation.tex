@@ -9,7 +9,7 @@ Thus, when Redis server stops, we can restart Redis and re-play the AOF to rebui
 Moreover, we configure Redis to save RDB (Redis Database File) snapshots every few minutes to further improve metadata reliability. 
 To improve metadata availability, 
 we configure Redis to use three replicas.
-In this case, Redis will not become a performance bottleneck.
+%In this case, Redis will not become a performance bottleneck.
 
 \paragraph{Distributed deduplication}
 We use Redis to make sure that no file duplicates are stored in registry cluster.
