@@ -1,3 +1,14 @@
+Sep 11
+------
+
+- We do need to chnage the title.
+- Use of " -- " or "---"
+- Use sentence % sentence convention
+- Have 80 lines char limit per line
+- ~\cite{}
+
+
+
 May 26, 27
 ----------
 
