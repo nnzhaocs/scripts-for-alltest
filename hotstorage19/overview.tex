@@ -53,9 +53,23 @@ server \emph{B} or \emph{C} is needed to rebuild the layer and serve the \texttt
 To meet different performance and capacity requirements,
 \sysname provides different \emph{deduplication modes} by deduplicating a different number of layer replicas, denoted as
 \textbf{basic deduplication modes (i.e, B-modes)}.
+We denote B-mode \emph{n} as keeping \emph{n} layer replicas and deduplicating the rest \emph{R-n} layer replicas, 
+where \emph{R} is the layer replication level.
+Apparently,
+B-mode \emph{R} provides the best performance without data reduction.
+B-mode \emph{0} provides the highest deduplication ratio with a performance degradation.
+The rest \emph{R-1} B-modes tradeoff 
+between performance and data reduction.
 For heavy skewned workloads,
-\sysname provides a \textbf{selective deduplication mode (i.e, S-modes}
-by maintaining a number of layer replicas inversely proportional to its popularity.
+\sysname provides a \textbf{selective deduplication mode (i.e, S-mode}
+by 
+utilizing the layer popularity distribution observed in~\cite{dockerworkload}.
+There are hot layers that receives majority of \texttt{pulling} layer requests.
+S-mode
+maintains a number of layer replicas inversely proportional to its popularity
+and deduplicates the rest
+to provide a better performance for hot layers
+and deduplicate the cold layer.
 
 Figure~\ref{fig:sift} shows the storage architecture of \sysname.
  \sysname comprises a cluster of registry backend storage servers and a distributed metadata database. 

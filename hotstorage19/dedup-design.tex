@@ -1,4 +1,4 @@
-\subsection{Deduplication and replication of layers}
+\subsection{The mix of deduplication and replication of layers}
 \label{sec:dedup-desgin}
 
 %We now describe \sysname's layer restoring performance--aware deduplication 
@@ -6,19 +6,28 @@
 %\subsubsection{When to deduplicate layers?}
 %
 %
-\LR{There should always be some text after a heading and before the
-next heading.}
+%\LR{There should always be some text after a heading and before the
+%next heading.}
 
-\subsubsection{Layer deduplication, replication, and partitioning}
+In this section,
+we first present how \sysname couples deduplication and replication together so
+that registry developers can find the \emph{perfect mix} based on their requirements.
+%Then we outline how \sysname performs low-latency layer restoring.
+Moreover,
+we show how \sysname utilizes user-behavior patterns to facilitate our cache design. 
+
+\subsubsection{Layer replication, deduplication, and partitioning}
 
 As with the traditional Docker registry, 
 \sysname maintains a \emph{layer index}.
 After receiving a \texttt{PUT} layer request,
 \sysname first checks the \textbf{layer fingerprint} in the \emph{layer index} to ensure 
 an identical layer is not already stored.
-The layer fingerprint is calculated by hashing the layer content, which is also used as layer identifier denoted as \textbf{layer id}.
+The layer fingerprint is calculated by hashing the layer content, 
+which is also used as layer identifier denoted as \textbf{layer id}.
 After that, \sysname~replicates $r$ primary layer replicas on P-servers. 
-Meanwhile, \sysname~submits $R-r$ backup layer replicas to D-servers and temporally stored on layer stage areas.
+Meanwhile, \sysname~submits $R-r$ backup layer replicas to 
+D-servers and temporally stored on layer stage areas.
  % and acknowledges back to the client. 
 
 %After the layer is deduplicated, it will be removed from stage area.
