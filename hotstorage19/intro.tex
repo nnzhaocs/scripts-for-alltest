@@ -30,66 +30,52 @@
 \mbox{CRI-O}~\cite{cri-o}, leverage Linux kernel's namespaces~\cite{namespaces}
 and cgroups~\cite{cgroups}
 %to efficiently isolate processes and virtualize compute resources.
-to effectively virtualize compute resources for applications.
+to efficiently virtualize computational resources.
 %
-Unlike the Virtual Machines (VMs) that implement hardware
-virtualization~\cite{adams2006comparison}, containers running on the same
-machine share the Operating System (OS) kernel, resulting in virtual
-environments with significantly lower resource usage and startup
-times~\cite{7819678}.
+Unlike the hardware-virtualization-based Virtual Machines
+(VMs)~\cite{adams2006comparison}, containers residing on the same host share the
+Operating System (OS) kernel, which yields virtual environments with
+significantly lower resource usage overheads and faster startups~\cite{7819678}.
 %
-Further, containerization runtimes introduce portable self-contained \emph{container
-images} and are surrounded by a rich ecosystem of technologies that automate and
-accelerate application development, deployment, and
-management~\cite{kubernetes}~\VT{cite more}.
+Further, container runtimes introduce portable, self-contained
+\emph{container images} and are surrounded by a rich ecosystem of technologies
+that automate and accelerate application development, deployment, and
+management~\cite{cncfprojects}.
 
-Given the significant benefits of containers, it is not surprising that they've
-seen a remarkable advancement in modern cloud environments and architectures
+Given the significant benefits of containers, it is not surprising that they
+have seen a remarkable advancement in modern cloud environments and
+architectures.
 %
-The wide spread of container is further fueled by the growing popularity of the
-microservices design methodology~\VT{cite}, for which containers effectively
-became an enabler.
+The rapid spread of containers is further fueled by the growing popularity of
+the microservices design methodology~\cite{wolff2016microservices}, for which
+containers act as an effective enabler.
 %
-All major cloud platforms endorse containers as core cloud deployment
-technologies~\cite{googlecengine,azurec,ibmkube,awscont} \VT{and it is
-predicted that in XXX there will be YYY and cite}
-
+All major cloud platforms endorse containers as a core cloud deployment
+technology~\cite{googlecengine,azurec,ibmkube,awscont}.
+%
+And according to some studies, about 21\% of hosts in 2018 are already managed
+by Docker with a consistent growth of this ratio by about 5\%
+annually~\cite{20percentdocker}.
 
 %%%
 % 2. Background on container images and registry storage;
 %    large number of images => high storage requirements for the registries;
 %%%
 
+An application's container image includes the executable of the application
+itself along with all of its dependencies---other executables, libraries,
+configuration and data files.
 %
-% - Images structure
-% - Storage of images at the registry side
-% - High and growing quantity of images
+Images have a layered structure; when building an image with Docker each
+executed command, such as \texttt{apt-get install}, forms a new \emph{layer} on
+top of the previous one~\cite{dockerfile}.
 %
-An image of an application contains its executables 
-along with all of the dependencies---other executables, libraries, configuration
-and data files.
+Each layer contains the files that the command has modified or added during its
+execution.
 %
-When building images with, e.g., Docker, each executed command
-executed, such as \texttt{apt-get install}, forms a new \emph{layer} on top of
-the previous one~\VT{cite Dockerfile}.
-%
-Docker leverages a COW (copy-on-write) file system which allows Docker to
-instantiate containers quickly. 
-%
-%Utilizing COW also improves storage system efficiency~\cite{docker, UnionFS}.
-%by minimizes I/O and the size of each of the subsequent layers.  because it
-%leverages the pointers to the existing files.
-%
-%Copy-on-write file system also provides layering of containers, thus you can
-%create a base container and then have another container which is based on the
-%base container.
-%
-%Commands can be executed manually or automatically using Dockerfiles.
+Docker leverages unification file systems to efficiently merge layers into 
+a single file system tree when a container starts~\cite{docker-driver-eval}.
 
-
-%
-% Storing images at the registry side
-%
 Docker images are stored as a set of shareable and content addressable
 \emph{compressed layer tarballs} and are distributed through a \emph{registry}
 like Docker Hub~\cite{docker-hub}.
