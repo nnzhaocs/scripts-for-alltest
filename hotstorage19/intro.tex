@@ -2,7 +2,7 @@
 \label{sec:intro}
 
 %
-% Introduction structure
+% Introduction structure:
 %
 % 1. Background, benefits, and popularity of containerization;
 %
@@ -19,65 +19,59 @@
 %
 
 
-%?:  %~\cite{slacker, 7158965, cntr}.
-%
+%?: ~\cite{slacker, 7158965, cntr}.
+%?: ~\cite{dockerbook}.
 
-%
+%%%
 % 1. Background, benefits, and popularity of containerization;
-%
-%
-%The use of containers targets the breaking up of traditional, monolithic
-%architectures into flexible, portable microservices. 
-%
-%%Coupled with microservices, the container ecosystem has changed the way
-%%resources are deployed into the cloud.
-%
-Container runtimes, such as Docker~\cite{docker} and \mbox{CRI-O}~\cite{cri-o},
-leverage Linux kernel's namespaces~\cite{namespaces} and cgroups~\cite{cgroups}
-to efficiently isolate processes and perform resource control.
-%
-Unlike the Virtual Machines (VMs) based on hardware
-virtualization~\cite{adams2006comparison}, containers share the Operating
-Systems (OS) kernel, resulting in virtual environments with significantly
-smaller resource usage footprints and lower startup times~\cite{7819678}.
-%
-Further, containerization frameworks use self-contained images and provide a
-systematic way to automate and accelerate application development and
-deployment while providing high portability~\cite{docker}.
-%
-%In large infrastructure running containers can be managed by an orchestrator
-%like Kubernetes~\cite{kubernetes} to provide highly available, scalable, and
-%secure services.
+%%%
 
+\emph{Container runtimes}, such as Docker~\cite{docker} and
+\mbox{CRI-O}~\cite{cri-o}, leverage Linux kernel's namespaces~\cite{namespaces}
+and cgroups~\cite{cgroups}
+%to efficiently isolate processes and virtualize compute resources.
+to effectively virtualize compute resources for applications.
 %
+Unlike the Virtual Machines (VMs) that implement hardware
+virtualization~\cite{adams2006comparison}, containers running on the same
+machine share the Operating System (OS) kernel, resulting in virtual
+environments with significantly lower resource usage and startup
+times~\cite{7819678}.
 %
-% Popularity
+Further, containerization runtimes introduce portable self-contained \emph{container
+images} and are surrounded by a rich ecosystem of technologies that automate and
+accelerate application development, deployment, and
+management~\cite{kubernetes}~\VT{cite more}.
+
+Given the significant benefits of containers, it is not surprising that they've
+seen a remarkable advancement in modern cloud environments and architectures
 %
-%
-Given these benefits of containers, it is not surprising that they've seen seen
-a remarkable advancement in modern cloud environments and
-architectures~\cite{dockerbook}.
-%
-\VT{need numbers that container are popular. So far it's a mix of background
-and a bit of motivation.}
+The wide spread of container is further fueled by the growing popularity of the
+microservices design methodology~\VT{cite}, for which containers effectively
+became an enabler.
 %
 All major cloud platforms endorse containers as core cloud deployment
-technologies~\cite{googlecengine,azurec,ibmkube,awscont}.
+technologies~\cite{googlecengine,azurec,ibmkube,awscont} \VT{and it is
+predicted that in XXX there will be YYY and cite}
 
-%
+
+%%%
 % 2. Background on container images and registry storage;
 %    large number of images => high storage requirements for the registries;
+%%%
+
 %
 % - Images structure
 % - Storage of images at the registry side
 % - High and growing quantity of images
 %
-Docker containers are created using base \emph{Docker images}.  A Docker image
-may include OS and system libraries, dependencies, and executable code. 
+An image of an application contains its executables 
+along with all of the dependencies---other executables, libraries, configuration
+and data files.
 %
-When building images with Docker, each action taken (that is, each command
-executed, such as \texttt{apt-get install}) forms a new \emph{layer} on top of
-the previous one~\cite{docker}.
+When building images with, e.g., Docker, each executed command
+executed, such as \texttt{apt-get install}, forms a new \emph{layer} on top of
+the previous one~\VT{cite Dockerfile}.
 %
 Docker leverages a COW (copy-on-write) file system which allows Docker to
 instantiate containers quickly. 
