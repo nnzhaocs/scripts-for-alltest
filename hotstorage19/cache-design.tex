@@ -15,10 +15,11 @@
 
 %\input{fig-layer-preconstruct}
 
-\LR{Why are we calling it `superfetch cache'? Isn't that just a prefetch cache?}
+%\LR{Why are we calling it `superfetch cache'? Isn't that just a prefetch cache?}
 
 Based on the user access patterns observed in Section~\ref{sec:dataset-analysis},
-\sysname predicts what layers will be accessed and prepares the layers before \texttt{pull} layer requests.
+\sysname predicts what layers will be accessed and 
+prepares the layers before \texttt{pull} layer requests.
 To improve the performance of primary cluster,
 \sysname \emph{superfetches} the layers that will be accessed later into \textbf{superfetch cache}.
 Moreover, 
@@ -28,19 +29,20 @@ and put them into \textbf{preconstruct cache} to save restoring latency.
 
 \paragraph{Future request prediction based on user access pattern}
 %
-\LR{The following paragraph should be part of the background. By now,
-the reader should be familiar with the pull process.}
+%\LR{The following paragraph should be part of the background. By now,
+%the reader should be familiar with the pull process.}
 %
-Typically, when a user 
- \texttt{pulls} an image,
-it will first \texttt{pulls} the image's manifest and extract the image's layers from the manifest, 
-Next, it compares these layers against a \emph{local layer index}.
-If a layer isn't presents in the \emph{local layer index}, meaning the layer hasn't been stored locally,
-the user will \texttt{pull} the layer.
+%Typically, when a user 
+% \texttt{pulls} an image,
+%it will first \texttt{pulls} the image's manifest and extract the image's layers from the manifest, 
+%Next, it compares these layers against a \emph{local layer index}.
+%If a layer isn't presents in the \emph{local layer index}, meaning the layer hasn't been stored locally,
+%the user will \texttt{pull} the layer.
 %Otherwise, the user will start pulling the layer.
 
-Based on the above access pattern, 
-\sysname uses to two maps for recording image-layer architecture and user's layer access information:
+%Based on the above access pattern, 
+\sysname uses two maps for recording image-to-layer architecture 
+and user's layer access information:
 \textbf{RLmap} and \textbf{ULmap}.
  RLmap maps an image to its containing \emph{layer set}.
  Image is identified as \textless Repository name@manifest digest\textgreater.
@@ -48,18 +50,21 @@ Based on the above access pattern,
 ULmap maps a user to its accessed layer set with the corresponding \emph{pull count}.
  User is identified by extracting the network address that sent the request. 
  When a \texttt{GET manifest} request \emph{r} is received,
-\sysname first calculates a set of image layers that haven't been \texttt{pulled} by the user \emph{r.client} by 
-calculating the difference $S_{\Delta}$ between the image layer set and user layer set ULmap:
+\sysname first calculates a set of image layers that haven't been \texttt{pulled} by the user \emph{r.client} 
+by 
+calculating the difference $S_{\Delta}$ between the image's layer set and user accessed layer set:
 $ S_{\Delta} = \emph{RLmap[r.img]} - \emph{ULmap[r.client]}$.
 The layers in $S_{\Delta}$ will be accessed later.
 
 Recall that some users \emph{always pull} layers no matter if the layers have been \texttt{pulled} previously.
 To distinguish this behavior,  
-\sysname first gets a set of image layers that have already been \texttt{pulled} by the user by calculating the 
-intersection $S_{\bigcap}$ between the image layer set and the user layer set as follows:
+\sysname first gets a subset of layers from the image that have already been \texttt{pulled} by the user 
+by calculating the 
+intersection $S_{\bigcap}$ between the image's layer set and the user accessed layer set as follows:
 $S_{\bigcap} = \emph{RLmap[r.img]} \bigcap \emph{ULmap[r.client]} $.
 Next, 
-\sysname compares the client repull probability $\gamma[r.client]$ with a predefined client repull threshold $\varepsilon_{c}$.
+\sysname compares the client repull probability 
+$\gamma[r.client]$ with a predefined client repull threshold $\varepsilon_{c}$.
 If $\gamma[r.client] > \varepsilon_{c}$, 
 then \sysname classifies the user as a repull user.
 The layers in $S_{\bigcap}$ will be accessed later.
@@ -72,54 +77,78 @@ The layers in $S_{\bigcap}$ will be accessed later.
 %	}
 %}
 
-\paragraph{Superfetch cache  on primary cluster} 
-\sysname \texttt{prefetches} layers on primary cluster based on the above user request prediction theory.
-After P-servers receive the primary layer replicas,
-\sysname will save the layer replicas into \emph{superfetch cache} as shown in Figure~\ref{fig:sift}.
-Meanwhile, it updates \emph{RLmap} with the layer and its associated image. 
+\paragraph{Tiered storage architecture} 
+As mentioned earlier,
+\sysname uses two-tier storage architecture: primary cluster and deduplication cluster.
+Now with the adding of superfetch cache and preconstruct cache,
+The two-tier storage architecture becomes
+multiple-level storage architecture as shown in Figure~\ref{fig:tieredstore}.
 
-When a~\texttt{pull} layer request is received, 
-\sysname will first search superfetch cache for the request layer.
-If the layer presents in cache, the request will be served from cache.
-Otherwise,
-the request will be served from layer store.
-Meanwhile, it updates \emph{ULmap} with the request sender and its associated layer. 
+First,
+Upon a \texttt{GET} layer request,
+\sysname first searches the superfetch caches in primary cluster.
+If the layer presents in the cache, 
+the request will be served from cache.
+Otherwise, the request will be served from the layer stores in primary cluster.
+%\texttt{prefetches} layers on primary cluster based on the above user request prediction theory.
+%After P-servers receive the primary layer replicas,
+%\sysname will save the layer replicas into \emph{superfetch cache} as shown in Figure~\ref{fig:sift}.
+%Meanwhile, it updates \emph{RLmap} with the layer and its associated image. 
+%
+If a \texttt{GET} layer request misses on primary cluster due to P-server failures,
+the request will be forward to deduplication cluster.
+First, \sysname searches the layer stage areas on deduplication cluster.
+If not found, \sysname searches the preconstruct caches.
+If again not found, \sysname will rebuild a layer to serve the request.
+
+Note that both superfetch cache and preconstruct cache are write-through caches.
+When the layers are evicted, 
+it will simply be discard since there will be no updates to layers.
+For preconstruct cache,
+it's possible when a \texttt{pull} layer request comes 
+before layer restoring is finished, meaning the layer cannot be preconstructed \emph{on time}.
+In this case, \texttt{pull} layer request \emph{waits} until the restoring is finished
+(detailed in Section~\ref{sec:impl}).
+%When a~\texttt{pull} layer request is received, 
+%\sysname will first search superfetch cache for the request layer.
+%If the layer presents in cache, the request will be served from cache.
+%Otherwise,
+%the request will be served from layer store.
+%Meanwhile, it updates \emph{ULmap} with the request sender and its associated layer. 
 
 %ULmap records user access status,
 %which maps a \textbf{user Id} to its accessed layers with its corresponding access count,
 %where user id is defined as client request address.
 
-
-\paragraph{Preconstruct cache on deduplication cluster}
-%\input{preconstruct_algori.tex}
-To improve layer restoring performance,
-\sysname \texttt{preconstructs} layers before \texttt{pull} layer requests to save layer construction time.
-Upon each \texttt{pull} manifest request,
-\sysname will predict a \emph{target layer set} that will be requested later based on above prediction theory.
 %
-%Meanwhile,
-%\sysname will update \emph{RLmap} with the layer and its associated repository, where
-%RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
-%as shown in Figure~\ref{fig:dedup-partition}.
-After that,
-\sysname gets each layer's layer recipe from metadata database
-and extracts each layer's restoring master.
-Next,
-\sysname sends a notification of \texttt{preconstruct layer} to
-each restoring master.
-After receiving the notification, 
-the restoring master starts layer restoring process and stores the preconstructed layer into \emph{preconstruct cache}.
+%\paragraph{Preconstruct cache on deduplication cluster}
+%%\input{preconstruct_algori.tex}
+%To improve layer restoring performance,
+%\sysname \texttt{preconstructs} layers before \texttt{pull} layer requests to save layer construction time.
+%Upon each \texttt{pull} manifest request,
+%\sysname will predict a \emph{target layer set} that will be requested later based on above prediction theory.
+%%
+%%Meanwhile,
+%%\sysname will update \emph{RLmap} with the layer and its associated repository, where
+%%RLmap maps a \textbf{repository id} (i.e., repository name) to its containing layers 
+%%as shown in Figure~\ref{fig:dedup-partition}.
+%After that,
+%\sysname gets each layer's layer recipe from metadata database
+%and extracts each layer's restoring master.
+%Next,
+%\sysname sends a notification of \texttt{preconstruct layer} to
+%each restoring master.
+%After receiving the notification, 
+%the restoring master starts layer restoring process and stores the preconstructed layer into \emph{preconstruct cache}.
+%
+%When a~\texttt{pull} layer request is received, 
+%\sysname will first search requested layer from preconstruct cache.
+%If the layer presents in cache, the request will be served from cache.
+%Otherwise,
+%\sysname will rebuild a layer from file store.
 
-When a~\texttt{pull} layer request is received, 
-\sysname will first search requested layer from preconstruct cache.
-If the layer presents in cache, the request will be served from cache.
-Otherwise,
-\sysname will rebuild a layer from file store.
 
-Note that it's possible when a \texttt{pull} layer request comes 
-before layer restoring is finished.
-In this case, \texttt{pull} layer request \emph{waits} until the restoring is finished
-(detailed in Section~\ref{xxx}).
+%(detailed in Section~\ref{xxx}).
  
 %the request will be served from layer store.
 %\sysname will first update \emph{ULmap}. 
