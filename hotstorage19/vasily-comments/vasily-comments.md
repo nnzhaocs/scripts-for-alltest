@@ -5,6 +5,7 @@ Sep 11
 - Use of " -- " or "---"
 - Use sentence % sentence convention
 - Have 80 lines char limit per line
+- ~\cite{}
 
 
 
