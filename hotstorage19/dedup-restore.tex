@@ -5,8 +5,8 @@
 
 \input{fig-layer-restoring}
 
-When a~\texttt{pull} layer request is received and its associated 
-P-servers fail, D-servers will rebuild a layer for the request.
+%When a~\texttt{pull} layer request is received and its associated 
+%P-servers fail, D-servers will rebuild a layer for the request.
 %\sysname will first search layer preconstruct cache on D-servers.
 %If not found,
 %\sysname will rebuild the layer according to the layer recipe. 
@@ -16,14 +16,18 @@ P-servers fail, D-servers will rebuild a layer for the request.
 %Next, it compresses the slice's directory tree into a slice tarball,
 %and directly sends it back to the client.
 
-\LR{Are we only considering the case when a P-server fails or
-are we also considering, if a P-server gets overloaded?}
+%\LR{Are we only considering the case when a P-server fails or
+%are we also considering, if a P-server gets overloaded?}
 
-\paragraph{Parallel layer construction}
+To restore a layer from files,
+\sysname uses a layer restoring process
+which involves two modules: slice constructor and layer constructor. 
+
+\paragraph{Slice construction}
 
 %Upon a \texttt{pull} layer request fails on P-servers,
 %\sysname initiates a layer restoring process on D-servers for it.
-The layer restoring process involves two modules: slice constructor and layer constructor. 
+%which involves two modules: slice constructor and layer constructor. 
 First, 
 layer constructor fetches the layer recipe from metadata database.
 As shown in Figure~\ref{fig:construct}, according to \emph{L1}'s layer recipe, 
