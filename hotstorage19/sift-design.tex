@@ -19,18 +19,25 @@
 %O are to improve Docker registry performance and to decrease the backend storage requirements such as ???.
 
 
-The goal of \sysname is to improve the storage efficacy of registry backend storage system.
-In addition to eliminates excessive duplicate data and 
-significantly decreases storage capacity requirements,
-\sysname more focuses on the impact of layer deduplication on \texttt{pulling} layer performance
-and how to improve layer \texttt{pulling} performance while \emph{deduplicating} layers.
+The main goal of \sysname is to reduce the storage demands of container registries while
+keeping the performance impact on user operations (mainly \texttt{push} and \texttt{pull})
+low.
+%In addition to eliminates excessive duplicate data and 
+%significantly decreases storage capacity requirements,
+%\sysname more focuses on the impact of layer deduplication on \texttt{pulling} layer performance
+%and how to improve layer \texttt{pulling} performance while \emph{deduplicating} layers.
+%
+In this section, we first provide an overview of \sysname~(\S\ref{sec:overview}) and
+explain, how it utilizes existing replicas to balance the trade-off between storage space reduction
+and performance. We then describe in detail, how \sysname deduplicates~(\S\ref{sec:dedup-desgin})
+and restores~(\S\ref{sec:restore-desgin}) layers, and how it further improves performance
+through predictive cache management~(\S\ref{sec:cache-design}).
 
-In this section, we outline the design of \sysname.
-We present how \sysname achieves 
-a maximum performance, 
-a maximum data deduplication ratio, 
-a trade-off between performance and data deduction
-by utilizing deduplication, replication, and user behavior patterns.
+%We present how \sysname achieves 
+%a maximum performance, 
+%a maximum data deduplication ratio, 
+%a trade-off between performance and data deduction
+%by utilizing deduplication, replication, and user behavior patterns.
 
 % To speedup layer restoring,
 % \sysname uses a parallel streaming layer deduplication and restoring process
@@ -50,5 +57,7 @@ by utilizing deduplication, replication, and user behavior patterns.
 \input{overview}
 
 \input{dedup-design}
+
+\input{dedup-restore}
 
 \input{cache-design}
