@@ -6,40 +6,49 @@
 %Next, we present the preliminary evaluation of our user access history-based cache algorithm
 %and the space efficiency of file cache.
 
-We first present our testbed and workloads.
+In this section, we evaluate \sysname and compare it with
+modern registry setup~\cite{dockerworkload}.
+Before that,
+we first show our testbed and workloads.
 Then we present our evaluation results.
-\subsection{Testbed}
+\subsection{Testbed, workloads and dataset}
 
-Our testbed includes two clusters: 
-8-node client cluster and
+Our testbed includes 
+%two clusters: 
+%8-node client cluster and
 %8-node registry cluster (Hulks), and
-21-node registry cluster.
-Each client server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
+a 22-node cluster.
+%Each client server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
 %Each client server is equipped with 8 cores, 64 GB RAM, 1 TB HDD, and 1000Mb/s NIC.
 %During evaluation,
-We instantiate multiple clients on each client server.
+Each server is equipped with 8 cores,16 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
+We deploy a distributed redis cluster on these 22 registry servers as our database.
+During our evaluation,
+we select different number of servers as our registry cluster
+and use the rest as client server.
+Note that each server only runs a single registry container
+while multiple clients can run on the same server.
+%Besides,
+%We instantiate multiple clients on each client server.
 %backend registry storage cluster and frontend registry cache cluster. 
 %Backend storage cluster includes 8 servers. 
 %Each registry Hulk server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, 1 TB HDD, and 10,000Mb/s NIC. 
-Each registry server is equipped with 8 cores,16 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
-We launch a single registry container on each registry server.
-Besides,
-we deploy a distributed redis cluster on 21 registry servers as our database.
+
 %We implemented \sysname~cache on frontend cache cluster and installed \sysname~dedup on backend storage cluster. 
 %We use extra 5 machines and each machine launches different number of clients to emulate client requests.
 %Hulks and new hulks are used as backend.
 %Thors are used as frontend.
-\subsection{Workloads and dataset}
+%\subsection{}
 \cite{xxx} presents an comprehensive analysis of our whole dataset downloaded from Docker Hub. 
-Docker image popularity distribution shows a heavy skewness~\cite{xxx}.
+Docker image popularity distribution shows a heavy skewness~\cite{analysisdockergithub}.
 To evaluate how our sift works for frequently accessed images,
-we select a subset of 74,000 popular images (i.e., image with a pull count greater than 100) from the whole dataset 
+we download 74,000 popular images (i.e., image with a pull count greater than 100) from the Docker Hub~\cite{docker-hub} 
 as our evaluation dataset, 
 totally 12.5 TB with 507,023 layers.
 After decompressing,  the total size of our dataset is 27.7 TB.
-With file-level deduplication ratio applying to our decompressed dataset, 
+With file-level deduplication applying to our decompressed dataset, 
 the total size of unique files is only 7.2 TB, with a dedup ratio of 0.5.
-The size distribution of our sample layer dataset is the same with the size distribution of whole layer dataset.
+The size distribution of our sample layer dataset is the same with the size distribution of~\cite{analysisdockergithub}.
 87.5\% of layers are smaller than 50 MB.
 12.3\% of layers fall between 50 MB and 1 GB.
 0.2\% of layers are bigger than 1 GB.
@@ -50,18 +59,20 @@ Layers that are bigger than 250 MB are split into sub-layers.
 %Therefore, we divided our sample dataset into two groups:
 %smaller layers (layer size $\leq$ 50 MB) and big layers ( 50MB $\leq$ layer size $\leq$ 1 GB).
 
-\cite{dockerworkload} presents IBM cloud registry workload traces spanning $\sim$80 days for 7 different registry clusters. 
-To evaluate how our sift performs for real-wold workloads,
-we randomly match IBM traces~\cite{xxx} and our dataset(see section~\cite{xxx}) as 7 real-world workloads. 
+\cite{dockerworkload} presents IBM cloud registry workload traces 
+spanning $\sim$80 days for 3 internal registry cluster and 4 production registry clusters. 
+To evaluate how our sift performs for production registry workloads,
+we randomly match these 4 production traces (i.e., \texttt{Dal, Fra, Lon, Syd}) and our dataset as 4 real-world production workloads
+(detailed in Section~\ref{sec:impl}). 
 Due to time constrain,
 We replay first 5000 requests from each workload.
-Table~\ref{tab:eval-overall} show the details of 5000 requests from each workload.
+Table~\ref{tab:eval-overall} and ~\ref{tab:eval-dataset} show the details of 5000 requests from each workload.
 Note that we use 3-way replication
 so the amount of data written during evaluation triples.
 We speedup trace replaying by using different speedup factors
 so that each trace can be finished within 30 minutes.
-During all experiments,
-we set \emph{replication level} equal to 3.
+%During all experiments,
+%we set \emph{replication level} equal to 3.
 
 \input{tab-eval-overall}
 \input{eval-performance}

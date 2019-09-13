@@ -10,7 +10,7 @@ Moreover, we configure Redis to save RDB (Redis Database File) snapshots every f
 To improve metadata availability, 
 we configure Redis to use three replicas.
 
-Apache Zookeeper is used to manage the registry server membership in the cluster. 
+Apache Zookeeper is used to manage the server membership in the cluster. 
 It is used to detect failures in the P-servers and handle failover to the D-servers, 
 which are used to restore and serve the layers when the P-servers are down.
 %In this case, Redis will not become a performance bottleneck.
