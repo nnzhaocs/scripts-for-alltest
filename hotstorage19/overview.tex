@@ -175,13 +175,23 @@ primary and the deduplication cluster.
 %
 Each P-server has a in-memory \emph{user-behavior based superfetch cache}
 to reduce disk I/Os as detailed in~\S\ref{sec:cache-design}.
+%
+When a \texttt{pull} manifest request is received,
+\sysname predicts which layers in the image will be \texttt{pulled} later
+and \emph{prefetches} them in the cache.
+To do that,
+\sysname maintains two maps for recording image-to-layer information and user's layer access history:
+\textbf{RLmap} and \textbf{ULmap}.
 \LR{Add short explanation on how it works and introduce RLmap and ULmap.}
 %as shown in Figure~\ref{fig:sift}.
 
 Additionally, to avoid layer restoring overhead,
 each D-server maintains an on-disk layer cache (called \emph{user-behavior based preconstruct cache}).
-D-servers try to preconstruct likely to be accessed layers and load them into their
-preconstruct cache.
+%D-servers try to preconstruct likely to be accessed layers.% and load them into their preconstruct cache.
+As with superfetch cache algorithm,
+when a \texttt{pull} manifest request is received,
+\sysname predicts which layers in the image will be \texttt{pulled} later
+and preconstruct the layers before later layer \texttt{pulling} requests.
 \LR{Again, put short explanation of how it works using RLmap und ULmap.}
 
 %To do that,
