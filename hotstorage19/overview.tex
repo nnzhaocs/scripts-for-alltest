@@ -10,8 +10,12 @@
 %objectives of Sift? We want to deduplicate layers but we don't want latencies to suffer. So what is
 %the problem then? Reconstructing layers is expensive. That's why we choose to have replication modes
 %to trade-off storage space for performance.}
-We first consider 
-a simple example of current registry backend storage system.
+\LR{This following paragraph should be part of background. Ali, can you move it to background and fit
+it in there? I think we should also split Figure~\ref{fig:sift-original} and also move the top part,
+which describes the standard registry, to the background section.}
+
+%\LR MOVE THIS TO BACKGROUND {START}
+We first consider  a simple example of current registry backend storage system.
 Upon a \texttt{push} layer request,
 server \emph{A} stores the layer locally, such layer is denoted as \emph{primary layer replica}.
 Meanwhile \emph{A} replicates the layer to the other two servers: 
@@ -22,123 +26,170 @@ These replicated layers are denoted as \emph{backup layer replicas}.
 %registry \emph{A} stores the layer locally, such layer is denoted as \emph{primary layer replica}.
 The subsequent \texttt{pull} layer requests can be served by 
 any of the three layer replicas.%depending on the registry server's availability?
+%\LR MOVE THIS TO BACKGROUND {FINISH}
 
-To exploit replication technique for good performance and deduplication technique for data reduction,
-%Similar to the original registry cluster, 
-\sysname maintains a certain number of layer replicas for layer accesses 
-while \emph{deduplicating} the rest for space savings.
-As shown in Figure~\ref{fig:sift-original},
-\sysname maintains a single layer replica (i.e., primary layer replica) on \emph{A} for newly 
-\texttt{pushed} layers.
+Figure~\ref{fig:sift} shows the architecture of \sysname.
+\sysname consists of a cluster of registry backend storage servers and a distributed metadata database. 
+Storage servers store and serve both manifest and layer requests sent by clients. The
+metadata database keeps all deduplication-related metadata, which is necessary to correctly restore
+a deduplicated layer.
+%
+To reduce deduplication overhead, \sysname tries to minimize the time it takes to restore a layer
+during a \texttt{pull} request. This is achieved by three main techniques: 1)~deduplication modes;
+and 2)~parallel layer reconstruction; and 3)~predictive cache prefetching.
+
+\paragraph{Deduplication modes}
+
+\sysname makes use of the fact that most registries employ some form of layer replication
+for fault tolerance and availability. The idea is that, instead of deduplicating every layer replica,
+\sysname allows to configure, how many replicas of a layer should be deduplicated and
+how many replicas should be kept in their original state for faster serving.
+
+A \emph{basic deduplication mode} (B-mode) $n$ defines that \sysname should keep $n$ layer
+replicas and deduplicate the remaining $R-n$ layer replicas, where $R$ is the
+layer replication level.
+%
+%by deduplicating a different number of layer replicas, denoted as
+%\textbf{basic deduplication modes (i.e, B-modes)}.
+%
+At one extreme, B-mode $R$ means that no replica should be deduplicated and hence, provides the best
+performance but no data reduction. At the other end, B-mode $0$ deduplicates all layer replicas, i.e. it
+provides the highest deduplication ratio but adds restoration overhead for every \texttt{pull} request.
+The remaining B-modes in between allow to trade off performance and data reduction.
+
+For heavily skewed workloads, \sysname also provides a \emph{selective deduplication mode} (S-mode). The
+S-mode utilizes the skewness in layer popularity, observed in~\cite{dockerworkload}, to decide, how many
+replicas should be deduplicated for each layer individually. As there are hot layers that receive the
+majority of \texttt{pull} requests, S-mode sets the number of layer replicas inversely proportional to
+its popularity. This means that hot layers have less deduplicated replicas and hence, can be served
+faster. On the other hand, cold layers have more deduplicated replicas to improve storage utilization.
+%
+%and deduplicates the rest
+%to provide a better performance for hot layers
+%and deduplicate the cold layer.
+
+%To exploit replication technique for good performance and deduplication technique for data reduction,
+%%Similar to the original registry cluster, 
+%\sysname maintains a certain number of layer replicas for layer accesses 
+%while \emph{deduplicating} the rest for space savings.
+%
+Figure~\ref{fig:sift-original} shows an example for B-mode $1$ with $R=3$.
+\sysname maintains a single layer replica (the \emph{primary layer replica}) on server A for newly 
+pushed layers.
+%
 %first stores three layer replicas for 
 %a newly \texttt{pushed} layers on three different servers: %\emph{A}, \emph{B}, and \emph{C}. 
 %
-The rest two backup layer replicas %server roles/group discussed later, a forward reference maybe?
-are \emph{deduplicated}: 
-the duplicated files are discard while the \emph{unique files} are kept.
-Meanwhile,
-the unique files are replicated and saved on different servers other than \emph{A}.
+The remaining two backup layer replicas %server roles/group discussed later, a forward reference maybe?
+are \emph{deduplicated}, i.e. any
+duplicate files are discard while \emph{unique files} are kept.
+The unique files are replicated and saved on different servers B and C.
+%
 %\emph{A} stores the while \emph{B} and \emph{C} store
 %
-%Then, one of the backup layer replicas (say, at server B) is \emph{deduplicated} into unique files, denoted as \emph{primary file replicas}. %
-%%\HA{It is not clear in the previous sentence that primary file replica is a collection of all the unique files constituting the layer or a file (one file)? Also, we should state why only one server is deduplicating i.e. the performance effect}
-%After that, each unique file is replicated and stored onto the remaining servers (in this case, \emph{C}), denoted as the \emph{backup file replicas}.
-%In the end, the two backup layer replicas at \emph{B} and \emph{C} are discarded while the primary layer replica at \emph{A} remains.
-A subsequent \texttt{pull} layer request are sent to \emph{A} since it stores a layer replica.
-If \emph{A} crashes,
-server \emph{B} or \emph{C} is needed to rebuild the layer and serve the \texttt{pull} layer request. %for the incoming \texttt{pull} layer request.
+%Then, one of the backup layer replicas (say, at server B) is \emph{deduplicated} into unique files, denoted as 
+%\emph{primary file replicas}. %
+%%\HA{It is not clear in the previous sentence that primary file replica is a collection of all the unique files 
+%constituting the layer or a file (one file)? Also, we should state why only one server is deduplicating i.e. 
+%the performance effect}
+%After that, each unique file is replicated and stored onto the remaining servers (in this case, \emph{C}),
+%denoted as the \emph{backup file replicas}.
+%In the end, the two backup layer replicas at \emph{B} and \emph{C} are discarded while the primary layer
+%replica at \emph{A} remains.
+%
+Any subsequent \texttt{pull} layer requests are sent to server A since it stores a complete layer replica.
+If server A crashes, server B or C is needed to rebuild the layer and serve the \texttt{pull} request.
+%for the incoming \texttt{pull} layer request.
 %As a result, 
-\sysname thus provides the same level of redundancy as the original registry backend storage cluster. 
+%Thus, \sysname provides the same level of redundancy as the original registry backend storage cluster. 
 
-To meet different performance and capacity requirements,
-\sysname provides different \emph{deduplication modes} by deduplicating a different number of layer replicas, denoted as
-\textbf{basic deduplication modes (i.e, B-modes)}.
-We denote B-mode \emph{n} as keeping \emph{n} layer replicas and deduplicating the rest \emph{R-n} layer replicas, 
-where \emph{R} is the layer replication level.
-Apparently,
-B-mode \emph{R} provides the best performance without data reduction.
-B-mode \emph{0} provides the highest deduplication ratio with a performance degradation.
-The rest \emph{R-1} B-modes tradeoff 
-between performance and data reduction.
-For heavy skewned workloads,
-\sysname provides a \textbf{selective deduplication mode (i.e, S-mode}
-by 
-utilizing the layer popularity distribution observed in~\cite{dockerworkload}.
-There are hot layers that receives majority of \texttt{pulling} layer requests.
-S-mode
-maintains a number of layer replicas inversely proportional to its popularity
-and deduplicates the rest
-to provide a better performance for hot layers
-and deduplicate the cold layer.
-
-Figure~\ref{fig:sift} shows the storage architecture of \sysname.
- \sysname comprises a cluster of registry backend storage servers and a distributed metadata database. 
-Storage servers store and serve both manifest and layer requests sent by clients.
-Storage servers are divided into two groups:
-a \emph{primary cluster} denoted \emph{P-servers} and a \emph{deduplication cluster} denoted \emph{D-servers}.
-P-servers mainly store layer replicas and manifest replicas.
-While D-servers \emph{deduplicate} layer replicas at the file level, 
-store the unique files and replicate them.
-The reason we separately store layer replicas and 
-file replicas is to make sure that
+To support the different deduplication modes, \sysname divides storage servers into two 
+groups (see Figure~\ref{fig:sift}):
+a \emph{primary cluster} consisting of \emph{P-servers} and a \emph{deduplication cluster}
+consisting of \emph{D-servers}.
+P-servers are responsible for storing full layer replicas and manifest replicas
+while D-servers \emph{deduplicate} layer replicas at the file level, 
+store the unique files, and replicate them.
+%
+%The reason we separately store layer replicas and 
+%file replicas is to make sure that
+The split is necessary to ensure that
 layer replicas and its containing file replicas are stored on different servers to maintain
-fault-tolerance.
-As shown in Figure~\ref{fig:sift},
-P-servers and D-servers 
-form a two-tier storage architecture.
-Primary cluster serves the normal \texttt{pull} layer requests.
-However, if the request miss on primary cluster,
-it will be served from deduplication cluster.
+fault tolerance.
+
+%As shown in Figure~\ref{fig:sift},
+P-servers and D-servers form a two-tier storage hierarchy:
+In the default case, the primary cluster serves all incoming \texttt{pull} requests.
+If a request can't be served from the primary cluster, for example, due to a node failure,
+it will forwarded to the deduplication cluster and the requested layer will be restored.
+%
 %\LR{It would be good to briefly mention here, how we split servers into P- and D-servers, or make a forward
 %reference to the place, where we actually discuss it in detail.}
+%
+\LR{Here we also need to talk about dealing with overloaded (not just crashed) P-servers.}
 
-To improve the layer access latency of 
-primary cluster,
-each P-server has a \emph{user-behavior based superfetch cache}
-to reduce disk I/Os detailed in ~\ref{sec:cache-design} 
-as shown in Figure~\ref{fig:sift}.
-To mitigate the layer restoring latency,
-each D-server maintains a on-disk layer cache ---\emph{user-behavior based preconstruct cache}--
-to preconstruct layers before layer accesses.
-As shown,
-each D-server's local storage system is
-divided into three parts: layer stage area, preconstruct cache, and file store.
+\paragraph{Parallel layer reconstruction}
+
+\sysname speeds up layer reconstruction through parallelism. As shown in Figure~\ref{fig:sift},
+each D-server's local storage is divided into three parts: layer stage area, preconstruction cache,
+and file store.
 %
 %\LR{Should it be 4 parts? Why do we not include the file cache? I think file cache should also
 %be explained here.###### remove file cache from graph}
-%
-The \emph{Layer stage area} temporarily stores newly added layer replicas.
-After \texttt{deduplicating} a layer replica, 
-the resulting unique files are stored in a content 
-addressable \emph{file store}. 
-Meanwhile, each unique file is replicated to the peer servers to provide redundancy.
-The layer replica is then deleted from the layer stage area. 
-%
-To improve layer restoring performance, 
-\sysname partitions the layer's unique files and \emph{shared files}
- onto several servers so that
-the layer can be restored in parallel (see section~\ref{sec:dedup-desgin}).
+
+The layer stage area temporarily stores newly added layer replicas.
+After \texttt{deduplicating} a replica, the resulting unique files are stored in a content 
+addressable \emph{file store} and replicated to the peer servers to
+provide redundancy. Once all replicas have been stored, the layer replica is deleted from the
+layer stage area. 
+
+\sysname distributes the layer's unique files
+% and \emph{shared files}
+onto several servers (see~\S\ref{sec:dedup-desgin}).
 %such that
 %a %\HA{is it a deduplicated layer replica? ##### no, layer = unique files + shared files. to rebuild a layer, we need to 
-%consider shared file as well} 
-The partition on each server 
-can rebuild a \textbf{slice} of the layer. 
+%consider shared file as well}
 %
-To rebuild a layer, 
-the D-server first rebuilds the layers' slices in parallel 
-according to the associated \textbf{slice recipes} and \textbf{layer recipe}.
-After that D-server concatenates the slices into a layer (see section~\ref{sec:dedup-desgin}).
+All files on a single server belonging to the same layer are called a \emph{slice}. A slice
+has a corresponding \emph{slice recipe}, which defines the files that are part of this slice,
+and a \emph{layer recipe} defines the slices needed to reconstruct the layer. This information
+is stored in \sysname{}'s metadata database
+%Deduplication related metadata such as \textbf{layer recipe} and \textbf{slice recipe}
+%%, \textbf{layer index}, and \textbf{file index} 
+%is kept in a \emph{distributed database} (Figure~\ref{fig:sift})
+for reliability, consistency, and fast accesses. 
+%The partition on each server can rebuild a \textbf{slice} of the layer. 
+%
+This allows D-servers to rebuild layer slices in parallel and thereby, improve reconstruction
+performance.
+%To rebuild a layer, the D-server first rebuilds the layers' slices in parallel 
+%according to the associated \textbf{slice recipes} and \textbf{layer recipe}.
+%After that D-server concatenates the slices into a layer (see section~\ref{sec:dedup-desgin}).
+%
+\LR{We should also explain here the File and Layer indeces shown in the Figure.}
+
+\paragraph{Predictive cache prefetching}
+
+To improve the layer access latency, \sysname employs a cache layer in both the
+primary and the deduplication cluster.
+%
+Each P-server has a in-memory \emph{user-behavior based superfetch cache}
+to reduce disk I/Os as detailed in~\S\ref{sec:cache-design}.
+\LR{Add short explanation on how it works and introduce RLmap and ULmap.}
+%as shown in Figure~\ref{fig:sift}.
+
+Additionally, to avoid layer restoring overhead,
+each D-server maintains an on-disk layer cache (called \emph{user-behavior based preconstruct cache}).
+D-servers try to preconstruct likely to be accessed layers and load them into their
+preconstruct cache.
+\LR{Again, put short explanation of how it works using RLmap und ULmap.}
+
 %To do that,
 %D-server
 %the layer's associated \textbf{layer recipe} (see section~\ref{sec:restore-design})
 %
 %The preconstruct cache is a write-through cache; when layers are evicted from the diskcache, they are simply discarded.
 %
-Deduplication related metadata such as \textbf{layer recipe} and \textbf{slice recipe}
-%, \textbf{layer index}, and \textbf{file index} 
-is kept in a \emph{distributed database} (Figure~\ref{fig:sift})
-for 
-reliability, consistency, and fast accesses. 
 %Slice recipe and layer recipe are used to restore slices and rebuild layers.
 %Layer index and file index records \emph{content fingerprints} that are uniquely mapped to the associated physical layers and files respectively. %psychical file based on
 %Moreover, \sysname keeps track of user accesses and repository status, 
