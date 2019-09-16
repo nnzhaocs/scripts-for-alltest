@@ -4,10 +4,10 @@
 %
 % Introduction structure:
 %
-% 1. Background, benefits, and popularity of containerization;
+% 1. Containerization background, benefits, and popularity.
 %
 % 2. Background on container images and registry storage;
-%    large number of images => high storage requirements for the registries;
+%    large number of images => high storage requirements for the registries.
 %
 % 3. Significant amount of unharvested duplication across images.
 %    Traditional dedup cannot be applied directly - need to decompress
@@ -18,43 +18,42 @@
 % 5. Evaluation: how and what we got
 %
 
-
 %?: ~\cite{slacker, 7158965, cntr}.
 %?: ~\cite{dockerbook}.
+%?: ~\cite{5655241} - dedup of containers?
 
 %%%
 % 1. Background, benefits, and popularity of containerization;
 %%%
 
-\emph{Container runtimes}, such as Docker~\cite{docker} and
-\mbox{CRI-O}~\cite{cri-o}, leverage Linux kernel's namespaces~\cite{namespaces}
-and cgroups~\cite{cgroups}
-%to efficiently isolate processes and virtualize compute resources.
+\emph{Container runtimes} such as Docker~\cite{docker} 
+%and \mbox{CRI-O}~\cite{cri-o}
+leverage Linux kernel's namespaces~\cite{namespaces} and cgroups~\cite{cgroups}
 to efficiently virtualize computational resources.
 %
 Unlike the hardware-virtualization-based Virtual Machines
-(VMs)~\cite{adams2006comparison}, containers residing on the same host share the
-Operating System (OS) kernel, which yields virtual environments with
-significantly lower resource usage overheads and faster startups~\cite{7819678}.
+(VMs)~\cite{adams2006comparison}, containers residing on the same host share
+the single Operating System (OS) kernel, which yields virtual environments with
+low overheads and fast starts~\cite{7819678}.
 %
-Further, container runtimes introduce portable, self-contained
-\emph{container images} and are surrounded by a rich ecosystem of technologies
-that automate and accelerate application development, deployment, and
+Further, container runtimes introduce portable, self-contained \emph{container
+images} and are surrounded by a rich ecosystem of technologies that automate
+and accelerate application development, deployment, and
 management~\cite{cncfprojects}.
 
-Given the significant benefits of containers, it is not surprising that they
-have seen a remarkable advancement in modern cloud environments and
-architectures.
+Given the benefits of containers, it is not surprising that they have seen a
+remarkable advancement in modern cloud environments.
 %
 The rapid spread of containers is further fueled by the growing popularity of
-the microservices design methodology~\cite{wolff2016microservices}, for which
-containers act as an effective enabler.
+the microservices~\cite{wolff2016microservices},
+%design methodology
+for which containers act as an imperative enabler.
 %
-All major cloud platforms endorse containers as a core cloud deployment
+By now all major cloud platforms endorse containers as a core cloud deployment
 technology~\cite{googlecengine,azurec,ibmkube,awscont}.
 %
-And according to some studies, about 21\% of hosts in 2018 are already managed
-by Docker with a consistent growth of this ratio by about 5\%
+According to some surveys, in 2018 about 21\% of enterprise hosts are already
+managed by Docker and the ratio is consistently growing by about 5\%
 annually~\cite{20percentdocker}.
 
 %%%
@@ -63,7 +62,7 @@ annually~\cite{20percentdocker}.
 %%%
 
 An application's container image includes the executable of the application
-itself along with all of its dependencies---other executables, libraries,
+along with a complete set of its dependencies---other executables, libraries,
 configuration and data files.
 %
 Images have a layered structure; when building an image with Docker each
@@ -73,134 +72,131 @@ top of the previous one~\cite{dockerfile}.
 Each layer contains the files that the command has modified or added during its
 execution.
 %
-Docker leverages unification file systems to efficiently merge layers into 
-a single file system tree when a container starts~\cite{docker-driver-eval}.
+A layer can be shared between multiple images.
+%
+Docker leverages unification file systems~\cite{docker-driver-eval} to
+efficiently merge layers into a single file system tree when a container
+starts.
 
-Docker images are stored as a set of shareable and content addressable
-\emph{compressed layer tarballs} and are distributed through a \emph{registry}
-like Docker Hub~\cite{docker-hub}.
+To store and distribute container images Docker relies on image
+\emph{registries} (e.g., Docker Hub~\cite{docker-hub}).
 %
-A Docker registry delegates the storage responsibility to different drivers
-using a content addressable store API.
+Docker clients can push images to or pull them from the registries as needed.
 %
-A layer is uniquely identified by a collision-resistant hash of its content and
-so no duplicate layers are stored in a registry~\cite{docker-hub}.
+On the registry side each layer is stored as a compressed tarball and
+identified by a content-based address.
 %
-The drivers interface with the \emph{backend storage systems} such as
-\emph{local file systems} or \emph{Cloud storage systems} (\eg S3~\cite{s3},
-Azure~\cite{azuredriver}, Swift~\cite{swift}, OSS~\cite{oss}, GCS~\cite{gcs}).
-%
-Cloud storage systems usually use \emph{replication} to maintain high availability and tolerate server failure~\cite{Bonvin:2010:SFS:1807128.1807162}.
-%
-Each layer can have multiple \emph{replicas}.
+Docker registry supports various storage backends for saving and retrieving
+layers; a typical large-scale setup stores each layer as an object in an object
+store~\cite{s3,swift}.
 
+As the container market continues to expand, Docker registries
+manage an increasing number of image layers.
+%
+One conservative estimate shows that already in \VT{XXX} Docker Hub alone
+stored at least XXX public images~\VT{cite}. 
+%
+We believe that this is just the tip of an iceberg and the number of private
+images is significantly higher.
+%
+Other popular public registries~\VT{cite}, as well as numerous on-prem
+registries in large organizations, experience the same surge of
+container images.
+%
+To keep up with the demand and provide adequate performance levels,
+organizations spend an increasing amount of their storage and
+networking infrastructure on operating image registries.
+%
+%
+\VT{This part will benefit from further strengthening. Some concrete numbers on
+registry sizes.}
 
-%
-% High and growing number of images => storage requirements
-%
-As the container market grows rapidly, more and more images and layers are
-built, \emph{replicated}, and stored in Docker registries.
-%
-This puts intense pressure on the availability and scalability requirements of
-a Docker registry's backend storage infrastructure~\cite{5655241}. 
-%
-Scaling-out involves data migration between existing storage servers and new
-storage servers, and even between existing storage servers for load balancing,
-which is detrimental to performance.
-
-%
-%
+%%%
 % 3. Significant amount of unharvested duplication across images.
-%    Traditional dedup cannot be applied directly - need to decompress
-%    Even with decompression, things do not work well: perfomance overhead
-%
-%
-Many cloud storage systems utilize deduplication to remove duplicate data and
-improve storage allocation, resulting in effective scale-out and a significant
-cost savings on hardware upgrades ~\cite{Ng:2012:PDD:2245276.2245361, 6753819,
-5655241}.
-%
-As shown in deduplication analysis of $47$~TB ($167$~TB uncompressed) Docker
-image/layer dataset downloaded from Docker Hub~\cite{dedupanalysis}, About
-$97$\% of files across \emph{compressed layers} are duplicate files.
-%
-If decompression and file-level deduplication is applied on the dataset,
-subil: citation needed half of the storage space can be saved.
+%%%
 
+The recent analysis of
+% $47$~TB ($167$~TB uncompressed)
+Docker Hub image dataset showed that about $97$\% of files across layers are
+duplicates~\cite{dedupanalysis}.
+%
+Such high redundancy is not surprising: after all every Docker image has to be
+self-sufficient by definition and is typically built by developers without much
+coordination with others.
+%
+Registry storage backends exacerbate the redundancy further due to the
+replication they perform to improve images durability and
+availability~\cite{Bonvin:2010:SFS:1807128.1807162}.
+%
+For instance assuming 3-way replication, the amount of duplicate files in the
+Docker Hub dataset study reaches 99\%.
+%
+And yet, existing registry deployments do not exploit high data redundancy
+across layers to make the service more efficient.
 
-%
-\VT{In general, we need to say the decompression is needed first}
-%
-The challenge of applying deduplication on Docker registry is that
-decompressing layers can have overheads besides the obvious
-decompression/compression. 
-%
-After decompression and simple file-level deduplication, the unique files may
-become scattered on multiple servers.
-%
-To restore a requested layer, the
-layer's files would need to be first fetched from multiple servers then
-compressed into a layer (to preserve transparency and avoid client-side API
-modifications).
-%
-%and sent back to the client.
-%
-The extra network, I/O, and computation will slow down the response time for
-retrieving (\texttt{pulling}) an image.
-
-%
-%
+%%%
 % 4. Sift's idea
+%     Even with decompression, things do not work well: perfomance overhead.
+%%%
+
+In this paper we propose \emph{\sysname}, the first Docker registry that
+supports deduplication.
 %
+The naive application of deduplication to the registry---decompress layers and
+store individual files in content-addressible storage---introduces prohibitive
+overheads.
 %
-In this paper, we propose \sysname, a layer deduplication aware Docker registry
-that provides significant storage improvements over standard registry
-deployments while maintaining a good performance.
+The slowdowns caused by layer reconstruction during image pulls are especially
+harmful because in practice they contribute directly to the start times of
+containers.
 %
-To do this, \sysname first
-exploits two kinds of redundancies: redundant data among layers, and redundancy
-policy used by Cloud storage system.
+\sysname, therefore, performs selective deduplication 
+
+\VT{we do selective in in allcases}.
+
+
+% fragmentation and compression are the issues
 %
-\sysname maintains a certain number of
-\emph{layer replicas} for layer accesses while \emph{deduplicates} the rest
-\emph{layer replicas} into \emph{unique files} to save space.
+\VT{do we have number to support that naive dedup is harmful}.
+
+\sysname first exploits two kinds of redundancies: redundant data among layers,
+and redundancy policy used by Cloud storage system.
 %
-In this case, by
-deduplicating different number of layer replicas, \sysname provides different
-\textbf{basic deduplication modes} to meet different capacity and performance
-requirements while maintaining the same failure-tolerance ability.
+\sysname maintains a certain number of \emph{layer replicas} for layer accesses
+while \emph{deduplicates} the rest \emph{layer replicas} into \emph{unique
+files} to save space.
 %
-Besides,
-\sysname also provides \textbf{selective deduplication mode} to deduplicate a
-certain number of layer replicas inversely proportional to their
+In this case, by deduplicating different number of layer replicas, \sysname
+provides different \textbf{basic deduplication modes} to meet different
+capacity and performance requirements while maintaining the same
+failure-tolerance ability.
+%
+Besides, \sysname also provides \textbf{selective deduplication mode} to
+deduplicate a certain number of layer replicas inversely proportional to their
 \emph{popularity} to achieve significant space savings while maintaining a good
 performance.
 %
-Moreover, \sysname also explores user access patterns and
-preconstructs layers before \texttt{pulling} layer requests arrive to save
-layer restoring latency.
+Moreover, \sysname also explores user access patterns and preconstructs layers
+before \texttt{pulling} layer requests arrive to save layer restoring latency.
 %
-Finally, \sysname does not just simply uses
-decompression and file-level deduplication to remove duplicate files from layer
-dataset.
+Finally, \sysname does not just simply uses decompression and file-level
+deduplication to remove duplicate files from layer dataset.
 %
-\sysname \emph{splits} a layer into \textbf{slices} during layer
-deduplication to enable \emph{parallel streaming layer construction} for fast
-layer restoring performance.
+\sysname \emph{splits} a layer into \textbf{slices} during layer deduplication
+to enable \emph{parallel streaming layer construction} for fast layer restoring
+performance.
 
 
-%
-%
+%%%
 % 4. Sift's evaluation
-l
-%
+%%%
+
 We implemented and deployed \sysname on a 21-node cluster and evaluated with
 real-world workloads and real layers.
 %
-The evaluation results show that
-uses a cache that takes into consideration the user behavior and layer
-popularity, in addition to parallelizing layer construction across %HA?
-servers.
+The evaluation results show that uses a cache that takes into consideration the
+user behavior and layer popularity, in addition to parallelizing layer
+construction across %HA?  servers.
 
 %This paper is organized into the following sections: Section 2 talks about
 %observed behaviors and access patterns in Docker registries, Section 3 covers
