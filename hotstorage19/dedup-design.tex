@@ -1,4 +1,4 @@
-\subsection{The mix of deduplication and replication of layers}
+\subsection{Deduplicating layers}
 \label{sec:dedup-desgin}
 
 %We now describe \sysname's layer restoring performance--aware deduplication 
@@ -9,27 +9,33 @@
 %\LR{There should always be some text after a heading and before the
 %next heading.}
 
-In this section,
-we first present how \sysname couples deduplication and replication together so
-that registry developers can find the \emph{perfect mix} based on their requirements.
-%Then we outline how \sysname performs low-latency layer restoring.
-Moreover,
-we show how \sysname utilizes user-behavior patterns to facilitate our cache design. 
+%In this section,
+%we first present how \sysname couples deduplication and replication together so
+%that registry developers can find the \emph{perfect mix} based on their requirements.
+%%Then we outline how \sysname performs low-latency layer restoring.
+%Moreover,
+%we show how \sysname utilizes user-behavior patterns to facilitate our cache design. 
 
-\subsubsection{Layer replication, deduplication, and partitioning}
-
-As with the traditional Docker registry, 
-\sysname maintains a \emph{layer index}.
+Next, we explain in detail, how \sysname stores and deduplicates layers.
+%
+%\subsubsection{Layer replication, deduplication, and partitioning}
+%
+As the traditional Docker registry, \sysname maintains a \emph{layer index}.
 After receiving a \texttt{PUT} layer request,
 \sysname first checks the \textbf{layer fingerprint} in the \emph{layer index} to ensure 
 an identical layer is not already stored.
-The layer fingerprint is calculated by hashing the layer content, 
-which is also used as layer identifier denoted as \textbf{layer Id}.
-After that, \sysname~replicates $r$ layer replicas on P-servers. 
-Meanwhile, \sysname~submits $R-r$ layer replicas to 
-D-servers and temporally stored on layer stage areas of D-servers.
- % and acknowledges back to the client. 
+The layer fingerprint is calculated by hashing the layer content 
+and is also used as the layer Id.
+After that, \sysname replicates the layer $r$ times across the P-servers
+and submits the remaining $R-r$ layer replicas to the D-servers. Those replicas are
+temporarily stored in the layer stage areas of the D-servers. Once the replicas
+have been stored successfully, \sysname notifies the client of the request completion.
+%
+\LR{How are the target D- and P-servers selected? Through consistent hashing?} 
 
+% and acknowledges back to the client.
+%
+%
 %After the layer is deduplicated, it will be removed from stage area.
 %\dedupname system~initiates layer deduplication process only if 
 %layer deduplication will achieve significant space savings and 
@@ -39,24 +45,29 @@ D-servers and temporally stored on layer stage areas of D-servers.
 %the registry traffic $RPS$ ( i.e., requests per second) is lower than $\theta_{RPS}$. Thus, layer deduplication process runs periodically.
 %The process always stars with the cold layers that haven't been
 %access for a long time.
- 
+%
 % After D-servers receive the layer replicas,
 % replicas will be temporally saved into layer stage areas as shown in Figure~\ref{fig:sift}.
- \sysname initiates an \emph{off-line lightweight layer deduplication process} on a D-server 
- which collaborates with the metadata database
- to remove redundant files from layers. 
- Note that only one layer replica is selected from the submitted $R-r$ replicas on D-servers to do layer deduplication.
-The deduplication process has three major steps: 
-layer decompression, 
-file-level deduplication,
-\textbf{unique file replication and layer partitioning}. 
-The first two steps are necessary for removing duplicate files from compressed layer tarballs.
+%
+\sysname then initiates the deduplication process, which runs \emph{off-line} to not affect \texttt{push}
+latencies. Deduplication is only performed once by a single D-server for a single layer replica
+and the resulting unique files are then replicated to achieve the desired replica count.
+%which collaborates with the metadata database
+%to remove redundant files from layers. 
+%Note that only one layer replica is selected from the submitted $R-r$ replicas on D-servers to do layer deduplication.
+After decompressing the layer, the deduplication process consists of three main steps: 
+%layer decompression, 
+1)~file-level deduplication;
+2)~unique file replication; and
+3)~layer partitioning. 
+The first two steps are necessary for removing duplicate files from compressed layer tarballs
+and reliably store the remaining unique files.
 %
 %\LR{Need to make this more clear. Are we just deduplicating one layer but then copy the
 %resulting unique files to $R-r$ D-servers?}
-The last step -- unique file replication and layer partitioning -- is 
-to evenly distribute the I/O and computation load of layer restoring across D-servers 
-while maintain a certain level of fault-tolerance.  
+The last step is needed
+to evenly distribute unique files for a layer across D-servers to balance the I/O and computational load
+during layer reconstruction while maintaining fault-tolerance.  
 
 %After the layer replica is \emph{deduplicated}, all the backup layer replicas stored on D-servers in the layer stage area will be discarded.  
 
@@ -73,81 +84,101 @@ while maintain a certain level of fault-tolerance.
 \input{fig-dedup-partition}
 
 %\input{fig-sift-metadata}
-\paragraph{Layer file-level deduplication}
+\paragraph{File-level deduplication}
 %\LR{Is the following just how the .tar format is structured or are we doing anything
 %additional to the headers and the content? If not, we should just mention that this is
 %how tar is creating archives.}
-As shown in Figure~\ref{fig:dedup-partition}, 
-following the staging area, 
-the compressed layer tarball is loaded to the layer deduplication process.
-In this process, 
-the layer tarball is first decompressed into a \textbf{layer tar archive}~\cite{xxx}.
+%
+%As shown in Figure~\ref{fig:dedup-partition},
+Following the staging area, 
+the decompressed layer tar archive is loaded to the layer deduplication process.
+%In this process, 
+%the layer tarball is first decompressed into a \textbf{layer tar archive}~\cite{xxx}.
 %Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning. 
 %After layer decompression, 
-Each file entry in the layer tar archive is represented as a \textbf{file header} and the associated \textbf{file content}
-~\cite{xxx}.
-The file header contains the file name, path, size, mode, owner information, etc~\cite{xxx}.
-The file header is needed to rebuild the \emph{file header} for 
-the associated file entry in the restoring layer archive.
-Thus, 
-the process records every file header in the layer tar archive for later restoring a complete layer achieve. 
-%##### need to record all files in the tar archive, not just unique files' header but also the deduplicated files'headers. otherwise, how do you restore a complete tar achieve?????
-After that,
-the process computes a \emph{fingerprint} by hashing the file content denoted as \textbf{file Id}, 
-and checks the file Id for presence in the file index.
+Each file entry in the archive is represented as a \emph{file header} and the associated
+\emph{file content}~\cite{xxx}.
+The file header contains metadata such as file name, path, size, mode, owner information, etc~\cite{xxx}.
+%
+%and is needed to correctly rebuild the \emph{file header} for 
+%the associated file entry in the restoring layer archive.
+%
+\sysname records every file header in the layer tar archive
+to be able to correctly restore the complete layer archive.
+%
+%##### need to record all files in the tar archive, not just unique files' header but also the deduplicated
+%files'headers. otherwise, how do you restore a complete tar achieve?????
+
+After that, \sysname computes the file Id for each file by hashing the file content and 
+checks, whether the file Id is already present in the file index.
 If the file Id is already stored, the file content will be discarded. 
-Otherwise, it will be saved physically in file store and 
-the file Id is recorded in the file index.
-As shown in Figure~\ref{fig:dedup-partition}, 
-to address a physical file, 
-each file Id in the file index is mapped to the
-% 
-%\textbf{file status}
-%
-%\LR{Is the file status the same as the file header?}
-%
-the physical file replicas stored on different D-servers,
-represented as
-a file location and a file size.
+Otherwise, it will be saved physically in the D-server's file store and 
+the file Id is recorded in the file index. As shown in Figure~\ref{fig:dedup-partition},
+the file index maps different file Ids to the physical file replicas stored
+on different D-servers.
+%represented as a file location and a file size.
 %File location is denoted as 
 %Besides, each file Id in the file index is also mapped to its \emph{host address} with the associated \textbf{backup level}.
 %Backup level denotes whether the host stores a primary backup file replica (i.e., \texttt{P}) or the $n^{th}$ backup replica (ie., \texttt{B}\emph{n}) detailed as follows.
 %detailed as following.
 
-\paragraph{Unique file replication and layer partitioning}
+%\LR{Here, we need to explain in more detail, what exactly a slice is (just a collection of headers?),
+%how a header is linked to its file content, and how files/headers are linked to layers (through layer
+%recipe? We should also talk a little bit about our metadata overhead here.}
+
+\paragraph{Unique file replication}
 
 %Note that, layer deduplication process only deduplicates regular files., 
 
-After discarding duplicate files%file duplicates
-, the deduplication process first replicates and distributes newly added unique file replicas across D-servers.
-Hence, the layer partitions on D-servers can be used to restore a \emph{slice} of layer in parallel.
+After discarding duplicate files,
+\sysname replicates and distributes newly added unique file replicas across D-servers.
+%Hence, the layer partitions on D-servers can be used to restore a \emph{slice} of layer in parallel.
 %To speedup layer restoring process,
 %\sysname distributes file replicas and 
 %in a way such that
 %each server is able to rebuild an $\sim$equal-sized slice of the layer from its local file store.
+%
+%As mentioned earlier, \sysname records every file header from a layer tar archive.
+During file replication, \sysname distributes the corresponding
+file headers to the associated servers 
+along with a content pointer pointing to the corresponding physical file.
+The headers from a single D-server which refer to files from the same layer
+form a \emph{slice recipe} (see Figure~\ref{fig:replication-partition}). 
+%After unique file replication and layer partitioning,
+After file replication, \sysname adds the new slice recipes to the metadata database.
+%A slice recipe represents a layer slice and is used to construct a
+%\emph{partial layer archive}.
 
-Figure~\ref{fig:replication-partition} shows a simple 
-example of unique file replication and layer partitioning.
-Each file has two replicas distributed on two different servers.
-\emph{f1, f2,} and \emph{f3} are 3 \emph{files} that are already stored in the system,
-and \emph{f1', f2',} and \emph{f3'} are their associated \emph{backup file replicas}. 
-Layer \emph{L1} that contains files \emph{f1, f2, f3, f4, f5}, and \emph{f6} 
-is decompressed and \emph{file-level deduplicated}.
-Its containing duplicate files \emph{f1, f2,} and \emph{f3} are discarded while unique files
-\emph{f5} and \emph{f6} are added to the system.
- \emph{f1, f2,} and \emph{f3} are shared by \emph{L1} and other layers, denoted as \textbf{shared files}.
-As shown, 
-\emph{f5} and \emph{f6} are replicated and distributed to D-servers \emph{A, B,} and \emph{C}.
-Consequently,
-%primary backup 
-shared file replica \emph{f2} and 
-unique file replica \emph{f5} stored on \emph{B} comprise a slice of \emph{L1},
-denoted as a \textbf{primary slice} of \emph{L1} (ie., \emph{L1::A::P}).
-The rest two backup file replicas 
-\emph{f1'} and \emph{f4'} stored on \emph{B} comprise a \textbf{backup slice} for \emph{L}.
-During layer restoring,
-\emph{L1} can be restored by using either all three primary slices
-or three backup slices.
+\sysname also creates a \emph{layer recipe} for the uploaded layer and stores it in the metadata database
+as shown in Figure~\ref{fig:replication-partition}.
+The layer recipe records all the D-servers that store layer slices and which can act
+as \emph{restoring workers}. When a layer needs to be reconstructed,
+one worker is selected as the \emph{restoring master}, responsible 
+for gathering all slices and rebuilding the layer~(see~\S\ref{sec:restore-desgin}).
+
+Figure~\ref{fig:replication-partition} demonstrates an example for unique file replication.
+The example assumes B-mode 1 with 3-way replication, i.e. each unique file has two replicas distributed
+on two different D-servers.
+The files $f1$, $f2$, and $f3$ are already stored in \sysname,
+and $f1'$, $f2'$, and $f3'$ are their corresponding backup replicas.
+Layer $L1$ is being pushed and contains files $f1$, $f2$, $f3$, $f4$, $f5$, and $f6$. 
+%is decompressed and \emph{file-level deduplicated}.
+$f1$, $f2$, and $f3$ are \emph{shared files} by $L1$ and other layers, and hence,
+are discarded during file-level deduplication.
+%\emph{f1, f2,} and \emph{f3} are shared by \emph{L1} and other layers, denoted as \textbf{shared files}.
+The unique files $f4$, $f5$ and $f6$ are added to the system and
+replicated to D-servers $A$, $B$, and $C$. We describe how the target servers are chosen in detail
+in the next paragraph.
+
+After replication, server $B$ contains $f2$, $f5$, $f1'$, and $f4'$. Together
+$f2$ and $f5$ form a \emph{primary slice} of $L1$, denoted as $L1::A::P$ \todo{explain this notation}.
+%shared file replica \emph{f2} and 
+%unique file replica \emph{f5} stored on \emph{B} comprise a slice of \emph{L1},
+%denoted as a \textbf{primary slice} of \emph{L1} (ie., \emph{L1::A::P}).
+The two backup file replicas 
+$f1'$ and $f4'$ on $B$ form a \emph{backup slice} for $L1$.
+During layer restoring, $L1$ can be restored by using any combination of primary and backup slices
+to achieve maximum parallelism.
 %
 %\LR{Why are \emph{f4'} and \emph{f8'} only a backup slice?}
 %\LR{Instead of putting the fX in emph environments, we should use math mode and put numbers in the index, e.g.
@@ -193,21 +224,6 @@ or three backup slices.
 %the primary slice stored on \emph{A} is denoted as \emph{L::}\emph{A::}\texttt{P}
 %while the rest backup slice is denoted as \emph{L::}\emph{A::}\texttt{B2}.
 
-As mentioned earlier, 
-\sysname records every file header from a layer tar archive.
-During layer partitioning,
-\sysname partitions the corresponding
- file headers in the layer tar archive to
-the associated slices 
-along with a content pointer pointing to the corresponding physical file, 
-which forms a \emph{slice recipe}.
-as shown in Figure~\ref{fig:replication-partition}. 
-
-After unique file replication and layer partitioning, 
-\sysname will add slice recipes 
-to metadata database.
-A slice recipe represents a layer slice and
-is used to construct a \emph{partial layer archive}.
 %=======
 %Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning algorithm.
 %After layer decompression, 
@@ -246,13 +262,6 @@ is used to construct a \emph{partial layer archive}.
 %each file is represented as a $header$ in the layer archive and
 %its corresponding physical file's status $src$. 
 %
-Finally, 
-\sysname creates a
-\emph{layer recipe} for \emph{L1} and stores in database as shown in Figure~\ref{fig:replication-partition}.
-Layer recipe records all the D-servers that stores \emph{L}'s slices, 
-denoted as \textbf{restoring workers}.
-One worker is selected as \textbf{restoring master} responsible 
-for gathering all slices and rebuilding \emph{L1} (detailed in Section~\ref{sec:restore-desgin}).
 %During layer deduplication process,
 %After unpacking the layer archive, 
 %
@@ -264,50 +273,56 @@ for gathering all slices and rebuilding \emph{L1} (detailed in Section~\ref{sec:
 
 %\LR{The following needs to be reformulated to be more clear.}
 %
-\paragraph{Greedy partition algorithm with shared file constraints}
-As shown in Figure~\ref{fig:replication-partition},
-layer \emph{L1} is evenly partitioned among D-servers 
-since its shared files and unique files are evenly distributed to D-servers. 
-However,
-due to the diversity contents of real-world layer dataset,
-shared files are usually not evenly distributed for all layers. 
-To evenly distribute and partitioning a layer's containing files -- shared files and unique files,
+\paragraph{Layer partitioning}
+To improve reconstruction times, it is important that different layer slices
+are equally sized and evenly distributed across D-servers.
+The example in Figure~\ref{fig:replication-partition}
+shows such a perfect scenario, in which the files of layer $L1$ are evenly partitioned across all D-servers.
+%since its shared files and unique files are evenly distributed to D-servers. 
+However, due to the diverse contents of real-world layer datasets,
+shared files are usually not evenly distributed for all layers.
+\LR{Provide more details. Why is that so? Is this assuming consistent hashing?}
+To evenly distribute and partition a layer's containing files, shared and unique files,
 %
 %To distribute the newly added unique files' primary replicas,
-\sysname uses a \emph{greedy partition algorithm with shared file constraints} to
- distribute the newly added unique files in a way such that
-each D-server stores relatively equal-sized slice for the layer.
+\sysname employs a greedy partitioning algorithm with shared file constraints.
+%distribute the newly added unique files in a way such that
+%each D-server stores relatively equal-sized slice for the layer.
+\LR{What exactly is meant by `shared file constraints'. Can we explain a bit more?}
 
-We first consider a simple case that each file only has a single replica.
-During layer partitioning,
-\sysname does not migrate shared files that already have been stored on D-servers 
-to
-reduce deduplication overhead.
-\sysname first partitions \emph{L1}'s shared files to their host servers.
+To introduce the approach, we first consider the simpler case in which each file only has
+a single replica. During layer partitioning, \sysname does not migrate shared files that already
+have been stored on D-servers to reduce deduplication overhead.
+%
+\LR{The following is unclear, why does \sysname partition shared files for $L1$? Aren't they already there?}
+%
+\sysname first partitions $L1$ shared files to their host servers.
 For example, in Figure~\ref{fig:replication-partition},
-shared file \emph{f1, f2,} and \emph{f3} are first 
-partitioned to their host D-server \emph{A, B} and \emph{C} respectively. 
-Next,
-\sysname starts to distribute unique files to D-servers.
-\sysname
-assigns the biggest unique file to the smallest partition
-til all the unique files are assigned.
-As shown in Figure~\ref{fig:replication-partition},
-since the shared files are evenly partitioned to all three D-servers,
-Thus the newly added unique files are also evenly assign to
-the three servers.
- Otherwise, the biggest unique files will be assigned to the smallest partitions.
+shared files $f1$, $f2$, and $f3$ are first partitioned to their host D-servers $A$, $B$ and $C$
+respectively. Next, \sysname starts to distribute unique files to D-servers following a greedy strategy.
+It assigns the biggest unique file to the smallest partition until all the unique files are assigned.
+In the example, the shared files are evenly partitioned to all three D-servers,
+and hence, the three newly added unique files are also evenly assigned to the three servers.
+%Otherwise, the biggest unique files will be assigned to the smallest partitions.
 %\LR{As a general note, it seems like we generate quite a bit of metadata to keep track
 %of the slices etc. Are we planning to evaluate how much metadata we generate?}
+\LR{Here, we need to talk about how we are planning to address the problem of metadata management as
+we are manually assigning files to servers and hence, have to store the location of each file in an index.
+How do we scale? What if we are dealing with billions of files?}
 
-Then, we consider a case that each file has multiple replicas.
-For each shared file,
-its file Id holds multiple file replicas in file index as shown in Figure~\ref{fig:dedup-partition}.
-\sysname first distribute the unique files
-according to the shared files' primary file replicas' partitions.
-After that,
-\sysname assigns the replicas of unique files 
-onto different servers with their primary replicas.
+\LR{The following is unclear and needs a better explanation. Are the new primary replicas
+assigned to servers which do not yet store shared files for the new layer? What if all
+servers already store at least one shared file for the layer? How are the backup replica
+servers picked?}
+%
+Next, we consider the case that each file has multiple replicas. The file
+index contains the location of the primary and backup replicas for each shared file.
+%For each shared file, its file Id points to multiple file replicas in the file index as
+%shown in Figure~\ref{fig:dedup-partition}.
+When adding new unique files, \sysname first distribute the files
+according to the shared files' primary file replicas' partitions. After that,
+\sysname assigns the replicas of unique files onto different servers with their primary
+replicas.
 
 %After layer partition,.
 %All the primary slices' hosts are denoted as layer restoring \textbf{primary workers}. 

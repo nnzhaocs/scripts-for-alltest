@@ -36,7 +36,7 @@ a deduplicated layer.
 %
 To reduce deduplication overhead, \sysname tries to minimize the time it takes to restore a layer
 during a \texttt{pull} request. This is achieved by three main techniques: 1)~deduplication modes;
-and 2)~parallel layer reconstruction; and 3)~predictive cache prefetching.
+2)~parallel layer reconstruction; and 3)~predictive cache prefetching.
 
 \paragraph{Deduplication modes}
 
@@ -166,33 +166,40 @@ performance.
 %according to the associated \textbf{slice recipes} and \textbf{layer recipe}.
 %After that D-server concatenates the slices into a layer (see section~\ref{sec:dedup-desgin}).
 %
-\LR{We should also explain here the File and Layer indeces shown in the Figure.}
+\LR{We should also explain here the File and Layer indices shown in the Figure.}
 
 \paragraph{Predictive cache prefetching}
 
 To improve the layer access latency, \sysname employs a cache layer in both the
 primary and the deduplication cluster.
 %
-Each P-server has a in-memory \emph{user-behavior based superfetch cache}
-to reduce disk I/Os as detailed in~\S\ref{sec:cache-design}.
+Each P-server has an in-memory \emph{user-behavior based superfetch cache}
+to reduce disk I/Os.
 %
-When a \texttt{pull} manifest request is received,
-\sysname predicts which layers in the image will be \texttt{pulled} later
+When a \texttt{pull} manifest request is received from a user,
+\sysname predicts which layers in the image will actually need to be \texttt{pulled}
 and \emph{prefetches} them in the cache.
-To do that,
-\sysname maintains two maps for recording image-to-layer information and user's layer access history:
-\textbf{RLmap} and \textbf{ULmap}.
-\LR{Add short explanation on how it works and introduce RLmap and ULmap.}
+To do that, \sysname maintains two maps: \emph{RLmap} and \emph{ULmap}. RLmap
+stores the mapping between images and layers while ULmap keeps track of
+a user's access history, i.e. which layers the user has pulled and how many
+times~(see details in~\S\ref{sec:cache-design}).
+%
+%\LR{Add short explanation on how it works and introduce RLmap and ULmap.}
 %as shown in Figure~\ref{fig:sift}.
 
 Additionally, to avoid layer restoring overhead,
 each D-server maintains an on-disk layer cache (called \emph{user-behavior based preconstruct cache}).
 %D-servers try to preconstruct likely to be accessed layers.% and load them into their preconstruct cache.
-As with superfetch cache algorithm,
+As with the superfetch cache algorithm,
 when a \texttt{pull} manifest request is received,
-\sysname predicts which layers in the image will be \texttt{pulled} later
-and preconstruct the layers before later layer \texttt{pulling} requests.
-\LR{Again, put short explanation of how it works using RLmap und ULmap.}
+\sysname predicts which layers in the image will be \texttt{pulled},
+preconstructs the layers, and loads them in the preconstruct cache.
+%
+%\LR{Again, put short explanation of how it works using RLmap und ULmap.}
+
+\LR{Talk about, how effective this approach is, if the gap between get manifset and
+get layer is short. Can we still load/preconstruct layers fast enough to be served
+from the cache once the get layer request is received?}
 
 %To do that,
 %D-server
