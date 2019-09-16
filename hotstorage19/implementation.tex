@@ -2,35 +2,36 @@
 \label{sec:impl}
 
 \paragraph{Handling metadata}
-We use Redis~\cite{redis} as metadata database to save slice and layer recipes, file index, layer index, ULmap, and RLmap.
-To guarantee the durability of metadata, 
-we configure Redis to use an \emph{append-only file (AOF)} to log all changes.
-Thus, when Redis server stops, we can restart Redis and re-play the AOF to rebuild the dataset to prevent data loss.
-Moreover, we configure Redis to save RDB (Redis Database File) snapshots every few minutes to further improve metadata reliability. 
-To improve metadata availability, 
-we configure Redis to use three replicas.
+We use Redis~\cite{redis} to store metadata, specifically,
+slice and layer recipes, file index, layer index, ULmap, and RLmap.
+We enable \emph{append-only file (AOF)} to log all changes for durability purposes.
+This allows us to rebuild the dataset and prevent data loss after a Redis restart.
+%Thus when Redis server stops, we can restart Redis and re-play the AOF to rebuild the dataset to prevent data loss.
+Moreover, we configure Redis to save RDB (Redis Database File) snapshots every few minutes for additional reliability.
+To improve metadata availability, we configure Redis to use three replicas.
 
-Apache Zookeeper is used to manage the server membership in the cluster. 
-It is used to detect failures in the P-servers and handle failover to the D-servers, 
-which are used to restore and serve the layers when the P-servers are down.
+The cluster membership is managed by Apache Zookeeper.
+It is used to detect failures in P-servers and handle failover to D-servers, 
+which are used to restore and serve layers when P-servers are down.
 %In this case, Redis will not become a performance bottleneck.
 
 \paragraph{Distributed deduplication}
-We use Redis as \emph{a distributed lock} 
+We use Redis as \emph{a distributed lock}
 to make sure that no file duplicates are stored in registry cluster.
-For file index, layer index, slice and layer recipes, 
-each key can be set to hold its value only if 
+For file index, layer index, slice and layer recipes,
+each key can be set to hold its value only if
 the key does not exist in Redis database (i.e, SETNX~\cite{SETNX}).
-When key already holds a value, a file duplicate or 
-layer duplicate is identified and will be removed from registry cluster. 
-Each registry instance 
-maintains a synchronization map 
-for layer restoring to make sure that multiple layer restoring processes 
+When a key already holds a value, a file duplicate or
+layer duplicate is identified and is removed from the registry cluster.
+%
+Each registry instance maintains a synchronization map
+%for layer restoring
+to ensure that multiple layer restoring processes
 don't attempt to restore the same layer simultaneously.
-If a layer is restoring, the subsequent
-\texttt{GET} layer requests to this layer will wait until the layer is restored.
- Different layers, however, can be constructed in parallel. 
- In this case, redundant layer restoring can be avoided to save I/O and network bandwidth, and computation resources.
+If a layer is being restored, subsequent
+\texttt{GET} layer requests to this layer wait until the layer is restored.
+Other layers, however, can be constructed in parallel.
+In this case, redundant layer restoring is avoided to save I/O and network bandwidth, and computation resources.
  %Slice restoring is the same.
 %  Another synchronization technique present is a lock acquirable on a layer recipe 
 %  that forces incoming requests to a D-server to wait 
@@ -39,53 +40,59 @@ If a layer is restoring, the subsequent
  
 \paragraph{Layer deduplication implementation}
 During layer deduplication, only \emph{regular} file duplicates~\cite{xxx} are removed.
-\sysname does not deduplicate \emph{irregular} files, such as symlink, hard link, or directories~\cite{xxx}.
-After removing regular file duplicates, 
-the remaining unique files are saved in a local file store.
-File store is implemented by modifying Docker registry's file system driver~\cite{dockerfs}, 
+\sysname does not deduplicate \emph{irregular} files, such as symlinks, hard links, or directories~\cite{xxx}.
+After removing regular file duplicates, any remaining unique files are saved in a local file store.
+The file store is implemented by modifying Docker registry's file system driver~\cite{dockerfs},
 which is a local storage driver 
 that uses a directory tree in the local file system.
 The default root directory in the local file system for registry storage system is `/var/lib/registry' (denoted as $rootdir$).
-Each layer is stored in directory `$rootdir$/docker/registry/v2/blobs/sha256/$\langle$ first two hex bytes of layer digest$\rangle$/$\langle$hex layer digest$\rangle$/' (denoted as $layerdir$) as a file named `data'.
-We store the unique files same as layers like: `$rootdir$/docker/registry/v2/uniquefiles/sha256/$\langle$ first two hex bytes of file digest$\rangle$/$\langle$hex file digest$\rangle$'
+Each layer is stored in directory
+`$rootdir$/docker/registry/v2/blobs/sha256/$\langle$
+first two hex bytes of layer digest
+$\rangle$/$\langle$hex layer digest$\rangle$/'
+(denoted as $layerdir$) as a file named `data'.
+We store the unique files as:
+`$rootdir$/docker/registry/v2/uniquefiles/sha256/$\langle$
+first two hex bytes of file digest
+$\rangle$/$\langle$hex file digest$\rangle$'
 so that given a file digest, we can build the file path to save metadata information.
 
 \paragraph{Layer restoring implementation}
-To speedup layer restoring performance,
-we utilize a parallel gzip compression/decompression library (pgzip)~\cite{pgzip} to do layer or slice compression and decompression.
-Different from Go's single-threaded standard gzip compression library~\cite{gogzip},
-pgzip splits compression stream into blocks so that data can be compressed in parallel to speedup compression.
-pgzip is compatible with standard gzip library.
+%To speedup layer restoring,
+We utilize the parallel gzip compression/decompression library (pgzip)~\cite{pgzip}
+for layer, slice compression and decompression.
+Unlike Go's single-threaded standard gzip compression library~\cite{gogzip},
+pgzip splits compression stream into blocks so that data is compressed in
+parallel to speedup compression. pgzip is compatible with standard gzip library.
 
 \paragraph{Cache implementation}
 
-Preconstruct cache and 
-superfetch cache is implemented by using Diskv~\cite{diskv}, which is a disk-backed key-value store.
-File cache for file store
- is implemented on BigCache~\cite{bigcache}, which can provide fast and concurrent cache access.
-However, both BigCache and Diskv do not use any cache algorithm. 
-Note that BigCache always evicts the oldest entries from cache without considering the entries' popularity.
-We build two ARC lists for BigCache and Diskv respectively by using a golang cache library~\cite{xxx}, 
-which provides expirable cache with different cache algorithm, such as LFU, LRU and ARC~\cite{megiddo2003arc}.
-Note that we select ARC with expiration as our cache algorithm.
-We combine ARC cache algorithm with bigcache as our file cache
-and ARC cache algorithm with diskv as our preconstruct cache and superfetch cache.
-Note that preconstruct cache is an on-disk cache while superfetch cache is an inmemory cache.
-We mount a tmpfs disk~\cite{xxx} for superfetch cache as an inmemory cache.
+Preconstruct and superfetch cache is implemented by using Diskv~\cite{diskv},
+which is a disk-backed key-value store.
+File cache for file store is implemented on BigCache~\cite{bigcache},
+which provides fast, concurrent cache access.
+However, both BigCache and Diskv do not use any cache algorithm.
+Specifically, BigCache evicts the oldest entries from cache without considering the entries' popularity.
+We build two ARC lists for BigCache and Diskv respectively by using a golang cache library~\cite{xxx},
+which provides expirable cache with various cache algorithms, such as LFU, LRU and ARC~\cite{megiddo2003arc}.
+In our implementation, we use ARC with expiration as our cache algorithm.
+We combine ARC cache algorithm with BigCache as our file cache
+and ARC cache algorithm with Diskv as our preconstruct and superfetch cache.
+Note that preconstruct cache is an on-disk cache while superfetch cache is an in-memory cache.
+We mount a tmpfs disk~\cite{xxx} for superfetch cache as an in-memory cache.
 
 %\paragraph{Cluster Management}
 
 \paragraph{Client implementation}
 %For simply implementation,
-Client is comprised of a trace replayer and 
-a proxy emulator.
+Client is comprised of a trace replayer and a proxy emulator.
 The trace replayer is implemented by modifying the IBM cloud registry trace replayer~\cite{dockerworkload}.
 Instead of generating a random layer,
-our trace replayer first matches IBM cloud registry trace with 
+our trace replayer matches IBM cloud registry trace with
 the real layers from our dataset downloaded from Docker Hub~\cite{dedupanalysis}.
 Specially, we extract layer digest from layer request recorded in the IBM traces~\cite{dockerworkload}.
 Then, 
-we randomly match each layer digest to a layer in our dataset. 
+we randomly match the layer digest to a layer in our dataset. 
 Consequently, each layer request from IBM traces \texttt{pull}s or \texttt{push}es a real layer.
 For manifest requests recorded in IBM traces, we generate a random file to emulate a manifest file.
 %This is because Sift does not deduplicate manifest file.
@@ -94,24 +101,26 @@ The trace replayer uses Docker registry client emulator Python-dxf~\cite{pydxf} 
 %In this case, each layer request 
 %will \texttt{pull} or \texttt{push} a real layer.
 
-In addition, client uses a proxy emulator to decide the destination among the P-servers for each request.
+In addition, client uses a proxy emulator to decide %the destination among the P-servers for each request.
+the P-server for each request.
 The proxy emulator uses
 consistent hashing ~\cite{kargercons} to distribute layers and manifests.
 Proxy emulator maintains a ring of registry servers
 and calculates a destination registry server for each \texttt{push} layer or manifest request
- by hashing its digest. For \texttt{pull} manifest requests, the proxy emulator maintains two consistent hashing rings, one for the P-servers, and one for the D-servers. It primarily queries the P-servers but if they are all down, it will switch to \texttt{pull}ing from the D-servers.
+ by hashing its digest. For \texttt{pull} manifest requests, the proxy emulator maintains two consistent hashing rings, one for the P-servers, and one for the D-servers. It primarily queries the P-servers but if they are all down, it \texttt{pull}s from the D-servers.
 
 \paragraph{Dealing with big layers}
-Due to our testbed cluster scale constraint,
-we set a layer size limitation (i.e., 250 MB) to reduce their restoring overhead.
+Due to the scale constraint of our testbed cluster, we limit the layer size
+to 250 MB, to reduce their restoring overhead.
+\DIM{Does that constraint prevent us from seeing any Sift disadvantages in the evaluation?}
 If a layer that exceeds the size limitation is received,
 \sysname will first divide the big layer into sub-layers and update its associated manifests.
 After that,
 the sub-layers are deduplicated and restored as normal layers.
-After a client receives sub-layers,   
-it will decompress all the sub-layers together into a whole big layer.
-To do that, the manifest for the big layers is 
-modified to reflect the relation between big layer and its sub-layers.
+Once a client receives the sub-layers it decompress them into a single (big) layer.
+To do so, the big layer manifest is modified to reflect the relation
+between the big layer and its sub-layers.
+\DIM{Is this part of the Sift design, would it still be there in a real cluster, can it be disabled/enabled without negative consequences?}
 
 %We implemented our preconstruction cache and \filecachename file cache on Redis cluster
 %deployed by using Docker swarm, denoted as cache service.
