@@ -2,12 +2,63 @@
 %In the following, we first present the performance comparison between original registry and \sysname.
 %Next, we present the layer restoring performance.
 
-\subsection{Performance VS. space savings}
+\subsection{Restoring performance of deduplication cluster }
 \label{sec:eval-dedup}
 
 %We map the traces with two different layer groups: 
 %small layers (layer size $\leq$ 50 MB)
 
+\paragraph{Restoring performance overhead and the benefit of preconstruct cache}:
+We first measure the overhead of deduplication on layer restoring latency 
+over LocalFS
+by running \sysname on a single server.
+We launch a client on another server and \texttt{pulls} 3 layers in parallel.
+We configure \sysname as
+registry without deduplication,
+deduplication registry,
+deduplication registry with LRU cache~\cite{xxx},
+and
+deduplication registry with a preconstruct cache.
+We set the cache size as 20\% of ingress data.
+We replay 1500 requests from \texttt{Dal}
+and match them with different layer sizes.
+
+%\paragraph{Cache}
+As shown in Figure~\ref{xxx},
+the average \texttt{GET} layer request latency increase as layer size.
+For localFS, the average \texttt{GET} layer request latency increase from 31 ms to 
+when the layer size increases from 1 MB to 8 MB.
+Restoring a layer put 150\% overhead on \texttt{GET} layer latency.
+By adding a normal LRU cache,
+the average \texttt{GET} layer latency decreases by 39\%.
+With our preconstruct cache,
+the average \texttt{text} layer latency descreases by 24\% over a normal LRU cache.
+Compare with localFS, our \sysname with preconstruct cache only adds 19\% of overhead. 
+
+Next, we descrease the duration between \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
+
+
+Figure~\ref{xxx} shows the cache hit ratio of a normal LRU and our preconstruct cache.
+
+\paragraph{Cluster scale impact}
+We increase the number of nodes in our sift deduplication cluster
+and test the layer restoring performance.
+
+As shown in Figure~\ref{xxx},
+
+
+
+Figure~\ref{xxx} shows the breakdown performance of layer restoring latency.
+
+
+\paragraph{Client concurrency impact}
+
+
+
+
+
+\subsection{Performance of primary cluster }
+%\paragraph{}
 In this experiment,
 we test five modes of \sysname:
 \textbf{B-mode 0},

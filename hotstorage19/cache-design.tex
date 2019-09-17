@@ -27,6 +27,10 @@ to avoid the layer restoring overhead.
 Both caches are filled based on the user access patterns observed in Section~\ref{sec:dataset-analysis}.
 \LR{Describe the interaction between the caches. Are they independent and make their
 own predictions. Are they always making the same predictions? How large are they?}
+\NZ{Yes, they have the same prediction module to do layer prediction and 
+	share the metadata ULmap and RLmap.
+But the two cache wont do prediction at the same time.
+Either of them can do prediction and update the maps.}
 %
 %\sysname predicts what layers will be accessed and 
 %prepares the layers before \texttt{pull} layer requests.
@@ -56,10 +60,13 @@ Therefor, it uses two maps to record the image-to-layer information
 and user layer accesses: RLmap and ULmap.
 %
 \LR{What do the abbrevations RL and UL stand for?}
+\NZ{Repo to layers; User to Layers.}
 %
 \LR{ Is the layer set the set of layers contained in an image? Why do we need
 an extra map for this? Can we also get this from the manifest? Need to explain
 the reasoning here.}
+\NZ{It takes a long time to load manifest for each request.}
+
 RLmap maps an image to its containing \emph{layer set} and an entry in RLmap
 is identified as \textless{}Repository name@manifest digest\textgreater.
 %
@@ -95,7 +102,10 @@ and fetches the layers in $S_{\cap}$ into the cache.
 \LR{Here, we need to talk more about how we get the repull probability and how we
 maintain it over time. Do we assume a static one like dicussed in background or
 are we updating it for each client over time?}
-
+\NZ{We calculate the repull proabability as the total number of pull layer request divided by the number of
+it accessed layers.
+We maintain each layer's pull count for a user in ULmap.
+So we can calculate the repull probability during each prediction.}
 %
 %targets $\leftarrow$ difference \\
 %\ForEach{layer in intersection} 
@@ -112,6 +122,13 @@ are we updating it for each client over time?}
 
 \LR{We need to provide more details on how we search the different tiers.
 Do we keep an index for each tier? How fast are the searches?}
+\NZ{Layer index holds the server address for each layer replica.
+	If the server is a P-server, then it's a layer replica stored in tier 1.
+	Otherwise it is deduplicated and stored in tier  2.
+Similar as files, we dont maintain layer path because each layer is stored in directory
+‘rootdir/docker/registry/v2/blobs/sha256/< first two hex bytes of layer digest >/<hex layer digest>/’ 
+(denoted as layerdir) as a file named ‘data’.
+}
 
 The introduction of the two cache layers results in a 5-tier storage architecture of
 \sysname as shown in Figure~\ref{fig:tieredstore}. Requests are passed through the
@@ -139,7 +156,9 @@ layer stage area will be evicted to the preconstruct cache after the layer is
 deduplicated.
 %
 \LR{Add details on eviction policies for each cache.}
-
+We use Adaptive Replacement Cache (ARC) replacement~\cite{xxx}, 
+which keeps track of both frequently used and recently used layers
+and adapts to changing access patterns.
 %For preconstruct cache, it's possible when a \texttt{pull} layer request comes 
 %before layer restoring is finished, meaning the layer cannot be preconstructed \emph{on time}.
 %In this case, \texttt{pull} layer request \emph{waits} until the restoring is finished

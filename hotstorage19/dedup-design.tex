@@ -32,6 +32,8 @@ temporarily stored in the layer stage areas of the D-servers. Once the replicas
 have been stored successfully, \sysname notifies the client of the request completion.
 %
 \LR{How are the target D- and P-servers selected? Through consistent hashing?} 
+\NZ{In our current implement, we distribute layers to D- and P-servers
+by using two CHT rings: a ring of D-server and a ring of P-servers.}
 
 % and acknowledges back to the client.
 %
@@ -172,6 +174,15 @@ in the next paragraph.
 
 After replication, server $B$ contains $f2$, $f5$, $f1'$, and $f4'$. Together
 $f2$ and $f5$ form a \emph{primary slice} of $L1$, denoted as $L1::A::P$ \todo{explain this notation}.
+\NZ{This slice Id contains the layer Id it belongs, the host server, and the backup level of this slice.
+This slice Id notation largely simplifies layer recipe and facilitate layer restoring.
+The restoring master only needs to fetch a small layer recipe, get the restoring workers,
+ and decide which backup level slices are needed for layer restoring.
+ After that, the master sends out simple layer restoring instructions to the workers.
+ The layer restoring instruction only contains the layer Id and the backup level.
+The workers will generate a slice Id by using the layer Id and backup level
+along with its own address, which holds the slice stored locally.}
+
 %shared file replica \emph{f2} and 
 %unique file replica \emph{f5} stored on \emph{B} comprise a slice of \emph{L1},
 %denoted as a \textbf{primary slice} of \emph{L1} (ie., \emph{L1::A::P}).
@@ -281,7 +292,19 @@ shows such a perfect scenario, in which the files of layer $L1$ are evenly parti
 %since its shared files and unique files are evenly distributed to D-servers. 
 However, due to the diverse contents of real-world layer datasets,
 shared files are usually not evenly distributed for all layers.
-\LR{Provide more details. Why is that so? Is this assuming consistent hashing?}
+\LR{Provide more details. Why is that so? Is this assuming consistent hashing?
+}
+\NZ{Let's consider an empty storage system, the first layer can be easily evenly partitioned
+ to servers because no shared files are stored.
+After the first layer is partitioned and stored,
+consider that the second layer is pushed,
+the second layer has some same files with the first layer and
+these shared files are already distributed to servers.
+These shared files are distributed in a way such that the first layer can be evenly partitioned.
+But they might not be evenly distributed for the second layer because
+when we distribute files for first layer we dont know the subsequent layers and
+we dont know which files will be shared with the subsequent layers.
+So the shared files' layout will affect the subsequent layers' partition.}
 To evenly distribute and partition a layer's containing files, shared and unique files,
 %
 %To distribute the newly added unique files' primary replicas,
@@ -289,12 +312,22 @@ To evenly distribute and partition a layer's containing files, shared and unique
 %distribute the newly added unique files in a way such that
 %each D-server stores relatively equal-sized slice for the layer.
 \LR{What exactly is meant by `shared file constraints'. Can we explain a bit more?}
+\NZ{It means before partition the layer, some of its containing files (shared files)
+are already allocated to the servers.
+We dont want to migrate those files to make all its containing files evenly distributed.
+So I called it a constrain.
+It means when we partition layers, we maintain its containing shared files that are already allocated
+and stored on servers as it is. 
+Through only distribute the newly added unique files,
+we achieve a relatively even partition for a layer.}
 
 To introduce the approach, we first consider the simpler case in which each file only has
 a single replica. During layer partitioning, \sysname does not migrate shared files that already
 have been stored on D-servers to reduce deduplication overhead.
 %
 \LR{The following is unclear, why does \sysname partition shared files for $L1$? Aren't they already there?}
+\NZ{I think it's allocating not partitioning.
+}
 %
 \sysname first partitions $L1$ shared files to their host servers.
 For example, in Figure~\ref{fig:replication-partition},
@@ -309,11 +342,27 @@ and hence, the three newly added unique files are also evenly assigned to the th
 \LR{Here, we need to talk about how we are planning to address the problem of metadata management as
 we are manually assigning files to servers and hence, have to store the location of each file in an index.
 How do we scale? What if we are dealing with billions of files?}
+\NZ{We just add a server address for each file Id in the file index.
+As shown in implementation section,
+we store the unique files as: ‘rootdir/docker/registry/v2/uniquefiles/sha256/
+ <first two hex bytes of file digest> /<hex file diges>t’ so that given a file digest, 
+ we can build the file path to save metadata information.}
 
 \LR{The following is unclear and needs a better explanation. Are the new primary replicas
 assigned to servers which do not yet store shared files for the new layer? What if all
 servers already store at least one shared file for the layer? How are the backup replica
-servers picked?}
+servers picked?
+}
+\NZ{The shared files also have primary replica and backup replicas.
+Simply, we distributed the primary replica of newly added unique files
+according to the distribution of primary replicas of shared files.
+And we distributed the secondary replicas of newly added unique files
+according to the distribution of secondary replicas of shared files to maintain a relatively even partition.
+Moreover, we also make sure that the secondary replicas of a newly added unique file
+is not stored on the same server with its primary replica.
+So when we distribute the secondary replicas, we need to consider the 
+secondary replicas of shared files and the previously allocated primary replicas.
+}
 %
 Next, we consider the case that each file has multiple replicas. The file
 index contains the location of the primary and backup replicas for each shared file.
