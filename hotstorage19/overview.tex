@@ -40,7 +40,7 @@ during a \texttt{pull} request. This is achieved by three main techniques: 1)~de
 
 \paragraph{Deduplication modes}
 
-\sysname makes use of the fact that most registries employ some form of layer replication
+\sysname makes use of the fact that most registries' backend storage systems employ some form of layer replication
 for fault tolerance and availability. The idea is that, instead of deduplicating every layer replica,
 \sysname allows to configure, how many replicas of a layer should be deduplicated and
 how many replicas should be kept in their original state for faster serving.
@@ -127,6 +127,8 @@ it will forwarded to the deduplication cluster and the requested layer will be r
 %reference to the place, where we actually discuss it in detail.}
 %
 \LR{Here we also need to talk about dealing with overloaded (not just crashed) P-servers.}
+\NZ{We use 
+	the superfetch cache on registry side instead of on backend storage system to save some workload overhead to backend storage system.}
 
 \paragraph{Parallel layer reconstruction}
 
@@ -167,6 +169,12 @@ performance.
 %After that D-server concatenates the slices into a layer (see section~\ref{sec:dedup-desgin}).
 %
 \LR{We should also explain here the File and Layer indices shown in the Figure.}
+\NZ{
+Besides, 
+\sysname maintains a layer index to make sure an identification layer is not already stored.
+To eliminate duplicate files from layer,
+\sysname maintains a file index to keep record the unique files stored in the system.}
+
 
 \paragraph{Predictive cache prefetching}
 
@@ -200,6 +208,12 @@ preconstructs the layers, and loads them in the preconstruct cache.
 \LR{Talk about, how effective this approach is, if the gap between get manifset and
 get layer is short. Can we still load/preconstruct layers fast enough to be served
 from the cache once the get layer request is received?}
+\NZ{The effective of the approach depends on 
+the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
+As shown in Figure~\ref{fig:intervals}, majority of intervals are greater than 1 s.
+)
+%
+We shown the effect of duration in~\S\ref{sec:eval-dedup}}.
 
 %To do that,
 %D-server
