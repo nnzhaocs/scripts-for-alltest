@@ -15,7 +15,7 @@ users start a container, Docker creates a new \emph{writable layer} on top of
 the underlying read-only layers.
 % (Figure~\ref{fig-docker-architecture}).
 Any changes made to files in the image will be reflected inside the writable
-layer via a copy-on-write mechanism.
+layer via a copy-on-write~(COW) mechanism.
 
  %in a container image to simplify and automate application
  %deployment~\cite{slacker}.  for packaging, distributing, and running
