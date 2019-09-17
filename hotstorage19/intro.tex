@@ -34,7 +34,7 @@ to efficiently virtualize computational resources.
 Unlike the hardware-virtualization-based Virtual Machines
 (VMs)~\cite{adams2006comparison}, containers residing on the same host share
 the single Operating System (OS) kernel, which yields virtual environments with
-low overheads and fast starts~\cite{7819678}.
+lower overheads and faster starts~\cite{7819678}.
 %
 Further, container runtimes introduce portable, self-contained \emph{container
 images} and are surrounded by a rich ecosystem of technologies that automate
@@ -45,7 +45,7 @@ Given the benefits of containers, it is not surprising that they have seen a
 remarkable advancement in modern cloud environments.
 %
 The rapid spread of containers is further fueled by the growing popularity of
-the microservices~\cite{wolff2016microservices},
+microservices~\cite{wolff2016microservices},
 %design methodology
 for which containers act as an imperative enabler.
 %
@@ -75,8 +75,7 @@ execution.
 A layer can be shared between multiple images.
 %
 Docker leverages unification file systems~\cite{docker-driver-eval} to
-efficiently merge layers into a single file system tree when a container
-starts.
+efficiently merge layers into a single file system tree when starting a container.
 
 To store and distribute container images Docker relies on image
 \emph{registries} (e.g., Docker Hub~\cite{docker-hub}).
@@ -90,27 +89,26 @@ Docker registry supports various storage backends for saving and retrieving
 layers; a typical large-scale setup stores each layer as an object in an object
 store~\cite{s3,swift}.
 
-As the container market continues to expand, Docker registries
-manage an increasing number of image layers.
+As the container market continues to expand, Docker registries manage an
+increasing number of image layers.
 %
-One conservative estimate shows that already in \VT{XXX} Docker Hub alone
-stored at least XXX public images~\VT{cite}. 
+Some conservative estimates show that in the spring of 2019 Docker Hub alone
+stored at least 2 million \emph{public} images of 1~PB size in
+total~\cite{skourtis2019carving,dedupanalysis}. 
 %
-We believe that this is just the tip of an iceberg and the number of private
-images is significantly higher.
+We believe that this is just the tip of an iceberg and the number of
+\emph{private} images is significantly higher.
 %
-Other popular public registries~\VT{cite}, as well as numerous on-prem
-registries in large organizations, experience the same surge of
-container images.
+Other popular public
+registries~\cite{amazon-ecr,jfrog-artifactory,azure-cr,google-cr}, as well as
+on-prem registry deployments in large organizations, experience the same
+surge of container images.
 %
 To keep up with the demand and provide adequate performance levels,
-organizations spend an increasing amount of their storage and
-networking infrastructure on operating image registries.
+organizations spend an increasing amount of their storage and networking
+infrastructure on operating image registries.
 %
 %
-\VT{This part will benefit from further strengthening. Some concrete numbers on
-registry sizes.}
-
 %%%
 % 3. Significant amount of unharvested duplication across images.
 %%%
@@ -128,8 +126,8 @@ Registry storage backends exacerbate the redundancy further due to the
 replication they perform to improve images durability and
 availability~\cite{Bonvin:2010:SFS:1807128.1807162}.
 %
-For instance assuming 3-way replication, the amount of duplicate files in the
-Docker Hub dataset study reaches 99\%.
+For instance, assuming the 3-way replication, the number of duplicate files in the
+Docker Hub dataset reaches 99\%.
 %
 And yet, existing registry deployments do not exploit high data redundancy
 across layers to make the service more efficient.
@@ -142,64 +140,49 @@ across layers to make the service more efficient.
 In this paper we propose \emph{\sysname}, the first Docker registry that
 supports deduplication.
 %
-The naive application of deduplication to the registry---decompress layers and
-store individual files in content-addressible storage---introduces prohibitive
-overheads.
+The na\"{i}ve application of deduplication to the registry---decompressing
+layers and storing individual files in content-addressable storage---introduces
+prohibitive overheads.
 %
-The slowdowns caused by layer reconstruction during image pulls are especially
-harmful because in practice they contribute directly to the start times of
-containers.
+The slowdowns caused by layers reconstruction during image pulls are especially
+harmful because they contribute directly to the start times of containers.
 %
-\sysname, therefore, performs selective deduplication 
+Our experiments showed that on average na\"{i}ve deduplication increases layer
+download latencies by 2.5$\times$ compared to the original registry.
 
-\VT{we do selective in in allcases}.
-
-
-% fragmentation and compression are the issues
 %
-\VT{do we have number to support that naive dedup is harmful}.
-
-\sysname first exploits two kinds of redundancies: redundant data among layers,
-and redundancy policy used by Cloud storage system.
+\sysname's design is tailored to Docker registry environments and workloads to
+reduce deduplication overhead.
 %
-\sysname maintains a certain number of \emph{layer replicas} for layer accesses
-while \emph{deduplicates} the rest \emph{layer replicas} into \emph{unique
-files} to save space.
+\sysname exploits two kinds of redundancies: 1)~redundant data across layers,
+and 2)~redundancy caused by the replication in the storage backend.
 %
-In this case, by deduplicating different number of layer replicas, \sysname
-provides different \textbf{basic deduplication modes} to meet different
-capacity and performance requirements while maintaining the same
-failure-tolerance ability.
+First, \sysname keeps a fixed number (0--3) of layer replicas as-is, without
+decompressing and deduplicating them.
 %
-Besides, \sysname also provides \textbf{selective deduplication mode} to
-deduplicate a certain number of layer replicas inversely proportional to their
-\emph{popularity} to achieve significant space savings while maintaining a good
-performance.
+Accesses to these replicas do not experience deduplication overhead.
 %
-Moreover, \sysname also explores user access patterns and preconstructs layers
-before \texttt{pulling} layer requests arrive to save layer restoring latency.
+The remaining layer replicas (0--3) are decompressed and deduplicated.
 %
-Finally, \sysname does not just simply uses decompression and file-level
-deduplication to remove duplicate files from layer dataset.
+Second, \sysname allows to deduplicate less frequently accessed layers more
+aggressively than the popular layers.
 %
-\sysname \emph{splits} a layer into \textbf{slices} during layer deduplication
-to enable \emph{parallel streaming layer construction} for fast layer restoring
-performance.
-
+Third, \sysname monitors and exploits user access patterns and preconstructs
+layers before layer download requests arrive.
+%
+Finally, during layer deduplication \sysname groups files in \emph{slices} to
+enable high-speed parallel streaming layer reconstruction.
+%
+%Depending on the user and environment requirements for performance, storage
+%savings, and durability users can configure...
 
 %%%
 % 4. Sift's evaluation
 %%%
 
-We implemented and deployed \sysname on a 21-node cluster and evaluated with
-real-world workloads and real layers.
-%
-The evaluation results show that uses a cache that takes into consideration the
-user behavior and layer popularity, in addition to parallelizing layer
-construction across %HA?  servers.
+\VT{will populate as eval is ready}
 
-%This paper is organized into the following sections: Section 2 talks about
-%observed behaviors and access patterns in Docker registries, Section 3 covers
-%the design of our registry, Section 4 details the implementation of the
-%registry, Section 5 evaluates the performance of the registry, Section 6 talks
-%about similar work done in the field, and Section 7 concludes. 
+%We implemented and deployed \sysname on a 21-node cluster and evaluated with
+%real-world workloads and real layers.
+%
+%The evaluation results show that uses a cache that takes into consideration the
