@@ -1,52 +1,25 @@
 \begin{abstract}
 
-\vspace{-6pt}
-%
-The proliferation  %rapidly growing number
- of container images and the associated storage
-performance and capacity requirements are the key obstacles to efficiently
-scaling Docker registries.
+\vspace{-5pt}
+
+The proliferation of container images and the associated storage performance
+and capacity requirements are the key obstacles to efficiently scaling Docker
+registries.
 %
 Though the real-world images contain a tremendous amount of duplicate data,
-modern registries cannot effectively eliminate the duplicates due to the
-compressed format of the images.
+modern registries cannot effectively eliminate the duplicates.
+%due to the compressed format of the images.
 %
 In this paper, we propose a new Docker registry architecture, \emph{\sysname},
-that integrates deduplication into the Docker registry.
+that integrates deduplication into the registry.
 %
 \sysname supports several configurable deduplication modes that provide
-different levels of storage efficiency, durability, and performance, as required
-by different use cases.
+different levels of storage efficiency, durability, and performance, as
+required by different use cases.
 %
-Further, to mitigate the negative impact of deduplication on the image download
+To further mitigate the negative impact of deduplication on the image download
 and upload times, \sysname introduces a two-tier cache with a novel
 user-access-history-based prefetch algorithm. 
 %
 Under real workloads, \sysname saves up to XXX\% of storage space while keeping
 the latencies within the XXX\% of the original registry.
-
-%The approach enables it to achieve a $96$\% hit ratio and save $56$\% more
-%cache space.
-
-%Based on our 
-
-%sustaining and scaling container systems in the face of exponential growth is challenging. 
-%%
-%For example, Docker Hub~\cite{docker-hub}---a popular public container registry---stores more than~2 million public repositories. These repositories have grown at the rate of about $1$ million annually---requiring provisioning an additional 2.5~TB of storage per week on average---and the rate is expected to increase.
-%%
-%This puts intense pressure on Docker registry storage infrastructure, but the problem has so far remained largely unexplored.
-%
-
-\end{abstract}
-
-%we predict  
-%Overall,  
-%to model the deduplication for estimating the deduplication effect on performance and storage savings, especially in terms of deduplication rate and deduplication overhead. We propose to use Markov decision process to find optimal solution that can maximize the storage saving and minimizing the cost in terms of performance degradation. Our solution will largely reduce the amount of redundant data in container storage systems and outperform the state-of-art deduplication techniques without any performance overhead.
-
-%and evaluate
-%the potential of file-level deduplication in the registry.
-%
-%Our analysis reveals that 
-%
-%We then present the design of \sysname---a Docker registry with file deduplication
-%support---and conduct a simulation-based analysis of its performance implications.
