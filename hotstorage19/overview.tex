@@ -10,22 +10,22 @@
 %objectives of Sift? We want to deduplicate layers but we don't want latencies to suffer. So what is
 %the problem then? Reconstructing layers is expensive. That's why we choose to have replication modes
 %to trade-off storage space for performance.}
-\LR{This following paragraph should be part of background. Ali, can you move it to background and fit
-it in there? I think we should also split Figure~\ref{fig:sift-original} and also move the top part,
-which describes the standard registry, to the background section.}
+%\LR{This following paragraph should be part of background. Ali, can you move it to background and fit
+%it in there? I think we should also split Figure~\ref{fig:sift-original} and also move the top part,
+%which describes the standard registry, to the background section.}
 
 %\LR MOVE THIS TO BACKGROUND {START}
-We first consider  a simple example of current registry backend storage system.
-Upon a \texttt{push} layer request,
-server \emph{A} stores the layer locally, such layer is denoted as \emph{primary layer replica}.
-Meanwhile \emph{A} replicates the layer to the other two servers: 
-\emph{B} and \emph{C} to maintain reliability as shown in Figure~\ref{fig:sift-original}. 
-These replicated layers are denoted as \emph{backup layer replicas}.
- %shows a simple deduplication mode of \sysname's registry cluster compared with original registry cluster.
-%In the original registry cluster upon  a \texttt{push} request, 
-%registry \emph{A} stores the layer locally, such layer is denoted as \emph{primary layer replica}.
-The subsequent \texttt{pull} layer requests can be served by 
-any of the three layer replicas.%depending on the registry server's availability?
+%We first consider  a simple example of current registry backend storage system.
+%Upon a \texttt{push} layer request,
+%server \emph{A} stores the layer locally, such layer is denoted as \emph{primary layer replica}.
+%Meanwhile \emph{A} replicates the layer to the other two servers: 
+%\emph{B} and \emph{C} to maintain reliability as shown in Figure~\ref{fig:sift-original}. 
+%These replicated layers are denoted as \emph{backup layer replicas}.
+% %shows a simple deduplication mode of \sysname's registry cluster compared with original registry cluster.
+%%In the original registry cluster upon  a \texttt{push} request, 
+%%registry \emph{A} stores the layer locally, such layer is denoted as \emph{primary layer replica}.
+%The subsequent \texttt{pull} layer requests can be served by 
+%any of the three layer replicas.%depending on the registry server's availability?
 %\LR MOVE THIS TO BACKGROUND {FINISH}
 
 Figure~\ref{fig:sift} shows the architecture of \sysname.
@@ -81,8 +81,8 @@ pushed layers.
 %a newly \texttt{pushed} layers on three different servers: %\emph{A}, \emph{B}, and \emph{C}. 
 %
 The remaining two backup layer replicas %server roles/group discussed later, a forward reference maybe?
-are \emph{deduplicated}, i.e. any
-duplicate files are discard while \emph{unique files} are kept.
+are deduplicated, i.e. any
+duplicate files are discard while unique files are kept.
 The unique files are replicated and saved on different servers B and C.
 %
 %\emph{A} stores the while \emph{B} and \emph{C} store
@@ -108,7 +108,7 @@ groups (see Figure~\ref{fig:sift}):
 a \emph{primary cluster} consisting of \emph{P-servers} and a \emph{deduplication cluster}
 consisting of \emph{D-servers}.
 P-servers are responsible for storing full layer replicas and manifest replicas
-while D-servers \emph{deduplicate} layer replicas at the file level, 
+while D-servers deduplicate layer replicas at the file level, 
 store the unique files, and replicate them.
 %
 %The reason we separately store layer replicas and 
@@ -140,10 +140,11 @@ and file store.
 %be explained here.###### remove file cache from graph}
 
 The layer stage area temporarily stores newly added layer replicas.
-After \texttt{deduplicating} a replica, the resulting unique files are stored in a content 
-addressable \emph{file store} and replicated to the peer servers to
+After deduplicating a replica, the resulting unique files are stored in a content 
+addressable file store and replicated to the peer servers to
 provide redundancy. Once all replicas have been stored, the layer replica is deleted from the
-layer stage area. 
+layer stage area and cached in the preconstruction cache. The cache is also used to hold
+preconstructed layers~(see~\S\ref{sec:cache-design}).
 
 \sysname distributes the layer's unique files
 % and \emph{shared files}
@@ -168,12 +169,9 @@ performance.
 %according to the associated \textbf{slice recipes} and \textbf{layer recipe}.
 %After that D-server concatenates the slices into a layer (see section~\ref{sec:dedup-desgin}).
 %
-\LR{We should also explain here the File and Layer indices shown in the Figure.}
-\NZ{
-Besides, 
-\sysname maintains a layer index to make sure an identification layer is not already stored.
-To eliminate duplicate files from layer,
-\sysname maintains a file index to keep record the unique files stored in the system.}
+%\LR{We should also explain here the File and Layer indices shown in the Figure.}
+To avoid storing duplicate layers and keep track of already stored unique files,
+\sysname maintains a layer and a file index. These are also kept in the metadata database.
 
 
 \paragraph{Predictive cache prefetching}
@@ -204,16 +202,15 @@ when a \texttt{pull} manifest request is received,
 preconstructs the layers, and loads them in the preconstruct cache.
 %
 %\LR{Again, put short explanation of how it works using RLmap und ULmap.}
-
-\LR{Talk about, how effective this approach is, if the gap between get manifset and
-get layer is short. Can we still load/preconstruct layers fast enough to be served
-from the cache once the get layer request is received?}
-\NZ{The effective of the approach depends on 
-the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
-As shown in Figure~\ref{fig:intervals}, majority of intervals are greater than 1 s.
-)
 %
-We shown the effect of duration in~\S\ref{sec:eval-dedup}}.
+%\LR{Talk about, how effective this approach is, if the gap between get manifest and
+%get layer is short. Can we still load/preconstruct layers fast enough to be served
+%from the cache once the get layer request is received?}
+%
+As shown in Figure~\ref{fig:intervals}, the time between a \texttt{GET} manifest request and its
+subsequent \texttt{GET} layer request is more than 1\,s on average \todo{Give more specifics,
+i.e. 50th percentile for different workloads}. As we will show in~\S\ref{sec:eval-dedup}, this is
+sufficient to preconstruct the necessary layers and load them into the cache.
 
 %To do that,
 %D-server
