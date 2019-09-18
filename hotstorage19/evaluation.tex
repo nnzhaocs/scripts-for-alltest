@@ -39,30 +39,27 @@ while multiple clients can run on the same server.
 Docker image popularity distribution is heavily skewed~\cite{analysisdockergithub}.
 To evaluate how \sysname works for frequently accessed images, we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub as our evaluation dataset. The size of this dataset is 12.5 TB and contains 507,023 layers. 
 After decompressing the layers, the total size of the dataset is 27.7 TB.
-We apply file-level deduplication on the decompressed dataset, the total size of unique files is only 7.2 TB, resulting with a deduplication ratio of 0.5.
+We apply file-level deduplication on the decompressed dataset, the total size of the resulting dataset of unique files is only 7.2 TB, making the deduplication ratio 0.5.
 The size distribution of our sample layer dataset is the same with the size distribution of~\cite{analysisdockergithub}.
 87.5\% of layers are smaller than 50 MB.
 12.3\% of layers fall between 50 MB and 1 GB.
 0.2\% of layers are bigger than 1 GB.
-Due to our testbed cluster scale constrain, we set the \emph{layer size limitation} equal to 250 MB. 
+Due to our testbed cluster's scaling restriction, we set a limit to the layer size %\emph{layer size limitation} 
+at 250 MB. 
 Layers that are bigger than 250 MB are split into sub-layers.
 %Based on our dataset analysis~\cite{xxx} and workload analysis~\cite{xxx},
 %more than 90\% of layers are smaller than 50MB. 
 %Therefore, we divided our sample dataset into two groups:
 %smaller layers (layer size $\leq$ 50 MB) and big layers ( 50MB $\leq$ layer size $\leq$ 1 GB).
-
-\cite{dockerworkload} presents IBM cloud registry workload traces 
-spanning $\sim$80 days for 3 internal registry cluster and 4 production registry clusters. 
-To evaluate how our sift performs for production registry workloads,
-we randomly match these 4 production traces (i.e., \texttt{Dal, Fra, Lon, Syd}) and our dataset as 4 real-world production workloads
-(detailed in Section~\ref{sec:impl}). 
-Due to time constrain,
-We replay first 5000 requests from each workload.
-Table~\ref{tab:eval-overall} and ~\ref{tab:eval-dataset} show the details of 5000 requests from each workload.
-Note that we use 3-way replication
-so the amount of data written during evaluation triples.
-We speedup trace replaying by using different speedup factors
-so that each trace can be finished within 30 minutes.
+  
+To evaluate how \sysname performs for production registry workloads, we leverage IBM's cloud registry workload traces\cite{dockerworkload}. 
+The traces span $\sim$80 days from three internal registry clusters and four production registry clusters. 
+We randomly match the four anonymized production traces (i.e., \texttt{Dal, Fra, Lon, Syd}) with our dataset to form four real-world production workloads (detailed in Section~\ref{sec:impl}). 
+Due to time constraint, we only replay the first 5000 requests from each workload.
+Tables~\ref{tab:eval-overall} and ~\ref{tab:eval-dataset} detail the 5000 requests for each workload.
+Note that we use a 3-way replication
+which triples the amount of data written during evaluation.
+We speedup trace replaying by using different speedup factors so that each trace finishes within 30 minutes.
 %During all experiments,
 %we set \emph{replication level} equal to 3.
 
