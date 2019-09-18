@@ -6,11 +6,8 @@
 %Next, we present the preliminary evaluation of our user access history-based cache algorithm
 %and the space efficiency of file cache.
 
-In this section, we evaluate \sysname and compare it with
-modern registry setup~\cite{dockerworkload}.
-Before that,
-we first show our testbed and workloads.
-Then we present our evaluation results.
+We conduct a performance evaluation of \sysname, and compare it with the modern registry setup~\cite{dockerworkload}.
+We start with describing the testbed and workloads then follow that with the evaluation results.
 \subsection{Testbed, workloads and dataset}
 
 Our testbed includes 
@@ -21,8 +18,7 @@ a 22-node cluster.
 %Each client server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
 %Each client server is equipped with 8 cores, 64 GB RAM, 1 TB HDD, and 1000Mb/s NIC.
 %During evaluation,
-Each server is equipped with 8 cores,16 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
-We deploy a distributed redis cluster on these 22 registry servers as our database.
+Each node is equipped with 8 cores, 16 GB RAM, 500 GB SSD, and 10,000 Mb/s NIC. We deploy Docker's registry container on each server and deploy a distributed Redis cluster on these 22 registry servers as our database.
 During our evaluation,
 we select different number of servers as our registry cluster
 and use the rest as client server.
@@ -39,15 +35,11 @@ while multiple clients can run on the same server.
 %Hulks and new hulks are used as backend.
 %Thors are used as frontend.
 %\subsection{}
-\cite{xxx} presents an comprehensive analysis of our whole dataset downloaded from Docker Hub. 
-Docker image popularity distribution shows a heavy skewness~\cite{analysisdockergithub}.
-To evaluate how our sift works for frequently accessed images,
-we download 74,000 popular images (i.e., image with a pull count greater than 100) from the Docker Hub~\cite{docker-hub} 
-as our evaluation dataset, 
-totally 12.5 TB with 507,023 layers.
-After decompressing,  the total size of our dataset is 27.7 TB.
-With file-level deduplication applying to our decompressed dataset, 
-the total size of unique files is only 7.2 TB, with a dedup ratio of 0.5.
+\cite{xxx} conducts an comprehensive analysis of our whole dataset that is downloaded from Docker Hub. 
+Docker image popularity distribution is heavily skewed~\cite{analysisdockergithub}.
+To evaluate how \sysname works for frequently accessed images, we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub as our evaluation dataset. The size of this dataset is 12.5 TB and contains 507,023 layers. 
+After decompressing the layers, the total size of the dataset is 27.7 TB.
+We apply file-level deduplication on the decompressed dataset, the total size of unique files is only 7.2 TB, resulting with a deduplication ratio of 0.5.
 The size distribution of our sample layer dataset is the same with the size distribution of~\cite{analysisdockergithub}.
 87.5\% of layers are smaller than 50 MB.
 12.3\% of layers fall between 50 MB and 1 GB.
