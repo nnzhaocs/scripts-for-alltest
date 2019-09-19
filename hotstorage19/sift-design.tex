@@ -1,58 +1,19 @@
 \section{\sysname~Design}
 \label{sec:Sift}
 
-%Our analysis in Section~\ref{sec:redundant_files} suggests that adding the
-%support of file-level deduplication to Docker registry can significantly reduce
-%its storage capacity requirements, especially in large-scale deployments.
+The main goal of \sysname is to reduce the storage demands of image registries
+while keeping the performance impact on user operations (mainly image
+\texttt{push} and \texttt{pull}) low.
 %
-%In this section, we first describe a high-level design of \emph{\sysname}---
-%a Docker registry that supports file-level deduplication.
-%We then proceed with a simulation-based evaluation of the expected performance
-%implications.
-%Integrated Caching and Deduplication
-%Cache-assisted Inline deduplication system
-
-
-%In this section, we first present the challenges brought by the unique characteristics of the Docker ecosystem.
-%Next, we discuss our design goals and finally present the design of~\sysname. 
-%Then we present the design of~\sysname. 
-%O are to improve Docker registry performance and to decrease the backend storage requirements such as ???.
-
-
-The main goal of \sysname is to reduce the storage demands of container registries while
-keeping the performance impact on user operations (mainly \texttt{push} and \texttt{pull})
-low.
-%In addition to eliminates excessive duplicate data and 
-%significantly decreases storage capacity requirements,
-%\sysname more focuses on the impact of layer deduplication on \texttt{pulling} layer performance
-%and how to improve layer \texttt{pulling} performance while \emph{deduplicating} layers.
+In this section, we first provide an overview of
+\sysname~(\S\ref{sec:overview}).
+%and explain, how it utilizes existing replicas to balance the trade-off
+%between storage space reduction and performance.
 %
-In this section, we first provide an overview of \sysname~(\S\ref{sec:overview}) and
-explain, how it utilizes existing replicas to balance the trade-off between storage space reduction
-and performance. We then describe in detail, how \sysname deduplicates~(\S\ref{sec:dedup-desgin})
-and restores~(\S\ref{sec:restore-desgin}) layers, and how it further improves performance
-through predictive cache management~(\S\ref{sec:cache-design}).
-
-%We present how \sysname achieves 
-%a maximum performance, 
-%a maximum data deduplication ratio, 
-%a trade-off between performance and data deduction
-%by utilizing deduplication, replication, and user behavior patterns.
-
-% To speedup layer restoring,
-% \sysname uses a parallel streaming layer deduplication and restoring process
-% .
-% Moreover, \sysname exploit the observed user access patterns
-% and uses a user behavior based layer cache.
-%In this section, we outline the design of \sysname.
-%Then, we present how \sysname performs layer deduplication and layer restoring. 
-%Finally, we present our user-behavior based layer preconstruct diskcache. % (\preconstructcachename).
-%a latency aware deduplication system (\dedupname system) and
-
-%\LR{In general, we need to structure this section more top-down, i.e. first introduce what are the
-%challenges/difficulties that we were facing when designing Sift and then explaining how we addressed
-%them and why we chose to address them that way. Otherwise, the text is just describing, how Sift
-%works but the readers don't know why it works that way and why the different features are there.}
+We then describe in detail how \sysname
+deduplicates~(\S\ref{sec:dedup-desgin}) and
+restores~(\S\ref{sec:restore-desgin}) layers, and how it further improves
+performance through predictive cache management~(\S\ref{sec:cache-design}).
 
 \input{overview}
 
