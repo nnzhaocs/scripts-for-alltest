@@ -2,7 +2,7 @@
 %In the following, we first present the performance comparison between original registry and \sysname.
 %Next, we present the layer restoring performance.
 
-\subsection{Restoring performance of deduplication cluster }
+\subsection{Restore performance of the deduplication cluster}
 \label{sec:eval-dedup}
 
 %We map the traces with two different layer groups: 
@@ -10,41 +10,61 @@
 
 \input{fig-eval-1node}
 
-\paragraph{Restoring performance overhead and the benefit of preconstruct cache}:
-We first measure the overhead of deduplication on layer restoring latency 
-over LocalFS
-by running \sysname on a single server.
-We launch a client on another server and \texttt{pulls} 3 layers in parallel.
-We configure \sysname as
-registry without deduplication,
-deduplication registry,
-deduplication registry with LRU cache~\cite{xxx},
-and
-deduplication registry with a preconstruct cache.
-We set the cache size as 20\% of ingress data.
-We replay 1500 requests from \texttt{Dal}
-and match them with different layer sizes.
+In this experiment,
+we measure the layer restoring latency of \sysname's deduplication cluster
+and its impact on \texttt{GET} layer latency.
+We first measure a single P-server's layer restoring capability
+and compare it with a \emph{No deduplication} scheme --
+downloading layers from server's local file system without deduplication.
+%denoted as .
+Then we scale out to multiple P-servers
+and compare it with a \emph{CHT based distributed object storage} system.
+%
+%
+% (denoted as
+%\sysname-dedup)
+% and 
+%overhead of layer deduplication on .
+%To measure the  
+%We compare the \texttt{GET} layer latency of D-servers
+%with 
+%by running \sysname with \text{only deduplication} on a single D-server.
+%We launch a client on another server and \texttt{pulls} 3 layers in parallel.
+%We configure \sysname as
+%registry without deduplication,
+%deduplication registry,
+%deduplication registry with LRU cache~\cite{xxx},
+%and
+%deduplication registry with a preconstruct cache.
+%We set the cache size as 20\% of ingress data.
 
+\paragraph{Restoring latency}
+
+We replay 2500 requests from \texttt{Dal}
+and match the requests to layers with different sizes.
+As shown in Figure~\ref{fig:eval-1nodegetlayerlatency},
+\texttt{GET} layer latency 189\%
+\emph{No deduplication} 
+
+\paragraph{Preconstruct cache VS. ARC cache}:
 %\paragraph{Cache}
-As shown in Figure~\ref{xxx},
-the average \texttt{GET} layer request latency increase as layer size.
+As shown in Figure~\ref{xxx}, the average \texttt{GET} layer request latency increase with the layer size.
 For localFS, the average \texttt{GET} layer request latency increase from 31 ms to 
 when the layer size increases from 1 MB to 8 MB.
-Restoring a layer put 150\% overhead on \texttt{GET} layer latency.
-By adding a normal LRU cache,
+Restoring a layer puts 150\% overhead on \texttt{GET} layer latency.
+By adding a ARC cache,
 the average \texttt{GET} layer latency decreases by 39\%.
 With our preconstruct cache,
-the average \texttt{text} layer latency descreases by 24\% over a normal LRU cache.
-Compare with localFS, our \sysname with preconstruct cache only adds 19\% of overhead. 
+the average \texttt{text} layer latency descreases by 24\% over an ARC cache.
+Compared to localFS, \sysname with preconstruct cache only adds 19\% of overhead. 
 
-Next, we descrease the duration between \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
+Next, we decrease the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
 
 
-Figure~\ref{xxx} shows the cache hit ratio of a normal LRU and our preconstruct cache.
+Figure~\ref{xxx} shows the cache hit ratio of the ARC cache and the preconstruct cache.
 
 \paragraph{Cluster scale impact}
-We increase the number of nodes in our sift deduplication cluster
-and test the layer restoring performance.
+We increase the number of nodes in \sysname deduplication cluster and test the layer restoring performance.
 
 As shown in Figure~\ref{xxx},
 
@@ -73,34 +93,25 @@ While B-mode 0 \emph{deduplicates} all layer replicas.
 %\sysname is evaluated by configuring different deduplication modes.
 Therefore, B-mode 3 doesn't have P-servers while
 B-mode 0 doesn't have P-servers.
-For the rest modes,
+For the remaining modes,
 the number of P-servers and D-servers are set to 14 and 7 respectively.
 %In addition, 
 %we speedup trace replaying by using different speedup factors
 %so that each trace can be finished within 30 minutes.
-Before we replay each workload,
-we first warmup P-servers and D-servers with a certain amount of layers as shown in Table~\ref{tab:eval-overall},
-which roughly takes 10 minutes.
-Then,
-we use 32 clients spreading on 4 client servers 
-distributed on client cluster to replay traces to P-servers and D-servers.
-Besides,
-we also evaluate \emph{original registry} with 3-way replication on 21 servers. 
+Before we replay each workload, we first warmup P-servers and D-servers with a certain amount of layers as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
+Then, we use 32 clients spread between four client servers distributed on client cluster to replay traces to P-servers and D-servers.
+We also evaluate the \emph{original registry} with 3-way replication on 21 servers. 
 
-Figure~\ref{label} shows the average response time for 
-\texttt{GET} layer, \texttt{PUT} layer, \texttt{GET} manifest, and \texttt{PUT} manifest
-requests for \sysname with different deduplication modes and original registry across different workloads.
-Note that for \emph{B-mode 0},
-the \texttt{GET} layer latency is \emph{layer restoring latency}.
+Figure~\ref{label} shows the average response time for \texttt{GET} layer, \texttt{PUT} layer, \texttt{GET} manifest, and \texttt{PUT} manifest requests for \sysname with different deduplication modes and original registry across different workloads.
+Note that for \emph{B-mode 0}, the \texttt{GET} layer latency is the \emph{layer restoring latency}.
 
 Overall, \texttt{PUT} requests have much higher average response time than \texttt{GET} requests.
 For example, the average response time of 
 \texttt{PUT} layer requests is almost twice higher than that of \texttt{GET} layer requests.
 Note that registry servers use SSDs as secondary storage devices.
-The different response time of \texttt{PUT} and \texttt{GET} requests are mainly caused by
-the difference throughput between writes and reads of SSDs. 
+The difference in response time for \texttt{PUT} and \texttt{GET} requests are mainly caused by the different writes and reads throughput of SSDs. 
 
-Comparing \emph{original} with \emph{B-mode 3},
+Comparing the \emph{original} with \emph{B-mode 3},
 we see that \emph{B-mode 3} improves the overall performance by using a \emph{superfetch cache}.
 \emph{B-mode 3}.
 \emph{B-mode 3} reduces 5\% of average \texttt{GET} layer latency
@@ -109,24 +120,23 @@ Next we compare \emph{B-mode 0} with \emph{original}.
 Although \emph{B-mode 0} saves half of the storage space
 by \emph{deduplicates} all layer replicas,
 it slightly reduce \texttt{GET} layer latency by 6\%.
-This is because of the high preconstruct cache hit ratio (detailed in Fgirue~\cite{xxx}), 
-which saves a lot of layer restoring latency.
+This is because of the high preconstruct cache hit ratio (detailed in Figure~\cite{xxx}), 
+which reduces the layer restoring latency.
 
-For the rest basic modes: \emph{B-mode 2} and \emph{B-mode 1},
-we see that \emph{B-mode 1} has a similar average response time with \emph{original}
+For the remaining basic modes: \emph{B-mode 2} and \emph{B-mode 1},
+we see that \emph{B-mode 1} has a similar average response time to \emph{original}
 although the primary cluster of \emph{B-mode 1} only has 14 nodes while 
 \emph{original} contains 21 nodes.
-This is because less data (1/3) is \texttt{pushed} onto the primary cluster in \emph{B-mode 1}.
+This is because only a one-third of the %less data (1/3) 
+data is \texttt{pushed} onto the primary cluster in \emph{B-mode 1}.
 \texttt{Push} requests also affect the performance of \texttt{pull} requests
-in terms of more network traffic and more writes on SSDs.
+in terms of more network traffic and more writes to SSDs.
 While \emph{B-mode 2} degrades \emph{GET} layer performance by 11\%.
-This is because 
-in \emph{B-mode 2},
+This is because in \emph{B-mode 2},
 more data (2/3) is \texttt{pushed} onto the 14-node primary cluster compared to \emph{B-mode 1},
 which causes a lot of overhead.
 \emph{S-mode} also has a similar \texttt{GET} layer performance with both \emph{original} and \emph{B-mode 1}.
-This is because in \emph{S-mode}, only few amount of hot layers replicates 3 replicas while
-the rest cold layers only has a single layer replicas on primary cluster. 
+This is because in \emph{S-mode}, only a few of the hot layers have 3 replicas while the remaining cold layers only have a single layer replica on the primary cluster. 
 
 We find that
 \emph{B-mode 1}, \emph{B-mode 2}, \emph{B-mode 0}, and \emph{S-mode}
@@ -142,73 +152,48 @@ manifest latency by 17\% and 24\% respectively.
 \paragraph{Cache hit ratio}
 
 Figure~\ref{xxx},
-show superfetch cache hit ratio and preconstruct cache hit ratio.
-Note that superfetch cache is used by primary cluster while preconstruct cache by deduplication cluster.
-The superfetch cache hit ratio shown in Figure~\ref{xxx}
-is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode}
-because they show the similar cache hit ratios.
+shows superfetch cache hit ratio and preconstruct cache hit ratio.
+Note that the superfetch cache is used by the primary cluster while the preconstruct cache is used by the deduplication cluster.
+The superfetch cache hit ratio shown in Figure~\ref{xxx} is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode} because they show the similar cache hit ratios.
 Preconstruct cache hit ratio is measured in \emph{B-mode 0}.
-Note that the big difference between a superfetch cache and a preconstruct cache 
-is that superfetch cache can prefetch layers \emph{on time}
-while preconstruct cache cannot guarantee to preconstruct layers \emph{on time} resulting in
-a certain amount of \texttt{pull} layer requests \emph{waiting} (detailed in~\ref{xxx}).
+Note that the big difference between a superfetch cache and a preconstruct cache is that the superfetch cache can prefetch layers \emph{on time} while the preconstruct cache cannot guarantee the preconstruction of layers \emph{on time} which makes a certain amount of \texttt{pull} layer requests \emph{wait} (detailed in~\ref{xxx}).
 The cache size is set to 20\% of ingress data.
 
-We see that superfetch cache has a higher hit ratio than preconstruct cache
-because of large amount of waiting layers on preconstruct cache.
-For example, for preconstruct cache, 
+We see that the superfetch cache has a higher hit ratio than the preconstruct cache
+because of the large amount of waiting layers on the preconstruct cache.
+For example, for the preconstruct cache, 
 the hit ratio is only 79\% excluding 20\% waiting layers requests for workload \texttt{Syd}.
-While the hit ratio of superfetch cache is 98\%.
-The number of waiting layers vary among different workloads.
-There are 4\% and 22\% of 
-layers waits on layer preconstruct cache for \texttt{Dal} and \texttt{Lon} respectively. 
+while the hit ratio of the superfetch cache is 98\%.
+The number of waiting layers vary across different workloads.
+There are 4\% and 22\% of layer waits on the preconstruct cache for \texttt{Dal} and \texttt{Lon} respectively. 
 Note that we speedup trace replaying
 and the speedup factor for \texttt{Lon} is the biggest.
-Speedup not only decreases the idle time between \texttt{pull} image requests,
-but also reduces the duration between \texttt{GET} manifest request 
-and the subsequent \texttt{GET} layer requests.
+Trace replay speedup does not only decreases the idle time between \texttt{pull} image requests, it also reduces the duration between a \texttt{GET} manifest request and the subsequent \texttt{GET} layer requests.
 Therefore, with the biggest speedup factor,
 lots of layer preconstruction cannot be finished on time.
-Moreover,
-for most of workloads,
-superfetch cache hit ratio is higher than 81\%.
-While \texttt{Dal} has the lowest hit ratio 0.77 
-because of 
-low prediction accuracy for \emph{users' repull behaviors} 
-and heavy workload.
+Moreover, for most of the workloads, the superfetch cache hit ratio is higher than 81\%. 
+The \texttt{Dal} workload has the lowest hit ratio (0.77) because of the low prediction accuracy for \emph{users' repull behaviors} 
+and the heaviness of the workload.
 
 Figure~\ref{xxx} shows file cache hit ratio during layer restoring in \emph{B-mode 0}.
 The file cache size is also set to 20\% of ingress data.
 Overall, we see that file cache hit ratio is fair.
-The hit ratio is lower than 60\% across all workloads,
-which means less files are shared among layers during a \emph{pulling} image request.
-It also means that the amount of shared/deduplicate files among layers is less when 
-the accessed layer dataset is smaller.
-Consequently,
-to get a higher deduplication ratio,
-deploying layer deduplication on a big layer dataset is a better choice, which aligns with
-~\cite{dedupanalysis}
+The hit ratio is lower than 60\% across all workloads, which means less files are shared among layers during a \emph{pull} image request.
+It also means that the amount of shared/deduplicate files among layers is less when the accessed layer dataset is smaller.
+Consequently, to get a higher deduplication ratio, deploying layer deduplication on a big layer dataset is a better choice, which aligns with~\cite{dedupanalysis}.
 
 
 \paragraph{Metadata size} 
-Figure~\ref{xxx} shows
-average metadata size on each registry server measured by using the size of Redis~\cite{redis} used memory in \emph{B-mode 0}.
-Note that the replication level for Redis cluster is also set to 3.
-As shown,
-for all traces,
-the total size of metadata generated by \sysname such as \emph{recipes} for layers or slices, \emph{indexes} of layers or files, 
-and RLmap or ULmap
-is lower than 100 MB.
-Compared with 16 GB memory on each registry server,
-metadata size is negligible.
+Figure~\ref{xxx} shows the average metadata size on each registry server measured by using the size of the used memory in Redis~\cite{redis} when in \emph{B-mode 0}.
+Note that the replication level for the Redis cluster is also set to three.
+As shown, for all traces, the total size of the metadata generated by \sysname such as \emph{recipes} for layers or slices, \emph{indexes} of layers or files, and RLmap or ULmap is less than 100 MB.
+With the 16 GB memory on each registry server, such metadata size is negligible.
 
 \paragraph{Client concurrency impact}
-Figure~\ref{label} shows the average response time for different deduplication modes and original registry
-with 8 clients and 64 clients respectively.
+Figure~\ref{label} shows the average response time for different deduplication modes and for the original registry with 8 clients and 64 clients, respectively.
 
 \paragraph{Primary cluster size  impact}
-Figure~\ref{label} shows the average response time for different deduplication modes and original registry
-with 7-node cluster and 14-node cluster.
+Figure~\ref{label} shows the average response time for different deduplication modes and for the original registry with a 7-node cluster and a 14-node cluster, respectively.
 The number of concurrent clients are set to 32.
 %\paragraph{Layer size impact}
 

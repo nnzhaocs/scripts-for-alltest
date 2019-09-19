@@ -60,21 +60,30 @@ By using layer-level content addressable store, Image layers are stored as
 compressed archival files and image manifests as JSON files.
 
 
-\VT{Somewhere we need to describe the common setup: nginx, independent registry servers
-for balancy, object storage beneath.}
-
-
-
-
-Although Docker registry is a layer-level content addressable storage system
-storing all the images, it delegates storage to drivers that interact with
+%\VT{Somewhere we need to describe the common setup: nginx, independent registry servers
+%for balancy, object storage beneath.}
+%
+%
+The current Docker registry software server is a single-node application.
+%
+To serve many requests concurrently, organizations typically deploy a load
+balancer like NGINX in front of several independent registry
+instances~\cite{dockerworkload, anwar-cloud19}.
+%
+All the instances delegate storage and retrieval of images to drivers that interact with
 either a local file system or a remote cloud storage such as Amazon
 S3~\cite{s3}, Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, and
 Aliyun OSS~\cite{aliyun}.
 %
 For example, Google Container Registry~\cite{GoogleContainerRegistry} uses
-Google cloud as its backend image store.  Users \texttt{push} and \texttt{pull}
+Google cloud as its backend image store. 
+%
+Users \texttt{push} and \texttt{pull}
 Docker images to and from their repositories that are stored on cloud storage.
+%
+
+
+
 %
 Upon a \texttt{push} layer request, Docker registry fowrards the layer to the
 backend storage which stores multiple replicas of the layer.

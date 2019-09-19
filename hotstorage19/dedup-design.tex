@@ -28,12 +28,14 @@ The layer fingerprint is calculated by hashing the layer content
 and is also used as the layer Id.
 After that, \sysname replicates the layer $r$ times across the P-servers
 and submits the remaining $R-r$ layer replicas to the D-servers. Those replicas are
-temporarily stored in the layer stage areas of the D-servers. Once the replicas
+temporarily stored in the layer stage areas of the D-servers. \sysname uses
+two consistent hashing rings to for each cluster to pick the target servers for
+a layer. Once the replicas
 have been stored successfully, \sysname notifies the client of the request completion.
 %
-\LR{How are the target D- and P-servers selected? Through consistent hashing?} 
-\NZ{In our current implement, we distribute layers to D- and P-servers
-by using two CHT rings: a ring of D-server and a ring of P-servers.}
+%\LR{How are the target D- and P-servers selected? Through consistent hashing?} 
+%\NZ{In our current implement, we distribute layers to D- and P-servers
+%by using two CHT rings: a ring of D-server and a ring of P-servers.}
 
 % and acknowledges back to the client.
 %
@@ -173,21 +175,24 @@ replicated to D-servers $A$, $B$, and $C$. We describe how the target servers ar
 in the next paragraph.
 
 After replication, server $B$ contains $f2$, $f5$, $f1'$, and $f4'$. Together
-$f2$ and $f5$ form a \emph{primary slice} of $L1$, denoted as $L1::A::P$ \todo{explain this notation}.
-\NZ{This slice Id contains the layer Id it belongs, the host server, and the backup level of this slice.
-This slice Id notation largely simplifies layer recipe and facilitate layer restoring.
-The restoring master only needs to fetch a small layer recipe, get the restoring workers,
- and decide which backup level slices are needed for layer restoring.
- After that, the master sends out simple layer restoring instructions to the workers.
- The layer restoring instruction only contains the layer Id and the backup level.
-The workers will generate a slice Id by using the layer Id and backup level
-along with its own address, which holds the slice stored locally.}
-
+$f2$ and $f5$ form the \emph{primary slice} of $L1$, denoted as $L1::A::P$.
+This slice ID contains the layer ID the slices belongs to ($L1$), the node, which
+stores the slice ($A$) and the backup level ($P$ for primary).
+%\todo{explain this notation}.
+%\NZ{This slice Id contains the layer Id it belongs, the host server, and the backup level of this slice.
+%This slice Id notation largely simplifies layer recipe and facilitate layer restoring.
+%The restoring master only needs to fetch a small layer recipe, get the restoring workers,
+% and decide which backup level slices are needed for layer restoring.
+% After that, the master sends out simple layer restoring instructions to the workers.
+% The layer restoring instruction only contains the layer Id and the backup level.
+%The workers will generate a slice Id by using the layer Id and backup level
+%along with its own address, which holds the slice stored locally.}
+%
 %shared file replica \emph{f2} and 
 %unique file replica \emph{f5} stored on \emph{B} comprise a slice of \emph{L1},
 %denoted as a \textbf{primary slice} of \emph{L1} (ie., \emph{L1::A::P}).
 The two backup file replicas 
-$f1'$ and $f4'$ on $B$ form a \emph{backup slice} for $L1$.
+$f1'$ and $f4'$ on $B$ form the \emph{backup slice} $L1::B::B$.
 During layer restoring, $L1$ can be restored by using any combination of primary and backup slices
 to achieve maximum parallelism.
 %
@@ -290,88 +295,103 @@ are equally sized and evenly distributed across D-servers.
 The example in Figure~\ref{fig:replication-partition}
 shows such a perfect scenario, in which the files of layer $L1$ are evenly partitioned across all D-servers.
 %since its shared files and unique files are evenly distributed to D-servers. 
-However, due to the diverse contents of real-world layer datasets,
-shared files are usually not evenly distributed for all layers.
-\LR{Provide more details. Why is that so? Is this assuming consistent hashing?
-}
-\NZ{Let's consider an empty storage system, the first layer can be easily evenly partitioned
- to servers because no shared files are stored.
-After the first layer is partitioned and stored,
-consider that the second layer is pushed,
-the second layer has some same files with the first layer and
-these shared files are already distributed to servers.
-These shared files are distributed in a way such that the first layer can be evenly partitioned.
-But they might not be evenly distributed for the second layer because
-when we distribute files for first layer we dont know the subsequent layers and
-we dont know which files will be shared with the subsequent layers.
-So the shared files' layout will affect the subsequent layers' partition.}
-To evenly distribute and partition a layer's containing files, shared and unique files,
+However, in general, it is not straightforward to evenly distribute shared files for different
+layers as their placement is fixed by the first layer, which was pushed to the registry that
+contained these files.
+%\LR{Provide more details. Why is that so? Is this assuming consistent hashing?}
+%\NZ{Let's consider an empty storage system, the first layer can be easily evenly partitioned
+% to servers because no shared files are stored.
+%After the first layer is partitioned and stored,
+%consider that the second layer is pushed,
+%the second layer has some same files with the first layer and
+%these shared files are already distributed to servers.
+%These shared files are distributed in a way such that the first layer can be evenly partitioned.
+%But they might not be evenly distributed for the second layer because
+%when we distribute files for first layer we dont know the subsequent layers and
+%we dont know which files will be shared with the subsequent layers.
+%So the shared files' layout will affect the subsequent layers' partition.}
+%
+To evenly distribute and partition a layer's unique and shared files
+%, shared and unique files,
 %
 %To distribute the newly added unique files' primary replicas,
-\sysname employs a greedy partitioning algorithm with shared file constraints.
+\sysname employs a greedy packing algorithm.
+%, which is constrained by  with shared file constraints.
 %distribute the newly added unique files in a way such that
 %each D-server stores relatively equal-sized slice for the layer.
-\LR{What exactly is meant by `shared file constraints'. Can we explain a bit more?}
-\NZ{It means before partition the layer, some of its containing files (shared files)
-are already allocated to the servers.
-We dont want to migrate those files to make all its containing files evenly distributed.
-So I called it a constrain.
-It means when we partition layers, we maintain its containing shared files that are already allocated
-and stored on servers as it is. 
-Through only distribute the newly added unique files,
-we achieve a relatively even partition for a layer.}
+%\LR{What exactly is meant by `shared file constraints'. Can we explain a bit more?}
+%\NZ{It means before partition the layer, some of its containing files (shared files)
+%are already allocated to the servers.
+%We dont want to migrate those files to make all its containing files evenly distributed.
+%So I called it a constrain.
+%It means when we partition layers, we maintain its containing shared files that are already allocated
+%and stored on servers as it is. 
+%Through only distribute the newly added unique files,
+%we achieve a relatively even partition for a layer.}
 
-To introduce the approach, we first consider the simpler case in which each file only has
+We first consider the simpler case in which each file only has
 a single replica. During layer partitioning, \sysname does not migrate shared files that already
-have been stored on D-servers to reduce deduplication overhead.
+have been stored on D-servers to reduce I/O overhead.
 %
-\LR{The following is unclear, why does \sysname partition shared files for $L1$? Aren't they already there?}
-\NZ{I think it's allocating not partitioning.
-}
+%\LR{The following is unclear, why does \sysname partition shared files for $L1$? Aren't they already there?}
+%\NZ{I think it's allocating not partitioning.}
 %
-\sysname first partitions $L1$ shared files to their host servers.
-For example, in Figure~\ref{fig:replication-partition},
-shared files $f1$, $f2$, and $f3$ are first partitioned to their host D-servers $A$, $B$ and $C$
-respectively. Next, \sysname starts to distribute unique files to D-servers following a greedy strategy.
+%\sysname first partitions $L1$ shared files to their host servers.
+%\sysname first determines the location of $L1$'s shared files in the cluster.
+%For example, in Figure~\ref{fig:replication-partition}, shared files $f1$, $f2$, and $f3$ are located
+%on D-servers $A$, $B$ and $C$ respectively. It then computes the total size of the shared files
+%for each affected D-servers.
+\sysname first computes the total size of the layer's existing shared files for each D-server (this could
+potentially be 0 if a D-server does not store any shared files for the layer).
+Next, \sysname starts to assign unique files to D-servers following a greedy packing strategy.
 It assigns the biggest unique file to the smallest partition until all the unique files are assigned.
-In the example, the shared files are evenly partitioned to all three D-servers,
-and hence, the three newly added unique files are also evenly assigned to the three servers.
+%In the example, the shared files are evenly partitioned to all three D-servers,
+%and hence, the three newly added unique files are also evenly assigned to the three servers.
 %Otherwise, the biggest unique files will be assigned to the smallest partitions.
 %\LR{As a general note, it seems like we generate quite a bit of metadata to keep track
 %of the slices etc. Are we planning to evaluate how much metadata we generate?}
-\LR{Here, we need to talk about how we are planning to address the problem of metadata management as
-we are manually assigning files to servers and hence, have to store the location of each file in an index.
-How do we scale? What if we are dealing with billions of files?}
-\NZ{We just add a server address for each file Id in the file index.
-As shown in implementation section,
-we store the unique files as: ‘rootdir/docker/registry/v2/uniquefiles/sha256/
- <first two hex bytes of file digest> /<hex file diges>t’ so that given a file digest, 
- we can build the file path to save metadata information.}
+%\LR{Here, we need to talk about how we are planning to address the problem of metadata management as
+%we are manually assigning files to servers and hence, have to store the location of each file in an index.
+%How do we scale? What if we are dealing with billions of files?}
+%\NZ{We just add a server address for each file Id in the file index.
+%As shown in implementation section,
+%we store the unique files as: ‘rootdir/docker/registry/v2/uniquefiles/sha256/
+% <first two hex bytes of file digest> /<hex file diges>t’ so that given a file digest, 
+% we can build the file path to save metadata information.}
+Finally, \sysname updates the file index with the newly added unique files.
 
-\LR{The following is unclear and needs a better explanation. Are the new primary replicas
-assigned to servers which do not yet store shared files for the new layer? What if all
-servers already store at least one shared file for the layer? How are the backup replica
-servers picked?
-}
-\NZ{The shared files also have primary replica and backup replicas.
-Simply, we distributed the primary replica of newly added unique files
-according to the distribution of primary replicas of shared files.
-And we distributed the secondary replicas of newly added unique files
-according to the distribution of secondary replicas of shared files to maintain a relatively even partition.
-Moreover, we also make sure that the secondary replicas of a newly added unique file
-is not stored on the same server with its primary replica.
-So when we distribute the secondary replicas, we need to consider the 
-secondary replicas of shared files and the previously allocated primary replicas.
-}
+%\LR{The following is unclear and needs a better explanation. Are the new primary replicas
+%assigned to servers which do not yet store shared files for the new layer? What if all
+%servers already store at least one shared file for the layer? How are the backup replica
+%servers picked?
+%}
+%\NZ{The shared files also have primary replica and backup replicas.
+%Simply, we distributed the primary replica of newly added unique files
+%according to the distribution of primary replicas of shared files.
+%And we distributed the secondary replicas of newly added unique files
+%according to the distribution of secondary replicas of shared files to maintain a relatively even partition.
+%Moreover, we also make sure that the secondary replicas of a newly added unique file
+%is not stored on the same server with its primary replica.
+%So when we distribute the secondary replicas, we need to consider the 
+%secondary replicas of shared files and the previously allocated primary replicas.
+%}
 %
-Next, we consider the case that each file has multiple replicas. The file
-index contains the location of the primary and backup replicas for each shared file.
-%For each shared file, its file Id points to multiple file replicas in the file index as
-%shown in Figure~\ref{fig:dedup-partition}.
-When adding new unique files, \sysname first distribute the files
-according to the shared files' primary file replicas' partitions. After that,
-\sysname assigns the replicas of unique files onto different servers with their primary
-replicas.
+In the case where a file has more than one replica, \sysname performs the
+above described partitioning \emph{per replica}. That means that it first assigns
+the primary replicas of the new unique files to D-servers according
+to the location of the primary replicas of the existing shared files. It then assigns the secondary
+replicas according to the location of the existing secondary replicas and so on.
+Additionally, \sysname also ensures that two replicas of the same file are never
+placed on the same node.
+
+%Next, we consider the case that each file has multiple replicas. The file
+%index contains the location of the primary and backup replicas for each shared file.
+%%For each shared file, its file Id points to multiple file replicas in the file index as
+%%shown in Figure~\ref{fig:dedup-partition}.
+%When adding new unique files, \sysname first distribute the files
+%according to the shared files' primary file replicas' partitions. After that,
+%\sysname assigns the replicas of unique files onto different servers with their primary
+%replicas.
 
 %After layer partition,.
 %All the primary slices' hosts are denoted as layer restoring \textbf{primary workers}. 

@@ -23,14 +23,15 @@ memory-based to avoid disk I/O during layer retrievals while the deduplication c
 (also called \emph{preconstruct cache}) is on disk. The main purpose of the preconstruct
 cache is to store preconstructed layers, which are likely to be accessed in the future,
 to avoid the layer restoring overhead.
-
+%
 Both caches are filled based on the user access patterns observed in Section~\ref{sec:dataset-analysis}.
-\LR{Describe the interaction between the caches. Are they independent and make their
-own predictions. Are they always making the same predictions? How large are they?}
-\NZ{Yes, they have the same prediction module to do layer prediction and 
-	share the metadata ULmap and RLmap.
-But the two cache wont do prediction at the same time.
-Either of them can do prediction and update the maps.}
+%\LR{Describe the interaction between the caches. Are they independent and make their
+%own predictions. Are they always making the same predictions? How large are they?}
+%\NZ{Yes, they have the same prediction module to do layer prediction and  share the metadata ULmap and RLmap.
+%But the two cache wont do prediction at the same time.
+%Either of them can do prediction and update the maps.}
+%\LR{This is unclear, wouldn't the P-servers always update ULmap and RLmap because every request first goes
+%to them? When is a prediction triggered? Only on GET manifest?}
 %
 %\sysname predicts what layers will be accessed and 
 %prepares the layers before \texttt{pull} layer requests.
@@ -59,13 +60,13 @@ track of user access patterns and image metadata.
 Therefor, it uses two maps to record the image-to-layer information
 and user layer accesses: RLmap and ULmap.
 %
-\LR{What do the abbrevations RL and UL stand for?}
-\NZ{Repo to layers; User to Layers.}
+\LR{Change RLmap (repo-to-layer) to ILmap (image-to-layer)?}
+%\NZ{Repo to layers; User to Layers.}
 %
-\LR{ Is the layer set the set of layers contained in an image? Why do we need
-an extra map for this? Can we also get this from the manifest? Need to explain
-the reasoning here.}
-\NZ{It takes a long time to load manifest for each request.}
+%\LR{ Is the layer set the set of layers contained in an image? Why do we need
+%an extra map for this? Can we also get this from the manifest? Need to explain
+%the reasoning here.}
+%\NZ{It takes a long time to load manifest for each request.}
 
 RLmap maps an image to its containing \emph{layer set} and an entry in RLmap
 is identified as \textless{}Repository name@manifest digest\textgreater.
@@ -74,6 +75,8 @@ is identified as \textless{}Repository name@manifest digest\textgreater.
 %
 ULmap stores for each user, the layers the has user accessed and the corresponding pull count.
 A user is uniquely identified by extracting the sender network address from the request.
+%
+Both maps serve as fast indices to speed up the prediction process.
 
 When a \texttt{GET manifest} request $r$ is received,
 \sysname first calculates a set of image layers that haven't been pulled by the user $r.addr$ 
@@ -99,13 +102,23 @@ $\gamma[r.addr]$ with a predefined client repull threshold $\varepsilon$.
 If $\gamma[r.addr] > \varepsilon$, then \sysname classifies the user as a repull user
 and fetches the layers in $S_{\cap}$ into the cache.
 %
-\LR{Here, we need to talk more about how we get the repull probability and how we
-maintain it over time. Do we assume a static one like dicussed in background or
-are we updating it for each client over time?}
-\NZ{We calculate the repull proabability as the total number of pull layer request divided by the number of
-it accessed layers.
-We maintain each layer's pull count for a user in ULmap.
-So we can calculate the repull probability during each prediction.}
+%\LR{Here, we need to talk more about how we get the repull probability and how we
+%maintain it over time. Do we assume a static one like dicussed in background or
+%are we updating it for each client over time?}
+%\NZ{We calculate the repull proabability as the total number of pull layer request divided by the number of
+%it accessed layers.
+%We maintain each layer's pull count for a user in ULmap.
+%So we can calculate the repull probability during each prediction.}
+
+The repull probability is computed based on ULmap. More specifically, for each
+\texttt{GET manifest} request $r$, \sysname will compute the repull probability for a user
+$r.addr$ as
+\begin{equation*}
+\gamma[r.addr] = \sum_{l \in RL} l.pullCount /  \sum_{l \in L} l.pullCount
+\end{equation*}
+where $RL$ is the set of layers that the user has repulled before, i.e. with a pull count greater
+than $1$, and $L$ is the set of all layer the user has ever pulled. \sysname updates the pull
+counts for a user whenever a \texttt{GET layer} request is received.
 %
 %targets $\leftarrow$ difference \\
 %\ForEach{layer in intersection} 
@@ -120,22 +133,22 @@ So we can calculate the repull probability during each prediction.}
 %cache, The two-tier storage architecture becomes multiple-level storage architecture
 %as shown in Figure~\ref{fig:tieredstore}.
 
-\LR{We need to provide more details on how we search the different tiers.
-Do we keep an index for each tier? How fast are the searches?}
-\NZ{Layer index holds the server address for each layer replica.
-	If the server is a P-server, then it's a layer replica stored in tier 1.
-	Otherwise it is deduplicated and stored in tier  2.
-Similar as files, we dont maintain layer path because each layer is stored in directory
-‘rootdir/docker/registry/v2/blobs/sha256/< first two hex bytes of layer digest >/<hex layer digest>/’ 
-(denoted as layerdir) as a file named ‘data’.
-}
+%\LR{We need to provide more details on how we search the different tiers.
+%Do we keep an index for each tier? How fast are the searches?}
+%\NZ{Layer index holds the server address for each layer replica.
+%	If the server is a P-server, then it's a layer replica stored in tier 1.
+%	Otherwise it is deduplicated and stored in tier  2.
+%Similar as files, we dont maintain layer path because each layer is stored in directory
+%‘rootdir/docker/registry/v2/blobs/sha256/< first two hex bytes of layer digest >/<hex layer digest>/’ 
+%(denoted as layerdir) as a file named ‘data’.}
 
 The introduction of the two cache layers results in a 5-tier storage architecture of
 \sysname as shown in Figure~\ref{fig:tieredstore}. Requests are passed through the
 tiers in the order displayed in the figure. Upon a \texttt{GET} layer request,
-\sysname first searches the superfetch caches in primary cluster.
+\sysname first determines the P-server(s) which is (are) repsonsible for the layer
+and searches the superfetch cache(s).
 If the layer is present the request will be served from cache.
-Otherwise, the request will be served from the layer store in the primary cluster.
+Otherwise, the request will be served from the layer store .
 %\texttt{prefetches} layers on primary cluster based on the above user request prediction theory.
 %After P-servers receive the primary layer replicas,
 %\sysname will save the layer replicas into \emph{superfetch cache} as shown in Figure~\ref{fig:sift}.
@@ -144,21 +157,25 @@ Otherwise, the request will be served from the layer store in the primary cluste
 If a \texttt{GET} layer request can't be served from the primary cluster
 due to a failure of the corresponding P-server(s),
 the request will be forward to the deduplication cluster.
-\sysname will first search the layer stage areas on the D-servers to check,
-whether the requested layer has been recently uploaded.
-If not found, \sysname will search the preconstruct caches and
-finally, if not found, it will rebuild a layer to serve the request.
+In that case, \sysname will first look up the layer recipe. If not found, it means that
+the layer has not been fully deduplicated yet and \sysname will serve the layer
+from one of the layer stage areas of the responsible D-servers. Those are located
+through consistent hashing.
+If the layer recipe is present, \sysname will contact the restoring master to
+check, whether the layer is in its preconstruct cache. Otherwise, it will
+instruct the restoring master to rebuild the layer.
 
 Both the superfetch and the preconstruct cache are write-through caches.
 When a layers is evicted, it will simply be discard since it does not contain any
-updates to layers. Recently uploaded layers, which are temporarily stored in the
-layer stage area will be evicted to the preconstruct cache after the layer is
-deduplicated.
+updates to layers.
+%Recently uploaded layers, which are temporarily stored in the
+%layer stage area will be evicted to the preconstruct cache after the layer is
+%deduplicated.
 %
-\LR{Add details on eviction policies for each cache.}
 We use Adaptive Replacement Cache (ARC) replacement~\cite{xxx}, 
 which keeps track of both frequently used and recently used layers
 and adapts to changing access patterns.
+\LR{Add details on on what ARC does exactly. How does it adapt? Why did we choose ARC?}
 %For preconstruct cache, it's possible when a \texttt{pull} layer request comes 
 %before layer restoring is finished, meaning the layer cannot be preconstructed \emph{on time}.
 %In this case, \texttt{pull} layer request \emph{waits} until the restoring is finished

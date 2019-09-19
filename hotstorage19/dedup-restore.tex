@@ -22,12 +22,14 @@
 To restore a layer, each D-server in \sysname has a slice constructor and
 layer constructor. The restoring process works as follows:
 
-First, the layer constructor fetches the layer recipe from metadata database.
+First, the layer constructor fetches the layer recipe from the metadata database.
 As shown in Figure~\ref{fig:construct}, according to $L1$'s layer recipe, 
-the restoring workers are D-server $A$, $B$, and $C$.
-Since $A$ is the restoring master \LR{Explain how the master is picked},
-\NZ{We select the server which stores the biggest slice as master to reduce restoring overhead.}
-it sends \texttt{GET slice} requests for their primary slices to $B$ and $C$.
+the restoring workers are D-server $A$, $B$, and $C$. The node with
+the largest slices is picked as the restoring master ($A$ in the example).
+Since $A$ is the restoring master
+%\LR{Explain how the master is picked},
+%\NZ{We select the server which stores the biggest slice as master to reduce restoring overhead.}
+it sends \texttt{GET slice} requests for the primary slices to $B$ and $C$.
 Note that the master first tries to rebuild the layer from primary slices.
 If a primary slice is missing, the master will find its corresponding backup
 slice and send a \texttt{GET slice} request to the corresponding D-server.
@@ -44,12 +46,12 @@ Meanwhile $A$ instructs its local slice constructor to restore its primary slice
 %
 To construct a layer slice, a slice constructor first gets the associate slice recipe
 from the metadata database. The recipe is keyed by a combination of layer Id, host address and requested
-backup level, i.e., \emph{L1::A::}\texttt{P} \LR{More details here. Why is that they key? Why is the backup
-level relevant?}.
-\NZ{The slices at the same backup level can build a complete layer.}
-
-Then, the slice constructor creates a slice tar archive by writing each file header and the corresponding
-file content from the slice recipe.
+backup level, i.e., $L1::A::P$.
+%\LR{More details here. Why is that they key? Why is the backup level relevant?}.
+%\NZ{The slices at the same backup level can build a complete layer.}
+%
+Based on the recipe, the slice constructor creates a slice tar archive by writing each file header and the corresponding
+file contents.
 %rebuilds each file entry in the slice tar archive according to the slice recipe.
 
 \paragraph{Optimizations}
@@ -71,18 +73,18 @@ Specifically, a slice constructor first reads each entry in the slice recipe
 and gets each header and its corresponding content pointer.
 %
 Then, the slice constructor reads the corresponding physical files addressed by the content
-pointers in parallel from the D-server's file store.
+pointers in parallel from the D-server's file store
 %
-\LR{The following is unclear. What does ``asynchronously'' mean in this case? Is every
-file written to its own buffer in parallel and then combined in a single archive buffer?}
-\NZ{It's synchronously.}
-Each file is written to a slice archive buffer asynchronously.
-Before writing file content to the archive buffer, slice constructor first writes its
-associated file header into the archive buffer according to the slice recipe.
-
+%\LR{The following is unclear. What does ``asynchronously'' mean in this case? Is every
+%file written to its own buffer in parallel and then combined in a single archive buffer?}
+%\NZ{It's synchronously.}
+and writes each file and it's corresponding header to a slice archive buffer in memory.
+%Before writing file content to the archive buffer, slice constructor first writes its
+%associated file header into the archive buffer according to the slice recipe.
+%
 After archiving all the files along with their headers in the slice archive buffer,
 the archive buffer will be divided into several chunks, compressed in parallel,
-and concatenated into a single compressed slice.
+concatenated again into a single compressed slice, and sent to the master
 %
 %Then, it writes the header in the slice archive.
 %After that it put the associated file content in the slice archive
@@ -92,19 +94,19 @@ and concatenated into a single compressed slice.
 %
 %Next, the slice constructor sends the slice stream to the layer constructor on restoring master
 %via network.
-
+%
 %first, slice constructor loads file in parallel from file store based on the slice recipe.
 % along with their corresponding headers saved in slice recipe.
-
+%
 %\LR{The following paragraph is a little bit out of context. Why are we suddenly talking about
 %stateless streaming layer construction? Need to tie it in better with the rest of the text and
 %motivate our design decisions better.}
-
+%
 %\paragraph{Streaming layer construction}
-\LR{What exactly do you mean by ``Through network transfer''? Are the different slices kept inmemory at the master for concatenation after they have been received?}
-\NZ{Yes. But before that, these slices need to be transferred through network to master.}
-Through network transfer, multiple compressed slices will be concatenated into a single
-layer compressed tarball and sent back the client as shown in Figure~\ref{fig:construct}.
+%\LR{What exactly do you mean by ``Through network transfer''? Are the different slices kept inmemory at the master for concatenation after they have been received?}
+%\NZ{Yes. But before that, these slices need to be transferred through network to master.}
+The master will concatenate all the compressed slices into a single
+layer compressed tarball and send it back the client as shown in Figure~\ref{fig:construct}.
 As a result no intermediate file will be created or stored on disk. % subil: whoa!
 %After receiving all slices, layer constructor on \emph{A} will concatenate all slices into a compressed layer
 %. 
@@ -114,16 +116,18 @@ As a result no intermediate file will be created or stored on disk. % subil: who
 %without creating any intermediate files stored on disk to reduce disk I/Os and improve
 %performance.
 
-Furthermore, \sysname also provisions a small in-memory file cache on each D-server to cache hot files.
-This reduces disk I/O during restoration even further. The file cache uses Adaptive
-Replacement (ARC)~\cite{xxx} \todo{fill in more details on how the cache works, how big it is, etc.}
-%
-\LR{It would be good to have a graph in the evaluation, showing how each of those optimizations
-reduces reconstruction time.}
-\NZ{The file cache hit ratio is very low, around 30\%
-because less files are shared among the 
-concurrent incoming requested layers.
-We can remove file cache from design.}
+\LR{Removed text on file cache. Make sure we really don't use it anymore in experiments
+and make sure, all references to file cache in the paper are removed.}
+%Furthermore, \sysname also provisions a small in-memory file cache on each D-server to cache hot files.
+%This reduces disk I/O during restoration even further. The file cache uses Adaptive
+%Replacement (ARC)~\cite{xxx} \todo{fill in more details on how the cache works, how big it is, etc.}
+%%
+%\LR{It would be good to have a graph in the evaluation, showing how each of those optimizations
+%reduces reconstruction time.}
+%\NZ{The file cache hit ratio is very low, around 30\%
+%because less files are shared among the 
+%concurrent incoming requested layers.
+%We can remove file cache from design.}
 
 %headers according to $Dests$,
 %after that it writes file contents into the archive
