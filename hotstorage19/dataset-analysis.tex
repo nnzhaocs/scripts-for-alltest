@@ -1,46 +1,57 @@
 \section{Motivation and Challenges}
 \label{sec:dataset-analysis}
 
-\subsection{Inter-layer deduplication} Although Docker uses COW file system to
-minimize redundant data inside each image and supports the sharing of layers
-among different images to remove redundant data in the Docker registry backend
-storage system, a large amount of duplicated files are observed among layers
-within different images. According to the deduplication analysis on Docker Hub
+\subsection{Inter-layer deduplication} Although Docker uses copy-on-write file
+system to minimize redundant data inside each image and supports the sharing of
+layers among different images to remove redundant data in the Docker registry
+backend storage system, a large amount of duplicated files are observed among
+layers within different images.
+%
+According to the deduplication analysis on Docker Hub
 dataset~\cite{dedupanalysis}, only 3.2\% of files are unique, resulting in
 deduplication ratio of 2x in terms of capacity.
-\footnote{Deduplication ratio is
-only 2x despite the 97\% of redundant data because most of the unique files are huge in szie.}
-These large amount of
-duplicated files shared among different layers associated with different
-images are mainly executables, object codes, libraries, and source codes,
-probably imported by different image developers using the same package
-installers or version control systems such as \texttt{apt}, \texttt{pip} or
-\texttt{git} to install or get similar dependencies or source codes.  
+%
+\footnote{Deduplication ratio is only 2x despite the 97\% of redundant data
+because most of the unique files are huge in szie.} 
+%
+These large amount of duplicated files shared among different layers associated
+with different images are mainly executables, object codes, libraries, and
+source codes, probably imported by different image developers using the same
+package installers or version control systems such as \texttt{apt},
+\texttt{pip} or \texttt{git} to install or get similar dependencies or source
+codes.  
 
 The current layer-level content addressable storage system design can not
-provide \texttt{file-level deduplication} among different layers.  As containerization
-frameworks like Docker and Kubernetes keep gaining popularity, more
-applications are encapsulated into images, pushed into registry, and stored on
-Cloud. Furthermore, due to \emph{R}-way replication, the amount of layers data
-grows exponentially and will explode in future.
+provide \texttt{file-level deduplication} among different layers.
+%
+As containerization frameworks like Docker and Kubernetes keep gaining
+popularity, more applications are encapsulated into images, pushed into
+registry, and stored on Cloud.
+%
+Furthermore, due to \emph{R}-way replication, the amount of layers data grows
+exponentially and will explode in future.
+%
 This large volume data management challenge can not be solved by just adding
 more disks and goes beyond just hardware upgrade or even datacenter expansion.
 %such as missive and slow data migration during scale-out or scale-up.
  
 File-level deduplication can help solve this challenge by first decompressing
 the compressed layer tarballs and then removing the duplicate files across
-different layers. This way layer dataset stored on registry can be
-largely reduced for better data management. 
-However, \texttt{pulling} a layer from a registry which employs file-level deduplication
-requires restoring a layer, which involves fetching the files, layer
-archiving, and layer compression.  These extra operations incur a considerable
-overhead. \footnote{Layer \texttt{pull} time is crucial as
-it comprises ??\% of the container startup time.}
-In this paper, we explore if it is possible to deduplicate layers
-without sacrificing the \texttt{pull} layer performance.
-Specifically, we analyze registry workloads and
-optimize the performance by exploring workload patterns and user access
-patterns.   
+different layers.
+%
+This way layer dataset stored on registry can be largely reduced for better
+data management.
+%
+However, to \texttt{GET} a layer from a registry which employs file-level
+deduplication requires restoring a layer, which involves fetching the files,
+layer archiving, and layer compression.
+%
+These extra operations incur a considerable overhead. \footnote{\texttt{GET}
+layer time is crucial as it comprises ??\% of the container startup time.}
+%
+In this paper, we explore if it is possible to deduplicate layers without
+sacrificing the \texttt{GET} layer performance.
+%   
 %Consider that deduplication incurs a performance overhead and the current
 %Docker registry already stores layers in compressed format to save space and
 %network transfer overhead. We first analyze the space efficiency of a registry
@@ -62,39 +73,49 @@ patterns.
 %understand the storage pressure and trends in the access patterns of the
 %Docker registries at the layer and repository level.
 
-\subsection{Predictable User Access} \input{fig-repull-analysis}
-
-\paragraph{User access patterns} When a Docker client \texttt{pulls} an image
-from Docker registry, it will first \texttt{pull} the \textbf{manifest} of the
+\subsection{Predictable User Access}
+%
+\input{fig-repull-analysis}
+%
+To overcome the deduplication overhead, we analyze registry workloads
+and optimize the performance by exploring workload patterns and user
+access patterns.
+%
+We observe that when a Docker client \texttt{pulls} an image
+from Docker registry, it will first \texttt{GET} the manifest of the
 image, which is metadata file of the image and contains a list of layers'
-digests.  After that, the client parses the manifest, gets a list of layers
-referenced by the image, and compares against a \emph{local layer index}.  If a
-layer doesn't exist in the local layer index, the client will \texttt{pull}
-this layer.  Thus, we can maintain a \emph{user local layer index} on registry
-side to keep track of user access history and predict which layer will be
-\texttt{pulled} by the user when the user issues a \texttt{pulling} manifest
-request.
-
+digests.
+%
+After that, the client parses the manifest, to find the list of layers
+referenced by the image, and compares against a \emph{local layer index}.
+%
+If a layer doesn't exist in the local layer index, the client will \texttt{GET}
+this layer.
+%
+Thus, we can maintain a \emph{user local layer index} on registry side to keep
+track of user access history and predict which layer will be requested by the
+user when the user issues a \texttt{GET} manifest request.
+%
 Typically, if a layer is already stored locally, then the client will not
-\texttt{pull} this layer again.  However, for Kubernetes, users can configure
-different \emph{pull policies}, such as \emph{IfNotPresent (i.e, pulling if not
-present)} or \emph{Always pulling}.  \cite{dockerworkload} presents IBM cloud
-registry workload traces spanning $\sim$80 days for 7 different registry
-clusters: \texttt{Syd}, \texttt{Dal}, \texttt{Fra}, \texttt{Lon}, \texttt{Dev},
-\texttt{Pre}, and \texttt{Sta}.  We observe these two kinds of user behaviors
-in these 7 real world registry workloads as follows:
-%we observe that few clients pull the same layers multiple time
-
-\paragraph{Pull once VS. Always pull} Figure~\ref{fig:layer-repull-cdf} shows
-the CDF of layer \texttt{pull} count by the same clients. 
-%Here, \emph{repulling} indicates the act of pulling layers that have been
-%pulled by the user before because they are no longer present on the user side.
-Majority of layers are only pulled once by the same clients.
-%83\% of the layers are only pulled twice.
-For example, 97\% of layers from \texttt{Syd} are only pulled once by the same
-clients.  We also observe that few clients \emph{pull} the same layers
-continuously.  For example, a client from \texttt{Lon} pulls the same layer
-19,300 times.
+\texttt{GET} this layer again.
+%
+However, for Kubernetes, users can configure different policies, such as
+\emph{IfNotPresent (i.e, GET if not present)} or \emph{Always GET}.
+%
+\cite{dockerworkload} presents IBM cloud registry workload traces spanning
+$\sim$80 days for 7 different registry clusters: \texttt{Syd}, \texttt{Dal},
+\texttt{Fra}, \texttt{Lon}, \texttt{Dev}, \texttt{Pre}, and \texttt{Sta}.
+%
+%
+Figure~\ref{fig:layer-repull-cdf} shows the
+CDF of layer \texttt{GET} count by the same clients. 
+%
+Majority of layers are only fetched once by the same clients.
+For example, 97\% of layers from \texttt{Syd} are only fetched once by the same
+clients.
+%
+We also observe that few clients \emph{GET} the same layers continuously.  For
+example, a client from \texttt{Lon} fetched the same layer 19,300 times.
 %When different clients \texttt{pull} the same repository, they will fetch
 %different amount of layers from the repository based on the contents of their
 %local layer dataset.  The local layers can vary with time due to clearing of
@@ -113,24 +134,34 @@ continuously.  For example, a client from \texttt{Lon} pulls the same layer
 %repulling probability higher than 0.5.  We also observe that few repositories'
 %repulling probability is 1, indicating repulls everytime by the clients.
 
-We define \emph{repulling} as the act of pulling the same layer more than once
+We define \emph{repulling} as the act of fetching the same layer more than once
 by the same user.
 % before because they are no longer present on the user side.
 Figure~\ref{fig:client-repull-cdf} shows the client repulling probability,
 calculated as the number of \emph{repulling} layer requests divided by the
-number of total \texttt{pull} layer requests issued by the same client.  We see
-that a significant amount of clients have a low repulling proability.  For
-example, 71\% of clients from \texttt{syd} have a repulling probability lower
-than 0.1.  Very few clients have a high repulling probability.  For instance,
+number of total \texttt{GET} layer requests issued by the same client.
+%
+We see that a significant amount of clients have a low repulling proability.
+%
+For example, 71\% of clients from \texttt{syd} have a repulling probability lower
+than 0.1.
+%
+Very few clients have a high repulling probability.  For instance,
 only 2\% clients have a repulling probability higher than 0.9 from
 \texttt{Dal}.
 
+
 We also observe that the slope is steep at both lower and higher probabilities.
-But the slope becomes gentle in the middle.  For example, the slope at
-probabilities between 0.1 and 0.9 for \texttt{dev} almost equals to zero.  In
-this case, the high repulling probability clients can be classified as
+However, the slope becomes flat in the middle.
+%
+For example, the slope at probabilities between 0.1 and 0.9 for \texttt{dev}
+almost equals to zero.
+%
+In this case, the high repulling probability clients can be classified as
 always-pull clients, and the low repulling probability clients as pull-once
-clients.  The few clients in the middle are considered as \emph{erratic}.
+clients.
+%
+The few clients in the middle are considered as \emph{erratic}.
 %
 Thus, to determine whether a client will \texttt{repull} a layer or not, we
 consider the client repulling probability and the layer repull count.
@@ -151,24 +182,39 @@ consider the client repulling probability and the layer repull count.
 %As shown in~\cite{xxx}, layer accesses are heavy skewed.  There are hot layers
 %that account for majority of layer accesses.  Hence, we can cache hot layers
 %to improve performance.
-Is it possible to preconstruct a layer before users pull a layer to save layer
-restoring latency?  We analyze the duration between a \texttt{pulling} manifest
-request and the subsequent \texttt{pulling} layer requests and show in
-Figure~\ref{fig:intervals}.  We see that majority of intervals are greater than
-1 s.  For example, 80\% of intervals from \texttt{lon} are greater than 1 s.
-60\% of intervals from \texttt{syd} are greater than 5 s.  Hence, there is a
-relatively long gap between a \texttt{pulling} manifest request and the
-subsequent \texttt{pulling} layer requests.  This is because, first, when
-fetching an image from registry, Docker client \emph{downloads} a certain
-number layers in parallel (3 by default) starting from the lowest or base
-layers.  In this case, if the image contains more than 3 layers, then the
-\emph{upper} layers have to wait til the \emph{lower} layers are downloaded,
-which varies \texttt{pulling} layer request arrive time on registry.  Second,
-network delay between clients and registries often accounts for a greater
-proportion of pulling latency in Cloud environment, especially for large
-layers.  Consequently, we can use this long gap to predict which layers will be
-pulled by the user when a \texttt{pulling} manifest request is received, and
-then rebuild a layer for the user before \texttt{pulling} layer requests
-arrive.
+As another optimization we explore if it is possible to preconstruct a 
+deduplicated layer before users iisues a \texttt{GET} layer to avoid the
+the time spend in layer restoration.
+%
+We analyze the duration between a \texttt{GET} manifest request and the subsequent
+\texttt{GET} layer request and show in Figure~\ref{fig:intervals}.
+%
+We observe that majority of intervals are greater than one second.
+%
+For example, 80\% of intervals from \texttt{lon} are greater than one second.
+%
+Whereas, 60\% of the intervals from \texttt{syd} are greater than five seconds. 
+%
+Hence, there is a relatively long gap
+between a \texttt{GET} manifest request and the subsequent \texttt{GET}
+layer requests.
+%
+This is because, first, when fetching an image from a registry,
+Docker client \emph{downloads} a certain number layers in parallel (three by
+default) starting from the lowest or base layers.
+%
+In a case where an image
+contains more than three layers, then the \emph{upper} layers have to wait untill the
+\emph{lower} layers are downloaded, which varies the \texttt{GET} layer request
+arrival time for the registry.
+%
+Second, network delay between clients and registry
+often accounts for a greater proportion of the \textt{GET} layer latency in Cloud
+environment, especially for the large layers.
+%
+Consequently, we can use this long
+gap to predict which layers will be fetched by the user when a \texttt{GET}
+manifest request is received, and then build a layer for the user before
+the \texttt{GET} layer request arrive.
 
 
