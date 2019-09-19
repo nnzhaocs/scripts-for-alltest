@@ -1,27 +1,38 @@
 \begin{abstract}
 
-\vspace{-5pt}
+%\vspace{-5pt}
 
-The proliferation of container images and the associated storage performance
-and capacity requirements are the key obstacles to efficiently scaling Docker
-registries.
+The rise of containers has lead to a steep proliferation of container images.
 %
-Though the real-world images contain a tremendous amount of duplicate data,
-modern registries cannot effectively eliminate the duplicates.
+The associated storage performance and capacity requirements place high
+pressure on the registries, which store and serve images, and are key obstacles
+to efficiently scale these registries.
+%
+%The proliferation of container images and the associated storage performance
+%and capacity requirements are key obstacles to efficiently scale Docker
+%registries.
+%
+Exploiting the high file redundancy in real-world images through deduplication is
+a promising approach to drastically reduce the necessary storage capacity of image
+registries
+%
+%Though real-world images contain a tremendous amount of duplicate data,
+%
+However, modern registries are currently not able to effectively eliminate the duplicates.
 %due to the compressed format of the images.
+
+In this paper, we propose \sysname, a new Docker registry architecture, which
+natively integrates deduplication into the registry.
 %
-In this paper, we propose a new Docker registry architecture, \emph{\sysname},
-that integrates deduplication into the registry.
-%
-\sysname supports several configurable deduplication modes that provide
+\sysname supports several configurable \emph{deduplication modes}, which provide
 different levels of storage efficiency, durability, and performance, as
 required by different use cases.
 %
 To further mitigate the negative impact of deduplication on the image download
-and upload times, \sysname introduces a two-tier cache with a novel
-user-access-history-based prefetch algorithm. 
+and upload times, \sysname introduces a \emph{two-tier cache hierarchy} with a novel
+prefetch algorithm based on user access histories.
 %
-Under real workloads, \sysname saves up to XXX\% of storage space while keeping
-the latencies within the XXX\% of the original registry.
+Under real workloads, \sysname saves up to \gap of storage space while keeping
+the latencies within \gap of the original registry.
 
 \end{abstract}
