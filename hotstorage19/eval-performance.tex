@@ -39,27 +39,77 @@ and compare it with a \emph{CHT based distributed object storage} system.
 %We set the cache size as 20\% of ingress data.
 
 \paragraph{Restoring latency}
+We launch a single node registry on a server.
+and a client on another server.
+We compare 4 backends:
+(1) Local file system with \emph{no deduplication},
+(2) Local file system with \sysname \emph{Deduplication} but without \emph{cache},
+(3) Local file system with \sysname \emph{Deduplication} and a \emph{ARC cache}, and
+(4) Local file system with \sysname \emph{Deduplication} and a \sysname \emph{preconstruct cache}
+as shown in Figure~\ref{fig:eval-1nodegetlayerlatency}.
+%
+The client matches 2500 requests from \texttt{Dal} to layers with different sizes
+and replays them to the D-server.
+%We compare four backends: 
 
-We replay 2500 requests from \texttt{Dal}
-and match the requests to layers with different sizes.
 As shown in Figure~\ref{fig:eval-1nodegetlayerlatency},
-\texttt{GET} layer latency 189\%
-\emph{No deduplication} 
+layer restoring increses the average \texttt{GET} layer latency by 189\% for layers with size of 1 MB
+ (\emph{see line Deduplication without cache})
+compared with \emph{No deduplication}.
+Moreover,
+layer restoring latency increases as layer size.
+It takes 0.22 s to restoring and download layers with size of 9 MB.
 
-\paragraph{Preconstruct cache VS. ARC cache}:
+\paragraph{Preconstruct cache VS. ARC cache}
 %\paragraph{Cache}
-As shown in Figure~\ref{xxx}, the average \texttt{GET} layer request latency increase with the layer size.
-For localFS, the average \texttt{GET} layer request latency increase from 31 ms to 
-when the layer size increases from 1 MB to 8 MB.
-Restoring a layer puts 150\% overhead on \texttt{GET} layer latency.
-By adding a ARC cache,
-the average \texttt{GET} layer latency decreases by 39\%.
-With our preconstruct cache,
-the average \texttt{text} layer latency descreases by 24\% over an ARC cache.
-Compared to localFS, \sysname with preconstruct cache only adds 19\% of overhead. 
+As shown in Figure~\ref{fig:eval-1nodegetlayerlatency}, 
+%the average \texttt{GET} layer request latency increase with the layer size.
+adding a cache can largely reduce layer restoring latency.
+By using a ARC cache, the layer restoring overhead decrease by
+40\% for layers with size of 1 MB compared with \emph{Deduplication without cache}.
+However,
+as layer size increase, 
+the improvements of \texttt{GET} layer request latency by using
+ARC cache drops.
+For layer size equals to 10 MB,
+%
+ARC cache only reduces layer restoring overhead by 16\%.
+%ARC cache can only improve 10\% of 
+%Restoring a layer puts 150\% overhead on \texttt{GET} layer latency.
+%By adding a ARC cache,
+%he average \texttt{GET} layer latency decreases by 39\%.
+With \sysname preconstruct cache,
+the average \texttt{GET} layer latency descreases by 24\% over an ARC cache
+for layers with size of 1 MB.
+%Overall,
+Compared to \emph{No deduplication}, 
+\sysname with preconstruct cache only adds 19\% of overhead for layers with size of 9 MB. 
 
-Next, we decrease the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
-
+\paragraph{Cache hit ratio}
+Figure~\ref{fig:eval-cachehitratios}
+shows the cache hit ratio for ARC cache and Preconstruct cache.
+Note that the cache size is set to 20\% of ingress data.
+The cache hit ratio for ARC is stable at 0.77 among different layer sizes.
+%However, 
+Preconstruct cache achieves a hit ratio of 0.95 for 1 MB.
+With the layer size increases to 9 MB,
+preconstruct cache hit ratio decreases to 79\%. 
+This is because layer restoring latency increases with layer size as 
+shown in Figure~\ref{fig:eval-1nodegetlayerlatency}
+and more layers cannot be preconstructed \emph{on time} as layer size becomes bigger. 
+As shown in Figure~\ref{fig:eval-cachehitratios},
+the number of waiting \texttt{GET} layer requests increases as layer size (see preconstruct cache waiting ratio).
+Since the layer construction already starts before these requests arrives,
+the restoring overhead can also be largely reduced.
+ The user-bahavior based request prediction accuracy is calculated by sum of preconstruct cache hit ratio and waiting ratio.
+ As shown in Figure~\ref{fig:eval-cachehitratios},
+ the prediction accuracy is 0.95.
+ 
+\paragraph{Impact of duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests}
+Next, 
+we vary 
+the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
+The layer size used here is 10 MB.
 
 Figure~\ref{xxx} shows the cache hit ratio of the ARC cache and the preconstruct cache.
 
