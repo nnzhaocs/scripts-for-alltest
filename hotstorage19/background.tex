@@ -1,69 +1,56 @@
 \section{Background}
 \label{sec:background}
 
-\paragraph{Docker image storage.} Docker~\cite{docker} is a platform to
-develop, deploy, and run applications inside \emph{containers}.
+%\paragraph{Docker registry.}
+
+%A Docker image consists of an ordered series of \emph{layers}.
 %
-Users interact with Docker using the Docker client, which in turn sends
-commands to the Docker host.
+%Each Docker layer contains a subset of the files in the image and often
+%represents a specific component/dependency of the image, \eg a shared library.
 %
-The Docker host runs a daemon process that implements the core logic of Docker
-and is responsible for \emph{running} containers from locally available images.
+%Layers can be shared between two or more images if the images depend on the
+%same layer.
+
+To exchange container images Docker hosts \emph{push} images to and \emph{pull}
+images from Docker registries.
 %
-A Docker image consists of an ordered series of \emph{layers}.
+A number of public Docker registry deployments
+exist~\cite{docker-hub,amazon-ecr,jfrog-artifactory,azure-cr,google-cr} and
+enterprises often resort to running private registries for improved security
+and privacy.
 %
-Each Docker layer contains a subset of the files in the image and often
-represents a specific component/dependency of the image, \eg a shared library.
-%
-Layers can be shared between two or more images if the images depend on the
-same layer.
-%
-Image layers are read-only.
-%
-When users start a container, Docker creates a new \emph{writable layer} on top
-of the underlying read-only layers.
-%
-% (Figure~\ref{fig-docker-architecture}).
-%
-Any changes made to files in the image will be reflected inside the writable
-layer via a copy-on-write~(COW) mechanism.
-%
-\VT{I propose to remove/reduce this paragraph. We can focus on registry only, I
-think.}
+Docker community specifies the REST API for hosts to communicate with the
+registries~\cite{docker-registry-api} and provides a reference registry
+software server implementation~\cite{docker-registry-software} which serves as
+a basis for commercial deployments.
 
 
 
 
-Docker registry~\cite{docker-hub} is a platform for storing and distributing
-container images.
-%
-It stores images in \emph{repositories}, each containing different versions
-(\emph{tags}) of the same image, identified as \texttt{<repo-name:tag>}.
+
+Docker registries group images in \emph{repositories}, each containing
+different versions (\emph{tags}) of the same image, identified as
+\texttt{<repo-name:tag>}.
 %
 For each image, the Docker registry stores a \emph{manifest}.
 %
 The manifest is a JSON file, which contains the runtime configuration for a
-container image (\eg target platform and environment variables) and the list of
-layers which make up the image.
+container image (\eg environment variables) and the list of layers which make
+up the image.
 %
-Layers are identified via a digest that is computed as a hash (SHA-256) over
+Layers are identified using a digest that is computed as a hash (SHA-256) over
 the uncompressed content of the layer and stored as compressed archival files.
 %
-If a user tries to launch a container from an image that is not available
-locally, Docker host \texttt{pulls} the required image from the Docker
-registry.
+When pulling an image, Docker host first downloads the manifest and then the
+layers referenced in it (unless the layers are already present in the host).
 %
-Additionally, the daemon supports \texttt{building} new images and
-\texttt{pushing} them to the registry.
-%
-By using layer-level content addressable store, Image layers are stored as
-compressed archival files and image manifests as JSON files.
+When pushing an image, Docker host first uploads the layers (if not present at the
+registry) and then uploads the manifest.
 
 
-%\VT{Somewhere we need to describe the common setup: nginx, independent registry servers
-%for balancy, object storage beneath.}
-%
-%
+
+
+
 The current Docker registry software server is a single-node application.
 %
 To serve many requests concurrently, organizations typically deploy a load
@@ -77,57 +64,46 @@ Aliyun OSS~\cite{aliyun}.
 %
 For example, Google Container Registry~\cite{GoogleContainerRegistry} uses
 Google cloud as its backend image store. 
-%
-Users \texttt{push} and \texttt{pull}
-Docker images to and from their repositories that are stored on cloud storage.
-%
 
 
 
-%
-Upon a \texttt{push} layer request, Docker registry fowrards the layer to the
+
+Upon a \texttt{PUT} layer request, Docker registry forwards the layer to the
 backend storage which stores multiple replicas of the layer.
 %
-The subsequent \texttt{pull} layer requests can be served by any of the three
-layer replicas.  Service providers often use geographically distributed
-registries for faster access, e.g., IBM's Container Registry setup spans five
-regions~\cite{dockerworkload}. 
+The subsequent \texttt{GET} layer requests can be served by any of the three
+layer replicas.
 %
-\VT{Should we avoid pull and push for layers? Strictly speaking these cations
-only apply to images.}
+%Service providers often use geographically distributed registries for faster
+%access, e.g., IBM's Container Registry setup spans five
+%regions~\cite{dockerworkload}. 
 
 
-
-
-\Ali{I am not sure how to weave in the following paragraph with the previous ones.}
+%\paragraph{Deduplication} Most existing cloud storage providers employ data
+%deduplication techniques to eliminate redundant data, same data stored more
+%than once.
 %
-\VT{I don't think we need this paragraph...}
+%Deduplication techniques significantly reduce storage needs and therefore
+%reduce storage costs and improve storage efficiency.
 %
-\paragraph{Deduplication} Most existing cloud storage providers employ data
-deduplication techniques to eliminate redundant data, same data stored more
-than once.
+%Data deduplication works by storing duplicate data chunks only once, keeping
+%only the unique data chunks. 
 %
-Deduplication techniques significantly reduce storage needs and therefore
-reduce storage costs and improve storage efficiency.
+%Current cloud providers deploy a cross-user client-side fixed-size-chunk-level
+%data deduplication that delivers the highest deduplication
+%gain~\cite{pooranian2018rare}.
 %
-Data deduplication works by storing duplicate data chunks only once, keeping
-only the unique data chunks. 
+%These approaches maximize the benefit of deduplication: The cross-user data
+%deduplication treats cloud storage as a pool shared by all the cloud users,
+%because the potential for data deduplication is the highest as the probability
+%for redundancies and duplicates is higher the more inclusive the shared pool.
 %
-Current cloud providers deploy a cross-user client-side fixed-size-chunk-level
-data deduplication that delivers the highest deduplication
-gain~\cite{pooranian2018rare}.
+%The fixed-size-chunk-level specifies that a fixed-size chunk is the unit for
+%checking for duplicates on cloud storage.
 %
-These approaches maximize the benefit of deduplication: The cross-user data
-deduplication treats cloud storage as a pool shared by all the cloud users,
-because the potential for data deduplication is the highest as the probability
-for redundancies and duplicates is higher the more inclusive the shared pool.
+%Google cloud and AWS employ StorReduce, a deduplication software that performs
+%in-line data deduplication transparently and resides between the client's
+%application and the hosting cloud storage.
 %
-The fixed-size-chunk-level specifies that a fixed-size chunk is the unit for
-checking for duplicates on cloud storage.
-%
-Google cloud and AWS employ StorReduce, a deduplication software that performs
-in-line data deduplication transparently and resides between the client's
-application and the hosting cloud storage.
-%
-StorReduce provide 80-97\% storage and bandwidth reduction to the cloud
-providers~\cite{StorReduce_google}.
+%StorReduce provide 80-97\% storage and bandwidth reduction to the cloud
+%providers~\cite{StorReduce_google}.
