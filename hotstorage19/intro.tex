@@ -24,12 +24,12 @@
 
 \emph{Container runtimes} such as Docker~\cite{docker} 
 %and \mbox{CRI-O}~\cite{cri-o}
-leverage Linux kernel's namespaces~\cite{namespaces} and cgroups~\cite{cgroups}
+leverage Linux kernel namespaces~\cite{namespaces} and cgroups~\cite{cgroups}
 to efficiently virtualize computational resources.
 %
-Unlike the hardware-virtualization-based Virtual Machines
+Unlike the hardware virtualization-based Virtual Machines
 (VMs)~\cite{adams2006comparison}, containers residing on the same host share
-the single Operating System (OS) kernel, which yields virtual environments with
+the Operating System (OS) kernel, which yields virtual environments with
 lower overheads and faster starts~\cite{7819678}.
 %
 Further, container runtimes introduce portable, self-contained \emph{container
@@ -38,17 +38,18 @@ and accelerate application development, deployment, and
 management~\cite{cncfprojects}.
 
 Given the benefits of containers, it is not surprising that they have seen a
-remarkable advancement in modern cloud environments.
+remarkable adoption in modern cloud environments.
 %
 The rapid spread of containers is further fueled by the growing popularity of
 microservices~\cite{wolff2016microservices},
 %design methodology
 for which containers act as an imperative enabler.
 %
-By now all major cloud platforms endorse containers as a core cloud deployment
-technology~\cite{googlecengine,azurec,ibmkube,awscont}.
+By now, all major cloud platforms endorse containers as a core deployment
+technology~\cite{googlecengine,azurec,ibmkube,awscont} and adoption
+is increasing.
 %
-According to some surveys, in 2018 about 21\% of enterprise hosts are already
+According to some surveys, in 2018, about 21\% of enterprise hosts are already
 managed by Docker and the ratio is consistently growing by about 5\%
 annually~\cite{20percentdocker}.
 
@@ -57,42 +58,46 @@ annually~\cite{20percentdocker}.
 %    large number of images => high storage requirements for the registries;
 %%%
 
+Images are at the core of containerized applications.
+%
 An application's container image includes the executable of the application
-along with a complete set of its dependencies---other executables, libraries,
+along with a complete set of its dependencies---other executables, libraries, and
 configuration and data files.
 %
-Images have a layered structure; when building an image with Docker each
-executed command, such as \texttt{apt-get install}, forms a new \emph{layer} on
+Images are structured in \emph{layers}. When building an image with Docker, each
+executed command, such as \texttt{apt-get install}, creates a new layer on
 top of the previous one~\cite{dockerfile}.
 %
-Each layer contains the files that the command has modified or added during its
+The layer contains the files that the command has modified or added during its
 execution.
 %
-A layer can be shared between multiple images.
+%A layer can be shared between multiple images.
 %
 Docker leverages unification file systems~\cite{docker-driver-eval} to
 efficiently merge layers into a single file system tree when starting a container.
+%
+Identical layers across different images can be shared by containers.
 
 To store and distribute container images Docker relies on image
 \emph{registries} (e.g., Docker Hub~\cite{docker-hub}).
 %
 Docker clients can push images to or pull them from the registries as needed.
 %
-On the registry side each layer is stored as a compressed tarball and
+On the registry side, each layer is stored as a compressed tarball and
 identified by a content-based address.
 %
-Docker registry supports various storage backends for saving and retrieving
-layers; a typical large-scale setup stores each layer as an object in an object
-store~\cite{s3,swift}.
+The Docker registry supports various storage backends for saving and retrieving
+layers. For example, a typical large-scale setup stores each layer as an object in an
+object store~\cite{s3,swift}.
 
 As the container market continues to expand, Docker registries manage a
-growing number of image layers.
+growing number of images and corresponding layers.
 %
-Some conservative estimates show that in the spring of 2019 Docker Hub alone
-stored at least 2 million \emph{public} images of 1~PB size in
-total~\cite{skourtis2019carving,dedupanalysis}. 
+Some conservative estimates show that in spring 2019, Docker Hub alone
+stored at least 2 million \emph{public} images of roughly 1~PB in
+size~\cite{skourtis2019carving,dedupanalysis}. 
 %
-We believe that this is just the tip of an iceberg and the number of
+We believe that this is just the tip of the iceberg and the number of
 \emph{private} images is significantly higher.
 %
 Other popular public
@@ -100,77 +105,105 @@ registries~\cite{amazon-ecr,jfrog-artifactory,azure-cr,google-cr}, as well as
 on-prem registry deployments in large organizations, experience the same
 surge of container images.
 %
-To keep up with the demand and provide adequate performance levels,
+As a result,
 organizations spend an increasing amount of their storage and networking
-infrastructure on operating image registries.
+infrastructure on operating image registries
+to keep up with the demand and provide adequate performance levels
 %
 %
 %%%
 % 3. Significant amount of unharvested duplication across images.
 %%%
 
-The recent analysis of
+Deduplication is a popular method to reduce capacity demands of storage systems.
+%
+As Docker images have to be self-contained by definition, they are prone to high
+redundancy as different images often rely on the same dependencies and hence,
+images are likely to benefit from deduplication.
+%
+Indeed, a recent analysis of the
 % $47$~TB ($167$~TB uncompressed)
 Docker Hub image dataset showed that about $97$\% of files across layers are
 duplicates~\cite{dedupanalysis}.
 %
-Such high redundancy is not surprising: after all every Docker image has to be
-self-sufficient by definition and is typically built by developers without much
-coordination with others.
+%Such high redundancy is not surprising: after all every Docker image has to be
+%self-sufficient by definition and is typically built by developers without much
+%coordination with others.
 %
 Registry storage backends exacerbate the redundancy further due to the
-replication they perform to improve images durability and
+replication they perform to improve image durability and
 availability~\cite{Bonvin:2010:SFS:1807128.1807162}.
 %
-For instance, assuming the 3-way replication, the number of duplicate files in the
+For instance, assuming 3-way replication, the number of duplicate files in the
 Docker Hub dataset reaches 99\%.
 %
-And yet, existing registry deployments do not exploit high data redundancy
+And yet, existing registry deployments do not exploit this high data redundancy
 across layers to make the service more efficient.
+
+Layer sharing is one approach to reduce this redundancy.
+%
+However, it is not sufficient as layers are coarse and rarely identical due the the
+fact that they are typically built by independent developers without much coordination
+with others.
+%
+While existing deduplication methods can be applied~\cite{dedup1,dedup2,dedup3}, they
+are problematic because \LR{add reasons against existing file- or block-level deduplication
+strategies}.
+
 
 %%%
 % 4. Sift's idea
 %     Even with decompression, things do not work well: perfomance overhead.
 %%%
 
-In this paper we propose \emph{\sysname}, the first Docker registry that
-supports deduplication.
+While applying deduplication to the Docker registry can yield promising storage
+reduction benefits, it is not straightforward.
 %
-The na\"{i}ve application of deduplication to the registry---decompressing
+The main challenge is to retain acceptable performance such that client
+interactions with the registry (in particular pushing and pulling of images)
+are not affected.
+%
+A na\"{i}ve application of deduplication to the registry---decompressing
 layers and storing individual files in content-addressable storage---introduces
-prohibitive overheads.
+prohibitive overheads due to high layer reconstruction cost.
 %
-The slowdowns caused by layers reconstruction during image pulls are especially
+These slowdowns during image pulls are especially
 harmful because they contribute directly to the start times of containers.
 %
 Our experiments showed that on average na\"{i}ve deduplication increases layer
 download latencies by 2.5$\times$ compared to the original registry.
 
+In this paper we propose \sysname, the first Docker registry that natively
+supports deduplication.
 %
 \sysname's design is tailored to Docker registry environments and workloads to
-reduce deduplication overhead.
+reduce deduplication overhead. It employs four key techniques to reduce
+deduplication overhead and keep request latencies low:
 %
-\sysname exploits two kinds of redundancies: 1)~redundant data across layers,
-and 2)~redundancy caused by the replication in the storage backend.
+%It exploits two kinds of redundancies: 1)~redundant data across layers;
+%and 2)~redundancy caused by replication in the storage backend.
 %
-First, \sysname keeps a fixed number (0--3) of layer replicas as-is, without
-decompressing and deduplicating them.
+\begin{compactenumerate}
+\item It exploits redundancy caused by replication in the storage backend and keeps a fixed
+number of layer replicas as-is, without decompressing and deduplicating them.
 %
-Accesses to these replicas do not experience deduplication overhead.
+Accesses to these replicas do not experience deduplication overhead while
+the remaining layer replicas are decompressed and deduplicated for storage reduction.
 %
-The remaining layer replicas (0--3) are decompressed and deduplicated.
+\item It allows to deduplicate less frequently accessed layers more
+aggressively than popular layers to speed up accesses to popular
+layers while still achieving high storage reduction.
 %
-Second, \sysname allows to deduplicate less frequently accessed layers more
-aggressively than the popular layers.
+\item It monitors and exploits user access patterns to preconstruct
+layers before layer download requests arrive to avoid adding reconstruction
+latencies to layer pull requests.
 %
-Third, \sysname monitors and exploits user access patterns and preconstructs
-layers before layer download requests arrive.
-%
-Finally, during layer deduplication \sysname groups files in \emph{slices} to
-enable high-speed parallel streaming layer reconstruction.
+\item During layer deduplication, it groups files in \emph{slices} and evenly
+distributes them across the cluster to parallelize and speed up layer reconstruction.
 %
 %Depending on the user and environment requirements for performance, storage
 %savings, and durability users can configure...
+\end{compactenumerate}
 
 %%%
 % 4. Sift's evaluation
