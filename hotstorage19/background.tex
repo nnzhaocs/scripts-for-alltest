@@ -64,6 +64,18 @@ compressed archival files and image manifests as JSON files.
 for balancy, object storage beneath.}
 
 
+The current Docker registry software server is a single-node application.
+%
+To serve many requests concurrently, organizations typically deploy a load
+balancer like NGINX in front of several independent registry
+instances~\cite{dockerworkload, anwar-cloud19}.
+%
+All the instances store and retrieve images from a shared backend object store.
+%
+The object store often requires its own load balancer and proxy servers to
+scale.
+
+
 
 
 Although Docker registry is a layer-level content addressable storage system
