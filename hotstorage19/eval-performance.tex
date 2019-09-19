@@ -2,47 +2,38 @@
 %In the following, we first present the performance comparison between original registry and \sysname.
 %Next, we present the layer restoring performance.
 
-\subsection{Restoring performance of deduplication cluster }
+\subsection{Restore performance of the deduplication cluster}
 \label{sec:eval-dedup}
 
 %We map the traces with two different layer groups: 
 %small layers (layer size $\leq$ 50 MB)
 
-\paragraph{Restoring performance overhead and the benefit of preconstruct cache}:
-We first measure the overhead of deduplication on layer restoring latency 
-over LocalFS
-by running \sysname on a single server.
-We launch a client on another server and \texttt{pulls} 3 layers in parallel.
-We configure \sysname as
-registry without deduplication,
-deduplication registry,
-deduplication registry with LRU cache~\cite{xxx},
-and
-deduplication registry with a preconstruct cache.
-We set the cache size as 20\% of ingress data.
+\paragraph{Restore performance overhead and preconstruct cache benefit} 
+We first measure the overhead of deduplication on layer restoring latency over LocalFS by running \sysname on a single server.
+We launch a client on another server and \texttt{pull} three layers in parallel.
+We evaluate three configurations for \sysname; \sysname as a registry without deduplication, as a deduplication registry, as a deduplication registry with ARC cache~\cite{xxx}, and as a deduplication registry with a preconstruct cache.
+We set the cache size to 20\% of ingress data.
 We replay 1500 requests from \texttt{Dal}
 and match them with different layer sizes.
 
 %\paragraph{Cache}
-As shown in Figure~\ref{xxx},
-the average \texttt{GET} layer request latency increase as layer size.
+As shown in Figure~\ref{xxx}, the average \texttt{GET} layer request latency increase with the layer size.
 For localFS, the average \texttt{GET} layer request latency increase from 31 ms to 
 when the layer size increases from 1 MB to 8 MB.
-Restoring a layer put 150\% overhead on \texttt{GET} layer latency.
-By adding a normal LRU cache,
+Restoring a layer puts 150\% overhead on \texttt{GET} layer latency.
+By adding a ARC cache,
 the average \texttt{GET} layer latency decreases by 39\%.
 With our preconstruct cache,
-the average \texttt{text} layer latency descreases by 24\% over a normal LRU cache.
-Compare with localFS, our \sysname with preconstruct cache only adds 19\% of overhead. 
+the average \texttt{text} layer latency descreases by 24\% over an ARC cache.
+Compared to localFS, \sysname with preconstruct cache only adds 19\% of overhead. 
 
-Next, we descrease the duration between \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
+Next, we decrease the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests.
 
 
-Figure~\ref{xxx} shows the cache hit ratio of a normal LRU and our preconstruct cache.
+Figure~\ref{xxx} shows the cache hit ratio of the ARC cache and the preconstruct cache.
 
 \paragraph{Cluster scale impact}
-We increase the number of nodes in our sift deduplication cluster
-and test the layer restoring performance.
+We increase the number of nodes in \sysname deduplication cluster and test the layer restoring performance.
 
 As shown in Figure~\ref{xxx},
 
@@ -71,34 +62,25 @@ While B-mode 0 \emph{deduplicates} all layer replicas.
 %\sysname is evaluated by configuring different deduplication modes.
 Therefore, B-mode 3 doesn't have P-servers while
 B-mode 0 doesn't have P-servers.
-For the rest modes,
+For the remaining modes,
 the number of P-servers and D-servers are set to 14 and 7 respectively.
 %In addition, 
 %we speedup trace replaying by using different speedup factors
 %so that each trace can be finished within 30 minutes.
-Before we replay each workload,
-we first warmup P-servers and D-servers with a certain amount of layers as shown in Table~\ref{tab:eval-overall},
-which roughly takes 10 minutes.
-Then,
-we use 32 clients spreading on 4 client servers 
-distributed on client cluster to replay traces to P-servers and D-servers.
-Besides,
-we also evaluate \emph{original registry} with 3-way replication on 21 servers. 
+Before we replay each workload, we first warmup P-servers and D-servers with a certain amount of layers as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
+Then, we use 32 clients spread between four client servers distributed on client cluster to replay traces to P-servers and D-servers.
+We also evaluate the \emph{original registry} with 3-way replication on 21 servers. 
 
-Figure~\ref{label} shows the average response time for 
-\texttt{GET} layer, \texttt{PUT} layer, \texttt{GET} manifest, and \texttt{PUT} manifest
-requests for \sysname with different deduplication modes and original registry across different workloads.
-Note that for \emph{B-mode 0},
-the \texttt{GET} layer latency is \emph{layer restoring latency}.
+Figure~\ref{label} shows the average response time for \texttt{GET} layer, \texttt{PUT} layer, \texttt{GET} manifest, and \texttt{PUT} manifest requests for \sysname with different deduplication modes and original registry across different workloads.
+Note that for \emph{B-mode 0}, the \texttt{GET} layer latency is the \emph{layer restoring latency}.
 
 Overall, \texttt{PUT} requests have much higher average response time than \texttt{GET} requests.
 For example, the average response time of 
 \texttt{PUT} layer requests is almost twice higher than that of \texttt{GET} layer requests.
 Note that registry servers use SSDs as secondary storage devices.
-The different response time of \texttt{PUT} and \texttt{GET} requests are mainly caused by
-the difference throughput between writes and reads of SSDs. 
+The difference in response time for \texttt{PUT} and \texttt{GET} requests are mainly caused by the different writes and reads throughput of SSDs. 
 
-Comparing \emph{original} with \emph{B-mode 3},
+Comparing the \emph{original} with \emph{B-mode 3},
 we see that \emph{B-mode 3} improves the overall performance by using a \emph{superfetch cache}.
 \emph{B-mode 3}.
 \emph{B-mode 3} reduces 5\% of average \texttt{GET} layer latency
@@ -107,24 +89,23 @@ Next we compare \emph{B-mode 0} with \emph{original}.
 Although \emph{B-mode 0} saves half of the storage space
 by \emph{deduplicates} all layer replicas,
 it slightly reduce \texttt{GET} layer latency by 6\%.
-This is because of the high preconstruct cache hit ratio (detailed in Fgirue~\cite{xxx}), 
-which saves a lot of layer restoring latency.
+This is because of the high preconstruct cache hit ratio (detailed in Figure~\cite{xxx}), 
+which reduces the layer restoring latency.
 
-For the rest basic modes: \emph{B-mode 2} and \emph{B-mode 1},
-we see that \emph{B-mode 1} has a similar average response time with \emph{original}
+For the remaining basic modes: \emph{B-mode 2} and \emph{B-mode 1},
+we see that \emph{B-mode 1} has a similar average response time to \emph{original}
 although the primary cluster of \emph{B-mode 1} only has 14 nodes while 
 \emph{original} contains 21 nodes.
-This is because less data (1/3) is \texttt{pushed} onto the primary cluster in \emph{B-mode 1}.
+This is because only a one-third of the %less data (1/3) 
+data is \texttt{pushed} onto the primary cluster in \emph{B-mode 1}.
 \texttt{Push} requests also affect the performance of \texttt{pull} requests
-in terms of more network traffic and more writes on SSDs.
+in terms of more network traffic and more writes to SSDs.
 While \emph{B-mode 2} degrades \emph{GET} layer performance by 11\%.
-This is because 
-in \emph{B-mode 2},
+This is because in \emph{B-mode 2},
 more data (2/3) is \texttt{pushed} onto the 14-node primary cluster compared to \emph{B-mode 1},
 which causes a lot of overhead.
 \emph{S-mode} also has a similar \texttt{GET} layer performance with both \emph{original} and \emph{B-mode 1}.
-This is because in \emph{S-mode}, only few amount of hot layers replicates 3 replicas while
-the rest cold layers only has a single layer replicas on primary cluster. 
+This is because in \emph{S-mode}, only a few of the hot layers have 3 replicas while the remaining cold layers only have a single layer replica on the primary cluster. 
 
 We find that
 \emph{B-mode 1}, \emph{B-mode 2}, \emph{B-mode 0}, and \emph{S-mode}
