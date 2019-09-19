@@ -121,73 +121,48 @@ manifest latency by 17\% and 24\% respectively.
 \paragraph{Cache hit ratio}
 
 Figure~\ref{xxx},
-show superfetch cache hit ratio and preconstruct cache hit ratio.
-Note that superfetch cache is used by primary cluster while preconstruct cache by deduplication cluster.
-The superfetch cache hit ratio shown in Figure~\ref{xxx}
-is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode}
-because they show the similar cache hit ratios.
+shows superfetch cache hit ratio and preconstruct cache hit ratio.
+Note that the superfetch cache is used by the primary cluster while the preconstruct cache is used by the deduplication cluster.
+The superfetch cache hit ratio shown in Figure~\ref{xxx} is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode} because they show the similar cache hit ratios.
 Preconstruct cache hit ratio is measured in \emph{B-mode 0}.
-Note that the big difference between a superfetch cache and a preconstruct cache 
-is that superfetch cache can prefetch layers \emph{on time}
-while preconstruct cache cannot guarantee to preconstruct layers \emph{on time} resulting in
-a certain amount of \texttt{pull} layer requests \emph{waiting} (detailed in~\ref{xxx}).
+Note that the big difference between a superfetch cache and a preconstruct cache is that the superfetch cache can prefetch layers \emph{on time} while the preconstruct cache cannot guarantee the preconstruction of layers \emph{on time} which makes a certain amount of \texttt{pull} layer requests \emph{wait} (detailed in~\ref{xxx}).
 The cache size is set to 20\% of ingress data.
 
-We see that superfetch cache has a higher hit ratio than preconstruct cache
-because of large amount of waiting layers on preconstruct cache.
-For example, for preconstruct cache, 
+We see that the superfetch cache has a higher hit ratio than the preconstruct cache
+because of the large amount of waiting layers on the preconstruct cache.
+For example, for the preconstruct cache, 
 the hit ratio is only 79\% excluding 20\% waiting layers requests for workload \texttt{Syd}.
-While the hit ratio of superfetch cache is 98\%.
-The number of waiting layers vary among different workloads.
-There are 4\% and 22\% of 
-layers waits on layer preconstruct cache for \texttt{Dal} and \texttt{Lon} respectively. 
+while the hit ratio of the superfetch cache is 98\%.
+The number of waiting layers vary across different workloads.
+There are 4\% and 22\% of layer waits on the preconstruct cache for \texttt{Dal} and \texttt{Lon} respectively. 
 Note that we speedup trace replaying
 and the speedup factor for \texttt{Lon} is the biggest.
-Speedup not only decreases the idle time between \texttt{pull} image requests,
-but also reduces the duration between \texttt{GET} manifest request 
-and the subsequent \texttt{GET} layer requests.
+Trace replay speedup does not only decreases the idle time between \texttt{pull} image requests, it also reduces the duration between a \texttt{GET} manifest request and the subsequent \texttt{GET} layer requests.
 Therefore, with the biggest speedup factor,
 lots of layer preconstruction cannot be finished on time.
-Moreover,
-for most of workloads,
-superfetch cache hit ratio is higher than 81\%.
-While \texttt{Dal} has the lowest hit ratio 0.77 
-because of 
-low prediction accuracy for \emph{users' repull behaviors} 
-and heavy workload.
+Moreover, for most of the workloads, the superfetch cache hit ratio is higher than 81\%. 
+The \texttt{Dal} workload has the lowest hit ratio (0.77) because of the low prediction accuracy for \emph{users' repull behaviors} 
+and the heaviness of the workload.
 
 Figure~\ref{xxx} shows file cache hit ratio during layer restoring in \emph{B-mode 0}.
 The file cache size is also set to 20\% of ingress data.
 Overall, we see that file cache hit ratio is fair.
-The hit ratio is lower than 60\% across all workloads,
-which means less files are shared among layers during a \emph{pulling} image request.
-It also means that the amount of shared/deduplicate files among layers is less when 
-the accessed layer dataset is smaller.
-Consequently,
-to get a higher deduplication ratio,
-deploying layer deduplication on a big layer dataset is a better choice, which aligns with
-~\cite{dedupanalysis}
+The hit ratio is lower than 60\% across all workloads, which means less files are shared among layers during a \emph{pull} image request.
+It also means that the amount of shared/deduplicate files among layers is less when the accessed layer dataset is smaller.
+Consequently, to get a higher deduplication ratio, deploying layer deduplication on a big layer dataset is a better choice, which aligns with~\cite{dedupanalysis}.
 
 
 \paragraph{Metadata size} 
-Figure~\ref{xxx} shows
-average metadata size on each registry server measured by using the size of Redis~\cite{redis} used memory in \emph{B-mode 0}.
-Note that the replication level for Redis cluster is also set to 3.
-As shown,
-for all traces,
-the total size of metadata generated by \sysname such as \emph{recipes} for layers or slices, \emph{indexes} of layers or files, 
-and RLmap or ULmap
-is lower than 100 MB.
-Compared with 16 GB memory on each registry server,
-metadata size is negligible.
+Figure~\ref{xxx} shows the average metadata size on each registry server measured by using the size of the used memory in Redis~\cite{redis} when in \emph{B-mode 0}.
+Note that the replication level for the Redis cluster is also set to three.
+As shown, for all traces, the total size of the metadata generated by \sysname such as \emph{recipes} for layers or slices, \emph{indexes} of layers or files, and RLmap or ULmap is less than 100 MB.
+With the 16 GB memory on each registry server, such metadata size is negligible.
 
 \paragraph{Client concurrency impact}
-Figure~\ref{label} shows the average response time for different deduplication modes and original registry
-with 8 clients and 64 clients respectively.
+Figure~\ref{label} shows the average response time for different deduplication modes and for the original registry with 8 clients and 64 clients, respectively.
 
 \paragraph{Primary cluster size  impact}
-Figure~\ref{label} shows the average response time for different deduplication modes and original registry
-with 7-node cluster and 14-node cluster.
+Figure~\ref{label} shows the average response time for different deduplication modes and for the original registry with a 7-node cluster and a 14-node cluster, respectively.
 The number of concurrent clients are set to 32.
 %\paragraph{Layer size impact}
 
