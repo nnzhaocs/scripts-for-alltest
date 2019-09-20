@@ -1,4 +1,4 @@
-\section{Background}
+\section{Docker Registries}
 \label{sec:background}
 
 %\paragraph{Docker registry.}
@@ -11,15 +11,21 @@
 %Layers can be shared between two or more images if the images depend on the
 %same layer.
 
-To exchange container images Docker hosts \emph{push} images to and \emph{pull}
-images from Docker registries.
+In this section, we explain, how the existing Docker registry works and how users
+can interact with it.
+%
+The main purpose of a registry is to store container images and make them available
+to other users.
+%
+Therefore, it allows Docker hosts to \emph{push} images to and to \emph{pull}
+images from the registry.
 %
 A number of public Docker registry deployments
 exist~\cite{docker-hub,amazon-ecr,jfrog-artifactory,azure-cr,google-cr} and
 enterprises often resort to running private registries for improved security
 and privacy.
 %
-Docker community specifies the REST API for hosts to communicate with the
+The Docker community specifies the REST API for hosts to communicate with the
 registries~\cite{docker-registry-api} and provides a reference registry
 software server implementation~\cite{docker-registry-software} which serves as
 a basis for commercial deployments.
@@ -32,43 +38,40 @@ Docker registries group images in \emph{repositories}, each containing
 different versions (\emph{tags}) of the same image, identified as
 \texttt{<repo-name:tag>}.
 %
-For each image, the Docker registry stores a \emph{manifest}.
+For each tagged image in a repository, the Docker registry stores a \emph{manifest}.
 %
 The manifest is a JSON file, which contains the runtime configuration for a
 container image (\eg environment variables) and the list of layers which make
 up the image.
 %
-Layers are identified using a digest that is computed as a hash (SHA-256) over
-the uncompressed content of the layer and stored as compressed archival files.
+A layer is identified using a digest that is computed as a hash (SHA-256) over
+the uncompressed content of the layer and stored as a compressed archival file.
 %
-When pulling an image, Docker host first downloads the manifest and then the
-layers referenced in it (unless the layers are already present in the host).
+When pulling an image, a Docker host first downloads the manifest and then the
+layers referenced in it (unless the layers are already present on the host).
 %
-When pushing an image, Docker host first uploads the layers (if not present at the
-registry) and then uploads the manifest.
+When pushing an image, a Docker host first uploads the layers (if not already present in
+the registry) and then uploads the manifest.
 
 
 
 
 
-The current Docker registry software server is a single-node application.
+The current Docker registry software is a single-node application.
 %
-To serve many requests concurrently, organizations typically deploy a load
+To scale the registry and serve many requests concurrently, organizations typically deploy a load
 balancer like NGINX in front of several independent registry
 instances~\cite{dockerworkload, anwar-cloud19}.
 %
 All the instances delegate storage and retrieval of images to drivers that interact with
-either a local file system or a remote cloud storage such as Amazon
-S3~\cite{s3}, Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, and
+either a locally mounted file system or a remote cloud storage such as Amazon
+S3~\cite{s3}, Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, or
 Aliyun OSS~\cite{aliyun}.
 %
-For example, Google Container Registry~\cite{GoogleContainerRegistry} uses
-Google cloud as its backend image store. 
-
-
-
-
-Upon a \texttt{PUT} layer request, Docker registry forwards the layer to the
+%For example, the Google Container Registry~\cite{GoogleContainerRegistry} uses
+%Google cloud as its backend image store.
+%
+Upon a \texttt{PUT} layer request, the Docker registry forwards the layer to the
 backend storage which stores multiple replicas of the layer.
 %
 The subsequent \texttt{GET} layer requests can be served by any of the three
