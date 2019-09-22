@@ -107,20 +107,21 @@ The proxy emulator uses
 consistent hashing ~\cite{kargercons} to distribute layers and manifests.
 Proxy emulator maintains a ring of registry servers
 and calculates a destination registry server for each \texttt{push} layer or manifest request
- by hashing its digest. For \texttt{pull} manifest requests, the proxy emulator maintains two consistent hashing rings, one for the P-servers, and one for the D-servers. It primarily queries the P-servers but if they are all down, it \texttt{pull}s from the D-servers.
+ by hashing its digest. For \texttt{pull} manifest requests, the proxy emulator maintains two consistent hashing rings, one for the P-servers, and one for the D-servers. It primarily queries the P-servers but if they are all down, 
+ it \texttt{pull}s from the D-servers.
 
-\paragraph{Dealing with big layers}
-Due to the scale constraint of our testbed cluster, we limit the layer size
-to 250 MB, to reduce their restoring overhead.
-\DIM{Does that constraint prevent us from seeing any Sift disadvantages in the evaluation?}
-If a layer that exceeds the size limitation is received,
-\sysname will first divide the big layer into sub-layers and update its associated manifests.
-After that,
-the sub-layers are deduplicated and restored as normal layers.
-Once a client receives the sub-layers it decompress them into a single (big) layer.
-To do so, the big layer manifest is modified to reflect the relation
-between the big layer and its sub-layers.
-\DIM{Is this part of the Sift design, would it still be there in a real cluster, can it be disabled/enabled without negative consequences?}
+%\paragraph{Dealing with big layers}
+%Due to the scale constraint of our testbed cluster, we limit the layer size
+%to 250 MB, to reduce their restoring overhead.
+%\DIM{Does that constraint prevent us from seeing any Sift disadvantages in the evaluation?}
+%If a layer that exceeds the size limitation is received,
+%\sysname will first divide the big layer into sub-layers and update its associated manifests.
+%After that,
+%the sub-layers are deduplicated and restored as normal layers.
+%Once a client receives the sub-layers it decompress them into a single (big) layer.
+%To do so, the big layer manifest is modified to reflect the relation
+%between the big layer and its sub-layers.
+%\DIM{Is this part of the Sift design, would it still be there in a real cluster, can it be disabled/enabled without negative consequences?}
 
 %We implemented our preconstruction cache and \filecachename file cache on Redis cluster
 %deployed by using Docker swarm, denoted as cache service.

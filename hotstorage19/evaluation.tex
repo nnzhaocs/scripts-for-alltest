@@ -6,25 +6,27 @@
 %Next, we present the preliminary evaluation of our user access history-based cache algorithm
 %and the space efficiency of file cache.
 
-We conduct a performance evaluation of \sysname, and compare it with the modern registry setup~\cite{dockerworkload}.
-We start with describing the testbed and workloads then follow that with the evaluation results.
+%We conduct a performance evaluation of \sysname, and compare it with the modern registry setup~\cite{dockerworkload}.
+%We start with describing the testbed and workloads then follow that with the evaluation results.
 \subsection{Testbed, workloads and dataset}
 
 Our testbed includes 
 %two clusters: 
 %8-node client cluster and
 %8-node registry cluster (Hulks), and
-a 22-node cluster.
+a 15-node cluster.
 %Each client server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
 %Each client server is equipped with 8 cores, 64 GB RAM, 1 TB HDD, and 1000Mb/s NIC.
 %During evaluation,
-Each node is equipped with 8 cores, 16 GB RAM, 500 GB SSD, and 10,000 Mb/s NIC. We deploy Docker's registry container on each server and deploy a distributed Redis cluster on these 22 registry servers as our database.
-During our evaluation,
-we select different number of servers as our registry cluster
-and use the rest as client server.
-Note that each server only runs a single registry container
-while multiple clients can run on the same server.
+Each node is equipped with 8 cores, 16 GB RAM, 500 GB SSD, and 10,000 Mb/s NIC. 
+%We deploy Docker's registry container on each server and deploy a distributed Redis cluster on these 22 registry servers as our database.
+%During our evaluation,
+%we select different number of servers as our registry cluster
+%and use the rest as client server.
+%Note that each server only runs a single registry container
+%while multiple clients can run on the same server.
 %Besides,
+
 %We instantiate multiple clients on each client server.
 %backend registry storage cluster and frontend registry cache cluster. 
 %Backend storage cluster includes 8 servers. 
@@ -35,35 +37,43 @@ while multiple clients can run on the same server.
 %Hulks and new hulks are used as backend.
 %Thors are used as frontend.
 %\subsection{}
-\cite{xxx} conducts an comprehensive analysis of our whole dataset that is downloaded from Docker Hub. 
+Recent work \cite{analysisdockergithub} conducts an comprehensive analysis of 47 TB Docker images downloaded from Docker Hub. 
 Docker image popularity distribution is heavily skewed~\cite{analysisdockergithub}.
-To evaluate how \sysname works for frequently accessed images, we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub as our evaluation dataset. The size of this dataset is 12.5 TB and contains 507,023 layers. 
+To evaluate how \sysname works for frequently accessed images, 
+we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub~\cite{docker-hub} as our evaluation dataset. 
+The size of this dataset is 12.5 TB and contains 507,023 layers. 
 After decompressing the layers, the total size of the dataset is 27.7 TB.
-We apply file-level deduplication on the decompressed dataset, the total size of the resulting dataset of unique files is only 7.2 TB, making the deduplication ratio 0.5.
-The size distribution of our sample layer dataset is the same with the size distribution of~\cite{analysisdockergithub}.
+We apply file-level deduplication on the decompressed dataset, 
+the total size of the resulting dataset of unique files is only 7.2 TB, making the deduplication ratio 0.5.
+The size distribution of our popular layer dataset is the same with 
+the size distribution of~\cite{analysisdockergithub}.
 87.5\% of layers are smaller than 50 MB.
-12.3\% of layers fall between 50 MB and 1 GB.
-0.2\% of layers are bigger than 1 GB.
-Due to our testbed cluster's scaling restriction, we set a limit to the layer size %\emph{layer size limitation} 
-at 250 MB. 
-Layers that are bigger than 250 MB are split into sub-layers.
+%12.3\% of layers fall between 50 MB and 1 GB.
+%0.2\% of layers are bigger than 1 GB.
+%Due to our testbed cluster's scaling restriction, 
+%we set a limit to the layer size %\emph{layer size limitation} 
+%at 250 MB. 
+%Layers that are bigger than 250 MB are split into sub-layers.
 %Based on our dataset analysis~\cite{xxx} and workload analysis~\cite{xxx},
 %more than 90\% of layers are smaller than 50MB. 
 %Therefore, we divided our sample dataset into two groups:
 %smaller layers (layer size $\leq$ 50 MB) and big layers ( 50MB $\leq$ layer size $\leq$ 1 GB).
   
-To evaluate how \sysname performs for production registry workloads, we leverage IBM's cloud registry workload traces\cite{dockerworkload}. 
-The traces span $\sim$80 days from three internal registry clusters and four production registry clusters. 
-We randomly match the four anonymized production traces (i.e., \texttt{Dal, Fra, Lon, Syd}) with our dataset to form four real-world production workloads (detailed in Section~\ref{sec:impl}). 
-Due to time constraint, we only replay the first 5000 requests from each workload.
+To evaluate how \sysname performs for production registry workloads, 
+we leverage IBM's cloud registry workload traces\cite{dockerworkload}. 
+The traces span $\sim$80 days from three private registry clusters and four production registry clusters. 
+We randomly match the four anonymized production traces (i.e., \texttt{Dal, Fra, Lon, Syd}) 
+with our dataset to form four real-world production workloads (detailed in Section~\ref{sec:impl}). 
+We replay the first 5000 requests from each workload.
 Tables~\ref{tab:eval-overall} and ~\ref{tab:eval-dataset} detail the 5000 requests for each workload.
-Note that we use a 3-way replication
-which triples the amount of data written during evaluation.
-We speedup trace replaying by using different speedup factors so that each trace finishes within 30 minutes.
+%Note that we use a 3-way replication
+%which triples the amount of data written during evaluation.
+%We speedup trace replaying by using different speedup factors so that each trace finishes within 30 minutes.
 %During all experiments,
 %we set \emph{replication level} equal to 3.
 
 \input{tab-eval-overall}
 \input{eval-performance}
-\input{eval-restore-performance}
-\input{eval-dedup}
+\input{eval-primary}
+%\input{eval-restore-performance}
+%\input{eval-dedup}
