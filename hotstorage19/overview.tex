@@ -2,40 +2,51 @@
 \label{sec:overview}
 
 \VT{In the intro/background we use "Docker hosts" instead of "Docker clients".
-Need to pick one and be consistent.}
+Need to pick one and be consistent. I prefer ``Docker hosts''}
 
-\VT{Should we say explicitly that this is a setup where registry and storage
-servers are co-allocated?}
+\VT{Make drivers emphasized in the background}
 
 \input{fig-sys-overview}
 
 Figure~\ref{fig:sift} shows the architecture of \sysname.
 %
-\sysname consists of a cluster of registry backend storage servers and a
-distributed metadata database. 
+\sysname consists of the three main components: 1)~\emph{frontend registry
+servers}, 2)~a cluster of \emph{backend storage servers}, and 3)~a distributed
+\emph{metadata database}. 
 %
-Storage servers store manifests and layers and serve clients' requests.
+When uploading or downloading layers, Docker hosts communicate with the
+frontend registry servers.
 %
-The metadata database keeps information necessary to deduplicate layers.
+As in the original registry, \sysname registries are independent from each
+other.
 %
-To reduce deduplication overhead, \sysname tries to minimize the time it takes
-to restore a layer during a \texttt{pull} request.
+Each registry server uses a \sysname driver that processes requests by
+communicatin with the metadata database and the backend storage servers.
 %
-This is achieved by three main techniques: 1)~replica deduplication modes; 2)~parallel
-layer reconstruction; and 3)~predictive cache prefetching.
-
+Backend storage servers store
+%manifests and
+layers  and perform deduplication, keeping the deduplication metadata in the
+database.
+%
+%The metadata database keeps information necessary to deduplicate layers.
+%
+%To reduce deduplication overhead, \sysname tries to minimize the time it takes
+%to restore a layer during a \texttt{pull} request.
+%
+\sysname uses three main techniques to reduce deduplication overhead:
+1)~replica deduplication modes; 2)~parallel layer reconstruction; and
+3)~predictive cache prefetching.
 
 
 
 
 \paragraph{Replica deduplication modes.}
 %
-\sysname makes use of the fact that most registries' backend storage systems
-employ some form of layer replication for fault tolerance and availability.
+For higher fault tolerance and availability existing registry backends bluntly
+replicate  each layer.
 %
-The idea is that, instead of deduplicating every layer replica, \sysname allows
-to configure, how many replicas of a layer should be deduplicated and how many
-replicas should be kept in their original state for faster serving.
+\sysname also performs replication, but some replicas it deduplicates while
+keeping the remaining ones in the non-deduplicated state for faster downloads.
 
 A \emph{basic deduplication mode} (B-mode) $n$ defines that \sysname should
 keep $n$ layer replicas intact and deduplicate the remaining $R-n$ layer

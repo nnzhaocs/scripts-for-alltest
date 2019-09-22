@@ -2,17 +2,14 @@
 \label{sec:Sift}
 
 The main goal of \sysname is to reduce the storage demands of image registries
-while keeping the performance impact on user operations (mainly image
-\texttt{push} and \texttt{pull}) low.
+while keeping the performance impact on user operations, mainly layer downloads
+and uploads, low.
 %
 In this section, we first provide an overview of
 \sysname~(\S\ref{sec:overview}).
-%and explain, how it utilizes existing replicas to balance the trade-off
-%between storage space reduction and performance.
 %
-We then describe in detail how \sysname
-deduplicates~(\S\ref{sec:dedup-desgin}) and
-restores~(\S\ref{sec:restore-desgin}) layers, and how it further improves
+We then describe in detail how \sysname deduplicates~(\S\ref{sec:dedup-desgin})
+and restores~(\S\ref{sec:restore-desgin}) layers, and how it further improves
 performance through predictive cache management~(\S\ref{sec:cache-design}).
 
 \input{overview}
