@@ -7,6 +7,7 @@ The rise of containers has lead to a steep proliferation of container images.
 The associated storage performance and capacity requirements place high
 pressure on the registries, which store and serve images, and are key obstacles
 to efficiently scale these registries.
+\DIM{I don't understand what is the "key obstacles" here?}
 %
 %The proliferation of container images and the associated storage performance
 %and capacity requirements are key obstacles to efficiently scale Docker
@@ -14,7 +15,7 @@ to efficiently scale these registries.
 %
 Exploiting the high file redundancy in real-world images through deduplication is
 a promising approach to drastically reduce the necessary storage capacity of image
-registries
+registries.
 %
 %Though real-world images contain a tremendous amount of duplicate data,
 %
@@ -28,7 +29,7 @@ natively integrates deduplication into the registry.
 different levels of storage efficiency, durability, and performance, as
 required by different use cases.
 %
-To further mitigate the negative impact of deduplication on the image download
+To mitigate the negative impact of deduplication on the image download
 and upload times, \sysname introduces a \emph{two-tier cache hierarchy} with a novel
 prefetch algorithm based on user access histories.
 %
