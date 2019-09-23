@@ -3,7 +3,7 @@
 	\begin{minipage}{0.3\textwidth}
 		\centering
 		\includegraphics[width=0.9\textwidth]{graphs/1nodegetlayerlatency.pdf}
-		\caption{GET layer latency.}% across different schemes.}
+		\caption{GET layer latency.\todo{add grid in background to match the other figures}}% across different schemes.}
 		\label{fig:eval-1nodegetlayerlatency}
 	\end{minipage}%
 	\begin{minipage}{0.3\textwidth}
@@ -27,15 +27,17 @@
 	\begin{minipage}{0.3\textwidth}
 		\centering
 		\includegraphics[width=0.9\textwidth]{graphs/clusterscale.pdf}
-		\caption{GET layer latency with different cluster size.}
+		\caption{GET layer latency with different cluster size. \Subil{the blue line is peeking out of the box.} \todo{change object storage to bolt in figure}}
 		\label{fig:eval-clusterscale}
 	\end{minipage}%
+	\hspace{1mm}
 	\begin{minipage}{0.3\textwidth}
 	\centering
 	\includegraphics[width=0.9\textwidth]{graphs/restoringbreakdown.pdf}
-	\caption{Restoring latency breakdown.}
+	\caption{Restoring latency breakdown. \Subil{maybe change 'fetch and merge slices' to 'layer construction duration' to keep consistency with the text}}
 	\label{fig:eval-restoringbreakdown}
-\end{minipage}
+	\end{minipage}
+	\hspace{1mm}
 	\begin{minipage}{0.3\textwidth}
 		\centering
 		\includegraphics[width=0.9\textwidth]{graphs/clientscale.pdf}
