@@ -10,12 +10,9 @@
 
 \input{fig-eval-1node}
 
-In this experiment,
-we measure the layer restoring latency of \sysname's deduplication cluster
-and its impact on \texttt{GET} layer latency.
-We first measure a single P-server's layer restoring capability
-and compare it with a \emph{No deduplication} scheme --
-downloading layers from server's local file system without deduplication.
+In this experiment, we measure the layer restoring latency of \sysname's deduplication cluster and its impact on \texttt{GET} layer request latency.
+We first measure a single P-server's layer restoring capability and compare it with a \emph{No deduplication} scheme --
+downloading layers from a server's local file system without deduplication.
 %denoted as .
 Then we scale out to multiple P-servers
 and compare it with a \emph{CHT based distributed object storage} system.
@@ -39,198 +36,124 @@ and compare it with a \emph{CHT based distributed object storage} system.
 %We set the cache size as 20\% of ingress data.
 
 \paragraph{Restoring latency}
-We launch a single node registry on a server.
-and a client on another server.
+We launch a single node registry on a server and a client on another server.
 We compare 4 backends:
 (1) Local file system with \emph{no deduplication},
-(2) Local file system with \sysname \emph{Deduplication} but without \emph{cache},
+(2) Local file system with \sysname \emph{Deduplication} but without a \emph{cache},
 (3) Local file system with \sysname \emph{Deduplication} and a \emph{ARC cache}, and
 (4) Local file system with \sysname \emph{Deduplication} and a \sysname \emph{preconstruct cache}
 as shown in Figure~\ref{fig:eval-1nodegetlayerlatency}.
 %
-The client matches 2500 requests from \texttt{Dal} to layers with different sizes
-and replays them to the D-server.
+The client matches 2500 requests from \texttt{Dal} to layers with similar sizes from the evaluation dataset and replays them to the D-server.
 %We compare four backends: 
 
-As shown in Figure~\ref{fig:eval-1nodegetlayerlatency},
-layer restoring increses the average \texttt{GET} layer latency by 189\% for layers with size of 1 MB
- (\emph{see line Deduplication without cache})
-compared with \emph{No deduplication}.
-Moreover,
-layer restoring latency increases as layer size.
-It takes 0.22 s to restoring and download layers with size of 9 MB.
+As shown in Figure~\ref{fig:eval-1nodegetlayerlatency}, layer restoring increases the average \texttt{GET} layer request latency by 189\% for layers with size 1~MB (\emph{see Deduplication without cache line}) compared to \emph{No deduplication}.
+Moreover, the layer restoring latency increases as the layer size increases.
+It takes 0.22~s to restore and download layers with size 9~MB.
 
 \paragraph{Preconstruct cache VS. ARC cache}
 %\paragraph{Cache}
 As shown in Figure~\ref{fig:eval-1nodegetlayerlatency}, 
 %the average \texttt{GET} layer request latency increase with the layer size.
-adding a cache can largely reduce layer restoring latency.
-By using a ARC cache, the layer restoring overhead decrease by
-40\% for layers with size of 1 MB compared with \emph{Deduplication without cache}.
-However,
-as layer size increase, 
-the improvements of \texttt{GET} layer request latency by using
-ARC cache drops.
-For layer size equals to 10 MB,
-%
-ARC cache only reduces layer restoring overhead by 16\%.
+leveraging a cache can largely reduce layer restoring latency.
+By using a ARC cache, the layer restoring overhead decreases by 40\% for layers with size of 1~MB compared to \emph{Deduplication without cache}.
+However, as the layer size increases, the improvement of \texttt{GET} layer request latency due to leveraging ARC cache drops.
+For layer sized 10~MB, the ARC cache reduces the layer restoring overhead by only 16\%.
 %ARC cache can only improve 10\% of 
 %Restoring a layer puts 150\% overhead on \texttt{GET} layer latency.
 %By adding a ARC cache,
 %he average \texttt{GET} layer latency decreases by 39\%.
-With \sysname preconstruct cache,
-the average \texttt{GET} layer latency descreases by 24\% over an ARC cache
-for layers with size of 1 MB.
+With \sysname preconstruct cache, the average \texttt{GET} layer latency for layers with size of 1~MB decreases by an extra 24\% over using ARC cache.
 %Overall,
-Compared to \emph{No deduplication}, 
-\sysname with preconstruct cache only adds 19\% of overhead for layers with size of 9 MB. 
+Compared to \emph{No deduplication}, \sysname with preconstruct cache only adds 19\% of overhead for layers with a 9~MB size. 
 
 \paragraph{Cache hit ratio}
-Figure~\ref{fig:eval-cachehitratios}
-shows the cache hit ratio for ARC cache and Preconstruct cache.
-Note that the cache size is set to 20\% of ingress data.
-The cache hit ratio for ARC is stable at 0.77 among different layer sizes.
+Figure~\ref{fig:eval-cachehitratios} shows the cache hit ratio for ARC cache and Preconstruct cache.
+Note that the cache size is set to 20\% of \texttt{Dal}'s ingress data.
+The cache hit ratio for ARC is stable at 0.77 for all layer sizes.
 %However, 
 Preconstruct cache achieves a hit ratio of 0.95 for 1 MB.
-With the layer size increases to 9 MB,
-preconstruct cache hit ratio decreases to 79\%. 
-This is because layer restoring latency increases with layer size as 
-shown in Figure~\ref{fig:eval-1nodegetlayerlatency}
-and more layers cannot be preconstructed \emph{on time} as layer size becomes bigger. 
-As shown in Figure~\ref{fig:eval-cachehitratios},
-the number of waiting \texttt{GET} layer requests increases as layer size (see preconstruct cache waiting ratio).
-Since the layer construction already starts before these requests arrives,
-the restoring overhead can also be largely reduced.
- The user-bahavior based request prediction accuracy is calculated by sum of preconstruct cache hit ratio and waiting ratio.
- As shown in Figure~\ref{fig:eval-cachehitratios},
- the prediction accuracy is 0.95.
+As the layer size increases to 9~MB, the preconstruct cache hit ratio decreases to 79\%. 
+This is because the layer restoring latency increases with layer size as shown in Figure~\ref{fig:eval-1nodegetlayerlatency} and therefore, many layers are not preconstructed on time.
+% and more layers cannot be preconstructed \emph{on time} as the layer size increases. 
+As shown in Figure~\ref{fig:eval-cachehitratios}, the number of waiting \texttt{GET} layer requests increases with layer size (see preconstruct cache waiting ratio).
+Since layer construction already starts before these requests arrives, the restoring overhead can also be largely reduced.
+The user-bahavior based request prediction accuracy is calculated by summing the preconstruct cache hit ratio and the waiting ratio.
+As shown in Figure~\ref{fig:eval-cachehitratios}, the prediction accuracy is 0.95.
  
 \paragraph{Impact of duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests}
-Next, 
-we vary 
-the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests (denoted as durationML).
+Next, we vary the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests (denoted durationML).
 The layer size used here is 9 MB.
 %
-Figure~\ref{fig:eval-durationML} shows 
-the average \texttt{GET} layer latency for \sysname deduplication with preconstruct cache and 
-\emph{No deduplication}.
-We see when the durationML is 1 s, 
-\sysname with preconstruct cache only increases 19\% of overhead.
-However, as the durationML decreases,
-the average \texttt{GET} layer latency increases as more layer cannot be preconstructed on time.
-When the client replays requests as fast as possible,
-the overhead of restoring layers on \texttt{GET} layer requests increases by 30\%.
+Figure~\ref{fig:eval-durationML} shows the average \texttt{GET} layer latency for \sysname deduplication with preconstruct cache versus \emph{No deduplication}.
+When the durationML is 1~s, \sysname with preconstruct cache only imposes a 19\% overhead.
+However, as the durationML decreases, the average \texttt{GET} layer latency increases because layers are not preconstructed on time.
+When the client replays requests as fast as possible, the overhead of restoring layers on \texttt{GET} layer requests increases by 30\%.
 
 %the cache hit ratio of the ARC cache and the preconstruct cache.
 
 \paragraph{Cluster scale impact}
-We scale the backend storage system 
-to show how the \texttt{GET} layer performance changes.
+We scale the backend storage system to show how the \texttt{GET} layer performance changes. 
  %To do that,
  %we launch multiple registries on each registry server. 
- The backends are:
+The backends are:
  (1) \sysname deduplication cluster (\sysname-dedup),
  and
  (2) Consistent hashing based distributed object store. 
  As mentioned in \S\ref{sec:impl},
  we implement layer deduplication on the
  local file system of each registry server.
-We implement consistent hashing logic on client side (see \S\ref{sec:impl}) to
- scale the registry server as a deduplication cluster.
+We implement consistent hashing logic on the client side (see \S\ref{sec:impl}) to scale the registry server as a deduplication cluster.
  %Besides, 
  %that the client distributes layers to 
-Therefore,
-we also use our client to scale the local file system of each registry server
-as a \emph{ consistent hashing based distributed object store}.
+%Therefore,
+we also use our client to scale the local file system of each registry server as a \emph{consistent hashing based distributed object store}.
 We increase the number of registry servers from 7 to 14,
 and the layer sizes from 30 to 70.
-We launch 20 clients to replay 2500 requests to registries.
+We launch 20 clients to replay 2500 requests to the registries.
 %
 %\sysname deduplication cluster and test the layer restoring performance.
-As shown in Figure~\ref{fig:eval-clusterscale},
-%when the cluster size is 7,
-when the number of servers increases,
-The average \texttt{GET} layer latency from
-distributed object store doesn't changes much.
+As shown in Figure~\ref{fig:eval-clusterscale}, when the number of servers increases, the average \texttt{GET} layer latency from distributed object store doesn't changes much.
 However, the performance of \sysname scales with the number of servers.
-This is because with a bigger deduplication cluster,
- layer restoring latency is largely reduced as 
- layer restoring has a higher parallelism level.
- As shown in Figure~\ref{fig:eval-clusterscale},
- when layer size is 30 MB,
- double the cluster size can reduce 35\% of restoring overhead.
+This is because with a bigger deduplication cluster, the layer restoring latency is largely reduced as layer restoring has a higher parallelism level. 
+As shown in Figure~\ref{fig:eval-clusterscale}, when the layer size is 30~MB, doubling the cluster size reduces 35\% of the restoring overhead.
 
 \paragraph{Restoring latency breakdown}
 
 Figure~\ref{fig:eval-restoringbreakdown} shows 
 the layer restoring latency breakdown.
-The layer restoring latency contains
-layer recipe lookup duration,
-layer construction duration, and layer transfer duration.
-Layer construction duration
-contains slice recipe lookup duration,
-slice construction, and slice transfer duration.
+The layer restoring latency comprises layer recipe lookup duration, layer construction duration, and layer transfer duration.
+The layer construction duration involves slice recipe lookup duration, slice construction, and slice transfer duration.
 %
 The latencies are measured on the 7-node cluster.
-The layer restoring latencies shown in Figure~\ref{fig:eval-restoringbreakdown}
-only includes the complete layer restoring processes
-and we eliminate the layer restoring processes that are waiting for
-others to construct layers.
-Note that the layer restoring latencies measured also includes
-layer restoring processes for preconstruction.
+The layer restoring latencies shown in Figure~\ref{fig:eval-restoringbreakdown} only include complete layer restoring processes. 
+We eliminate the layer restoring processes that are waiting for others to construct layers.
+Note that the layer restoring latencies measured also include layer restoring processes for preconstruction.
 
-As shown in Figure~\ref{fig:eval-restoringbreakdown},
-slice construction duration accounts for the largest partition of  
-layer construct time.
-Slice construction contains
-file archiving and compression, which are two bottlenecks of slice construction. 
-Layer construct time increases with layer size because 
-the layer slices become bigger and take longer time to archive and compress.
-For example,
-for layer size equals 30 MB,
-fetching and merging slices takes 1.3 s on average.
-When the layer size increases to 70 MB,
-it takes 3.6 s on average to fetch and merge slices.
+As shown in Figure~\ref{fig:eval-restoringbreakdown}, slice construction duration accounts for the largest partition of layer construction time.
+Slice construction involves file archiving and compression, which are two bottlenecks of slice construction. 
+Layer construction time increases with layer size because layer slices become bigger and take a longer time to archive and compress.
+For example, for layers of size 30~MB, fetching and merging slices take 1.3~s on average.
+When the layer size increases to 70~MB, it takes 3.6~s on average to fetch and merge slices.
 
 \paragraph{Client concurrency impact}
-We increase the number of concurrent client request
-and measure the \texttt{GET} layer request latency on 14-node cluster
-for \emph{\sysname-dedup} and \emph{distributed object storage system} respectively.
+We increase the number of concurrent client requests and measure the average \texttt{GET} layer request latency on a 14-node cluster for \emph{\sysname-dedup} and a \emph{distributed object storage system}.
 %
 Figure~\ref{fig:eval-clientscale} shows
-the average \texttt{GET} layer latency for \emph{\sysname-dedup}
-and \emph{distributed object storage system} with different number of concurrent client requests.
-As shown, 
-distributed storage system shows almost a stable \texttt{GET} layer latency with increasing number of clients.
-However,
-as the number of concurrent client requests increases,
-the average \texttt{GET} layer request latency of \emph{sift-dedup} increases.
-For example,
-when the number of concurrent client requests is 20,
-the average \texttt{GET} layer request latency for \emph{\sysname-dedup} is 0.37 s.
-When the number of concurrent client requests increases to 60,
-the average \texttt{GET} layer request latency for \emph{\sysname-dedup} increases to 0.47 s.
-This is because layer restoring process is computation-intensive.
-With more concurrent requests,
-the layer restoring overhead grows higher.
+the average \texttt{GET} layer latency for \emph{\sysname-dedup} and \emph{distributed object storage system} for a varying number of concurrent client requests.
+The \texttt{GET} layer latency for the distributed storage system is almost stable as the number of clients increase.
+However, for \emph{sift-dedup}, the average \texttt{GET} layer request latency increases with the number of concurrent client requests.
+For example, in the case of \emph{\sysname-dedup}, when the number of concurrent client requests is 20, the average \texttt{GET} layer request latency is 0.37~s while when it's 60, the average \texttt{GET} layer request latency  increases to 0.47~s.
+This is because layer restoring process is computationally intensive.
+The more concurrent requests, the higher the layer restoring overhead.
+
 \paragraph{Deduplication latency breakdown}
-Figure~\ref{fig:eval-dedupbreakdown}
-shows the breakdown of deduplication latency.
-Note that to reduce the impact of layer deduplication on
-\texttt{GET} layer request,
- layer deduplication process is a 
-single-threaded off-line deduplication.
-As shown in Figure~\ref{fig:eval-dedupbreakdown},
-decompression and file-level deduplication
-account for the largest proportion of layer deduplication duration.
-This is because \sysname uses single-threaded decompression
-and file-level deduplication for reducing the computation overhead of the off-line layer deduplication.
-Moreover, the duration of decompression and file-level deduplication
-increases with layer sizes.
-For example,
-when the layer size increases from 30 MB to 70 MB,
-the decompress duration increases from 1.6 s to 3.8 s on average
-and the file-level deduplication duration increases from 2.5 s to 8.8 s.
+Figure~\ref{fig:eval-dedupbreakdown} shows the breakdown of the deduplication latency.
+Note that to reduce the impact of layer deduplication on the \texttt{GET} layer request, the layer deduplication process is single-threaded and off-line.
+As shown in Figure~\ref{fig:eval-dedupbreakdown}, decompression and file-level deduplication account for the largest portions of the layer deduplication duration.
+This is because \sysname uses single-threaded decompression and file-level deduplication for reducing the computation overhead of the off-line layer deduplication.
+Moreover, the duration of decompression and file-level deduplication increases with layer sizes.
+For example, when the layer size increases from 30~MB to 70~MB, the decompression duration increases from 1.6~s to 3.8~s on average and the file-level deduplication duration increases from 2.5~s to 8.8~s on average.
 %\paragraph{Metadata size} 
 %Figure~\ref{xxx} shows the average metadata size on each registry server measured by using the size of the used memory in Redis~\cite{redis} when in \emph{B-mode 0}.
 %Note that the replication level for the Redis cluster is also set to three.
