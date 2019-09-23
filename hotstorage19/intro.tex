@@ -102,13 +102,13 @@ We believe that this is just the tip of the iceberg and the number of
 %
 Other popular public
 registries~\cite{amazon-ecr,jfrog-artifactory,azure-cr,google-cr}, as well as
-on-prem registry deployments in large organizations, experience the same
+on-prem registry deployments in large organizations, experience a similar
 surge of container images.
 %
 As a result,
 organizations spend an increasing amount of their storage and networking
 infrastructure on operating image registries
-to keep up with the demand and provide adequate performance levels
+to keep up with the demand and provide adequate performance levels.
 %
 %
 %%%
@@ -142,7 +142,7 @@ across layers to make the service more efficient.
 
 Layer sharing is one approach to reduce this redundancy.
 %
-However, it is not sufficient as layers are coarse and rarely identical due the the
+However, it is insufficient as layers are coarse and rarely identical due the the
 fact that they are typically built by independent developers without much coordination
 with others.
 %
@@ -159,7 +159,7 @@ strategies}.
 While applying deduplication to the Docker registry can yield promising storage
 reduction benefits, it is not straightforward.
 %
-The main challenge is to retain acceptable performance such that client
+The main challenge is retaining acceptable performance such that client
 interactions with the registry (in particular pushing and pulling of images)
 are not affected.
 %
@@ -170,14 +170,15 @@ prohibitive overheads due to high layer reconstruction cost.
 These slowdowns during image pulls are especially
 harmful because they contribute directly to the start times of containers.
 %
-Our experiments showed that on average na\"{i}ve deduplication increases layer
+Our experiments showed that on average, na\"{i}ve deduplication increases layer
 download latencies by 2.5$\times$ compared to the original registry.
 
 In this paper we propose \sysname, the first Docker registry that natively
 supports deduplication.
 %
 \sysname's design is tailored to Docker registry environments and workloads to
-reduce deduplication overhead. It employs four key techniques to reduce
+reduce deduplication overhead. \DIM{I don't understand the preceeding sentence.}
+It employs four key techniques to reduce
 deduplication overhead and keep request latencies low:
 %
 %It exploits two kinds of redundancies: 1)~redundant data across layers;
@@ -188,15 +189,15 @@ deduplication overhead and keep request latencies low:
 number of layer replicas as-is, without decompressing and deduplicating them.
 %
 Accesses to these replicas do not experience deduplication overhead while
-the remaining layer replicas are decompressed and deduplicated for storage reduction.
+the remaining layer replicas are decompressed \DIM{Is this supposed to say "compressed"?}and deduplicated for storage reduction.
 %
-\item It allows to deduplicate less frequently accessed layers more
+\item It deduplicates less frequently accessed layers more
 aggressively than popular layers to speed up accesses to popular
 layers while still achieving high storage reduction.
 %
 \item It monitors and exploits user access patterns to preconstruct
 layers before layer download requests arrive to avoid adding reconstruction
-latencies to layer pull requests.
+latency to layer pull requests.
 %
 \item During layer deduplication, it groups files in \emph{slices} and evenly
 distributes them across the cluster to parallelize and speed up layer reconstruction.
