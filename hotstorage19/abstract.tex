@@ -5,9 +5,11 @@
 The rise of containers has lead to a steep proliferation of container images.
 %
 The associated storage performance and capacity requirements place high
-pressure on the registries, which store and serve images, and are key obstacles
+pressure on the registries, which store and serve images. And 
+the large volume of Docker images stored in registries is the key obstacle
 to efficiently scale these registries.
 \DIM{I don't understand what is the "key obstacles" here?}
+\NZ{Fixed}
 %
 %The proliferation of container images and the associated storage performance
 %and capacity requirements are key obstacles to efficiently scale Docker
@@ -22,18 +24,27 @@ registries.
 However, modern registries are currently not able to effectively eliminate the duplicates.
 %due to the compressed format of the images.
 
-In this paper, we propose \sysname, a new Docker registry architecture, which
+In this paper, we propose \sysname, a new Docker registry architecture, 
+which
 natively integrates deduplication into the registry.
 %
 \sysname supports several configurable \emph{deduplication modes}, which provide
 different levels of storage efficiency, durability, and performance, as
 required by different use cases.
 %
-To mitigate the negative impact of deduplication on the image download
-and upload times, \sysname introduces a \emph{two-tier cache hierarchy} with a novel
-prefetch algorithm based on user access histories.
+To mitigate the negative impact of deduplication on the image download times, 
+\sysname introduces a \emph{two-tier storage hierarchy} with a novel
+layer prefetch/preconstruct cache algorithm based on user access patterns.
 %
-Under real workloads, \sysname saves up to \gap of storage space while keeping
-the latencies within \gap of the original registry.
+Under real workloads, 
+for \emph{highest data reduction mode},
+\sysname saves up to half of storage space 
+compare to the current registry. 
+For the \emph{highest performance mode},
+\sysname can reduce the \texttt{GET} layer latency up to 14\%
+compare to the state-of-the-art. 
+While the rest deduplication modes
+allow to trade off performance and data reduction.
+%the latencies within \gap of the original registry.
 
 \end{abstract}
