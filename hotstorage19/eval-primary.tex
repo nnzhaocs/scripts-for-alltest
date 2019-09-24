@@ -19,7 +19,7 @@ Accordingly, B mode 3 doesn't have D-servers while
 B mode 0 doesn't have P-servers.
 %
 For the remaining two modes --
-B mode 2 and B mode 1, the number of P-servers is set to 6 and 3, respectively.
+B mode 2 and B mode 1, the number of P-servers is set to six and three, respectively.
 %In addition, 
 %we speedup trace replaying by using different speedup factors
 %so that each trace can be finished within 30 minutes.
@@ -27,7 +27,7 @@ B mode 2 and B mode 1, the number of P-servers is set to 6 and 3, respectively.
 %we first warmup P-servers and D-servers with a certain amount of layers 
 %as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
 We have 100 clients replaying the traces to P-servers and/or D-servers depending on the mode.
-We also evaluate the \emph{Bolt} with 3-way replication on 9 servers as our baseline. 
+We also evaluate the \emph{Bolt} with 3-way replication on nine servers as our baseline. 
 
 Figure~\ref{fig:eval-dalprimary} shows the average \texttt{GET} layer response time for \texttt{GET} layer requests for \sysname with different deduplication modes and \emph{Bolt} by replaying the \texttt{Dal} workload five times, each time with a different layer size (starting with 5~MB and ending at 25~MB).
 Note that for \emph{B mode 0}, the \texttt{GET} layer latency is the \emph{layer restoring latency}.
@@ -65,7 +65,7 @@ This is because the primary cluster for \emph{B mode 1} is half the \emph{B mode
 %For \emph{B mode 1} which has a 3-node primary cluster, more \texttt{GET} layer requests are sent to the P-servers, which causes a lot of overhead.
 \emph{S mode}'s \texttt{GET} layer performance is similar to that of \emph{B mode 2}.
 For example, the average \texttt{GET} layer latency variation between \emph{B mode 2} and \emph{S mode} is only 3\% when the layer size is 20~MB.
-This is because for \emph{S mode}, the hot layers have 3 replicas and are distributed across a 6-node primary cluster, which improves the overall performance.
+This is because for \emph{S mode}, the hot layers have three replicas and are distributed across a 6-node primary cluster, which improves the overall performance.
 %while the remaining cold layers only have a single layer replica on the primary cluster. 
 
 %We find that
@@ -80,30 +80,19 @@ This is because for \emph{S mode}, the hot layers have 3 replicas and are distri
 %manifest latency by 17\% and 24\% respectively.
 
 \paragraph{Different traces}
-Next,
-we replay 4 different traces and match with layer size around 25 MB.
-Figure~\ref{fig:eval-total-traces}
-shows the average \texttt{GET} layer latency across 4 different workloads.
-Overall,
-\texttt{Lon} has the lowest
-\texttt{GET} layer latency.
-This is because \texttt{Lon} has less \texttt{GET} layer requests than other workloads
-as shown in Table~\ref{tab:eval-overall}.
-Majority of the request in \texttt{Lon} is \texttt{GET} manifest requests.
+Next, we replay four different traces and match them with layers of size $\sim25$~MB.
+Figure~\ref{fig:eval-total-traces} shows the average \texttt{GET} layer latency across the four different workloads.
+Overall, the \texttt{Lon} trace has the lowest \texttt{GET} layer latency.
+This is due to \texttt{Lon}'s fewer \texttt{GET} layer requests compared to other workloads as shown in Table~\ref{tab:eval-overall}.
+The majority of requests in \texttt{Lon} are \texttt{GET} manifest requests.
 
-As shown in Figure~\ref{fig:eval-total-traces},
-\emph{B-mode 0} increases the \texttt{GET} layer latency by 39\% and 80\% on average
-for workloads \texttt{Fra} and \texttt{Lon}
-because of layer restoring overhead.
-\texttt{Fra} and \texttt{Lon} has 
-lower preconstruct cache hit ratios of 0.72 and 0.8 with 
-21\% and 15\% of \texttt{GET} layer requests waiting
-for layer construction because of small duration between 
-\texttt{GET} manifest requests and the subsequent \texttt{GET} layer requests.
+As shown in Figure~\ref{fig:eval-total-traces}, because of layer restoring overhead, \emph{B mode 0} increases the \texttt{GET} layer latency by 39\% and 80\% on average for the \texttt{Fra} and \texttt{Lon} workloads, respectively.
+\texttt{Fra} and \texttt{Lon} traces have lower preconstruct cache hit ratios, 0.72 and 0.8, respectively. 
+The \texttt{Fra} and \texttt{Lon} traces have 21\% and 15\%, respectively, of \texttt{GET} layer requests waiting for layer construction. 
+This is because of the small duration between \texttt{GET} manifest requests and their subsequent \texttt{GET} layer requests.
 Note that the \emph{superfetch cache} hit ratio is
-not affected by the duration \texttt{GET} manifest requests and the subsequent \texttt{GET} layer requests.
-Therefore, \emph{B-mode 3}
-outperforms \emph{Blot} for both \texttt{Fra} and \texttt{Lon}.
+not affected by the duration between \texttt{GET} manifest requests and their subsequent \texttt{GET} layer requests.
+Therefore, \emph{B mode 3} outperforms \emph{Bolt} for both the \texttt{Fra} and \texttt{Lon} traces.
 
 %Note that the superfetch cache is used by the primary cluster while the preconstruct cache is used by the deduplication cluster.
 %The superfetch cache hit ratio shown in Figure~\ref{xxx} is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode} because they show the similar cache hit ratios.
