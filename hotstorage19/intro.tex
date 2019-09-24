@@ -49,9 +49,7 @@ By now, all major cloud platforms endorse containers as a core deployment
 technology~\cite{googlecengine,azurec,ibmkube,awscont} and adoption
 is increasing.
 %
-According to some surveys, in 2018, about 21\% of enterprise hosts are already
-managed by Docker and the ratio is consistently growing by about 5\%
-annually~\cite{20percentdocker}.
+According to \cite{20percentdocker}, in 2018, about 21\% of Datadog's customers' monitored hosts run Docker and this continues to grow by about 5\% annually.
 
 %%%
 % 2. Background on container images and registry storage;
@@ -73,7 +71,7 @@ execution.
 %
 %A layer can be shared between multiple images.
 %
-Docker leverages unification file systems~\cite{docker-driver-eval} to
+Docker leverages union file systems~\cite{docker-driver-eval} to
 efficiently merge layers into a single file system tree when starting a container.
 %
 Identical layers across different images can be shared by containers.
@@ -94,7 +92,7 @@ As the container market continues to expand, Docker registries manage a
 growing number of images and corresponding layers.
 %
 Some conservative estimates show that in spring 2019, Docker Hub alone
-stored at least 2 million \emph{public} images of roughly 1~PB in
+stored at least 2 million \emph{public} images totalling roughly 1~PB in
 size~\cite{skourtis2019carving,dedupanalysis}. 
 %
 We believe that this is just the tip of the iceberg and the number of
@@ -107,8 +105,7 @@ surge of container images.
 %
 As a result,
 organizations spend an increasing amount of their storage and networking
-infrastructure on operating image registries
-to keep up with the demand and provide adequate performance levels.
+infrastructure on operating image registries to provide adequate performance while keeping up with the demand.
 %
 %
 %%%
@@ -151,7 +148,7 @@ are problematic because \LR{add reasons against existing file- or block-level de
 strategies}
 \NZ{fixed}
 the image dataset is a set of \textbf{compressed} layer tarballs
-and the deduplication ratio for compressed tarballs is low.
+and the deduplication ratio for compressed tarballs is low \Subil{Do we have a citation for this? Or did we run file and block level deduplication on compressed tarballs and found it have poor deduplication results?}.
 
 %%%
 % 4. Sift's idea
@@ -175,14 +172,16 @@ These slowdowns during image pulls are especially
 harmful because they contribute directly to the start times of containers.
 %
 Our experiments showed that on average, na\"{i}ve deduplication increases layer
-download latencies by 2.5$\times$ compared to the registry without deduplication.
+download latencies by 2.5$\times$ compared to the registry without deduplication and layer reconstruction.
 
 In this paper we propose \sysname, the first Docker registry that natively
 supports deduplication.
 %
-\sysname's design is tailored to Docker registry environments and workloads to
-reduce deduplication overhead. \DIM{I don't understand the preceeding sentence.}
-\NZ{can you read again?}
+\sysname's design is tailored to
+% Docker registry environments and workloads to
+increase storage efficiency via deduplication of layers while
+reducing the corresponding layer restoring overhead. \DIM{I don't understand the preceeding sentence.}
+\NZ{can you read again?} \Subil{reworded. is this better?}
 It employs four key techniques to reduce
 the impact of utilizing layer deduplication on performance: 
 %and keep request response time low:
@@ -195,8 +194,11 @@ the impact of utilizing layer deduplication on performance:
 number of layer replicas as-is, without decompressing and deduplicating them.
 %
 Accesses to these replicas do not experience layer restoring overhead while
-the remaining layer replicas are decompressed \DIM{Is this supposed to say "compressed"?}
-\NZ{it is decompressed. otherwise how we do dedup} and deduplicated for storage reduction.
+the remaining layer replicas are decompressed
+ \DIM{Is this supposed to say "compressed"?}
+\NZ{it is decompressed. otherwise how we do dedup} 
+and deduplicated for storage reduction.
+\Subil{I understand Dimitris' confusion. Maybe this is a better rewording: It maintains a level of redundancy by keeping a configurable number of layer replicas on certain assigned servers in the registry cluster, while also storing unique files (and maintaining replicas for redundancy purposes) from across all the layers in the remaining servers.}
 %
 \item It deduplicates less frequently accessed layers more
 aggressively than popular layers to speed up accesses to popular
@@ -220,7 +222,7 @@ distributes them across the cluster to parallelize and speed up layer reconstruc
 \VT{will populate as eval is ready}
 \NZ{fixed}
 
-We implement \sysname by modify current registry' driver and backend as a 
+We implement \sysname by modifying the existing registry's filesystem driver and backend as a 
 layer deduplication driver and backend (detailed in \S\ref{sec:impl}).
 We deploy \sysname
 on a 14-node cluster and evaluated with real-world workloads and real layers.
@@ -228,6 +230,6 @@ With the \emph{highest performance mode},
 \sysname outperforms the state-of-the-art by reducing the layer downloading latency up to 14\%.
 With the \emph{highest deduplication mode},
 \sysname saves up to 50\% of storage space compare to the registry without layer deduplication.
-The rest deduplication modes trade off performance and data reduction (detailed in \S\ref{sec:Evaluation}).
+The remaining deduplication modes make different trade offs in performance and data reduction (detailed in \S\ref{sec:Evaluation}).
 %
 %The evaluation results show that uses a cache that takes into consideration the
