@@ -148,15 +148,18 @@ with others.
 %
 While existing deduplication methods can be applied~\cite{dedup1,dedup2,dedup3}, they
 are problematic because \LR{add reasons against existing file- or block-level deduplication
-strategies}.
-
+strategies}
+\NZ{fixed}
+the image dataset is a set of \textbf{compressed} layer tarballs
+and the deduplication ratio for compressed tarballs is low.
 
 %%%
 % 4. Sift's idea
 %     Even with decompression, things do not work well: perfomance overhead.
 %%%
 
-While applying deduplication to the Docker registry can yield promising storage
+While applying decompression and then file-level deduplication to the Docker registry 
+can yield promising storage
 reduction benefits, it is not straightforward.
 %
 The main challenge is retaining acceptable performance such that client
@@ -165,31 +168,35 @@ are not affected.
 %
 A na\"{i}ve application of deduplication to the registry---decompressing
 layers and storing individual files in content-addressable storage---introduces
-prohibitive overheads due to high layer reconstruction cost.
+prohibitive overheads due to high layer reconstruction 
+(denoted as layer restoring) cost.
 %
 These slowdowns during image pulls are especially
 harmful because they contribute directly to the start times of containers.
 %
 Our experiments showed that on average, na\"{i}ve deduplication increases layer
-download latencies by 2.5$\times$ compared to the original registry.
+download latencies by 2.5$\times$ compared to the registry without deduplication.
 
 In this paper we propose \sysname, the first Docker registry that natively
 supports deduplication.
 %
 \sysname's design is tailored to Docker registry environments and workloads to
 reduce deduplication overhead. \DIM{I don't understand the preceeding sentence.}
+\NZ{can you read again?}
 It employs four key techniques to reduce
-deduplication overhead and keep request latencies low:
+the impact of utilizing layer deduplication on performance: 
+%and keep request response time low:
 %
 %It exploits two kinds of redundancies: 1)~redundant data across layers;
 %and 2)~redundancy caused by replication in the storage backend.
 %
 \begin{compactenumerate}
-\item It exploits redundancy caused by replication in the storage backend and keeps a fixed
+\item It exploits redundancy caused by replication in the storage backends and keeps a fixed
 number of layer replicas as-is, without decompressing and deduplicating them.
 %
-Accesses to these replicas do not experience deduplication overhead while
-the remaining layer replicas are decompressed \DIM{Is this supposed to say "compressed"?}and deduplicated for storage reduction.
+Accesses to these replicas do not experience layer restoring overhead while
+the remaining layer replicas are decompressed \DIM{Is this supposed to say "compressed"?}
+\NZ{it is decompressed. otherwise how we do dedup} and deduplicated for storage reduction.
 %
 \item It deduplicates less frequently accessed layers more
 aggressively than popular layers to speed up accesses to popular
@@ -211,8 +218,16 @@ distributes them across the cluster to parallelize and speed up layer reconstruc
 %%%
 
 \VT{will populate as eval is ready}
+\NZ{fixed}
 
-%We implemented and deployed \sysname on a 21-node cluster and evaluated with
-%real-world workloads and real layers.
+We implement \sysname by modify current registry' driver and backend as a 
+layer deduplication driver and backend (detailed in \S\ref{sec:impl}).
+We deploy \sysname
+on a 14-node cluster and evaluated with real-world workloads and real layers.
+With the \emph{highest performance mode},
+\sysname outperforms the state-of-the-art by reducing the layer downloading latency up to 14\%.
+With the \emph{highest deduplication mode},
+\sysname saves up to 50\% of storage space compare to the registry without layer deduplication.
+The rest deduplication modes trade off performance and data reduction (detailed in \S\ref{sec:Evaluation}).
 %
 %The evaluation results show that uses a cache that takes into consideration the
