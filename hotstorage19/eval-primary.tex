@@ -19,7 +19,7 @@ Accordingly, B mode 3 doesn't have D-servers while
 B mode 0 doesn't have P-servers.
 %
 For the remaining two modes --
-B mode 2 and B mode 1, the number of P-servers is set to six and three, respectively.
+B mode 2 and B mode 1, the number of P-servers is set to six and three, respectively. For S mode, the number of P-servers is set to six.
 %In addition, 
 %we speedup trace replaying by using different speedup factors
 %so that each trace can be finished within 30 minutes.
@@ -39,16 +39,16 @@ Note that for \emph{B mode 0}, the \texttt{GET} layer latency is the \emph{layer
 %The difference in response time for \texttt{PUT} and \texttt{GET} requests are mainly caused by the different writes and reads throughput of SSDs. 
 
 Overall, the average \texttt{GET} layer latency increases with layer size for all the schemes.
-For example, when the layer size increases from 5~MB to 25~MB, the average \texttt{GET} layer latency for \emph{Bolt} grows from 0.19~s to 0.7~s, and from 0.17~s to 0.6~s for \emph{B mode 3}.
+For example, when the layer size increases from 5~MB to 25~MB, the average \texttt{GET} layer latency for \emph{BOLT} grows from 0.19~s to 0.7~s, and from 0.17~s to 0.6~s for \emph{B mode 3}.
 Moreover, when the layer size is 5~MB, the average \texttt{GET} layer latency across all the different schemes is around 0.2~s with minimal variation.
 For example, the highest and lowest \texttt{GET} layer latency when the layer size is 5~MB are 0.17~s and 0.21~s (for \emph{B mode 3} and \emph{B mode 1}).
 
-Comparing \emph{Bolt} with \emph{B mode 3}, we see that \emph{B mode 3} improves the overall performance by using a \emph{superfetch cache}.
-\emph{B mode 3} reduces the average \texttt{GET} layer latency by 13\% compared to \emph{Bolt} when the layer size is 20~MB.
-Our superfetch cache hit ratio is 0.91. This high hit ratio entails a significant improvement to the primary servers' I/O latency. However, the network transfer time accounts for the largest portion of the \text{GET} layer latency for \emph{Bolt} and \emph{B mode 3}.
+Comparing \emph{BOLT} with \emph{B mode 3}, we see that \emph{B mode 3} improves the overall performance by using a \emph{superfetch cache}.
+\emph{B mode 3} reduces the average \texttt{GET} layer latency by 13\% compared to \emph{BOLT} when the layer size is 20~MB.
+Our superfetch cache hit ratio is 0.91. This high hit ratio entails improvement to the primary servers' I/O latency. However, the network transfer time accounts for the largest portion of the \text{GET} layer latency for \emph{BOLT} and \emph{B mode 3}.
 
-Next we compare \emph{B mode 0} with \emph{Bolt}.
-Although \emph{B mode 0} saves half of the storage space by \emph{deduplicating} all layer replicas, it increases the \texttt{GET} layer latency by at most 37\% due to the layer restoring overhead.
+Next we compare \emph{B mode 0} with \emph{BOLT}.
+Although \emph{B mode 0} saves half of the storage space by \emph{deduplicating} all layer replicas (see \S\ref{sec:inter-layer-deduplication}), it increases the \texttt{GET} layer latency by at most 37\% due to the layer restoring overhead.
 %This is because of the high preconstruct cache hit ratio (detailed in Figure~\cite{xxx}), 
 %which reduces the layer restoring latency.
 
@@ -65,7 +65,7 @@ This is because the primary cluster for \emph{B mode 1} is half the \emph{B mode
 %For \emph{B mode 1} which has a 3-node primary cluster, more \texttt{GET} layer requests are sent to the P-servers, which causes a lot of overhead.
 \emph{S mode}'s \texttt{GET} layer performance is similar to that of \emph{B mode 2}.
 For example, the average \texttt{GET} layer latency variation between \emph{B mode 2} and \emph{S mode} is only 3\% when the layer size is 20~MB.
-This is because for \emph{S mode}, the hot layers have three replicas and are distributed across a 6-node primary cluster, which improves the overall performance.
+This is because for \emph{S mode}, the popular layers have multiple replicas across the 6-node cluster, which improves the overall performance.
 %while the remaining cold layers only have a single layer replica on the primary cluster. 
 
 %We find that
@@ -86,13 +86,13 @@ Overall, the \texttt{Lon} trace has the lowest \texttt{GET} layer latency.
 This is due to \texttt{Lon}'s fewer \texttt{GET} layer requests compared to other workloads as shown in Table~\ref{tab:eval-overall}.
 The majority of requests in \texttt{Lon} are \texttt{GET} manifest requests.
 
-As shown in Figure~\ref{fig:eval-total-traces}, because of layer restoring overhead, \emph{B mode 0} increases the \texttt{GET} layer latency by 39\% and 80\% on average for the \texttt{Fra} and \texttt{Lon} workloads, respectively.
+As shown in Figure~\ref{fig:eval-total-traces}, because of layer restoring overhead, \emph{B mode 0} have \texttt{GET} layer latency that is, on average, 39\% and 80\% higher than BOLT for the \texttt{Fra} and \texttt{Lon} workloads respectively.
 \texttt{Fra} and \texttt{Lon} traces have lower preconstruct cache hit ratios, 0.72 and 0.8, respectively. 
-The \texttt{Fra} and \texttt{Lon} traces have 21\% and 15\%, respectively, of \texttt{GET} layer requests waiting for layer construction. 
+The \texttt{Fra} and \texttt{Lon} traces have 21\% and 15\%, respectively, of \texttt{GET} layer requests waiting for layer construction \Subil{We need a graph or something to show this waiting time because I don't see it from the existing figures}. 
 This is because of the small duration between \texttt{GET} manifest requests and their subsequent \texttt{GET} layer requests.
 Note that the \emph{superfetch cache} hit ratio is
 not affected by the duration between \texttt{GET} manifest requests and their subsequent \texttt{GET} layer requests.
-Therefore, \emph{B mode 3} outperforms \emph{Bolt} for both the \texttt{Fra} and \texttt{Lon} traces.
+Therefore, \emph{B mode 3} outperforms \emph{BOLT} for both the \texttt{Fra} and \texttt{Lon} traces. \Subil{I think there needs to be at least some mention of Dal and Syd?}
 
 %Note that the superfetch cache is used by the primary cluster while the preconstruct cache is used by the deduplication cluster.
 %The superfetch cache hit ratio shown in Figure~\ref{xxx} is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode} because they show the similar cache hit ratios.

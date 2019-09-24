@@ -61,7 +61,7 @@ computation resources.
 
 %\paragraph{Non-regular files}
 %
-When deduplicating layers, \sysname needs to be able to deal with
+While deduplicating layers, \sysname needs to be able to deal with
 non-regular files such as symlinks, device files, or directories.
 %
 %During layer deduplication, only \emph{regular} file duplicates~\cite{xxx} are removed.
@@ -74,11 +74,11 @@ After removing regular file duplicates, any remaining unique files are saved in 
 %The file store is implemented by modifying the Docker registry's file system driver~\cite{dockerfs},
 %which is a local storage driver that uses a directory tree in the local file system.
 
-/var/lib/registry/docker/registry/v2 is the default root directory in the local file system, where all
+\emph{/var/lib/registry/docker/registry/v2} is the default root directory in the local file system, where all
 registry-related data is stored (denoted as rootdir).
 %
 On the deduplication cluster,
-each uploaded layer is stored in directory rootdir/blobs/sha256/ld.2/ld/
+each uploaded layer is stored in directory \emph{rootdir/blobs/sha256/ld.2/ld/}
 as a file named \texttt{data} where ld is the layer's hex
 digest and ld.2 are the first two digits of the hex digest.
 %
@@ -86,11 +86,11 @@ When deduplication has finished, \texttt{data} is deleted.
 
 During deduplication, all \emph{regular} unique files are distributed to their
 corresponding D-servers and stored there locally under
-rootdir/uniquefiles/sha256/fd.2/fd/, where fd is the file's hex
+\emph{rootdir/uniquefiles/sha256/fd.2/fd/}, where fd is the file's hex
 digest and fd.2 its first two digits.
 %
 Every \emph{non-regular} file will be stored on the D-server, which initially
-received the layer for deduplication, under rootdir/blobs/sha256/ld.2/ld/tmp.
+received the layer for deduplication, under \emph{rootdir/blobs/sha256/ld.2/ld/tmp}.
 %
 When a layer is reconstructed, the restoring master can check for non-regular files through
 the layer digest under that location.
@@ -186,12 +186,13 @@ real layers, downloaded from Docker Hub.
 %~\cite{dedupanalysis}.
 %
 Specifically, we extract layer digests from layer requests recorded in the IBM trace
-and then randomly match each digest to a layer in Docker Hub
+and then randomly match each digest to a layer in the Docker Hub.
 %. 
 Consequently, each layer request pulls or pushes a real layer.
 %
 For manifest only requests recorded in the IBM traces, we generate a random file to emulate a
 manifest file.
+\Ali{we need to explain how we match layers in detail.}
 %This is because Sift does not deduplicate manifest file.
 %The trace replayer uses Docker registry client emulator Python-dxf~\cite{pydxf} to 
 %\texttt{pull} or \texttt{push} layers or manifests to registry.
