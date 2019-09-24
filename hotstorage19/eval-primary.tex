@@ -122,9 +122,23 @@ shows the average \texttt{GET} layer latency across 4 different workloads.
 Overall,
 \texttt{Lon} has the lowest
 \texttt{GET} layer latency.
-This is because \texttt{Lon} has less \texttt{GET} layer requests than other workloads.
+This is because \texttt{Lon} has less \texttt{GET} layer requests than other workloads
+as shown in Table~\ref{tab:eval-overall}.
 Majority of the request in \texttt{Lon} is \texttt{GET} manifest requests.
 
+As shown in Figure~\ref{fig:eval-total-traces},
+\emph{B-mode 0} increases the \texttt{GET} layer latency by 39\% and 80\% on average
+for workloads \texttt{Fra} and \texttt{Lon}
+because of layer restoring overhead.
+\texttt{Fra} and \texttt{Lon} has 
+lower preconstruct cache hit ratios of 0.72 and 0.8 with 
+21\% and 15\% of \texttt{GET} layer requests waiting
+for layer construction because of small duration between 
+\texttt{GET} manifest requests and the subsequent \texttt{GET} layer requests.
+Note that the \emph{superfetch cache} hit ratio is
+not affected by the duration \texttt{GET} manifest requests and the subsequent \texttt{GET} layer requests.
+Therefore, \emph{B-mode 3}
+outperforms \emph{Blot} for both \texttt{Fra} and \texttt{Lon}.
 
 %Note that the superfetch cache is used by the primary cluster while the preconstruct cache is used by the deduplication cluster.
 %The superfetch cache hit ratio shown in Figure~\ref{xxx} is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode} because they show the similar cache hit ratios.
