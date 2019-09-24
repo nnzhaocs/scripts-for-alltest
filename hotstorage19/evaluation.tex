@@ -61,7 +61,10 @@ The traces span $\sim$80 days from three private registry clusters and four prod
 We randomly match the four anonymized production traces (i.e., \texttt{Dal, Fra, Lon, Syd}) 
 with our dataset to form four real-world production workloads (detailed in Section~\ref{sec:impl}). 
 We replay the first 5000 requests from each workload.
-Tables~\ref{tab:eval-overall} and ~\ref{tab:eval-dataset} detail the 5000 requests for each workload.
+Tables~\ref{tab:eval-overall} detail the 5000 requests for each workload.
+Before we replay each workload, 
+we first warmup P-servers and D-servers with a certain amount of layers 
+as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
 %Note that we use a 3-way replication
 %which triples the amount of data written during evaluation.
 %We speedup trace replaying by using different speedup factors so that each trace finishes within 30 minutes.
