@@ -7,29 +7,23 @@
 %Due to its increasing popularity, Docker has recently received increased
 %attention from the research community.
 
-A number of studies investigated various dimensions of Docker storage
-performance~\cite{dockerssd,shifter,slacker,exoclones,docker-driver-eval,
-improve-cow-container-drivers,cntr,slacker}.
-Many studies focus on
-reducing single Docker image size~\cite{Cimplifier, } to reduce image pulling time.
-docker-slim~\cite{dockerslim} is an effective tool to 
+A number of studies investigated various dimensions of Docker storage performance~\cite{dockerssd,shifter,slacker,exoclones,docker-driver-eval,improve-cow-container-drivers,cntr,dockerworkload}.
+Many studies focus on reducing the size of Docker images~\cite{rastogi2017cimplifier,gschwind2017optimizing} to reduce image pulling time.
+DockerSlim~\cite{dockerslim} is an effective tool to 
 minify a single image.
-~\cite{xxx}
-propose a file-level deduplication scheme on Docker client side.
+Alfred Krohmer~\cite{Krohmer-proposal} proposes a file-level deduplication scheme on the Docker clients side.
 %https://gist.github.com/devkid/5249ea4c88aab4c7bff1b34c955c1980#file-readme-md
-However, there is no performance evaluation for these two approaches.
-Recent study~\cite{Cimplifier}
-proposed to debloat Docker images by only maintaining
-enough resources to perform their functionality.
-All these methods can be complementary to our approach.
+However, neither of these approaches provide a performance evaluation.
+Rastogi~\etal~\cite{rastogi2017cimplifier} proposed to shrink Docker images by preserving enough image resources to function properly.
+All of these methods can be complementary to our approach.
 %
-%Harter \etal~\cite{} studied 57 images from Docker Hub for a variety of metrics
+%Harter \etal~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics
 %but not for data redundancy.
 %The authors used the results from their study to derive a benchmark to evaluate
 %the push, pull, and run performance of Docker graph drivers based on the studied
 %images. Compared to Slacker, our analysis focuses on the entire Docker Hub dataset.
 %
-%Cito \etal~\cite{analysisdockergithub} studied 70,000
+%Cito \etal~\cite{cito2017empirical} studied 70,000
 %Dockerfiles and focused on the image build process not its contents.
 %of Docker ecosystem with a focus on prevalent quality issues, and the evolution of Docker 
 %files based on a data set of 70,000 Docker files.
@@ -74,39 +68,15 @@ All these methods can be complementary to our approach.
 %registry dataset for its deduplication potential.
 %and propose to apply deduplication to it.
 
-%\VT{potentially move the dedup part from background to here.}
-%\paragraph{Deduplication} 
-Deduplication in Cloud storage has been investigated for decades.
-Many studies
-shows
-a great effectiveness of deduplication on virtual machine disk images~\cite{}.
-For example,
-~\cite{empirical analysisvm}
-shows
-similarity within and between 525 VM images from a production IaaS cloud.
-This is because current hypervisor-based virtualization techniques
-do not support block sharing between virtual disk images, 
-instead relying on techniques such as overlays 
-to build multiple VMs from a single "base" image, similar with Docker images.
-Variety of compression and deduplication
-techniques are proposed to reduce virtual image disk storage overhead
-~\cite{xxx}.
-Besides virtual disk images,
-many studies focus on primary data deduplication~\cite{xxx}
-and show the effectiveness by using
-whole-file deduplication and 
-sub-file deduplication~\cite{xxx}.
-\sysname uses whole-file deduplication and
-the sub-file deduplication methods
-can be complementary to \sysname.
+Deduplication in cloud storage has been investigated for decades.
+Multiple studies proposed compression and deduplication techniques to reduce virtual image disk storage overhead~\cite{zhou2013characterizing,srinivasan2012idedup,jin2009effectiveness}.
+For instance, Jayaram~\etal~\cite{jayaram2011empirical} studied 525 VM images from a production IaaS cloud and detected similarities. 
+ %...because current hypervisor-based virtualization techniques do not support block sharing between virtual disk images, instead relying on techniques such as overlays to build multiple VMs from a single "base" image, similar with Docker images.
+Beside virtual disk images, many studies focus on primary and backup data deduplication~\cite{tarasov2014dmdedup,muthitacharoen2001low,lu2012insights,2009-sparse_indexing_inline_dedup_using_sampling-fast,2013-charact_increment_changes_data_protect-atc,wallace2012characteristics,zhu2008avoiding} and show the effectiveness by using whole-file deduplication and sub-file deduplication~\cite{2012-hpc_practical_dedup_study-sc,msst16dedup-study}.
+\sysname uses whole-file deduplication and sub-file deduplication methods can be complementary to \sysname.
 
-The restoring performance is 
-as important as deduplication ratio for all deduplication methods even for backup systems~\cite{xxx}.
-To improve the restoring latency,
-variety optimizations are proposed and evaluated, such as  
-cache, prefetching, forward assembly area via exploiting historical information, 
-temporal trends, and data locality
-and etc.~\cite{xxx}.
+The restoring performance is as important as the deduplication ratio for all deduplication methods even for backup systems~\cite{lillibridge2013improving}.
+To improve the restoring latency, multiple optimizations are proposed and evaluated, such as caching, prefetching, forward assembly area via exploiting historical information, temporal trends, data locality, ...etc.~\cite{fu2014accelerating,fu2015design,fu2011aa}.
 All these optimization techniques inspire our \sysname design.
 %Most existing cloud storage providers employ data
 %deduplication techniques to eliminate redundant data, same data stored more
