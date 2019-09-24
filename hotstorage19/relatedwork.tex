@@ -4,15 +4,24 @@
 %?: ~\cite{7158965}.
 %?: ~\cite{dockerbook}.
 %?: ~\cite{5655241} - dedup of containers?
-
-
-
 %Due to its increasing popularity, Docker has recently received increased
 %attention from the research community.
 
 A number of studies investigated various dimensions of Docker storage
 performance~\cite{dockerssd,shifter,slacker,exoclones,docker-driver-eval,
 improve-cow-container-drivers,cntr,slacker}.
+Many studies focus on
+reducing single Docker image size~\cite{Cimplifier, } to reduce image pulling time.
+docker-slim~\cite{dockerslim} is an effective tool to 
+minify a single image.
+~\cite{xxx}
+propose a file-level deduplication scheme on Docker client side.
+%https://gist.github.com/devkid/5249ea4c88aab4c7bff1b34c955c1980#file-readme-md
+However, there is no performance evaluation for these two approaches.
+Recent study~\cite{Cimplifier}
+proposed to debloat Docker images by only maintaining
+enough resources to perform their functionality.
+All these methods can be complementary to our approach.
 %
 %Harter \etal~\cite{} studied 57 images from Docker Hub for a variety of metrics
 %but not for data redundancy.
@@ -29,8 +38,8 @@ improve-cow-container-drivers,cntr,slacker}.
 %Shu \etal~\cite{dockervulnerabile} studied the security vulnerabilities in Docker Hub
 %for 356,218 images.
 %
-Anwar \etal~\cite{dockerworkload} performed a detailed analysis
-of an IBM Docker registry workload but not the dataset.
+%Anwar \etal~\cite{dockerworkload} performed a detailed analysis
+%of an IBM Docker registry workload but not the dataset.
 %
 % and found there is a strong need for more
 %automated and systematic methods of applying security updates to Docker images. While
@@ -45,27 +54,88 @@ of an IBM Docker registry workload but not the dataset.
 %Bhimani~\cite{dockerssd} \etal characterized the performance of persistent storage options
 %for I/O intensive containerized applications with NVMe SSDs.
 %
-Data deduplication is a well
-explored and widely applied technique~\cite{2009-sparse_indexing_inline_dedup_using_sampling-fast,
-2001-low_bandwidth_network_fs-sosp,
-2012-idedup-fast,
-tarasov2014dmdedup,
-2008-avoid_disk_bottleneck_data_domain_dedupfs-fast}.
+%Data deduplication is a well
+%explored and widely applied technique~\cite{2009-sparse_indexing_inline_dedup_using_sampling-fast,
+%2001-low_bandwidth_network_fs-sosp,
+%2012-idedup-fast,
+%tarasov2014dmdedup,
+%2008-avoid_disk_bottleneck_data_domain_dedupfs-fast}.
 %
-A number of studies which focus on
-real-world datasets~\cite{2009-dedup_effectiveness_on_vm_disk_images-systor,
-2012-data_reduction_in_primary_storage-systor,
-2012-hpc_practical_dedup_study-sc,
-2013-charact_increment_changes_data_protect-atc,
-msst16dedup-study,
-2012-charact_backup_workloads-fast,
-2013-charact_dedup_effic_big_data-iiswc}
- can be complementary to our approach.
+%A number of studies which focus on
+%real-world datasets~\cite{2009-dedup_effectiveness_on_vm_disk_images-systor,
+%2012-data_reduction_in_primary_storage-systor,
+%2012-hpc_practical_dedup_study-sc,
+%2013-charact_increment_changes_data_protect-atc,
+%msst16dedup-study,
+%2012-charact_backup_workloads-fast,
+%2013-charact_dedup_effic_big_data-iiswc}
+% can be complementary to our approach.
 %but to the best of our knowledge, we are the first to analyze a large-scale Docker
 %registry dataset for its deduplication potential.
 %and propose to apply deduplication to it.
 
-\VT{potentially move the dedup part from background to here.}
+%\VT{potentially move the dedup part from background to here.}
+%\paragraph{Deduplication} 
+Deduplication in Cloud storage has been investigated for decades.
+Many studies
+shows
+a great effectiveness of deduplication on virtual machine disk images~\cite{}.
+For example,
+~\cite{empirical analysisvm}
+shows
+similarity within and between 525 VM images from a production IaaS cloud.
+This is because current hypervisor-based virtualization techniques
+do not support block sharing between virtual disk images, 
+instead relying on techniques such as overlays 
+to build multiple VMs from a single "base" image, similar with Docker images.
+Variety of compression and deduplication
+techniques are proposed to reduce virtual image disk storage overhead
+~\cite{xxx}.
+Besides virtual disk images,
+many studies focus on primary data deduplication~\cite{xxx}
+and show the effectiveness by using
+whole-file deduplication and 
+sub-file deduplication~\cite{xxx}.
+\sysname uses whole-file deduplication and
+the sub-file deduplication methods
+can be complementary to \sysname.
+
+The restoring performance is 
+as important as deduplication ratio for all deduplication methods even for backup systems~\cite{xxx}.
+To improve the restoring latency,
+variety optimizations are proposed and evaluated, such as  
+cache, prefetching, forward assembly area via exploiting historical information, 
+temporal trends, and data locality
+and etc.~\cite{xxx}.
+All these optimization techniques inspire our \sysname design.
+%Most existing cloud storage providers employ data
+%deduplication techniques to eliminate redundant data, same data stored more
+%than once.
+
+%Deduplication techniques significantly reduce storage needs and therefore
+%reduce storage costs and improve storage efficiency.
+
+%Data deduplication works by storing duplicate data chunks only once, keeping
+%only the unique data chunks. 
+%
+%Current cloud providers deploy a cross-user client-side fixed-size-chunk-level
+%data deduplication that delivers the highest deduplication
+%gain~\cite{pooranian2018rare}.
+%
+%These approaches maximize the benefit of deduplication: The cross-user data
+%deduplication treats cloud storage as a pool shared by all the cloud users,
+%because the potential for data deduplication is the highest as the probability
+%for redundancies and duplicates is higher the more inclusive the shared pool.
+%
+%The fixed-size-chunk-level specifies that a fixed-size chunk is the unit for
+%checking for duplicates on cloud storage.
+%
+%Google cloud and AWS employ StorReduce, a deduplication software that performs
+%in-line data deduplication transparently and resides between the client's
+%application and the hosting cloud storage.
+%
+%StorReduce provide 80-97\% storage and bandwidth reduction to the cloud
+%providers~\cite{StorReduce_google}.
 
 
 %Unlike our study, their analysis
