@@ -38,11 +38,13 @@ Each node is equipped with 8 cores, 16 GB RAM, 500 GB SSD, and 10,000 Mb/s NIC.
 %Thors are used as frontend.
 %\subsection{}
 Recent work \cite{analysisdockergithub} conducts a comprehensive analysis of 47~TB Docker Hub images and reports that the popularity distribution of the images is heavily skewed.
-To evaluate how \sysname works for frequently accessed images, we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub~\cite{docker-hub} as our evaluation dataset. 
+To evaluate how \sysname works for frequently accessed images, 
+we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub~\cite{docker-hub} as our evaluation dataset. 
 The size of this dataset is 12.5~TB and contains 507,023 layers. 
 After decompressing the layers, the total size of the dataset is 27.7~TB.
 We apply file-level deduplication on the decompressed dataset, 
-the total size of the resulting dataset of unique files is only 7.2~TB, making the deduplication ratio 0.5.
+the total size of the resulting dataset of unique files is only 7.2~TB, 
+making the deduplication ratio 0.5.
 The size distribution of our popular layer dataset is the same with the size distribution of~\cite{analysisdockergithub}.
 87.5\% of layers are smaller than 50 MB.
 %12.3\% of layers fall between 50 MB and 1 GB.
@@ -56,15 +58,17 @@ The size distribution of our popular layer dataset is the same with the size dis
 %Therefore, we divided our sample dataset into two groups:
 %smaller layers (layer size $\leq$ 50 MB) and big layers ( 50MB $\leq$ layer size $\leq$ 1 GB).
   
-To evaluate how \sysname performs for production registry workloads, we leverage IBM's cloud registry workload traces\cite{dockerworkload}. 
-The traces span $\sim$80 days from three private registry clusters and four production registry clusters. 
+To evaluate how \sysname performs for production registry workloads, 
+we leverage IBM's cloud registry workload traces\cite{dockerworkload}. 
+The traces span $\sim$80 days from three private registry clusters and 
+four production registry clusters. 
 We randomly match the four anonymized production traces (i.e., \texttt{Dal, Fra, Lon, Syd}) 
 with our dataset to form four real-world production workloads (detailed in Section~\ref{sec:impl}). 
 We replay the first 5000 requests from each workload.
 Tables~\ref{tab:eval-overall} detail the 5000 requests for each workload.
 Before we replay each workload, 
 we first warmup P-servers and D-servers with a certain amount of layers 
-as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
+as shown in Table~\ref{tab:eval-overall}.
 %Note that we use a 3-way replication
 %which triples the amount of data written during evaluation.
 %We speedup trace replaying by using different speedup factors so that each trace finishes within 30 minutes.
