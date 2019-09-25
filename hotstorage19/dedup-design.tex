@@ -131,6 +131,7 @@ After discarding duplicate files,
 During file replication, \sysname distributes the corresponding
 file headers to the associated servers 
 along with a content pointer pointing to the corresponding physical file. \Subil{The previous sentence seems to indicate that the header-contentpointer pairs are stored in the D-server. But they are only stored in the metadata database as part of the slice recipe, right?}
+\NZ{yes}
 The headers and content pointers of all the files, in a given D-server, that belong to a particular layer are included in that D-server's \emph{slice recipe} for that layer (see Figure~\ref{fig:replication-partition}). 
 %After unique file replication and layer partitioning,
 After file replication, \sysname adds the new slice recipes to the metadata database.
