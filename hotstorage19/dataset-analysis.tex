@@ -26,6 +26,7 @@ dataset~\cite{dedupanalysis}, only 3.2\% of files are unique, resulting in
 a deduplication ratio of 2$\times$ in terms of
 capacity\footnote{The deduplication ratio is only 2$\times$ despite the 97\% of redundant data
 because most of the unique files are very large in size.}.
+\NZ{can we just say 3\% of unique files without mention the space savings?}
 %
 This large amount of duplicate files
 %shared among different layers associated with different images
@@ -33,7 +34,7 @@ mainly consists of executables, object codes, libraries, and
 source codes, and is likely imported by different image developers using the same
 package installers or version control systems such as \texttt{apt},
 \texttt{pip} or \texttt{git} to install or get similar dependencies or source
-code.  
+codes.  
 %
 This file-level redundancy cannot be eliminated by the current layer-level content addressable
 storage system design.
@@ -47,7 +48,7 @@ $R$-way replication for reliability additionally fuels the high storage demands
 of Docker registries.
 %the amount of layers data grows exponentially and will explode in future.
 %
-Hence, solving this challenge by adding more disks and expanding storage systems
+Hence, solving this challenge by adding more disks and scaling out storage systems
 quickly becomes expensive due to the rapid growth of images.
 %This large volume data management challenge can not be solved by just adding
 %more disks and goes beyond just hardware upgrade or even datacenter expansion.
@@ -65,11 +66,11 @@ effective storage utilization.
 %
 However, retrieving a layer from a registry with file-level
 deduplication support requires restoring the layer,
-which involves fetching the files, and archiving and compressing them.
+which involves fetching the files, archiving and compressing them.
 %
 These extra operations incur a considerable overhead for
-\texttt{GET} layer requests, which already constitute a significant portion of \gap\% of
-the container startup time.
+\texttt{GET} layer requests, which already constitute a significant portion of 76\% of
+the container startup time~\cite{slacker}.
 %
 In this paper, we explore if it is possible to deduplicate layers and save storage space
 without sacrificing the \texttt{GET} layer performance.
@@ -100,7 +101,7 @@ without sacrificing the \texttt{GET} layer performance.
 
 \input{fig-repull-analysis}
 %
-A promising approach to mitigate deduplication overhead is predicting,
+A promising approach to mitigate layer restoring overhead is predicting,
 which layers will be accessed in the future and then preconstruct them.
 %
 %To overcome the deduplication overhead, we analyze registry workloads
@@ -108,7 +109,7 @@ which layers will be accessed in the future and then preconstruct them.
 %access patterns.
 %
 To study the feasibility of such a prediction approach, we analyze
-existing registry workloads from \todo{cite the workloads we studied here}.
+existing registry workloads from~\cite{dockerworkload}. %\todo{cite the workloads we studied here}.
 %
 We exploit the fact that, when a Docker client pulls an image
 from the Docker registry, it will first get the manifest of the
@@ -173,6 +174,7 @@ example, a client from \texttt{Lon} fetched the same layer 19,300 times.
 
 %
 \LR{Need to make sure that the following is not repeated in 4.4 (Caching Layers)}
+%\NZ{its duplicated}
 %We define \emph{repulling} as the act of fetching the same layer more than once
 %by the same user.
 % before because they are no longer present on the user side.
@@ -236,8 +238,8 @@ can compute the client repull probability and the client to one of the classes.
 %that account for majority of layer accesses.  Hence, we can cache hot layers
 %to improve performance.
 
-Once layer accesses can be predicted, deduplicated layers need to be restored
-in time before the \texttt{GET} layer request arrives.
+Once layer accesses can be predicted, deduplicated layers can be restored
+before the \texttt{GET} layer request arrives.
 %
 %As another optimization we explore if it is possible to preconstruct a 
 %deduplicated layer before users issues a \texttt{GET} layer to avoid
@@ -280,4 +282,12 @@ environment, especially for the large layers.
 In summary, it is feasible to build a layer for the user before
 the \texttt{GET} layer request arrives.
 
+
+In the case of small duration between a \texttt{GET} manifest request
+and its subsequent \texttt{GET} layer requests,
+layer preconstruction probably cannot be finished \emph{in time}. 
+Layer preconstruction also benefits a lot because
+the layer construction starts before the arrival of a \texttt{GET} layer request,
+which can largely reduce the layer construction overhead on 
+a \texttt{GET} layer request latency.
 

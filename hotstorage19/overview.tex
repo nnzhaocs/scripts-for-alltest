@@ -3,29 +3,36 @@
 
 \VT{In the intro/background we use "Docker hosts" instead of "Docker clients".
 Need to pick one and be consistent. I prefer ``Docker hosts''}
-
+\NZ{I think it's not necessarily docker hosts. we can pull an image without using
+	 docker engine}
 \VT{Make drivers emphasized in the background}
-
+%\NZ{arg1}
 \input{fig-sys-overview}
 
 Figure~\ref{fig:sift} shows the architecture of \sysname.
 %
-\sysname consists of the three main components: 1)~\emph{frontend registry
-servers}, 2)~a cluster of \emph{backend storage servers}, and 3)~a distributed
+\NZ{I think we can describe registry as a registry restful api. and indeed registry is a rest api}
+\sysname consists of the two main components: %1)~\emph{frontend registries}, 
+1)~a cluster of \emph{storage servers}
+with registry RESTful API and 2)~a distributed
 \emph{metadata database}. 
+%\NZ{arg1}
 %
-When uploading or downloading layers, Docker hosts communicate with the
-frontend registry servers.
+When uploading or downloading layers, 
+Docker clients communicate with the
+registry RESTful API.
 %
-As in the original registry, \sysname registries are independent from each
-other.
+%As in the original registry, 
+%\sysname registries are independent from each
+%other.
 %
-Each registry server uses a \sysname driver that processes requests by
-communicatin with the metadata database and the backend storage servers.
+Each server contains a registry RESTful API and a backend storage system.
+%uses a \sysname driver that processes requests by
+%communicatin with the metadata database and the backend storage servers.
 %
-Backend storage servers store
+Backend storage systems store
 %manifests and
-layers  and perform deduplication, keeping the deduplication metadata in the
+layers and perform deduplication, keeping the deduplication metadata in the
 database.
 %
 %The metadata database keeps information necessary to deduplicate layers.
@@ -33,9 +40,9 @@ database.
 %To reduce deduplication overhead, \sysname tries to minimize the time it takes
 %to restore a layer during a \texttt{pull} request.
 %
-\sysname uses three main techniques to reduce deduplication overhead:
+\sysname uses three main techniques to reduce deduplication and restoring overhead:
 1)~replica deduplication modes; 2)~parallel layer reconstruction; and
-3)~predictive cache prefetching.
+3)~predictive layer prefetching/preconstruction.
 
 
 
