@@ -58,6 +58,7 @@ keep $n$ layer replicas intact and deduplicate the remaining $R-n$ layer
 replicas, where $R$ is the layer replication level. This is in comparison to R-way replication in existing registry setups that hold $R$ layer replicas.
 %
 \VT{Maybe call it B-mode n/R? R seems to be Sifts config parameter as well?}
+\NZ{R is replication level used by distributed storage systems. it's different with our mode n. n <= R.}
 %
 At one extreme, B mode $R$ means that no replica should be deduplicated and
 hence, provides the best performance but no data reduction.
@@ -71,7 +72,7 @@ reduction.
 %
 \VT{Do we replicate after deduplication? E.g., in B mode 0 do we still have 
 R replicas of all files for durability?}
-
+\NZ{yes}
 \VT{Why keeping more than 1 non-deduped layers helps?} \Subil{Because we're distributing traffic among the replicas. The replicas are stored on different servers. More replicas means faster GET responses}
 
 For heavily skewed workloads, \sysname also provides a \emph{selective
@@ -94,7 +95,7 @@ Figure~\ref{fig:sift-original} shows an example for B mode $1$ with $R=3$.
 \sysname first creates 3 layer replicas across our servers. It maintains a single layer replica as the \emph{primary layer replica} on
 server A for newly pushed layers.
 %
-Deduplication is then carried out in the other servers i.e. the other layer replicas are decompressed and any duplicate
+Deduplication is then carried out in one of the other servers i.e. one layer replica is decompressed and any duplicate
 files are discarded while unique files are kept.  The unique files are replicated
 and saved on different servers B and C. Once deduplication is complete, the remaining two layer replicas are removed. 
 %
@@ -110,6 +111,7 @@ so we control to have or not to have replicas?}
 %
 \VT{Wha tis original server in Figure~~\ref{fig:sift-original}? We never describe it
 and how it works?}
+\NZ{removed original system. the original systems are the current used backend distributed storage systems.}
 
 To support the different deduplication modes, \sysname divides storage servers
 into two groups (see Figure~\ref{fig:sift}): a \emph{primary cluster}
@@ -153,9 +155,9 @@ The layer stage area temporarily stores newly added layer replicas.
 After deduplicating a replica, the resulting unique files are stored in a
 content addressable file store and replicated to the peer servers to provide
 redundancy. Once all file replicas have been stored, the layer replica is deleted
-from the layer stage area and cached in the preconstruction cache.
+from the layer stage area.% and cached in the preconstruction cache.
 %
-The cache is also used to hold preconstructed
+The preconstruction cache is used to hold preconstructed
 layers~(see~\S\ref{sec:cache-design}).
 
 \sysname distributes the layer's unique files onto several servers
@@ -209,5 +211,7 @@ preconstructs the layers, and loads them in the preconstruct cache.
 %
 As shown in Figure~\ref{fig:intervals}, the time between a \texttt{GET} manifest request and its
 subsequent \texttt{GET} layer request is more than 1\,s on average \todo{Give more specifics,
-i.e. 50th percentile for different workloads}. As we will show in~\S\ref{sec:eval-dedup}, this is
+i.e. 50th percentile for different workloads}. 
+\NZ{The median duration ranges from 0.8 s to 6.4 s across all the workloads.}
+As we will show in~\S\ref{sec:eval-dedup}, this is
 sufficient to preconstruct the necessary layers and load them into the cache.
