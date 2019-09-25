@@ -73,11 +73,11 @@ Multiple studies proposed compression and deduplication techniques to reduce vir
 For instance, Jayaram~\etal~\cite{jayaram2011empirical} studied 525 VM images from a production IaaS cloud and detected similarities. 
  %...because current hypervisor-based virtualization techniques do not support block sharing between virtual disk images, instead relying on techniques such as overlays to build multiple VMs from a single "base" image, similar with Docker images.
 Beside virtual disk images, many studies focus on primary and backup data deduplication~\cite{tarasov2014dmdedup,muthitacharoen2001low,lu2012insights,2009-sparse_indexing_inline_dedup_using_sampling-fast,2013-charact_increment_changes_data_protect-atc,wallace2012characteristics,zhu2008avoiding} and show the effectiveness by using whole-file deduplication and sub-file deduplication~\cite{2012-hpc_practical_dedup_study-sc,msst16dedup-study}.
-\sysname uses whole-file deduplication and sub-file deduplication methods can be complementary to \sysname.
+\sysname uses whole-file deduplication, and sub-file deduplication methods can be complementary to \sysname.
 
 The restoring performance is as important as the deduplication ratio for all deduplication methods even for backup systems~\cite{lillibridge2013improving}.
-To improve the restoring latency, multiple optimizations are proposed and evaluated, such as caching, prefetching, forward assembly area via exploiting historical information, temporal trends, data locality, ...etc.~\cite{fu2014accelerating,fu2015design,fu2011aa}.
-All these optimization techniques inspire our \sysname design.
+To improve the restoring latency, multiple optimizations are proposed and evaluated, such as caching, prefetching, forward assembly area via exploiting historical information, temporal trends, data locality, etc.~\cite{fu2014accelerating,fu2015design,fu2011aa}.
+All these optimization techniques inspire our design.
 %Most existing cloud storage providers employ data
 %deduplication techniques to eliminate redundant data, same data stored more
 %than once.
