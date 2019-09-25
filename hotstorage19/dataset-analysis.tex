@@ -4,8 +4,7 @@
 We now explore, why file-level deduplication in Docker registries is necessary to
 effectively reduce storage utilization~(\S\ref{sec:inter-layer-deduplication}).
 We then discuss the feasibility of predicting layer accesses at the
-registry~(\S\ref{sec:predictable-user-access}) and preconstruct layers before they
-are being accessed~(\S\ref{sec:layer-preconstruction}) to reduce the deduplication
+registry~(\S\ref{sec:predictable-user-access}) and preconstructing layers before they are requested~(\S\ref{sec:layer-preconstruction}) to reduce the deduplication
 overhead for layer retrievals.
 
 \subsection{Inter-layer deduplication}
@@ -26,9 +25,9 @@ dataset~\cite{dedupanalysis}, only 3.2\% of files are unique, resulting in
 a deduplication ratio of 2$\times$ in terms of
 capacity\footnote{The deduplication ratio is only 2$\times$ despite the 97\% of redundant data
 because most of the unique files are very large in size.}.
-\NZ{can we just say 3\% of unique files without mention the space savings?}
+\NZ{can we just say 3\% of unique files without mention the space savings?} \Subil{Though I agree that mentioning the 2x space savings doesn't really fit well here, we need to make sure this 2x space saving is mentioned somewhere because we say in section 6.3 that full deduplication saves half the storage space. so 2x space saving should be talked about somewhere before then, if not here}
 %
-This large amount of duplicate files
+The large amount of duplicate files
 %shared among different layers associated with different images
 mainly consists of executables, object codes, libraries, and
 source codes, and is likely imported by different image developers using the same
@@ -69,7 +68,7 @@ deduplication support requires restoring the layer,
 which involves fetching the files, archiving and compressing them.
 %
 These extra operations incur a considerable overhead for
-\texttt{GET} layer requests, which already constitute a significant portion of 76\% of
+\texttt{GET} layer requests, which already constitute a significant portion of
 the container startup time~\cite{slacker}.
 %
 In this paper, we explore if it is possible to deduplicate layers and save storage space
@@ -101,8 +100,7 @@ without sacrificing the \texttt{GET} layer performance.
 
 \input{fig-repull-analysis}
 %
-A promising approach to mitigate layer restoring overhead is predicting,
-which layers will be accessed in the future and then preconstruct them.
+A promising approach to mitigate layer restoring overhead is predicting which layers will be accessed in the future and preconstructing them.
 %
 %To overcome the deduplication overhead, we analyze registry workloads
 %and optimize the performance by exploring workload patterns and user
@@ -123,7 +121,7 @@ If a layer doesn't exist in the local layer index, the client will issue a \text
 request for this layer.
 %
 Thus, to anticipate layer accesses, we can maintain a \emph{layer index} for each user
-at the registry to keep track of a user's access history and thereby determine, which layer
+at the registry to keep track of a user's access history and thereby determine which layer
 will be requested by the user after the \texttt{GET} manifest request.
 %
 
@@ -192,7 +190,7 @@ This suggests that we can split clients into two classes, always-pull clients
 and pull-once clients, based on a threshold.
 %
 Thus, to determine whether a client will \texttt{repull} a layer or not, we
-can compute the client repull probability and the client to one of the classes.
+can compute the client repull probability and place the client in one of these classes.
 %
 %significant amount of clients have a low repulling proability.
 %
@@ -245,10 +243,10 @@ before the \texttt{GET} layer request arrives.
 %deduplicated layer before users issues a \texttt{GET} layer to avoid
 %the time spend in layer restoration.
 %
-Therefor, we analyze the duration between a \texttt{GET} manifest request and the subsequent
-\texttt{GET} layer request (see Figure~\ref{fig:intervals}).
+Therefore, we analyze the duration between a \texttt{GET} manifest request and the subsequent
+\texttt{GET} layer request.
 %
-As shown in the figure, the majority of intervals are greater than one second.
+As shown in Figure~\ref{fig:intervals}, the majority of intervals are greater than one second.
 %
 For example, 80\% of intervals from \texttt{lon} are greater than one second,
 whereas, 60\% of the intervals from \texttt{syd} are greater than five seconds. 
@@ -271,23 +269,20 @@ This varies the \texttt{GET} layer request arrival time for the registry.
 %
 %<<<<<<< HEAD
 Second, network delay between clients and registry
-often accounts for a greater proportion of the \texttt{GET} layer latency in Cloud
-environment, especially for the large layers.
+often accounts for a greater proportion of the \texttt{GET} layer latency in cloud
+environments, especially for the large layers.
 %=======
 %Second, the network latency between clients and a registry
 %often accounts for a large proportion of the \texttt{GET} layer latency,
 %especially in Cloud environments.
 %>>>>>>> 5cfa95ad1ce38b7942bffcb37086db33854ab296
 %
-In summary, it is feasible to build a layer for the user before
+
+ 
+In the case of small duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests,
+layer preconstruction probably cannot be finished \emph{in time}. However, layer preconstruction can still provide a lot of benefit because
+the layer construction starts before the arrival of a \texttt{GET} layer request,
+which can largely reduce the layer construction overhead in the \texttt{GET} layer request latency. In summary, it is feasible to start building a layer for the user before
 the \texttt{GET} layer request arrives.
 
-
-In the case of small duration between a \texttt{GET} manifest request
-and its subsequent \texttt{GET} layer requests,
-layer preconstruction probably cannot be finished \emph{in time}. 
-Layer preconstruction also benefits a lot because
-the layer construction starts before the arrival of a \texttt{GET} layer request,
-which can largely reduce the layer construction overhead on 
-a \texttt{GET} layer request latency.
 
