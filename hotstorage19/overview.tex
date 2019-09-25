@@ -14,7 +14,7 @@ Figure~\ref{fig:sift} shows the architecture of \sysname.
 \NZ{I think we can describe registry as a registry restful api. and indeed registry is a rest api}
 \sysname consists of the two main components: %1)~\emph{frontend registries}, 
 1)~a cluster of \emph{storage servers}
-with registry RESTful API and 2)~a distributed
+with the registry RESTful API and 2)~a distributed
 \emph{metadata database}. 
 %\NZ{arg1}
 %
@@ -26,7 +26,7 @@ registry RESTful API.
 %\sysname registries are independent from each
 %other.
 %
-Each server contains a registry RESTful API and a backend storage system.
+Each server in the cluster contains a registry RESTful API and a backend storage system.
 %uses a \sysname driver that processes requests by
 %communicatin with the metadata database and the backend storage servers.
 %
@@ -49,15 +49,14 @@ database.
 
 \paragraph{Replica deduplication modes.}
 %
-For higher fault tolerance and availability existing registry backends bluntly
+For higher fault tolerance and availability existing registry setups bluntly
 replicate  each layer.
 %
-\sysname also performs replication, but some replicas it deduplicates while
-keeping the remaining ones in the non-deduplicated state for faster downloads.
+\sysname also performs replication of the layers, but also provides the option to deduplicate and store the deduplicated file content of the layers.
 
-A \emph{basic deduplication mode} (B-mode) $n$ defines that \sysname should
+A \emph{basic deduplication mode} (B-mode) $n$ defines that \sysname should only
 keep $n$ layer replicas intact and deduplicate the remaining $R-n$ layer
-replicas, where $R$ is the layer replication level.
+replicas, where $R$ is the layer replication level. This is in comparison to R-way replication in existing registry setups that hold $R$ layer replicas.
 %
 \VT{Maybe call it B-mode n/R? R seems to be Sifts config parameter as well?}
 %
@@ -74,7 +73,7 @@ reduction.
 \VT{Do we replicate after deduplication? E.g., in B-mode 0 do we still have 
 R replicas of all files for durability?}
 
-\VT{Why keeping more than 1 non-deduped layers helps?}
+\VT{Why keeping more than 1 non-deduped layers helps?} \Subil{Because we're distributing traffic among the replicas. The replicas are stored on different servers. More replicas means faster GET responses}
 
 For heavily skewed workloads, \sysname also provides a \emph{selective
 deduplication mode} (S-mode).
@@ -87,25 +86,25 @@ As there are hot layers that receive the majority of \texttt{pull} requests,
 S-mode sets the number of layer replicas inversely proportional to its
 popularity.
 %
-This means that hot layers have less deduplicated replicas and
+This means that hot layers have more layer replicas and
 hence, can be served faster.
 %
-On the other hand, cold layers have more
-deduplicated replicas to improve storage utilization.
+On the other hand, cold layers have fewer replicas to improve storage utilization.
 
 Figure~\ref{fig:sift-original} shows an example for B-mode $1$ with $R=3$.
-\sysname maintains a single layer replica (the \emph{primary layer replica}) on
+\sysname first creates 3 layer replicas across our servers. It maintains a single layer replica as the \emph{primary layer replica} on
 server A for newly pushed layers.
 %
-The remaining two backup layer replicas are deduplicated, i.e. any duplicate
-files are discard while unique files are kept.  The unique files are replicated
-and saved on different servers B and C.
+Deduplication is then carried out in the other servers i.e. the other layer replicas are decompressed and any duplicate
+files are discarded while unique files are kept.  The unique files are replicated
+and saved on different servers B and C. Once deduplication is complete, the remaining two layer replicas are removed. 
 %
 Any subsequent \texttt{pull} layer requests are sent to server A since it
 stores a complete layer replica.
 %
 If server A crashes, server B or C is needed to rebuild the layer and serve the
 \texttt{pull} request.
+\Subil{Nannan, please check to see if the above rewording is an acurate representation of the deduplication and replication process. I think this addresses Vasily's below comment}
 %
 \VT{Why do we even have replicas of layers if we are the storage system,
 so we control to have or not to have replicas?}
