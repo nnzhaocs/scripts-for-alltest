@@ -53,7 +53,6 @@ backup level, i.e., $L1::A::P$.
 Based on the recipe, the slice constructor creates a slice tar archive by writing each file header and the corresponding
 file contents.
 %rebuilds each file entry in the slice tar archive according to the slice recipe.
-
 \paragraph{Optimizations}
 The layer restoration performance is critical to keep \texttt{pull} latencies low. Hence,
 \sysname uses several optimiations to streamline the process.

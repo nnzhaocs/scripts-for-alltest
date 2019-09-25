@@ -20,7 +20,7 @@ that does no deduplication.
 Then we scale out to a deduplication cluster with multiple P-servers
 and compare it with BOLT \cite{littley2019bolt}, 
 a consistent hashing based distributed docker registry cluster 
-that utilizes the local filesystems on the nodes for storage.
+that utilizes the local file systems on the nodes for storage.
 %
 %
 % (denoted as
@@ -43,7 +43,7 @@ that utilizes the local filesystems on the nodes for storage.
 \paragraph{Restoring latency}
 We launch a single node registry on a server and 
 a client on another server.
-We compare 4 backends:
+We compare four backends:
 (1) Local file system with \emph{no deduplication},
 (2) Local file system with \sysname \emph{Deduplication without cache},
 (3) Local file system with \sysname \emph{Deduplication with ARC cache}, and
@@ -102,7 +102,7 @@ As shown in Figure~\ref{fig:eval-cachehitratios}, the prediction accuracy is 0.9
  
 \paragraph{Impact of duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests}
 Next, we vary the duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests (denoted as \emph{durationML}).
-The layer size used here is 9 MB.
+The layer size used here is 9~MB.
 %
 Figure~\ref{fig:eval-durationML} shows the average \texttt{GET} layer latency for \sysname deduplication with preconstruct cache versus \emph{No deduplication}.
 When the durationML is 1~s, \sysname with preconstruct cache only imposes a 19\% overhead.

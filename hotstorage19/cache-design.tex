@@ -172,9 +172,7 @@ updates to layers.
 %layer stage area will be evicted to the preconstruct cache after the layer is
 %deduplicated.
 %
-We use Adaptive Replacement Cache (ARC) replacement~\cite{xxx}, 
-which keeps track of both frequently used and recently used layers
-and adapts to changing access patterns.
+We use Adaptive Replacement Cache (ARC) replacement policy~\cite{megiddo2003arc}, which keeps track of both the frequently and recently used layers and adapts to changing access patterns.
 \LR{Add details on on what ARC does exactly. How does it adapt? Why did we choose ARC?}
 %For preconstruct cache, it's possible when a \texttt{pull} layer request comes 
 %before layer restoring is finished, meaning the layer cannot be preconstructed \emph{on time}.
