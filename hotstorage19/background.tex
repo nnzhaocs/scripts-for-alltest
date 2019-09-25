@@ -11,13 +11,13 @@
 %Layers can be shared between two or more images if the images depend on the
 %same layer.
 
-In this section, we explain, how the existing Docker registry works and how users
+In this section, we explain how the existing Docker registry works and how users
 can interact with it.
 %
 The main purpose of a registry is to store container images and make them available
 to other users.
 %
-Therefore, it allows Docker hosts to \emph{push} images to and to \emph{pull}
+Therefore, it allows Docker hosts to \emph{push} images to and \emph{pull}
 images from the registry.
 %
 A number of public Docker registry deployments
@@ -26,8 +26,7 @@ enterprises often resort to running private registries for improved security
 and privacy.
 %
 The Docker community specifies the REST API for hosts to communicate with the
-registries~\cite{docker-registry-api} and provides a reference registry
-software server implementation~\cite{docker-registry-software} which serves as
+registries~\cite{docker-registry-api} and provides a reference registry server implementation~\cite{docker-registry-software} which serves as
 a basis for commercial deployments.
 
 
@@ -44,8 +43,8 @@ The manifest is a JSON file, which contains the runtime configuration for a
 container image (\eg environment variables) and the list of layers which make
 up the image.
 %
-A layer is identified using a digest that is computed as a hash (SHA-256) over
-the uncompressed content of the layer and stored as a compressed archival file.
+A layer is stored as a compressed archival file and identified using a digest that is computed as a hash (SHA-256) over
+the uncompressed content of the layer.
 %
 When pulling an image, a Docker host first downloads the manifest and then the
 layers referenced in it (unless the layers are already present on the host).
@@ -71,11 +70,12 @@ Aliyun OSS~\cite{aliyun}.
 %For example, the Google Container Registry~\cite{GoogleContainerRegistry} uses
 %Google cloud as its backend image store.
 %
-Upon a \texttt{PUT} layer request, the Docker registry forwards the layer to the
-backend storage which stores multiple replicas of the layer.
+Upon a \texttt{PUT} layer request from a Docker host, the Docker registry receives the layer and forwards it to the
+backend storage driver. Multiple replicas of the layer can be stored for redundancy.
 %
-The subsequent \texttt{GET} layer requests can be served by any of these
-layer replicas.
+
+Any subsequent \texttt{GET} layer requests can be served by any of the servers that hold a replica of that layer. \Subil{Maybe replace mentions of "Docker hosts" in this section with "Docker clients"?}
+
 %
 %Service providers often use geographically distributed registries for faster
 %access, e.g., IBM's Container Registry setup spans five
