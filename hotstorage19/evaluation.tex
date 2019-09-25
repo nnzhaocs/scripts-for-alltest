@@ -44,7 +44,7 @@ The size of this dataset is 12.5~TB and contains 507,023 layers.
 After decompressing the layers, the total size of the dataset is 27.7~TB.
 We apply file-level deduplication on the decompressed dataset, 
 the total size of the resulting dataset of unique files is only 7.2~TB, 
-making the deduplication ratio 0.5.
+making the deduplication ratio 0.5 \Subil{is the dedup ratio $7.2\div27.7$ or $7.2\div12.5$? because neither of them equals 0.5. How is the dedup ratio calculated?}.
 The size distribution of our popular layer dataset is the same with the size distribution of~\cite{analysisdockergithub}.
 87.5\% of layers are smaller than 50 MB.
 %12.3\% of layers fall between 50 MB and 1 GB.
@@ -68,7 +68,7 @@ We replay the first 5000 requests from each workload.
 Tables~\ref{tab:eval-overall} detail the 5000 requests for each workload.
 Before we replay each workload, 
 we first warmup P-servers and D-servers with a certain amount of layers 
-as shown in Table~\ref{tab:eval-overall}.
+as shown in Table~\ref{tab:eval-overall} \Subil{there's nothing in the table indicating what number of layers we use for warmup}.
 %Note that we use a 3-way replication
 %which triples the amount of data written during evaluation.
 %We speedup trace replaying by using different speedup factors so that each trace finishes within 30 minutes.

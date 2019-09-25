@@ -27,9 +27,9 @@ B mode 2 and B mode 1, the number of P-servers is set to six and three, respecti
 %we first warmup P-servers and D-servers with a certain amount of layers 
 %as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
 We have 100 clients replaying the traces to P-servers and/or D-servers depending on the mode.
-We also evaluate the \emph{Bolt} with 3-way replication on nine servers as our baseline. 
+We also evaluate \emph{BOLT} with 3-way replication on nine servers as our baseline. 
 
-Figure~\ref{fig:eval-dalprimary} shows the average \texttt{GET} layer response time for \texttt{GET} layer requests for \sysname with different deduplication modes and \emph{Bolt} by replaying the \texttt{Dal} workload five times, each time with a different layer size (starting with 5~MB and ending at 25~MB).
+Figure~\ref{fig:eval-dalprimary} shows the average \texttt{GET} layer response time for \texttt{GET} layer requests for \sysname with different deduplication modes and \emph{BOLT} by replaying the \texttt{Dal} workload five times, each time with a different layer size (starting with 5~MB and ending at 25~MB).
 Note that for \emph{B mode 0}, the \texttt{GET} layer latency is the \emph{layer restoring latency}.
 
 %Overall, \texttt{PUT} requests have much higher average response time than \texttt{GET} requests.
@@ -48,7 +48,7 @@ Comparing \emph{BOLT} with \emph{B mode 3}, we see that \emph{B mode 3} improves
 Our superfetch cache hit ratio is 0.91. This high hit ratio entails improvement to the primary servers' I/O latency. However, the network transfer time accounts for the largest portion of the \text{GET} layer latency for \emph{BOLT} and \emph{B mode 3}.
 
 Next we compare \emph{B mode 0} with \emph{BOLT}.
-Although \emph{B mode 0} saves half of the storage space by \emph{deduplicating} all layer replicas (see \S\ref{sec:inter-layer-deduplication}), it increases the \texttt{GET} layer latency by at most 37\% due to the layer restoring overhead.
+Although \emph{B mode 0} saves half of the storage space by \emph{deduplicating} all layer replicas (see \S\ref{sec:inter-layer-deduplication}), it only increases the \texttt{GET} layer latency by at most 37\% due to the layer restoring overhead.
 %This is because of the high preconstruct cache hit ratio (detailed in Figure~\cite{xxx}), 
 %which reduces the layer restoring latency.
 
@@ -92,7 +92,9 @@ The \texttt{Fra} and \texttt{Lon} traces have 21\% and 15\%, respectively, of \t
 This is because of the small duration between \texttt{GET} manifest requests and their subsequent \texttt{GET} layer requests.
 Note that the \emph{superfetch cache} hit ratio is
 not affected by the duration between \texttt{GET} manifest requests and their subsequent \texttt{GET} layer requests.
-Therefore, \emph{B mode 3} outperforms \emph{BOLT} for both the \texttt{Fra} and \texttt{Lon} traces. \Subil{I think there needs to be at least some mention of Dal and Syd?}
+Therefore, \emph{B mode 3} outperforms \emph{BOLT} for both the \texttt{Fra} and \texttt{Lon} traces.
+%\Subil{I think there needs to be at least some mention of Dal and Syd?}
+ In the \texttt{Dal} workload also, \emph{B mode 3} outperforms \emph{BOLT} for the same reasons. Across all the workloads, \emph{S mode} provides comparable latencies to \emph{BOLT} while providing savings on the storage side due to deduplication.
 
 %Note that the superfetch cache is used by the primary cluster while the preconstruct cache is used by the deduplication cluster.
 %The superfetch cache hit ratio shown in Figure~\ref{xxx} is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode} because they show the similar cache hit ratios.
