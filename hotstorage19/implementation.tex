@@ -1,7 +1,7 @@
 \section{Implementation}
 \label{sec:impl}
 
-We implement \sysname in Go on top of the existing Docker registry. In our implementation,
+We implement \sysname in Go on top of the existing Docker registry implementation. In our implementation,
 we address a set of challenges regarding distributed, reliable handling of
 metadata~(\S\ref{sec:handling-metadata}), dealing with non-regular files~(\S\ref{sec:deduplication-details}),
 and generating a suitable workload~(\S\ref{sec:workload}).
@@ -13,7 +13,7 @@ and generating a suitable workload~(\S\ref{sec:workload}).
 able to correctly restore deduplicated layers in case of a failure.
 %
 \sysname uses Redis~\cite{redis} to store its metadata, i.e.
-the slice and layer recipes, the file and layer indeces, and ULmap and RLmap.
+the slice and layer recipes, the file and layer indices, and ULmap and RLmap.
 %
 We enable \emph{append-only file (AOF)} to log all changes for durability purposes.
 This allows us to rebuild the dataset and prevent data loss after a Redis restart.
@@ -32,7 +32,7 @@ reliability. To improve availability, we configure Redis to use 3-way replicatio
 To ensure that the metadata is in a consistent state, \sysname uses Redis as a distributed
 lock to make sure that no file duplicates are stored in registry cluster.
 %
-For the file index and layer indeces and the slice and layer recipes,
+For the file and layer indices and the slice and layer recipes,
 each key can be set to hold its value only if
 the key does not yet exist in Redis (i.e, using \texttt{SETNX}~\cite{SETNX}).
 %
@@ -47,7 +47,7 @@ If a layer is currently being restored, subsequent
 %
 Other layers, however, can be constructed in parallel.
 %
-In this case, redundant layer restoring is avoided to save I/O, network, and
+In this case, redundant layer restoring is avoided, saving I/O, network, and
 computation resources.
  %Slice restoring is the same.
 %  Another synchronization technique present is a lock acquirable on a layer recipe 
@@ -75,7 +75,7 @@ After removing regular file duplicates, any remaining unique files are saved in 
 %which is a local storage driver that uses a directory tree in the local file system.
 
 \emph{/var/lib/registry/docker/registry/v2} is the default root directory in the local file system, where all
-registry-related data is stored (denoted as rootdir).
+registry-related data is stored (denoted as \emph{rootdir}).
 %
 On the deduplication cluster,
 each uploaded layer is stored in directory \emph{rootdir/blobs/sha256/ld.2/ld/}
@@ -89,7 +89,7 @@ corresponding D-servers and stored there locally under
 \emph{rootdir/uniquefiles/sha256/fd.2/fd/}, where fd is the file's hex
 digest and fd.2 its first two digits.
 %
-Every \emph{non-regular} file will be stored on the D-server, which initially
+Every \emph{non-regular} file will be stored on the D-server which initially
 received the layer for deduplication, under \emph{rootdir/blobs/sha256/ld.2/ld/tmp}.
 %
 When a layer is reconstructed, the restoring master can check for non-regular files through
@@ -99,7 +99,7 @@ the layer digest under that location.
 
 %\paragraph{Parallel (de)compression}
 %
-\LR{A bit out of context, not sure where to put the following to integrate it better.}
+\LR{A bit out of context, not sure where to put the following to integrate it better.} \Subil{Would a subsection work or is that too much?}
 %To speedup layer restoring,
 To speed up (de)compression, we use the parallel gzip library (pgzip)~\cite{pgzip}
 for layer and slice compression/decompression.
@@ -201,7 +201,7 @@ manifest file.
 
 In addition, our workload generator uses a proxy emulator to decide
 %the destination among the P-servers for each request.
-the P-server for each request.
+the server for each request.
 %
 The proxy emulator uses
 consistent hashing ~\cite{kargercons} to distribute layers and manifests.
