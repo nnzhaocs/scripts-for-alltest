@@ -10,7 +10,7 @@ After receiving a \texttt{PUT} layer request,
 \sysname first checks the \textbf{layer fingerprint} in the \emph{layer index} to ensure 
 an identical layer is not already stored.
 The layer fingerprint is calculated by hashing the layer content 
-and is also used as the layer Id.
+and serves as the layer ID.
 After that, \sysname replicates the layer $r$ times across the P-servers
 and submits the remaining $R-r$ layer replicas to the D-servers. Those replicas are
 temporarily stored in the layer stage areas of the D-servers. \sysname uses
@@ -86,8 +86,8 @@ the decompressed layer tar archive is loaded to the layer deduplication process.
 %Algorithm~\ref{alg:dedup-partition} details layer deduplication and partitioning. 
 %After layer decompression, 
 Each file entry in the archive is represented as a \emph{file header} and the associated
-\emph{file content}~\cite{xxx}\todo{ }.
-The file header contains metadata such as file name, path, size, mode, owner information, etc~\cite{xxx}\todo{ }.
+\emph{file content}~\cite{basictar}\todo{ }.
+The file header contains metadata such as file name, path, size, mode, owner information, etc\todo{ }.
 %
 %and is needed to correctly rebuild the \emph{file header} for 
 %the associated file entry in the restoring layer archive.
@@ -130,9 +130,8 @@ After discarding duplicate files,
 %As mentioned earlier, \sysname records every file header from a layer tar archive.
 During file replication, \sysname distributes the corresponding
 file headers to the associated servers 
-along with a content pointer pointing to the corresponding physical file.
-The headers from a single D-server which refer to files from the same layer
-form a \emph{slice recipe} (see Figure~\ref{fig:replication-partition}). 
+along with a content pointer pointing to the corresponding physical file. \Subil{The previous sentence seems to indicate that the header-contentpointer pairs are stored in the D-server. But they are only stored in the metadata database as part of the slice recipe, right?}
+The headers and content pointers of all the files, in a given D-server, that belong to a particular layer are included in that D-server's \emph{slice recipe} for that layer (see Figure~\ref{fig:replication-partition}). 
 %After unique file replication and layer partitioning,
 After file replication, \sysname adds the new slice recipes to the metadata database.
 %A slice recipe represents a layer slice and is used to construct a
@@ -140,7 +139,7 @@ After file replication, \sysname adds the new slice recipes to the metadata data
 
 \sysname also creates a \emph{layer recipe} for the uploaded layer and stores it in the metadata database
 as shown in Figure~\ref{fig:replication-partition}.
-The layer recipe records all the D-servers that store layer slices and which can act
+The layer recipe records all the D-servers that store slices for that layer and which can act
 as \emph{restoring workers}. When a layer needs to be reconstructed,
 one worker is selected as the \emph{restoring master}, responsible 
 for gathering all slices and rebuilding the layer~(see~\S\ref{sec:restore-desgin}).
@@ -161,7 +160,7 @@ in the next paragraph.
 
 After replication, server $B$ contains $f2$, $f5$, $f1'$, and $f4'$. Together
 $f2$ and $f5$ form the \emph{primary slice} of $L1$, denoted as $L1::A::P$.
-This slice ID contains the layer ID the slices belongs to ($L1$), the node, which
+This slice Id contains the layer Id the slices belongs to ($L1$), the node, which
 stores the slice ($A$) and the backup level ($P$ for primary).
 %\todo{explain this notation}.
 %\NZ{This slice Id contains the layer Id it belongs, the host server, and the backup level of this slice.

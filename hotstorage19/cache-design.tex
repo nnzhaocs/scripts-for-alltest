@@ -143,7 +143,7 @@ counts for a user whenever a \texttt{GET layer} request is received.
 %(denoted as layerdir) as a file named ‘data’.}
 
 The introduction of the two cache layers results in a 5-tier storage architecture of
-\sysname as shown in Figure~\ref{fig:tieredstore}. Requests are passed through the
+\sysname as shown in Figure~\ref{fig:tieredstore} \Subil{We say 5-tier here but 2-tier in the figure. Must change one or the other for consistency along with any other mentions of 2-tier/5-tier in the paper}. Requests are passed through the
 tiers in the order displayed in the figure. Upon a \texttt{GET} layer request,
 \sysname first determines the P-server(s) which is (are) repsonsible for the layer
 and searches the superfetch cache(s).
@@ -166,7 +166,7 @@ check, whether the layer is in its preconstruct cache. Otherwise, it will
 instruct the restoring master to rebuild the layer.
 
 Both the superfetch and the preconstruct cache are write-through caches.
-When a layers is evicted, it will simply be discard since it does not contain any
+When a layers is evicted, it will simply be discarded since it does not contain any
 updates to layers.
 %Recently uploaded layers, which are temporarily stored in the
 %layer stage area will be evicted to the preconstruct cache after the layer is
