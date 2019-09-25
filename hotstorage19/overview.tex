@@ -49,41 +49,40 @@ database.
 
 \paragraph{Replica deduplication modes.}
 %
-For higher fault tolerance and availability existing registry setups bluntly
-replicate  each layer.
+For higher fault tolerance and availability existing registry setups bluntly replicate each layer.
 %
-\sysname also performs replication of the layers, but also provides the option to deduplicate and store the deduplicated file content of the layers.
+\sysname also performs layer replication, but also provides the option to deduplicate and store the deduplicated file content of the layers.
 
-A \emph{basic deduplication mode} (B-mode) $n$ defines that \sysname should only
+A \emph{basic deduplication mode} (B mode) $n$ defines that \sysname should only
 keep $n$ layer replicas intact and deduplicate the remaining $R-n$ layer
 replicas, where $R$ is the layer replication level. This is in comparison to R-way replication in existing registry setups that hold $R$ layer replicas.
 %
 \VT{Maybe call it B-mode n/R? R seems to be Sifts config parameter as well?}
 %
-At one extreme, B-mode $R$ means that no replica should be deduplicated and
+At one extreme, B mode $R$ means that no replica should be deduplicated and
 hence, provides the best performance but no data reduction.
 %
-At the other end, B-mode $0$ deduplicates all layer replicas, i.e. it provides
+At the other end, B mode $0$ deduplicates all layer replicas, i.e. it provides
 the highest deduplication ratio but adds restoration overhead for every
 \texttt{pull} request.
 %
-The remaining B-modes in between allow to trade off performance and data
+The remaining B modes in between allow to trade off performance and data
 reduction.
 %
-\VT{Do we replicate after deduplication? E.g., in B-mode 0 do we still have 
+\VT{Do we replicate after deduplication? E.g., in B mode 0 do we still have 
 R replicas of all files for durability?}
 
 \VT{Why keeping more than 1 non-deduped layers helps?} \Subil{Because we're distributing traffic among the replicas. The replicas are stored on different servers. More replicas means faster GET responses}
 
 For heavily skewed workloads, \sysname also provides a \emph{selective
-deduplication mode} (S-mode).
+deduplication mode} (S mode).
 %
-The S-mode utilizes the skewness in layer popularity, observed
+The S mode utilizes the skewness in layer popularity, observed
 in~\cite{dockerworkload}, to decide, how many replicas should be deduplicated
 for each layer individually.
 %
 As there are hot layers that receive the majority of \texttt{pull} requests,
-S-mode sets the number of layer replicas inversely proportional to its
+S mode sets the number of layer replicas inversely proportional to its
 popularity.
 %
 This means that hot layers have more layer replicas and
@@ -91,7 +90,7 @@ hence, can be served faster.
 %
 On the other hand, cold layers have fewer replicas to improve storage utilization.
 
-Figure~\ref{fig:sift-original} shows an example for B-mode $1$ with $R=3$.
+Figure~\ref{fig:sift-original} shows an example for B mode $1$ with $R=3$.
 \sysname first creates 3 layer replicas across our servers. It maintains a single layer replica as the \emph{primary layer replica} on
 server A for newly pushed layers.
 %
