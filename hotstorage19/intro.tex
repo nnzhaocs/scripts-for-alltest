@@ -46,7 +46,7 @@ microservices~\cite{wolff2016microservices},
 for which containers act as an imperative enabler.
 %
 By now, all major cloud platforms endorse containers as a core deployment
-technology~\cite{googlecengine,azurec,ibmkube,awscont} and adoption
+technology~\cite{googlecengine,azurec,ibmkube,awscont} and their adoption
 is increasing.
 %
 According to \cite{20percentdocker}, in 2018, about 21\% of Datadog's customers' monitored hosts run Docker and this continues to grow by about 5\% annually.
@@ -89,7 +89,7 @@ layers. For example, a typical large-scale setup stores each layer as an object 
 object store~\cite{s3,swift}.
 
 As the container market continues to expand, Docker registries manage a
-growing number of images and corresponding layers.
+growing number of images and layers.
 %
 Some conservative estimates show that in spring 2019, Docker Hub alone
 stored at least 2 million \emph{public} images totalling roughly 1~PB in
@@ -105,18 +105,19 @@ surge of container images.
 %
 As a result,
 organizations spend an increasing amount of their storage and networking
-infrastructure on operating image registries to provide adequate performance while keeping up with the demand.
-%
+infrastructure on operating image registries to provide adequate service level.
+%while keeping up with the demand.
+
 %
 %%%
 % 3. Significant amount of unharvested duplication across images.
 %%%
 
-Deduplication is a popular method to reduce capacity demands of storage systems.
+As Docker images have to be self-contained by definition
+and yet they frequently rely on common dependencies,
+they are prone to high file redundancy.
 %
-As Docker images have to be self-contained by definition, they are prone to high
-redundancy as different images often rely on the same dependencies and hence,
-images are likely to benefit from deduplication.
+%Hence, images are likely to benefit from deduplication.
 %
 Indeed, a recent analysis of the
 % $47$~TB ($167$~TB uncompressed)
@@ -134,8 +135,13 @@ availability~\cite{Bonvin:2010:SFS:1807128.1807162}.
 For instance, assuming 3-way replication, the number of duplicate files in the
 Docker Hub dataset reaches 99\%.
 %
-And yet, existing registry deployments do not exploit this high data redundancy
-across layers to make the service more efficient.
+Deduplication is an effective method to reduce capacity demands of intrinsically redundant
+datasets.
+%
+And yet, existing registry deployments do not support deduplication.
+%exploit this high data redundancy
+%across layers.
+% to make the service more efficient.
 
 Layer sharing is one approach to reduce this redundancy.
 %
