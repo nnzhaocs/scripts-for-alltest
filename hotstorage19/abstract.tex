@@ -2,25 +2,30 @@
 
 %\vspace{-5pt}
 
-The rise of containers has lead to a steep proliferation of container images.
+The rise of containers has led to a broad proliferation of container images.
 %
 The associated storage performance and capacity requirements place high
-pressure on the registries, which store and serve images. The large volume of Docker images stored in registries and the high file redundancy among the images are key obstacles
-to efficiently scale these registries.
-\DIM{I don't understand what is the "key obstacles" here?}
-\NZ{Fixed} \Subil{reworded to include file redundancy as obstacle}
+pressure on the infrastructure of registries, which store and serve images.
+%
+%The large volume of Docker images stored in registries and the high file
+%redundancy among the images are key obstacles to efficiently scale these
+%registries.
+%
+%\DIM{I don't understand what is the "key obstacles" here?}
+%\NZ{Fixed} \Subil{reworded to include file redundancy as obstacle}
 %
 %The proliferation of container images and the associated storage performance
 %and capacity requirements are key obstacles to efficiently scale Docker
 %registries.
 %
-Mitigating the high file redundancy in real-world images through deduplication is
-a promising approach to drastically reduce the large storage requirements of the
+Exploiting the high file redundancy in real-world images
+%through deduplication
+is a promising approach to drastically reduce the large storage requirements of the
 registries.
 %
 %Though real-world images contain a tremendous amount of duplicate data,
 %
-However, modern registries are currently not able to effectively eliminate the duplicates.
+%However, modern registries are currently not able to effectively eliminate the duplicates.
 %due to the compressed format of the images.
 
 In this paper, we propose \sysname, a new Docker registry architecture, 
@@ -38,12 +43,16 @@ layer prefetch/preconstruct cache algorithm based on user access patterns.
 Under real workloads, 
 for \emph{highest data reduction mode},
 \sysname saves up to half of storage space 
-compare to the current registry. 
+compared to the current registry. 
 For the \emph{highest performance mode},
 \sysname can reduce the \texttt{GET} layer latency up to 14\%
-compare to the state-of-the-art. 
+compared to the state-of-the-art. 
 %The remaining deduplication modes
 %allow for different trade offs in performance and data reduction.
 %the latencies within \gap of the original registry.
+%
+\VT{We need to state performance impact of the highest data
+reduction mode and deduplication ratio for the highest performance mode.}
+
 
 \end{abstract}

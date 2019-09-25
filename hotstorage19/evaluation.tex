@@ -1,6 +1,10 @@
 \section{ Evaluation}
 \label{sec:Evaluation}
 
+For the evaluation of \sysname, we are interested in two main aspects. First, we analyze the deduplication
+performance of \sysname happening in the D-cluster~(\S\ref{sec:eval-dedup}). We then look at, how
+the different B modes affect the performance of the primary cluster~(\S\ref{sec:eval-primary}).
+
 %Our two-tier heterogeneous cache in the registry can improve the performance of the entire system
 %by hiding the long latency imposed by the backend dedup system.
 %Next, we present the preliminary evaluation of our user access history-based cache algorithm
@@ -8,17 +12,17 @@
 
 %We conduct a performance evaluation of \sysname, and compare it with the modern registry setup~\cite{dockerworkload}.
 %We start with describing the testbed and workloads then follow that with the evaluation results.
-\subsection{Testbed, workloads and dataset}
+\subsection{Evaluation Setup}
 
-Our testbed includes 
+Our testbed consists of 
 %two clusters: 
 %8-node client cluster and
 %8-node registry cluster (Hulks), and
-a 15-node cluster.
+a 15-node cluster and
 %Each client server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
 %Each client server is equipped with 8 cores, 64 GB RAM, 1 TB HDD, and 1000Mb/s NIC.
 %During evaluation,
-Each node is equipped with 8 cores, 16 GB RAM, 500 GB SSD, and 10,000 Mb/s NIC. 
+each node is equipped with 8 cores, 16\,GB RAM, a 500\,GB SSD, and a 10\,Gbps NIC. 
 %We deploy Docker's registry container on each server and deploy a distributed Redis cluster on these 22 registry servers as our database.
 %During our evaluation,
 %we select different number of servers as our registry cluster
@@ -37,16 +41,24 @@ Each node is equipped with 8 cores, 16 GB RAM, 500 GB SSD, and 10,000 Mb/s NIC.
 %Hulks and new hulks are used as backend.
 %Thors are used as frontend.
 %\subsection{}
-Recent work \cite{analysisdockergithub} conducts a comprehensive analysis of 47~TB Docker Hub images and reports that the popularity distribution of the images is heavily skewed.
-To evaluate how \sysname works for frequently accessed images, 
-we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub~\cite{docker-hub} as our evaluation dataset. 
-The size of this dataset is 12.5~TB and contains 507,023 layers. 
-After decompressing the layers, the total size of the dataset is 27.7~TB.
-We apply file-level deduplication on the decompressed dataset, 
-the total size of the resulting dataset of unique files is only 7.2~TB, 
-making the deduplication ratio 0.5.
-The size distribution of our popular layer dataset is the same with the size distribution of~\cite{analysisdockergithub}.
-87.5\% of layers are smaller than 50 MB.
+\paragraph{Dataset}
+%
+%Recent work \cite{analysisdockergithub} conducts a comprehensive analysis of 47~TB Docker Hub images and reports that the popularity distribution of the images is heavily skewed.
+%To evaluate how \sysname works for frequently accessed images, 
+As our dataset, we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub.
+% 
+The total size of this dataset is 12.5\,TB and contains 507,023 layers. 87.5\% of layers are smaller than 50\,MB.
+%
+After decompressing the layers, the total size of the dataset is 27.7\,TB.
+%
+Applying file-level deduplication on the decompressed dataset
+reduces the total size of the dataset to only 7.2\,TB, yielding 
+a deduplication ratio of 1.74.
+%
+%\Subil{is the dedup ratio $7.2\div27.7$ or $7.2\div12.5$? because neither of them equals 0.5. How is the dedup ratio calculated?}.
+%
+%The size distribution of our popular layer dataset is the same with the size distribution of~\cite{analysisdockergithub}.
+%87.5\% of layers are smaller than 50 MB.
 %12.3\% of layers fall between 50 MB and 1 GB.
 %0.2\% of layers are bigger than 1 GB.
 %Due to our testbed cluster's scaling restriction, 
@@ -58,17 +70,26 @@ The size distribution of our popular layer dataset is the same with the size dis
 %Therefore, we divided our sample dataset into two groups:
 %smaller layers (layer size $\leq$ 50 MB) and big layers ( 50MB $\leq$ layer size $\leq$ 1 GB).
   
+\paragraph{Workload}
+%
 To evaluate how \sysname performs for production registry workloads, 
-we leverage IBM's cloud registry workload traces\cite{dockerworkload}. 
-The traces span $\sim$80 days from three private registry clusters and 
-four production registry clusters. 
-We randomly match the four anonymized production traces (i.e., \texttt{Dal, Fra, Lon, Syd}) 
-with our dataset to form four real-world production workloads (detailed in Section~\ref{sec:impl}). 
-We replay the first 5000 requests from each workload.
-Tables~\ref{tab:eval-overall} detail the 5000 requests for each workload.
-Before we replay each workload, 
-we first warmup P-servers and D-servers with a certain amount of layers 
-as shown in Table~\ref{tab:eval-overall}.
+we use the IBM Cloud Registry traces~\cite{dockerworkload}.
+%
+The traces come from three private registry clusters and 
+four production registry clusters and span approximately 80 days.
+%
+As detailed in~\S\ref{sec:impl}, we randomly match layers from the four anonymized production
+traces (\dal, \fra, \lon, and \syd) to layers from our dataset to generate four real-world production workloads.
+%
+Before an experiment, we first warmup P-servers and D-servers with a certain amount of layers as shown in
+Table~\ref{tab:eval-overall} and then replay the first 5000 requests from each workload.
+%
+\Subil{there's nothing in the table indicating what number of layers we use for warmup.}
+\LR{Do you mean we warm up the caches?}
+%
+Tables~\ref{tab:eval-overall} details how the 5000 requests for each workload are composed
+with respect to layer and manifest requests.
+
 %Note that we use a 3-way replication
 %which triples the amount of data written during evaluation.
 %We speedup trace replaying by using different speedup factors so that each trace finishes within 30 minutes.
