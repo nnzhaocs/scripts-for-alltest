@@ -61,10 +61,18 @@
 \newcommand{\vs}{vs.\ }
 \newcommand{\cf}{cf.~}
 
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\vspace{2px}\noindent\textbf{#1.}}
+
 \newcommand{\sysname}{Sift\xspace}
 \newcommand{\dedupname}{LRPA deduplication\xspace}
 \newcommand{\filecachename}{LRA file cache\xspace}
 \newcommand{\preconstructcachename}{UBLP cache\xspace}
+
+\newcommand{\dal}{\texttt{dal}}
+\newcommand{\fra}{\texttt{fra}}
+\newcommand{\lon}{\texttt{lon}}
+\newcommand{\syd}{\texttt{syd}}
 
  % lukas: a more compact itemize/enumerate environment to save space and better looks
 \newenvironment{compactitemize}{%
