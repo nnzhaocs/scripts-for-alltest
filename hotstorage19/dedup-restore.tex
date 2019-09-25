@@ -23,9 +23,10 @@ To restore a layer, each D-server in \sysname has a slice constructor and
 layer constructor. The restoring process works as follows:
 
 First, the layer constructor fetches the layer recipe from the metadata database.
-As shown in Figure~\ref{fig:construct}, according to $L1$'s layer recipe, 
-the restoring workers are D-server $A$, $B$, and $C$. The node with
-the largest slices is picked as the restoring master ($A$ in the example).
+%According to $L1$'s layer recipe, 
+%(Figure~\ref{fig:replication-partition})
+%Figure~\ref{fig:construct}
+As shown in Figure~\ref{fig:replication-partition}, according to $L1$'s layer recipe,  the restoring workers are D-server $A$, $B$, and $C$. The node with the largest slices is picked as the restoring master ($A$ in the example).
 Since $A$ is the restoring master
 %\LR{Explain how the master is picked},
 %\NZ{We select the server which stores the biggest slice as master to reduce restoring overhead.}
@@ -39,9 +40,8 @@ slice and send a \texttt{GET slice} request to the corresponding D-server.
 %Upon a \texttt{pull} layer request fails on P-servers,
 %\sysname initiates a layer restoring process on D-servers for it.
 %which involves two modules: slice constructor and layer constructor. 
-
 After a \texttt{GET slice} request has been received, 
-$B$ and $C$'s slice constructors start rebuilding their primary slices and send them to $A$.
+$B$ and $C$'s slice constructors start rebuilding their primary slices and send them to $A$ as shown in Figure~\ref{fig:construct}.
 Meanwhile $A$ instructs its local slice constructor to restore its primary slice for $L1$.
 %
 To construct a layer slice, a slice constructor first gets the associate slice recipe
