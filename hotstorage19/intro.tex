@@ -92,7 +92,7 @@ As the container market continues to expand, Docker registries manage a
 growing number of images and corresponding layers.
 %
 Some conservative estimates show that in spring 2019, Docker Hub alone
-stored at least 2 million \emph{public} images totalling roughly 1~PB in
+stored at least 2 million \emph{public} images totaling roughly 1~PB in
 size~\cite{skourtis2019carving,dedupanalysis}. 
 %
 We believe that this is just the tip of the iceberg and the number of
@@ -222,7 +222,7 @@ distributes them across the cluster to parallelize and speed up layer reconstruc
 \VT{will populate as eval is ready}
 \NZ{fixed}
 
-We implement \sysname by modifying the existing registry's filesystem driver and backend as a 
+We implement \sysname by modifying the existing registry's file system driver and backend as a 
 layer deduplication driver and backend (detailed in \S\ref{sec:impl}).
 We deploy \sysname
 on a 14-node cluster and evaluated with real-world workloads and real layers.
