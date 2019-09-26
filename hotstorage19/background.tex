@@ -60,7 +60,7 @@ The current Docker registry software is a single-node application.
 %
 To scale the registry and serve many requests concurrently, organizations typically deploy a load
 balancer like NGINX in front of several independent registry
-instances~\cite{dockerworkload, anwar-cloud19}.
+instances~\cite{dockerworkload, littley2019bolt}.
 %
 All the instances delegate storage and retrieval of images to drivers that interact with
 either a locally mounted shared file system or a remote object storage~\cite{s3,azure,swift,aliyun}.
