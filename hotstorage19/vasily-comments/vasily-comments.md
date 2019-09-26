@@ -5,6 +5,11 @@ To address after the FAST'20 deadline:
 
 * Use consistently either "layer reconstruct" or "layer restore"
 
+Possible shortening:
+
+* Kubernetes pieces in 3.2
+* Preamble of Section 3
+
 Sep 11
 ------
 

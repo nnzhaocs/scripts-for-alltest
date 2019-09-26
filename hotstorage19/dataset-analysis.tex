@@ -1,13 +1,16 @@
 \section{Motivation and Challenges}
 \label{sec:dataset-analysis}
 
-We now explore, why file-level deduplication in Docker registries is necessary to
-effectively reduce storage utilization~(\S\ref{sec:inter-layer-deduplication}).
-We then discuss the feasibility of predicting layer accesses at the
-registry~(\S\ref{sec:predictable-user-access}) and preconstructing layers before they are requested~(\S\ref{sec:layer-preconstruction}) to reduce the deduplication
-overhead for layer retrievals.
+In this section we first explore why file-level deduplication in Docker
+registries can effectively reduce storage
+utilization~(\S\ref{sec:inter-layer-deduplication}).
+%
+We then discuss the feasibility of predicting and exploiting registry access
+patterns for proactive layer restoration~(\S\ref{sec:predictable-user-access}).
+%before they are requested~(\S\ref{sec:layer-preconstruction}) to reduce the
+%deduplication overhead for layer retrievals.
 
-\subsection{Inter-layer deduplication}
+\subsection{Inter-layer Data Redundancy}
 \label{sec:inter-layer-deduplication}
 
 Layers inside different container images exhibit a large amount of redundancy
@@ -15,7 +18,7 @@ in terms of duplicate files.
 %
 Although Docker
 %uses copy-on-write file systems to minimize redundant data inside each image and
-supports the sharing of layers among different images to remove redundant data in the
+supports the sharing of layers among different images to remove some redundant data in the
 Docker registry,
 %a large amount of duplicated files are observed among layers within different images.
 this is not sufficient to effectively eliminate duplicates.
@@ -23,17 +26,16 @@ this is not sufficient to effectively eliminate duplicates.
 According to the deduplication analysis of the Docker Hub
 dataset~\cite{dedupanalysis}, only 3.2\% of files are unique, resulting in
 a deduplication ratio of 2$\times$ in terms of
-capacity\footnote{The deduplication ratio is only 2$\times$ despite the 97\% of redundant data
-because most of the unique files are very large in size.}.
-\NZ{can we just say 3\% of unique files without mention the space savings?} \Subil{Though I agree that mentioning the 2x space savings doesn't really fit well here, we need to make sure this 2x space saving is mentioned somewhere because we say in section 6.3 that full deduplication saves half the storage space. so 2x space saving should be talked about somewhere before then, if not here}
+capacity\footnote{The deduplication ratio is 2$\times$ despite the 97\% of redundant data
+because many of the unique files are large in size.}.
 %
 The large amount of duplicate files
 %shared among different layers associated with different images
-mainly consists of executables, object codes, libraries, and
-source codes, and is likely imported by different image developers using the same
+are executables, object codes, libraries, and
+source codes, and are likely imported by different image developers using the
 package installers or version control systems such as \texttt{apt},
-\texttt{pip} or \texttt{git} to install or get similar dependencies or source
-codes.  
+\texttt{pip} or \texttt{git} to install similar dependencies.
+% or source codes.  
 %
 This file-level redundancy cannot be eliminated by the current layer-level content addressable
 storage system design.
@@ -48,7 +50,8 @@ of Docker registries.
 %the amount of layers data grows exponentially and will explode in future.
 %
 Hence, solving this challenge by adding more disks and scaling out storage systems
-quickly becomes expensive due to the rapid growth of images.
+quickly becomes expensive.
+%due to the rapid growth of images.
 %This large volume data management challenge can not be solved by just adding
 %more disks and goes beyond just hardware upgrade or even datacenter expansion.
 %such as missive and slow data migration during scale-out or scale-up.
@@ -59,8 +62,8 @@ A deduplication solution needs to first decompress
 the compressed layer tarballs and then remove the duplicate files across
 different layers.
 %
-This way, the layer dataset stored in the registry can be largely reduced for more
-effective storage utilization.
+%This way, the layer dataset stored in the registry can be largely reduced for more
+%effective storage utilization.
 %data management.
 %
 However, retrieving a layer from a registry with file-level
@@ -95,7 +98,7 @@ without sacrificing the \texttt{GET} layer performance.
 %understand the storage pressure and trends in the access patterns of the
 %Docker registries at the layer and repository level.
 
-\subsection{Predictable User Access}
+\subsection{Predictable User Access Patterns}
 \label{sec:predictable-user-access}
 
 \input{fig-repull-analysis}
@@ -106,34 +109,41 @@ A promising approach to mitigate layer restoring overhead is predicting which la
 %and optimize the performance by exploring workload patterns and user
 %access patterns.
 %
-To study the feasibility of such a prediction approach, we analyze
-existing registry workloads from~\cite{dockerworkload}. %\todo{cite the workloads we studied here}.
+%To study the feasibility of such a prediction approach, we analyze
+%existing registry workloads from~\cite{dockerworkload}. %\todo{cite the workloads we studied here}.
 %
-We exploit the fact that, when a Docker client pulls an image
+We can exploit the fact that when a Docker client pulls an image
 from the Docker registry, it will first get the manifest of the
-image, which includes all the layers in the image.
+image, which includes references to all the layers in the image.
 %is metadata file of the image and contains a list of layers' digests.
 %
-The client then parses the layer list in the manifests
-and compares it against a \emph{local layer index}.
+%The client then parses the layer list in the manifests
+%and compares it against a \emph{local layer index}.
 %
-If a layer doesn't exist in the local layer index, the client will issue a \texttt{GET}
-request for this layer.
+%If a layer doesn't exist in the local layer index, the client will issue a \texttt{GET}
+%request for this layer.
 %
-Thus, to anticipate layer accesses, we can maintain a \emph{layer index} for each user
-at the registry to keep track of a user's access history and thereby determine which layer
-will be requested by the user after the \texttt{GET} manifest request.
+%Thus, to anticipate layer accesses, we can maintain a \emph{layer index} for each user
+%at the registry to keep track of a user's access history and thereby determine which layer
+%will be requested by the user after the \texttt{GET} manifest request.
 %
+However, the client might or might not follow up with a layer \texttt{GET} requests.
+%
+Further, there might be not enough time to preconstruct the layer
+between the manifest and layer \texttt{GET} requests.
 
+
+\paragraphQ{Do clients issue repeated GETs}
+%
 Typically, if a layer is already stored locally, then the client will not
 fetch this layer again.
 %
-However, higher level container orchestrators, such as Kubernetes, allow users to configure different policies
-for starting new containers. Kubernetes, for example, allows policies such as
+However, higher level container orchestrators, e.g., Kubernetes, allow users to configure different policies
+for starting new containers. Kubernetes, e.g., allows policies such as
 \texttt{IfNotPresent}, i.e,  only get the layer if not present, or \texttt{AlwaysGet}, i.e.
 retrieve the layer, even if it is already present locally.
 %
-This fact needs to be considered when trying to predict, whether a layer will
+This fact needs to be considered when predicting whether a layer will
 be pulled by a user or not.
 
 We use the IBM cloud registry workload~\cite{dockerworkload} to analyze the likelihood for
@@ -143,7 +153,6 @@ The traces span $\sim$80 days for 7 different registry clusters:
 \texttt{Syd} (Sydney), \texttt{Dal} (Dallas), \texttt{Fra} (Frankfurt), \texttt{Lon} (London),
 \texttt{Dev} (Development), \texttt{Pre} (Prestaging), and \texttt{Sta} (Staging).
 %
-
 Figure~\ref{fig:layer-repull-cdf} shows the
 CDF of layer \texttt{GET} counts by the same clients. 
 %
@@ -187,10 +196,10 @@ We also observe that the slope of the CDFs is steep at both lower and higher pro
 but becomes flat in the middle.
 %
 This suggests that we can split clients into two classes, always-pull clients
-and pull-once clients, based on a threshold.
+and pull-once clients, e.g., based on a threshold.
 %
-Thus, to determine whether a client will \texttt{repull} a layer or not, we
-can compute the client repull probability and place the client in one of these classes.
+%Thus, to determine whether a client will \texttt{repull} a layer or not, we
+%can compute the client repull probability and place the client in one of these classes.
 %
 %significant amount of clients have a low repulling proability.
 %
@@ -226,24 +235,24 @@ can compute the client repull probability and place the client in one of these c
 %is made for them.
 
 
-
-\subsection{Layer preconstruction}
-\label{sec:layer-preconstruction}
-
 \input{fig-reusetime}
+
+\paragraphQ{Is there enough time to reconstruct a layer}
+\label{sec:layer-preconstruction}
+%
 %
 %As shown in~\cite{xxx}, layer accesses are heavy skewed.  There are hot layers
 %that account for majority of layer accesses.  Hence, we can cache hot layers
 %to improve performance.
-
-Once layer accesses can be predicted, deduplicated layers can be restored
-before the \texttt{GET} layer request arrives.
+%
+%Once layer accesses can be predicted, deduplicated layers can be restored
+%before the \texttt{GET} layer request arrives.
 %
 %As another optimization we explore if it is possible to preconstruct a 
 %deduplicated layer before users issues a \texttt{GET} layer to avoid
 %the time spend in layer restoration.
 %
-Therefore, we analyze the duration between a \texttt{GET} manifest request and the subsequent
+We analyze the duration between a \texttt{GET} manifest request and the subsequent
 \texttt{GET} layer request.
 %
 As shown in Figure~\ref{fig:intervals}, the majority of intervals are greater than one second.
@@ -278,11 +287,15 @@ environments, especially for the large layers.
 %>>>>>>> 5cfa95ad1ce38b7942bffcb37086db33854ab296
 %
 
- 
+As we show later (\S\ref{sec:Evaluation}) \sysname
+can often reconstruct a layer within a single second.
+%
 In the case of small duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests,
-layer preconstruction probably cannot be finished \emph{in time}. However, layer preconstruction can still provide a lot of benefit because
-the layer construction starts before the arrival of a \texttt{GET} layer request,
-which can largely reduce the layer construction overhead in the \texttt{GET} layer request latency. In summary, it is feasible to start building a layer for the user before
-the \texttt{GET} layer request arrives.
+layer preconstruction might not be finished \emph{in time}. However, even in that case layer preconstruction can still be beneficial because
+the layer construction starts before the arrival of a \texttt{GET} layer request.
+% which can largely reduce the layer construction overhead in the \texttt{GET} layer request latency.
+
+%In summary, it is feasible to start building a layer for the user before
+%the \texttt{GET} layer request arrives.
 
 
