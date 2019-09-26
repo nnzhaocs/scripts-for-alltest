@@ -175,11 +175,11 @@ which do not deduplicate well.
 %are not affected.
 %
 A na\"{i}ve application of deduplication to the registry---decompressing
-layers and storing individual files in content-addressable storage---introduces
-prohibitive overheads due to high layer reconstruction 
-(denoted as layer restoring) cost.
+layers and storing individual files in content-addressable storage---prohibitively
+slows down image pulls due to high layer reconstruction 
+(layer restoring) cost.
 %
-These slowdowns during image pulls are especially
+The slowdowns during image pulls are especially
 harmful because they contribute directly to the start times of containers.
 %
 Our experiments showed that on average, na\"{i}ve deduplication increases layer
@@ -191,35 +191,37 @@ supports deduplication.
 \sysname's design is tailored to
 % Docker registry environments and workloads to
 increase storage efficiency via deduplication of layers while
-reducing the corresponding layer restoring overhead. \DIM{I don't understand the preceeding sentence.}
-\NZ{can you read again?} \Subil{reworded. is this better?}
+reducing the corresponding layer restoring overhead.
+%
 It employs four key techniques to reduce
-the impact of utilizing layer deduplication on performance: 
+the impact of layer deduplication on performance: 
 %and keep request response time low:
 %
 %It exploits two kinds of redundancies: 1)~redundant data across layers;
 %and 2)~redundancy caused by replication in the storage backend.
 %
 \begin{compactenumerate}
-\item It exploits redundancy caused by replication in the storage backends and keeps a fixed
+\item 
+\sysname changes how replication is performed by the registry.
+%
+It keeps an administrator-defined
 number of layer replicas as-is, without decompressing and deduplicating them.
 %
-Accesses to these replicas do not experience layer restoring overhead while
-the remaining layer replicas are decompressed
- \DIM{Is this supposed to say "compressed"?}
-\NZ{it is decompressed. otherwise how we do dedup} 
-and deduplicated for storage reduction.
-\Subil{I understand Dimitris' confusion. Maybe this is a better rewording: It maintains a level of redundancy by keeping a configurable number of layer replicas on certain assigned servers in the registry cluster, while also storing unique files (and maintaining replicas for redundancy purposes) from across all the layers in the remaining servers.}
+Accesses to these replicas do not experience layer restoring overhead.
 %
-\item It deduplicates less frequently accessed layers more
-aggressively than popular layers to speed up accesses to popular
-layers while still achieving high storage reduction.
+However, the additional layer replicas (needed
+to maintain the desired durability level)
+are decompressed and deduplicated.
+
+\item \sysname deduplicates less frequently accessed layers more
+aggressively than popular ones to speed up accesses to popular
+layers while achieving high storage savings.
 %
-\item It monitors and exploits user access patterns to preconstruct
-layers before layer download requests arrive to avoid adding reconstruction
-latency to layer pull requests.
+\item By monitoring user access patterns \sysname predictively
+restores layers before layer download requests arrive,
+avoiding reconstruction latency in pull requests.
 %
-\item During layer deduplication, it groups files in \emph{slices} and evenly
+\item During layer deduplication, \sysname groups files in \emph{slices} and evenly
 distributes them across the cluster to parallelize and speed up layer reconstruction.
 %
 %Depending on the user and environment requirements for performance, storage
@@ -230,17 +232,24 @@ distributes them across the cluster to parallelize and speed up layer reconstruc
 % 4. Sift's evaluation
 %%%
 
-\VT{will populate as eval is ready}
-\NZ{fixed}
+We implemented \sysname as a custom layer storage system and
+a registry backend driver to communicate
+with the new backend (detailed in \S\ref{sec:impl}).
+%
+We deployed \sysname on a 14-node cluster and evaluated with real-world
+workloads and real layers.
+%
+With the \emph{highest performance mode}, \sysname outperforms the
+state-of-the-art by reducing the layer downloading latency up to 14\%.
+%
+With the \emph{highest deduplication mode}, \sysname saves up to 50\% of
+storage space compare to the registry without layer deduplication.
+%
+\VT{We need to state performance impact of the highest data
+reduction mode and deduplication ratio for the highest performance mode.}
+%
+The remaining deduplication modes make different trade offs in performance and
+data reduction (detailed in \S\ref{sec:Evaluation}).
 
-We implement \sysname by modifying the existing registry's file system driver and backend as a 
-layer deduplication driver and backend (detailed in \S\ref{sec:impl}).
-We deploy \sysname
-on a 14-node cluster and evaluated with real-world workloads and real layers.
-With the \emph{highest performance mode},
-\sysname outperforms the state-of-the-art by reducing the layer downloading latency up to 14\%.
-With the \emph{highest deduplication mode},
-\sysname saves up to 50\% of storage space compare to the registry without layer deduplication.
-The remaining deduplication modes make different trade offs in performance and data reduction (detailed in \S\ref{sec:Evaluation}).
 %
 %The evaluation results show that uses a cache that takes into consideration the

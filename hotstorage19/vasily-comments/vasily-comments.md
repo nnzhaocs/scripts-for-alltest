@@ -1,3 +1,10 @@
+Sep 26
+------
+
+To address after the FAST'20 deadline:
+
+* Use consistently either "layer reconstruct" or "layer restore"
+
 Sep 11
 ------
 
