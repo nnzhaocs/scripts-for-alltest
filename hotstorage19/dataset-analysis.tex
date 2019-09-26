@@ -29,7 +29,10 @@ a deduplication ratio of 2$\times$ in terms of
 capacity\footnote{The deduplication ratio is 2$\times$ despite the 97\% of redundant data
 because many of the unique files are large in size.}.
 %
-The large amount of duplicate files
+We believe that the deduplication ratio is much higher when
+private registries are taken into account.
+%
+The duplicate files
 %shared among different layers associated with different images
 are executables, object codes, libraries, and
 source codes, and are likely imported by different image developers using the
@@ -49,14 +52,14 @@ $R$-way replication for reliability additionally fuels the high storage demands
 of Docker registries.
 %the amount of layers data grows exponentially and will explode in future.
 %
-Hence, solving this challenge by adding more disks and scaling out storage systems
+Hence, satisfying the demand by adding more disks and scaling out storage systems
 quickly becomes expensive.
 %due to the rapid growth of images.
 %This large volume data management challenge can not be solved by just adding
 %more disks and goes beyond just hardware upgrade or even datacenter expansion.
 %such as missive and slow data migration during scale-out or scale-up.
  
-File-level deduplication can address this challenge without the need of storage expansion.
+File-level deduplication can address this challenge reducing the need of storage expansion.
 %
 A deduplication solution needs to first decompress
 the compressed layer tarballs and then remove the duplicate files across
@@ -68,7 +71,9 @@ different layers.
 %
 However, retrieving a layer from a registry with file-level
 deduplication support requires restoring the layer,
-which involves fetching the files, archiving and compressing them.
+which involves fetching the files, archiving and compressing them\footnote{Notice
+that given the large variety of Docker clients the registry-side enhancements
+should not involve changes on the client-side.}.
 %
 These extra operations incur a considerable overhead for
 \texttt{GET} layer requests, which already constitute a significant portion of
@@ -113,8 +118,8 @@ A promising approach to mitigate layer restoring overhead is predicting which la
 %existing registry workloads from~\cite{dockerworkload}. %\todo{cite the workloads we studied here}.
 %
 We can exploit the fact that when a Docker client pulls an image
-from the Docker registry, it will first get the manifest of the
-image, which includes references to all the layers in the image.
+from the registry, it will first get the manifest of the
+image, which includes references to the layers in the image.
 %is metadata file of the image and contains a list of layers' digests.
 %
 %The client then parses the layer list in the manifests
@@ -127,10 +132,10 @@ image, which includes references to all the layers in the image.
 %at the registry to keep track of a user's access history and thereby determine which layer
 %will be requested by the user after the \texttt{GET} manifest request.
 %
-However, the client might or might not follow up with a layer \texttt{GET} requests.
+However, the client might or might not follow up with layer \texttt{GET} requests.
 %
-Further, there might be not enough time to preconstruct the layer
-between the manifest and layer \texttt{GET} requests.
+Further, there might be not enough time to reconstruct the layer
+between the manifest and layer \texttt{GET}s.
 
 
 \paragraphQ{Do clients issue repeated GETs}
@@ -146,7 +151,7 @@ retrieve the layer, even if it is already present locally.
 This fact needs to be considered when predicting whether a layer will
 be pulled by a user or not.
 
-We use the IBM cloud registry workload~\cite{dockerworkload} to analyze the likelihood for
+We use the IBM Cloud registry workload~\cite{dockerworkload} to analyze the likelihood for
 a user to \emph{repull} an already present layer.
 %
 The traces span $\sim$80 days for 7 different registry clusters:
@@ -180,7 +185,7 @@ example, a client from \texttt{Lon} fetched the same layer 19,300 times.
 %repulling probability is 1, indicating repulls everytime by the clients.
 
 %
-\LR{Need to make sure that the following is not repeated in 4.4 (Caching Layers)}
+%\LR{Need to make sure that the following is not repeated in 4.4 (Caching Layers)}
 %\NZ{its duplicated}
 %We define \emph{repulling} as the act of fetching the same layer more than once
 %by the same user.
@@ -268,7 +273,7 @@ There are several reasons for this long gap.
 %
 First, when fetching an image from a registry,
 the Docker client fetches a fixed number of layers in parallel (three by
-default) starting from the lowest or base layers.
+default) starting from the lowest layers.
 %
 In the case where an image
 contains more than three layers, the upper layers have to wait until the
@@ -278,7 +283,7 @@ This varies the \texttt{GET} layer request arrival time for the registry.
 %
 %<<<<<<< HEAD
 Second, network delay between clients and registry
-often accounts for a greater proportion of the \texttt{GET} layer latency in cloud
+often accounts for a greater portion of the \texttt{GET} layer latency in cloud
 environments, especially for the large layers.
 %=======
 %Second, the network latency between clients and a registry
@@ -290,8 +295,8 @@ environments, especially for the large layers.
 As we show later (\S\ref{sec:Evaluation}) \sysname
 can often reconstruct a layer within a single second.
 %
-In the case of small duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests,
-layer preconstruction might not be finished \emph{in time}. However, even in that case layer preconstruction can still be beneficial because
+In the case of a small duration between a \texttt{GET} manifest request and its subsequent \texttt{GET} layer requests,
+layer preconstruction might not be finished in time. However, even in that case layer preconstruction can still be beneficial because
 the layer construction starts before the arrival of a \texttt{GET} layer request.
 % which can largely reduce the layer construction overhead in the \texttt{GET} layer request latency.
 

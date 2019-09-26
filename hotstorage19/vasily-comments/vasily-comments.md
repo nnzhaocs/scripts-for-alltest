@@ -4,11 +4,11 @@ Sep 26
 To address after the FAST'20 deadline:
 
 * Use consistently either "layer reconstruct" or "layer restore"
+* Does AlwaysGet will get the layers even if they do not change?
 
 Possible shortening:
 
-* Kubernetes pieces in 3.2
-* Preamble of Section 3
+* 
 
 Sep 11
 ------
