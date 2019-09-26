@@ -61,6 +61,7 @@ Therefor, it uses two maps to record the image-to-layer information
 and user layer accesses: RLmap and ULmap.
 %
 \LR{Change RLmap (repo-to-layer) to ILmap (image-to-layer)?}
+\NZ{Ok.}
 %\NZ{Repo to layers; User to Layers.}
 %
 %\LR{ Is the layer set the set of layers contained in an image? Why do we need
@@ -73,7 +74,7 @@ is identified as \textless{}Repository name@manifest digest\textgreater.
 %
 %Layer is identified as layer digest.
 %
-ULmap stores for each user, the layers the has user accessed and the corresponding pull count.
+ULmap stores for each user, the layers the user has accessed and the corresponding pull count.
 A user is uniquely identified by extracting the sender network address from the request.
 %
 Both maps serve as fast indices to speed up the prediction process.
@@ -143,7 +144,9 @@ counts for a user whenever a \texttt{GET layer} request is received.
 %(denoted as layerdir) as a file named ‘data’.}
 
 The introduction of the two cache layers results in a 5-tier storage architecture of
-\sysname as shown in Figure~\ref{fig:tieredstore} \Subil{We say 5-tier here but 2-tier in the figure. Must change one or the other for consistency along with any other mentions of 2-tier/5-tier in the paper}. Requests are passed through the
+\sysname as shown in Figure~\ref{fig:tieredstore} \Subil{We say 5-tier here but 2-tier in the figure. Must change one or the other for consistency along with any other mentions of 2-tier/5-tier in the paper}.
+\NZ{can we say 2-tier with 5-level?}
+ Requests are passed through the
 tiers in the order displayed in the figure. Upon a \texttt{GET} layer request,
 \sysname first determines the P-server(s) which is (are) repsonsible for the layer
 and searches the superfetch cache(s).
@@ -172,8 +175,13 @@ updates to layers.
 %layer stage area will be evicted to the preconstruct cache after the layer is
 %deduplicated.
 %
-We use Adaptive Replacement Cache (ARC) replacement policy~\cite{megiddo2003arc}, which keeps track of both the frequently and recently used layers and adapts to changing access patterns. ARC is best suited for our purposes because it is known handle varying workloads without prior tuning. The real-life Docker registry workloads have varied access patterns between them and so a caching solution that would work effectively without needing to be fine tuned for each observed workload was necessary. ARC makes use of two LRU lists that tracks items based on recency and frequency and self tunes to determine how many items from each list are actually kept in the cache.  
-%\LR{Add details on on what ARC does exactly. How does it adapt? Why did we choose ARC?} \Subil{addressed, but may need editing}
+We use Adaptive Replacement Cache (ARC) replacement policy~\cite{megiddo2003arc}, which keeps track of both the frequently and recently used layers and adapts to changing access patterns. 
+ARC is best suited for our purposes because it is known handle varying workloads without prior tuning. The real-life Docker registry workloads have varied access patterns between them and so a caching solution that would work effectively without needing to be fine tuned for each observed workload was necessary. ARC makes use of two LRU lists that tracks items based on recency and frequency and self tunes to determine how many items from each list are actually kept in the cache.  
+\LR{Add details on on what ARC does exactly. How does it adapt? Why did we choose ARC?} \Subil{addressed, but may need editing}
+\NZ{because ARC adapts between LRU and LFU. 
+Layer accesses are skewed according to anwar's paper so LRU will work but
+in case that layer reuse time is higher,
+so LFU is also needed.}
 %For preconstruct cache, it's possible when a \texttt{pull} layer request comes 
 %before layer restoring is finished, meaning the layer cannot be preconstructed \emph{on time}.
 %In this case, \texttt{pull} layer request \emph{waits} until the restoring is finished
