@@ -12,9 +12,8 @@
 	\centering
 	\begin{minipage}{0.3\textwidth}
 		\centering
-		\includegraphics[width=0.9\textwidth]{graphs/1nodegetlayerlatency.pdf}
-		\caption{GET layer latency\todo{add grid in background to match the other figures}
-		\LR{Change `deduplication' to `\sysname' in the legend}}% across different schemes.}
+		\includegraphics[width=0.72\textwidth]{graphs/1nodegetlayerlatency.pdf}
+		\caption{GET layer latency}
 		\label{fig:eval-1nodegetlayerlatency}
 	\end{minipage}%
 	\begin{minipage}{0.3\textwidth}
@@ -26,8 +25,7 @@
 	\begin{minipage}{0.3\textwidth}
 	\centering
 	\includegraphics[width=0.9\textwidth]{graphs/durationML.pdf}
-	\caption{\texttt{GET} manifest/layer IAT \LR{Change xlabel to ``GET manifest/layer inter-arrival time''.}
-	\LR{We should also reorder the x-axis going from None (i.e. 0) to 1, not the other way round.}}
+	\caption{\texttt{GET} manifest/layer IAT}
 	\label{fig:eval-durationML}
    \end{minipage}
 \end{figure*}
@@ -104,7 +102,6 @@ Moreover, the layer restoring latency increases almost linearly as the layer siz
 While a 1\,MB layer takes 0.13\,s to restore and download, 
 it takes 0.22\,s to restore and download a 9\,MB
 layer for \sysname without caching.
-\NZ{fill the gap with 0.13}
 
 %\paragraph{Preconstruct cache VS. ARC cache}
 %\paragraph{Cache}
@@ -141,14 +138,16 @@ Overall, \sysname with preconstruct incurs the lowest overhead and only increase
 Figure~\ref{fig:eval-cachehitratios} shows the cache hit ratios for the ARC and
 preconstruct caches.
 %
-Note that the cache size is set to 20\% of \dal{}'s ingress data ,i.e. \gap.
-\NZ{Here, the cache size = unique layer count x layer size x 0.2.
-Cache size depends on the layer size we chose.
-we replay the workload five times, varying
-the layer size (from 1~MB to 9~MB)
-For example, if layer size is 1 M,
-then the cache size = unique layer count x I MB x 0.2
-= 1278*0.2MB.}
+Note that the cache size is set to 20\% of \dal{}'s ingress data ,i.e. 20\% of the total size of
+all unique layers, which are pushed to the registry as part of our workload.
+%
+%\NZ{Here, the cache size = unique layer count x layer size x 0.2.
+%Cache size depends on the layer size we chose.
+%we replay the workload five times, varying
+%the layer size (from 1~MB to 9~MB)
+%For example, if layer size is 1 M,
+%then the cache size = unique layer count x I MB x 0.2
+%= 1278*0.2MB.}
 %
 %\Subil{approximately how much is Dal's ingress data?}.
 %
@@ -184,23 +183,22 @@ cache hit ratio and the waiting ratio, which results to 0.95.
 	\centering
 	\begin{minipage}{0.3\textwidth}
 		\centering
-		\includegraphics[width=0.9\textwidth]{graphs/clusterscale.pdf}
-		\caption{GET layer latency with different cluster size.}
+		\includegraphics[width=0.76\textwidth]{graphs/clusterscale.pdf}
+		\caption{GET layer latency with different cluster size}
 		\label{fig:eval-clusterscale}
 	\end{minipage}%
 	\hspace{1mm}
 		\begin{minipage}{0.3\textwidth}
 		\centering
 		\includegraphics[width=0.9\textwidth]{graphs/clientscale.pdf}
-		\caption{GET layer latency with different client concurrency.}
+		\caption{GET layer latency with different client concurrency}
 		\label{fig:eval-clientscale}
 	\end{minipage}%
 	\hspace{1mm}
 	\begin{minipage}{0.3\textwidth}
 	\centering
-	\includegraphics[width=0.9\textwidth]{graphs/restoringbreakdown.pdf}
-	\caption{Restoring latency breakdown. \Subil{maybe change 'fetch and merge slices' to
-	'layer construction duration' to keep consistency with the text}}
+	\includegraphics[width=0.98\textwidth]{graphs/restoringbreakdown.pdf}
+	\caption{Restoring latency breakdown}
 	\label{fig:eval-restoringbreakdown}
 	\end{minipage}
 \end{figure*}
@@ -241,9 +239,6 @@ This is for finishing all evaluations in a reasonable time.
 %
 We analyze the impact of larger clusters and layers, we increase the number of registry servers from
 7 to 14, and the layer sizes from 30 to 70\,MB and compare \sysname to the BOLT registry.
-%
-\LR{Can we just call it \sysname instead of \sysname-dedup?}
-\NZ{yes.}
 %
 %(1) \sysname deduplication cluster (denoted as \sysname-dedup),
 %and
@@ -339,7 +334,7 @@ for 70\,MB layers, it takes 3.6\,s.
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=0.4\textwidth]{graphs/dedupbreakdown.pdf}
+	\includegraphics[width=0.3\textwidth]{graphs/dedupbreakdown.pdf}
 	\caption{Deduplication latency breakdown.}
 	%	\vspace{-3pt}
 	\label{fig:eval-dedupbreakdown}
@@ -357,19 +352,22 @@ Figure~\ref{fig:eval-dedupbreakdown} shows the breakdown of the deduplication la
 We observe that decompression and file-level deduplication account for the largest portions of
 the layer deduplication duration.
 %
-\LR{Why does the following reduce the overhead? Do we want to reduce the impact on the
-restoring processes?}
-\NZ{Because there are \texttt{GET} and \texttt{PUT} requests.
-We configure deduplication process to use a single thread to 
-minimize its computation and I/O resource consumption
-so it wont compete for resources with layer restoring process. }
+%\LR{Why does the following reduce the overhead? Do we want to reduce the impact on the
+%restoring processes?}
+%\NZ{Because there are \texttt{GET} and \texttt{PUT} requests.
+%We configure deduplication process to use a single thread to 
+%minimize its computation and I/O resource consumption
+%so it wont compete for resources with layer restoring process. }
 %
-This is because \sysname uses single-threaded decompression and file-level deduplication for
-reducing the computation overhead of the off-line layer deduplication.
+This is because \sysname uses single-threaded decompression and file-level deduplication in
+order to reduce interference with the critical layer restoration processes.
 %
-\Subil{This conflicts with our description of pgzip in the Implementation section where we
- talk about using parallelism in both compression ad decompression}.
-\NZ{pgzip is for layer restoring. We use standard gzip for deduplication.}  \Subil{Since we are only using pgzip for compression for layer restoring for pulls and standard gzip for decompression during a push, we should remove the implication that pgzip is used for both compression and decompression at the end of section 5.2}
+%\Subil{This conflicts with our description of pgzip in the Implementation section where we
+% talk about using parallelism in both compression ad decompression}.
+%\NZ{pgzip is for layer restoring. We use standard gzip for deduplication.}
+%\Subil{Since we are only using pgzip for compression for layer restoring for pulls and standard
+%gzip for decompression during a push, we should remove the implication that pgzip is used
+%for both compression and decompression at the end of section 5.2}
 %
 Moreover, the duration of decompression and file-level deduplication increases with layer sizes.
 %
