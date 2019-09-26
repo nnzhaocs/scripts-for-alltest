@@ -1,10 +1,9 @@
 \section{ Evaluation}
 \label{sec:Evaluation}
 
-For the evaluation of \sysname, we are interested in two main aspects. First, we analyze the deduplication
-performance of \sysname happening in the D-cluster~(\S\ref{sec:eval-dedup}). 
-We then look at, how
-the different deduplication modes affect the performance of the primary cluster~(\S\ref{sec:eval-primary}).
+For the evaluation of \sysname, we are interested in two main aspects. First, the deduplication
+performance of \sysname happening in the D-cluster~(\S\ref{sec:eval-dedup}).
+Second, the effect of different deduplication modes on the performance of the primary cluster~(\S\ref{sec:eval-primary}).
 
 %Our two-tier heterogeneous cache in the registry can improve the performance of the entire system
 %by hiding the long latency imposed by the backend dedup system.
@@ -19,11 +18,11 @@ Our testbed consists of
 %two clusters: 
 %8-node client cluster and
 %8-node registry cluster (Hulks), and
-a 16-node cluster and
+a 16-node cluster with
 %Each client server is equipped with 32 cores, 64 GB RAM, 500 GB SSD, and 10,000Mb/s NIC. 
 %Each client server is equipped with 8 cores, 64 GB RAM, 1 TB HDD, and 1000Mb/s NIC.
 %During evaluation,
-each node is equipped with 8 cores, 16\,GB RAM, a 500\,GB SSD, and a 10\,Gbps NIC. 
+each node being equipped with 8 cores, 16\,GB RAM, a 500\,GB SSD, and a 10\,Gbps NIC. 
 %We deploy Docker's registry container on each server and deploy a distributed Redis cluster on these 22 registry servers as our database.
 %During our evaluation,
 %we select different number of servers as our registry cluster
@@ -48,7 +47,7 @@ each node is equipped with 8 cores, 16\,GB RAM, a 500\,GB SSD, and a 10\,Gbps NI
 %To evaluate how \sysname works for frequently accessed images, 
 As our dataset, we download 74,000 popular images (i.e., images with a pull count greater than 100) from Docker Hub.
 % 
-The total size of this dataset is 12.5\,TB and contains 507,023 layers. 87.5\% of layers are smaller than 50\,MB.
+The total size of this dataset is 12.5\,TB and contains 507,023 layers with 87.5\% of them being smaller than 50\,MB.
 %
 After decompressing the layers, the total size of the dataset is 27.7\,TB.
 %
@@ -76,15 +75,15 @@ a deduplication ratio of 1.74.
 To evaluate how \sysname performs for production registry workloads, 
 we use the IBM Cloud Registry traces~\cite{dockerworkload}.
 %
-The traces come from three private registry clusters and 
+The traces come from three private registry clusters, 
 four production registry clusters and span approximately 80 days.
 %
 As detailed in~\S\ref{sec:impl}, we randomly match layers from the four anonymized production
-traces (\dal, \fra, \lon, and \syd) to layers from our dataset to generate four real-world production workloads.
+traces (\dal, \fra, \lon, and \syd) to layers of our dataset to generate four real-world production workloads.
 %
-Before an experiment, we first warmup P-servers and D-servers with the unique layers as shown in
-Table~\ref{tab:eval-overall} and then replay the first 5000 requests from each workload.
-Note that we do not warmup the caches.
+Before each experiment, we warm-up P-servers and D-servers with the unique layers as shown in
+Table~\ref{tab:eval-overall} and then replay the first 5,000 requests from each workload.
+Note that we do not warm-up the caches.
 %
 %\Subil{there's nothing in the table indicating what number of layers we use for warmup.}
 %\NZ{the unique layer count is the number.}
@@ -94,7 +93,7 @@ The warmup requests wont go to caches.
 We distinguish the request types as: \texttt{GET}, \texttt{PUT}, and \texttt{WARMUP}, 
 \texttt{PRECONSTRUCT}.}
 %
-Tables~\ref{tab:eval-overall} details how the 5000 requests for each workload are composed
+Tables~\ref{tab:eval-overall} details how the 5,000 requests for each workload are composed
 with respect to layer and manifest requests.
 
 %Note that we use a 3-way replication
