@@ -202,6 +202,30 @@ cache hit ratio and the waiting ratio, which results to 0.95.
 	\label{fig:eval-restoringbreakdown}
 	\end{minipage}
 \end{figure*}
+
+\begin{figure*}[t]
+	\centering
+	\begin{minipage}{0.3\textwidth}
+		\centering
+		\includegraphics[width=0.9\textwidth]{graphs/dedupbreakdown.pdf}
+		\caption{Deduplication latency breakdown}
+		\label{fig:eval-dedupbreakdown}
+	\end{minipage}%
+	\hspace{1mm}
+	\begin{minipage}{0.3\textwidth}
+		\centering
+		\includegraphics[width=0.9\textwidth]{graphs/dalprimary.pdf}
+		\caption{\texttt{GET} layer latency for different layer sizes}
+		\label{fig:eval-dalprimary}
+	\end{minipage}%
+	\hspace{1mm}
+	\begin{minipage}{0.3\textwidth}
+		\centering
+		\includegraphics[width=1.0\textwidth]{graphs/total-traces.pdf}
+		\caption{\texttt{GET} layer latency for different workloads} %\Subil{"Blot" in figure should be "BOLT".}}
+		\label{fig:eval-total-traces}
+	\end{minipage}
+\end{figure*}
  
 \paragraph{Inter-arrival time of manifest and layer requests}
 %
@@ -331,14 +355,6 @@ take longer time to archive and compress.
 %
 For example, for layers of size 30\,MB, fetching and merging slices takes 1.3\,s on average while
 for 70\,MB layers, it takes 3.6\,s.
-
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=0.3\textwidth]{graphs/dedupbreakdown.pdf}
-	\caption{Deduplication latency breakdown.}
-	%	\vspace{-3pt}
-	\label{fig:eval-dedupbreakdown}
-\end{figure}
 
 \paragraph{Deduplication latency breakdown}
 %

@@ -1,26 +1,21 @@
 
 \input{fig-eval-primary}
 
-\subsection{Performance of the primary cluster }
+\subsection{Deduplication Modes}
 \label{sec:eval-primary}
 %\paragraph{}
-In this experiment, we measure the performance of \sysname's primary cluster.
+Next, we evaluate the performance of \sysname's primary cluster
+and different B-mode configurations.
 %
-We test five modes of \sysname on a 9-node cluster: \textbf{B-mode 0},
-\textbf{B-mode 1}, \textbf{B-mode 2}, \textbf{B-mode 3}, and \textbf{S-mode}.
-Note that 
-B-mode 0 \emph{deduplicates} all layer replicas
-while
-B-mode 3 does not deduplicate layer replicas.
+We test five modes of \sysname on a 9-node cluster: B-mode 0, 1, 2, and 3,
+and S-mode.
+%
+B-mode 0 deduplicates \emph{all} layer replicas while B-mode 3 does not perform deduplication.
 %\sysname is evaluated by configuring different deduplication modes.
-Accordingly,
-B-mode 0 doesn't have P-servers
-while
-B-mode 3 doesn't have D-servers.
+Accordingly, B-mode 0 doesn't have P-servers while B-mode 3 doesn't have D-servers.
 %
-For the remaining two B-modes -- B-mode 1 and B-mode 2, the number of P-servers
-is set to three and six, respectively. For S-mode, the number of P-servers is
-set to six.
+For the remaining two B-modes, B-mode 1 and B-mode 2, the number of P-servers
+is set to 3 and 6, respectively. For S-mode, the number of P-servers is set to 6.
 %In addition, 
 %we speedup trace replaying by using different speedup factors
 %so that each trace can be finished within 30 minutes.
@@ -28,6 +23,7 @@ set to six.
 %we first warmup P-servers and D-servers with a certain amount of layers 
 %as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
 %To generate workload, 
+%
 We use 100 clients to replay the traces to P-servers and/or D-servers
 depending on the mode.
 %
