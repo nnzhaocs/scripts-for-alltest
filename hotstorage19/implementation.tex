@@ -100,14 +100,15 @@ the layer digest under that location.
 
 %\paragraph{Parallel (de)compression}
 %
-\LR{A bit out of context, not sure where to put the following to integrate it better.} \Subil{Would a subsection work or is that too much?}
+%\LR{A bit out of context, not sure where to put the following to integrate it better.}
+%\Subil{Would a subsection work or is that too much?}
 %To speedup layer restoring,
-To speed up (de)compression, we use the parallel gzip library (pgzip)~\cite{pgzip}
-for layer and slice compression/decompression.
-%
-Unlike Go's single-threaded standard gzip compression library~\cite{gogzip},
-pgzip splits the compression stream into blocks so that data can be compressed in
-parallel. pgzip is compatible with the standard gzip library.
+%To speed up (de)compression, we use the parallel gzip library (pgzip)~\cite{pgzip}
+%for layer and slice compression/decompression.
+%%
+%Unlike Go's single-threaded standard gzip compression library~\cite{gogzip},
+%pgzip splits the compression stream into blocks so that data can be compressed in
+%parallel. pgzip is compatible with the standard gzip library.
 
 %\paragraph{Dealing with big layers}
 %%
