@@ -82,12 +82,12 @@ four production registry clusters and span approximately 80 days.
 As detailed in~\S\ref{sec:impl}, we randomly match layers from the four anonymized production
 traces (\dal, \fra, \lon, and \syd) to layers from our dataset to generate four real-world production workloads.
 %
-Before an experiment, we first warmup P-servers and D-servers with a certain amount of layers as shown in
+Before an experiment, we first warmup P-servers and D-servers with the unique layers as shown in
 Table~\ref{tab:eval-overall} and then replay the first 5000 requests from each workload.
 Note that we do not warmup the caches.
 %
-\Subil{there's nothing in the table indicating what number of layers we use for warmup.}
-\NZ{the unique layer count is the number.}
+%\Subil{there's nothing in the table indicating what number of layers we use for warmup.}
+%\NZ{the unique layer count is the number.}
 \LR{Do you mean we warm up the caches?}
 \NZ{No we dont warmup caches.
 The warmup requests wont go to caches.

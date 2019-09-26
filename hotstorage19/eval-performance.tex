@@ -184,8 +184,7 @@ cache hit ratio and the waiting ratio, which results to 0.95.
 	\begin{minipage}{0.3\textwidth}
 		\centering
 		\includegraphics[width=0.9\textwidth]{graphs/clusterscale.pdf}
-		\caption{GET layer latency with different cluster size. \Subil{the blue line is peeking out of the box.}
-		 \todo{change object storage to BOLT in figure}}
+		\caption{GET layer latency with different cluster size.}
 		\label{fig:eval-clusterscale}
 	\end{minipage}%
 	\hspace{1mm}
@@ -369,7 +368,7 @@ reducing the computation overhead of the off-line layer deduplication.
 %
 \Subil{This conflicts with our description of pgzip in the Implementation section where we
  talk about using parallelism in both compression ad decompression}.
-\NZ{pgzip is for layer restoring. We use standard gzip for deduplication.}
+\NZ{pgzip is for layer restoring. We use standard gzip for deduplication.}  \Subil{Since we are only using pgzip for compression for layer restoring for pulls and standard gzip for decompression during a push, we should remove the implication that pgzip is used for both compression and decompression at the end of section 5.2}
 %
 Moreover, the duration of decompression and file-level deduplication increases with layer sizes.
 %
