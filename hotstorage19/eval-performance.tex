@@ -35,7 +35,7 @@ and its impact on \texttt{GET} layer request latency.
 %
 We first measure a single D-server's layer restoring capability and compare it with 
 a \emph{no deduplication} scheme, i.e.  a plain registry server with a local file system backend
-that does no deduplication.
+that performs no deduplication.
 %
 Then we scale out to a deduplication cluster with multiple D-servers and compare
 \sysname to BOLT~\cite{littley2019bolt}, a recently published, state-of-the-art registry design.
@@ -67,7 +67,7 @@ Then we scale out to a deduplication cluster with multiple D-servers and compare
 \NZ{We start from small layers to big layers like 70 MB.
 small layers can be restored by using just a single node.
 }
-\LR{Is the ARC cache the layer stage area cache or what does it refer to in Figure 3a)?}
+\LR{Is the ARC cache the layer stage area cache or what does it refer to in Figure 3a?}
 \NZ{No. ARC cache is a layer cache which stores the constructed hot layers
 to save restoring time. ARC cache does not preconstruct layers.
 }
@@ -237,7 +237,7 @@ This is for finishing all evaluations in a reasonable time.
 
 \paragraph{Cluster scale out}
 %
-We analyze the impact of larger clusters and layers, we increase the number of registry servers from
+We analyze the impact of larger clusters and layers by increasing the number of registry servers from
 7 to 14, and the layer sizes from 30 to 70\,MB and compare \sysname to the BOLT registry.
 %
 %(1) \sysname deduplication cluster (denoted as \sysname-dedup),
