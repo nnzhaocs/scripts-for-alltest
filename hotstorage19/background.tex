@@ -33,14 +33,14 @@ a basis for commercial deployments.
 
 
 
-Docker registries group images in \emph{repositories}, each containing
-different versions (\emph{tags}) of the same image, identified as
+Docker registries group images into \emph{repositories}, each containing
+versions (\emph{tags}) of the same image, identified as
 \texttt{<repo-name:tag>}.
 %
 For each tagged image in a repository, the Docker registry stores a \emph{manifest}.
 %
 The manifest is a JSON file, which contains the runtime configuration for a
-container image (\eg environment variables) and the list of layers which make
+container image (\eg environment variables) and the list of layers that make
 up the image.
 %
 A layer is stored as a compressed archival file and identified using a digest that is computed as a hash (SHA-256) over
