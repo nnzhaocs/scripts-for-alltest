@@ -113,9 +113,17 @@ infrastructure on operating image registries to provide adequate service level.
 % 3. Significant amount of unharvested duplication across images.
 %%%
 
-As Docker images have to be self-contained by definition
-and yet they frequently rely on common dependencies,
-they are prone to high file redundancy.
+Docker images must be self-contained by definition
+and yet they frequently rely on common dependencies (e.g., libraries).
+%
+As a result images are prone to contain a
+high number of duplicate files.
+%
+Docker employs layer sharing to reduce this redundancy.
+%
+However, it is insufficient as layers are coarse and rarely identical due the the
+fact that they are built by independent developers without much coordination
+with others.
 %
 %Hence, images are likely to benefit from deduplication.
 %
@@ -135,39 +143,36 @@ availability~\cite{Bonvin:2010:SFS:1807128.1807162}.
 For instance, assuming 3-way replication, the number of duplicate files in the
 Docker Hub dataset reaches 99\%.
 %
-Deduplication is an effective method to reduce capacity demands of intrinsically redundant
-datasets.
-%
-And yet, existing registry deployments do not support deduplication.
+%And yet, existing registry deployments do not support deduplication.
 %exploit this high data redundancy
 %across layers.
 % to make the service more efficient.
 
-Layer sharing is one approach to reduce this redundancy.
-%
-However, it is insufficient as layers are coarse and rarely identical due the the
-fact that they are typically built by independent developers without much coordination
-with others.
-%
-While existing deduplication methods can be applied~\cite{dedup1,dedup2,dedup3}, they
-are problematic because \LR{add reasons against existing file- or block-level deduplication
-strategies}
-\NZ{fixed}
-the image dataset is a set of \textbf{compressed} layer tarballs
-and the deduplication ratio for compressed tarballs is low \Subil{Do we have a citation for this? Or did we run file and block level deduplication on compressed tarballs and found it have poor deduplication results?}.
+
 
 %%%
 % 4. Sift's idea
 %     Even with decompression, things do not work well: perfomance overhead.
 %%%
 
-While applying decompression and then file-level deduplication to the Docker registry 
-can yield promising storage
-reduction benefits, it is not straightforward.
+Deduplication is an effective method to reduce capacity demands of intrinsically redundant
+datasets~\cite{paulo2014survey}.
 %
-The main challenge is retaining acceptable performance such that client
-interactions with the registry (in particular pushing and pulling of images)
-are not affected.
+%
+%While existing deduplication methods can be applied, they
+%are problematic because
+%
+Docker registry, however, cannot apply deduplication to layers directly 
+because they come from the clients in the form of \textbf{compressed} tarballs,
+which do not deduplicate well.
+%
+%While applying decompression and then file-level deduplication to the Docker registry 
+%can yield promising storage
+%reduction benefits, it is not straightforward.
+%
+%The main challenge is retaining acceptable performance such that client
+%interactions with the registry (in particular pushing and pulling of images)
+%are not affected.
 %
 A na\"{i}ve application of deduplication to the registry---decompressing
 layers and storing individual files in content-addressable storage---introduces
