@@ -7,14 +7,18 @@ In this experiment, we measure the performance of \sysname's primary cluster.
 %
 We test five modes of \sysname on a 9-node cluster: \textbf{B-mode 0},
 \textbf{B-mode 1}, \textbf{B-mode 2}, \textbf{B-mode 3}, and \textbf{S-mode}.
-Note that B-mode 3 does not deduplicate layer replicas.  While B-mode 0
-\emph{deduplicates} all layer replicas. 
+Note that 
+B-mode 0 \emph{deduplicates} all layer replicas
+while
+B-mode 3 does not deduplicate layer replicas.
 %\sysname is evaluated by configuring different deduplication modes.
-Accordingly, B-mode 3 doesn't have D-servers while B-mode 0 doesn't have
-P-servers.
+Accordingly,
+B-mode 0 doesn't have P-servers
+while
+B-mode 3 doesn't have D-servers.
 %
-For the remaining two B-modes -- B-mode 2 and B-mode 1, the number of P-servers
-is set to six and three, respectively. For S-mode, the number of P-servers is
+For the remaining two B-modes -- B-mode 1 and B-mode 2, the number of P-servers
+is set to three and six, respectively. For S-mode, the number of P-servers is
 set to six.
 %In addition, 
 %we speedup trace replaying by using different speedup factors
@@ -22,7 +26,8 @@ set to six.
 %Before we replay each workload, 
 %we first warmup P-servers and D-servers with a certain amount of layers 
 %as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
-To generate workalod, we use 100 clients replaying the traces to P-servers and/or D-servers
+%To generate workload, 
+We use 100 clients to replay the traces to P-servers and/or D-servers
 depending on the mode.
 %
 For comparison, we evaluate \emph{BOLT} with 3-way replication on the same 9-node
@@ -31,10 +36,10 @@ setup and use this setting as our baseline.
 
 Figure~\ref{fig:eval-dalprimary} shows the average \texttt{GET} layer response
 time for \texttt{GET} layer requests for \sysname with different deduplication
-modes and \emph{BOLT} by replaying the \texttt{Dal} workload five times, each
-time with a different layer size (from 5~MB to 25~MB).
+modes and \emph{BOLT} by replaying the \texttt{Dal} workload five times, varying
+the layer size (from 5~MB to 25~MB).
 %
-Note that for \emph{B-mode 0}, the \texttt{GET} layer latency is the
+Note that for \emph{B-mode 0}, the \texttt{GET} layer latency refers to the
 \emph{layer restoring latency}.
 
 %Overall, \texttt{PUT} requests have much higher average response time than \texttt{GET} requests.
@@ -51,8 +56,9 @@ For example, when the layer size increases from 5~MB to
 to 0.7~s, and from 0.17~s to 0.6~s for \emph{B-mode 3}.
 %
 Moreover, when the
-layer size is 5~MB, the average \texttt{GET} layer latency across all the
-different schemes is around 0.2~s with minimal variation.
+layer size is 5~MB, the average \texttt{GET} layer latency across the
+schemes is around 0.2~s with minimal variation.
+\DIM{Although it's true that 5MB has the smallest variation, it seems to me that only 25MB has any significant variation. Can you given any insight as to why?}
 %
 For example, the
 lowest and highest \texttt{GET} layer latency when the layer size is 5~MB are
@@ -65,6 +71,7 @@ improves the overall performance by using a \emph{superfetch cache}.
 %
 \emph{B-mode 3} reduces the average \texttt{GET} layer latency by 13\% compared to
 \emph{BOLT} when the layer size is 20~MB.
+\DIM{The 13\% is not significant by itself. Is there some other benefit of mode3 over BOLT, like space savings, that could be added here?}
 %
 Our superfetch cache hit ratio is 0.91.
 %
@@ -73,6 +80,7 @@ latency.
 %
 However, the network transfer time accounts for the largest portion of
 the \text{GET} layer latency for \emph{BOLT} and \emph{B-mode 3}.
+\DIM{how much is that portion?}
 
 
 
@@ -81,7 +89,7 @@ Next we compare \emph{B-mode 0} with \emph{BOLT}.
 Although \emph{B-mode 0}
 saves half of the storage space by \emph{deduplicating} all layer replicas (see
 \S\ref{sec:inter-layer-deduplication}), it increases the \texttt{GET}
-layer latency by at most 37\% due to the layer restoring overhead.
+layer latency by up to 37\% due to the layer restoring overhead.
 %This is because of the high preconstruct cache hit ratio (detailed in
 %Figure~\cite{xxx}), which reduces the layer restoring latency.
 
@@ -101,6 +109,7 @@ This is because the primary cluster for \emph{B-mode 1} is half the \emph{B-mode
 cluster and this intensifies the servers load for \emph{B-mode 1}
 causing a lot of overhead.
 \Ali{Above statement is not clear.}
+\DIM{This is just due to the setup though? Does it tell us anything fundamental about Sift?}
 %For \emph{B mode 1} which has a 3-node primary cluster, more \texttt{GET}
 %layer requests are sent to the P-servers, which causes a lot of overhead.
 \emph{S-mode}'s \texttt{GET} layer performance is similar to that of \emph{B-mode 2}.
@@ -125,7 +134,7 @@ across the 6-node cluster, which improves the overall performance.
 %manifest latency by 17\% and 24\% respectively.
 
 \paragraph{Different traces} Next, we replay four traces from IBM datacenters
-to preserve the temporal properties and use the layer size of $\sim25$~MB
+to preserve the temporal properties and use a layer size of $\sim25$~MB
 for all the requests.
 \Ali{I reworded the above statement but it still needs to be fixed.}
 %
@@ -142,7 +151,7 @@ requests in \texttt{Lon} are \texttt{GET} manifest requests.
 
 
 
-Figure~\ref{fig:eval-total-traces} shows that due to layer restoration overhead
+Figure~\ref{fig:eval-total-traces} illustrates that due to layer restoration overhead
 \emph{B-mode 0} has 39\% and 80\% higher \texttt{GET} layer latency
 than BOLT for \texttt{Fra} and \texttt{Lon} trace, respectively.
 %
