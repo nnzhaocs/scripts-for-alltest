@@ -41,8 +41,7 @@ Both caches are filled based on the user access patterns observed in Section~\re
 %\sysname preconstructs layers before \texttt{pull} layer requests 
 %and put them into \textbf{preconstruct cache} to save restoring latency.
 
-\paragraph{Request prediction}
-%
+\paragraph{Request prediction} %
 %\LR{The following paragraph should be part of the background. By now,
 %the reader should be familiar with the pull process.}
 %
@@ -53,15 +52,14 @@ Both caches are filled based on the user access patterns observed in Section~\re
 %If a layer isn't presents in the \emph{local layer index}, meaning the layer hasn't been stored locally,
 %the user will \texttt{pull} the layer.
 %Otherwise, the user will start pulling the layer.
-
 %Based on the above access pattern,
 To accurately predict layers that will be accessed in the future, \sysname keeps
 track of user access patterns and image metadata.
 Therefor, it uses two maps to record the image-to-layer information
-and user layer accesses: RLmap and ULmap.
+and user layer accesses: ILmap and ULmap.
 %
 \LR{Change RLmap (repo-to-layer) to ILmap (image-to-layer)?}
-\NZ{Ok.}
+\NZ{Ok.}\Subil{fixed}
 %\NZ{Repo to layers; User to Layers.}
 %
 %\LR{ Is the layer set the set of layers contained in an image? Why do we need
@@ -69,7 +67,7 @@ and user layer accesses: RLmap and ULmap.
 %the reasoning here.}
 %\NZ{It takes a long time to load manifest for each request.}
 
-RLmap maps an image to its containing \emph{layer set} and an entry in RLmap
+ILmap maps an image to its containing \emph{layer set} and an entry in ILmap
 is identified as \textless{}Repository name@manifest digest\textgreater.
 %
 %Layer is identified as layer digest.
@@ -84,7 +82,7 @@ When a \texttt{GET manifest} request $r$ is received,
 by calculating the difference $S_{\Delta}$ between the image's layer set and the user's accessed layer set
 %
 \begin{equation*}
-S_{\Delta} = RLmap[r.img] - ULmap[r.addr].
+S_{\Delta} = ILmap[r.img] - ULmap[r.addr].
 \end{equation*}
 %
 The resulting layers in $S_{\Delta}$ are likely going to be accessed later.
@@ -95,7 +93,7 @@ layers, no matter if the layers have been previously pulled. To detect such user
 been pulled by the user by computing
 %
 \begin{equation*}
-S_{\cap} = RLmap[r.img] \cap ULmap[r.addr].
+S_{\cap} = ILmap[r.img] \cap ULmap[r.addr].
 \end{equation*}
 %
 Next,  \sysname compares the client repull probability 
@@ -128,12 +126,10 @@ counts for a user whenever a \texttt{GET layer} request is received.
 %	}
 %}
 
-\paragraph{Cache handling in tiered storage} 
-%As mentioned earlier, \sysname uses two-tier storage architecture: primary cluster
+\paragraph{Cache handling in tiered storage} %As mentioned earlier, \sysname uses two-tier storage architecture: primary cluster
 %and deduplication cluster. Now with the adding of superfetch cache and preconstruct
 %cache, The two-tier storage architecture becomes multiple-level storage architecture
 %as shown in Figure~\ref{fig:tieredstore}.
-
 %\LR{We need to provide more details on how we search the different tiers.
 %Do we keep an index for each tier? How fast are the searches?}
 %\NZ{Layer index holds the server address for each layer replica.
@@ -142,10 +138,9 @@ counts for a user whenever a \texttt{GET layer} request is received.
 %Similar as files, we dont maintain layer path because each layer is stored in directory
 %‘rootdir/docker/registry/v2/blobs/sha256/< first two hex bytes of layer digest >/<hex layer digest>/’ 
 %(denoted as layerdir) as a file named ‘data’.}
-
-The introduction of the two cache layers results in a 5-tier storage architecture of
-\sysname as shown in Figure~\ref{fig:tieredstore} \Subil{We say 5-tier here but 2-tier in the figure. Must change one or the other for consistency along with any other mentions of 2-tier/5-tier in the paper}.
-\NZ{can we say 2-tier with 5-level?} \Subil{that works too}
+The introduction of the two cache layers results in a 5-level storage architecture of
+\sysname as shown in Figure~\ref{fig:tieredstore}, split into two tiers. \Subil{We say 5-tier here but 2-tier in the figure. Must change one or the other for consistency along with any other mentions of 2-tier/5-tier in the paper}.
+\NZ{can we say 2-tier with 5-level?} \Subil{changed to 5 level/2 tier}
  Requests are passed through the
 tiers in the order displayed in the figure. Upon a \texttt{GET} layer request,
 \sysname first determines the P-server(s) which is (are) repsonsible for the layer
@@ -176,12 +171,21 @@ updates to layers.
 %deduplicated.
 %
 We use Adaptive Replacement Cache (ARC) replacement policy~\cite{megiddo2003arc}, which keeps track of both the frequently and recently used layers and adapts to changing access patterns. 
-ARC is best suited for our purposes because it is known handle varying workloads without prior tuning. The real-life Docker registry workloads have varied access patterns between them and so a caching solution that would work effectively without needing to be fine tuned for each observed workload was necessary. ARC makes use of two LRU lists that tracks items based on recency and frequency and self tunes to determine how many items from each list are actually kept in the cache.  
+ARC is best suited for our purposes because it is known handle varying workloads
+without prior tuning. %The real-life Docker registry workloads have varied access 
+%patterns between them and so a caching solution that would work effectively 
+%without needing to be fine tuned for each observed workload was necessary. 
+ARC makes use of two LRU lists that tracks items based on recency and frequency
+and self tunes to determine how many items from each list are actually kept in 
+the cache. Docker registry workloads are skewed towards popular 
+layers~\cite{dockerworkload} so LRU can be sufficient. But ARC allows us to handle
+cases where a layer is popular and is useful cached, but might get kicked out by
+a na{\"i}ve LRU cache due to lack of recency.
 \LR{Add details on on what ARC does exactly. How does it adapt? Why did we choose ARC?} \Subil{addressed, but may need editing}
 \NZ{because ARC adapts between LRU and LFU. 
 Layer accesses are skewed according to anwar's paper so LRU will work but
 in case that layer reuse time is higher,
-so LFU is also needed.}
+so LFU is also needed.}\Subil{incorporated the reasons into text}
 %For preconstruct cache, it's possible when a \texttt{pull} layer request comes 
 %before layer restoring is finished, meaning the layer cannot be preconstructed \emph{on time}.
 %In this case, \texttt{pull} layer request \emph{waits} until the restoring is finished
