@@ -12,6 +12,7 @@ and S-mode.
 %
 B-mode 0 deduplicates \emph{all} layer replicas while B-mode 3 does not perform deduplication.
 %\sysname is evaluated by configuring different deduplication modes.
+%
 Accordingly, B-mode 0 doesn't have P-servers while B-mode 3 doesn't have D-servers.
 %
 For the remaining two B-modes, B-mode 1 and B-mode 2, the number of P-servers
@@ -24,20 +25,15 @@ is set to 3 and 6, respectively. For S-mode, the number of P-servers is set to 6
 %as shown in Table~\ref{tab:eval-overall}, which roughly takes 10 minutes.
 %To generate workload, 
 %
-We use 100 clients to replay the traces to P-servers and/or D-servers
-depending on the mode.
+We use 100 clients to replay the traces and BOLT with 3-way replication on the same 9-node setup as our baseline. 
+
+\LR{What does it mean that we're varying the layer size?}
 %
-For comparison, we evaluate \emph{BOLT} with 3-way replication on the same 9-node
-setup and use this setting as our baseline. 
-
-
 Figure~\ref{fig:eval-dalprimary} shows the average \texttt{GET} layer response
-time for \texttt{GET} layer requests for \sysname with different deduplication
-modes and \emph{BOLT} by replaying the \texttt{Dal} workload five times, varying
-the layer size (from 5~MB to 25~MB).
+for the \dal workload, varying the layer size (from 5\,MB to 25\,MB).
 %
-Note that for \emph{B-mode 0}, the \texttt{GET} layer latency refers to the
-\emph{layer restoring latency}.
+Note that for B-mode 0, the \texttt{GET} layer latency refers to the
+layer restoring latency as no complete layer replica is stored.
 
 %Overall, \texttt{PUT} requests have much higher average response time than \texttt{GET} requests.
 %For example, the average response time of 
@@ -45,56 +41,70 @@ Note that for \emph{B-mode 0}, the \texttt{GET} layer latency refers to the
 %Note that registry servers use SSDs as secondary storage devices.
 %The difference in response time for \texttt{PUT} and \texttt{GET} requests are mainly caused by the different writes and reads throughput of SSDs. 
 
-Overall, the average \texttt{GET} layer latency increases with layer size for
-all the schemes.
-%
-For example, when the layer size increases from 5~MB to
-25~MB, the average \texttt{GET} layer latency for \emph{BOLT} grows from 0.19~s
-to 0.7~s, and from 0.17~s to 0.6~s for \emph{B-mode 3}.
-%
-Moreover, when the
-layer size is 5~MB, the average \texttt{GET} layer latency across the
-schemes is around 0.2~s with minimal variation.
-\DIM{Although it's true that 5MB has the smallest variation, it seems to me that only 25MB has any significant variation. Can you given any insight as to why?}
-%
-For example, the
-lowest and highest \texttt{GET} layer latency when the layer size is 5~MB are
-0.17~s and 0.21~s for \emph{B-mode 3} and \emph{B-mode 1}, respectively.
+%Our first observation is that the average \texttt{GET} layer latency increases with layer size for all the schemes.
+%%
+%For example, when the layer size increases from 5~MB to
+%25~MB, the average \texttt{GET} layer latency for \emph{BOLT} grows from 0.19~s
+%to 0.7~s, and from 0.17~s to 0.6~s for \emph{B-mode 3}.
+%%
+%Moreover, when the
+%layer size is 5~MB, the average \texttt{GET} layer latency across the
+%schemes is around 0.2~s with minimal variation.
+%\DIM{Although it's true that 5MB has the smallest variation, it seems to me that only 25MB has any significant variation. Can you given any insight as to why?}
+%%
+%For example, the
+%lowest and highest \texttt{GET} layer latency when the layer size is 5~MB are
+%0.17~s and 0.21~s for \emph{B-mode 3} and \emph{B-mode 1}, respectively.
 
-
-
-Comparing \emph{BOLT} with \emph{B-mode 3}, we see that \emph{B-mode 3}
-improves the overall performance by using a \emph{superfetch cache}.
+As expected, the response times increase with a larger layer size for all configurations.
 %
-\emph{B-mode 3} reduces the average \texttt{GET} layer latency by 13\% compared to
-\emph{BOLT} when the layer size is 20~MB.
-\DIM{The 13\% is not significant by itself. Is there some other benefit of mode3 over BOLT, like space savings, that could be added here?}
+Overall, B-mode 3 achieves the lowest latencies as it is not performing any deduplication.
 %
-Our superfetch cache hit ratio is 0.91.
+Compared to BOLT, B-mode 3 benefits from \sysname{}'s superfetch cache, which
+lowers latencies by prefetching layers into and serving them from memory.
 %
-This high hit ratio entails improvement to the primary servers' I/O
-latency.
+B-mode 3 is able to reduce the average \texttt{GET} latencies by 13\% compared to
+BOLT for a layer size of 20\,MB.
+%\DIM{The 13\% is not significant by itself. Is there some other benefit of mode3 over BOLT, like space savings, that
+%could be added here?}
 %
-However, the network transfer time accounts for the largest portion of
-the \text{GET} layer latency for \emph{BOLT} and \emph{B-mode 3}.
-\DIM{how much is that portion?}
+\LR{is it 0.91 for the 20\,MB case?}
+%
+The superfetch cache hit ratio in this case is 0.91.
+%
+%However, the network transfer time accounts for the largest portion of
+%the \text{GET} layer latency for \emph{BOLT} and \emph{B-mode 3}.
+%\DIM{how much is that portion?}
 
-
-
-Next we compare \emph{B-mode 0} with \emph{BOLT}.
+Looking at B-mode 0, we see that it adds the highest overhead, up to 37\%, to
+the \texttt{GET} layer latencies as it deduplicates everything and maximizes
+storage savings.
 %
-Although \emph{B-mode 0}
-saves half of the storage space by \emph{deduplicating} all layer replicas (see
-\S\ref{sec:inter-layer-deduplication}), it increases the \texttt{GET}
-layer latency by up to 37\% due to the layer restoring overhead.
+%Next we compare \emph{B-mode 0} with \emph{BOLT}.
+%
+%Although \emph{B-mode 0} saves half of the storage space by \emph{deduplicating} all layer replicas (see
+%\S\ref{sec:inter-layer-deduplication}), it increases the \texttt{GET}
+%layer latency by up to 37\% due to the layer restoring overhead.
 %This is because of the high preconstruct cache hit ratio (detailed in
 %Figure~\cite{xxx}), which reduces the layer restoring latency.
-
-For the remaining basic modes: \emph{B-mode 2} and \emph{B-mode 1}, we see that
-\emph{B-mode 1} has a higher \texttt{GET} layer latency than \emph{B-mode 2}.
 %
-For example, the average \texttt{GET} layer latency for \emph{B-mode 1} is 30\%
-higher than that for \emph{B-mode 2}.
+The remaining B-modes are in between with B-mode 1 showing slightly higher
+latencies compared to B-mode 2 as B-mode 1 only keeps one complete layer
+replica.
+%
+Additionally, B-mode 1 only has 3 P-servers, which intensifies the load on
+the primary cluster.
+%
+%\DIM{This is just due to the setup though? Does it tell us anything fundamental about Sift?}
+%
+While the difference is minor for layer sizes less or equal than 20\,MB, only
+up to \gap, is is around 30\% for 25\,MB layers.
+
+%basic modes: \emph{B-mode 2} and \emph{B-mode 1}, we see that
+%\emph{B-mode 1} has a higher \texttt{GET} layer latency than \emph{B-mode 2}.
+%
+%For example, the average \texttt{GET} layer latency for \emph{B-mode 1} is 30\%
+%higher than that for \emph{B-mode 2}.
 %although the primary cluster of \emph{B-mode 1} only has 14 nodes while 
 %\emph{original} contains 21 nodes.
 %This is because only a one-third of the %less data (1/3) 
@@ -102,20 +112,26 @@ higher than that for \emph{B-mode 2}.
 %\texttt{Push} requests also affect the performance of \texttt{pull} requests
 %in terms of more network traffic and more writes to SSDs.
 %While \emph{B-mode 2} degrades \emph{GET} layer performance by 11\%.
-This is because the primary cluster for \emph{B-mode 1} is half the \emph{B-mode 2}
-cluster and this intensifies the servers load for \emph{B-mode 1}
-causing a lot of overhead.
-\Ali{Above statement is not clear.}
-\DIM{This is just due to the setup though? Does it tell us anything fundamental about Sift?}
+%This is because the primary cluster for \emph{B-mode 1} is half the \emph{B-mode 2}
+%cluster and this intensifies the servers load for \emph{B-mode 1}
+%causing a lot of overhead.
+%\Ali{Above statement is not clear.}
+%\DIM{This is just due to the setup though? Does it tell us anything fundamental about Sift?}
 %For \emph{B mode 1} which has a 3-node primary cluster, more \texttt{GET}
 %layer requests are sent to the P-servers, which causes a lot of overhead.
-\emph{S-mode}'s \texttt{GET} layer performance is similar to that of \emph{B-mode 2}.
 %
-For example, the average \texttt{GET} layer latency variation between
-\emph{B-mode 2} and \emph{S-mode} is only 3\% when the layer size is 20~MB.
+The \texttt{GET} layer performance of S-mode is similar to that of \emph{B-mode 2}, e.g.,
+the average \texttt{GET} layer latency variation between the two modes is only
+3\% when the layer size is 20\,MB.
 %
-This is because for \emph{S-mode}, the popular layers have multiple replicas
+This is because in S-mode, the popular layers have multiple replicas
 across the 6-node cluster, which improves the overall performance.
+%
+Additionally, S-mode can reduce storage consumption by \gap compared to
+B-mode 2 as less popular layers keep less complete replicas.
+%
+However, for 25\,MB layers, the gap between S-mode and B-mode 2 widens
+because \todo{fill in reason}.
 %while the remaining cold layers only have a single layer replica on the
 %primary cluster. 
 
@@ -130,51 +146,59 @@ across the 6-node cluster, which improves the overall performance.
 %For example, \emph{B-mode 1} reduces \texttt{GET} and \texttt{PUT}
 %manifest latency by 17\% and 24\% respectively.
 
-\paragraph{Different traces} Next, we replay four traces from IBM datacenters
-to preserve the temporal properties and use a layer size of $\sim25$~MB
-for all the requests.
-\Ali{I reworded the above statement but it still needs to be fixed.}
+\paragraph{Different traces} Next, we replay all four traces from the IBM registry deployments
+with a layer size of $\sim$25\,MB for all the requests.
 %
-Figure~\ref{fig:eval-total-traces} shows
-the average \texttt{GET} layer latency across the four different traces.
+%\Ali{I reworded the above statement but it still needs to be fixed.}
 %
-Overall, the \texttt{Lon} trace has the lowest \texttt{GET} layer latency.
-%
-This is due to \texttt{Lon}'s fewer \texttt{GET} layer requests compared to
-other traces as shown in Table~\ref{tab:eval-overall}. 
-%
-The majority of
-requests in \texttt{Lon} are \texttt{GET} manifest requests.
+Figure~\ref{fig:eval-total-traces} shows the average \texttt{GET} layer latency across the four different traces.
 
 
+Overall, we observe a similar trend to the previous analysis of the
+\dal trace: B-mode 3 shows the lowest overhead, followed by
+B-modes 2, 1, and 0 (in that order) and BOLT performs similar to B-mode 2
+while S-mode is worse than B-mode 2 but better than B-modes 1 and 0.
+
+The \lon trace has the lowest \texttt{GET} layer latency due to the fact that
+\lon has fewer \texttt{GET} layer requests compared to other traces as shown in Table~\ref{tab:eval-overall}. 
+%
+The majority of requests in \lon are \texttt{GET} manifest requests, which are not affected
+by \sysname{}'s deduplication.
+%
+%\LR{Do we know why B-mode 0 is so bad for \lon? Maybe related to caching?}
 
 Figure~\ref{fig:eval-total-traces} illustrates that due to layer restoration overhead
-\emph{B-mode 0} has 39\% and 80\% higher \texttt{GET} layer latency
-than BOLT for \texttt{Fra} and \texttt{Lon} trace, respectively.
+B-mode 0 has a 39\% and 80\% higher \texttt{GET} layer latency
+compared to BOLT for \fra and \lon, respectively.
 %
-We also observe that \texttt{Fra} and \texttt{Lon} traces have lower preconstruct
+We also observe that \fra and \lon have lower preconstruct
 cache hit ratios of 0.72 and 0.8, respectively.
 %
-The \texttt{Fra} and \texttt{Lon} traces have 21\% and 15\%, respectively, of \texttt{GET} layer
-requests waiting for layer construction \Subil{We need a graph or table or something to
-show this waiting times percentage because I don't see it from the existing figures}.
+In turn, the \fra and \lon traces have 21\% and 15\% of \texttt{GET} layer
+requests waiting for layer construction, respectively.
 %
-This is because of the small duration between \texttt{GET} manifest requests and
-their subsequent \texttt{GET} layer requests.
+%\Subil{We need a graph or table or something to show this waiting times percentage because I don't see it from
+%the existing figures}.
 %
-Note that the \emph{superfetch
-cache} hit ratio is not affected by the duration between \texttt{GET} manifest
+This is because of the shorter duration between \texttt{GET} manifest requests and
+their subsequent \texttt{GET} layer requests in those traces.
+%
+Note that the \emph{superfetch cache} hit ratio is not affected by the duration between \texttt{GET} manifest
 requests and their subsequent \texttt{GET} layer requests.
 %
-Therefore, \emph{B-mode 3} outperforms \emph{BOLT} for both the \texttt{Fra} and \texttt{Lon}
-traces.
-%\Subil{I think there needs to be at least some mention of Dal and Syd?}
-For the \texttt{Dal} trace, \emph{B-mode 3} again outperforms \emph{BOLT} for
-the same reasons.
+\LR{Why is that?}
 %
-Across all the traces, \emph{S-mode} provides comparable
-latencies to \emph{BOLT} while providing savings on the storage side due to
-deduplication.
+Therefore, \emph{B-mode 3} outperforms \emph{BOLT} for both the \fra and \lon traces.
+%
+\Subil{I think there needs to be at least some mention of Dal and Syd?}
+\LR{Why are the different configurations so close together in \syd?}
+%
+%For the \texttt{Dal} trace, \emph{B-mode 3} again outperforms \emph{BOLT} for
+%the same reasons.
+%
+%Across all the traces, \emph{S-mode} provides comparable
+%latencies to \emph{BOLT} while providing savings on the storage side due to
+%deduplication.
 
 %Note that the superfetch cache is used by the primary cluster while the preconstruct cache is used by the deduplication cluster.
 %The superfetch cache hit ratio shown in Figure~\ref{xxx} is the average superfetch cache hit ratio across \emph{B-mode 3}, \emph{B-mode 2}, \emph{B-mode 1}, and \emph{S-mode} because they show the similar cache hit ratios.
