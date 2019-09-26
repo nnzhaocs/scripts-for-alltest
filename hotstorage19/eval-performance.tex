@@ -144,7 +144,8 @@ preconstruct caches.
 Note that the cache size is set to 20\% of \dal{}'s ingress data ,i.e. \gap.
 \NZ{Here, the cache size = unique layer count x layer size x 0.2.
 Cache size depends on the layer size we chose.
-We match requests with layers with similar size.
+we replay the workload five times, varying
+the layer size (from 1~MB to 9~MB)
 For example, if layer size is 1 M,
 then the cache size = unique layer count x I MB x 0.2
 = 1278*0.2MB.}
