@@ -1,12 +1,12 @@
 \section{Conclusion}
 \label{sec:conclusion}
-%\NZ{put in background or intro, conclusion, discussion?}
-We presented \sysname, a new Docker registry architecture that integrates caching and deduplication  
-to
-improve the registry's performance and decrease the storage capacity requirement. 
-%The layer buffer holds hot layers that belong to active users.
-%To improve the capacity limitation of the main memory cache, we utilize flash memory to store unique files since it offers fast random read access.
-%The utilization of flash memory to store unique files not only mitigates the capacity limitation of the main memory cache, it also offers fast random read accesses.
-% a on a distributed flash-based store.  \\
-\sysname~leverages a two-tier heterogeneous cache architecture to efficiently improve cache space 
-utilization. Our prefetch algorithm can improve the cache hit ratio and mitigate the overhead of decompression-enabled deduplication.
+
+We presented \sysname, a new Docker registry architecture that supports deduplication for
+Docker images to reduce storage utilization. \sysname makes several design decisions to
+reduce deduplication overhead and keep layer retrieval latencies low. It parallelizes
+layer reconstrucion locally and across the cluster to mitigate the overhead of
+compression and decompression of layers, and exploits user behavior to preconstruct
+layers before they are accessed. \sysname additionally leverages caching at different
+storage tiers to further improve \texttt{GET} latencies. Our evaluation shows that
+we can achieve a deduplication ratio of 1.74$\times$ while only adding an overhead
+of up to \gap when layers are pulled.
