@@ -1,4 +1,4 @@
-\section{Docker Registries}
+\clientsection{Docker Registries}
 \label{sec:background}
 
 %\paragraph{Docker registry.}
@@ -17,7 +17,7 @@ can interact with it.
 The main purpose of a registry is to store container images and make them available
 to other users.
 %
-Therefore, it allows Docker hosts to \emph{push} images to and \emph{pull}
+Therefore, it allows Docker clients to \emph{push} images to and \emph{pull}
 images from the registry.
 %
 A number of public Docker registry deployments
@@ -25,7 +25,7 @@ exist~\cite{docker-hub,amazon-ecr,jfrog-artifactory,azure-cr,google-cr} and
 enterprises often resort to running private registries for improved security
 and privacy.
 %
-The Docker community specifies the REST API for hosts to communicate with the
+The Docker community specifies the REST API for clients to communicate with the
 registries~\cite{docker-registry-api} and provides a reference registry server implementation~\cite{docker-registry-software} which serves as
 a basis for commercial deployments.
 
@@ -46,10 +46,10 @@ up the image.
 A layer is stored as a compressed archival file and identified using a digest that is computed as a hash (SHA-256) over
 the uncompressed content of the layer.
 %
-When pulling an image, a Docker host first downloads the manifest and then the
-layers referenced in it (unless the layers are already present on the host).
+When pulling an image, a Docker client first downloads the manifest and then the
+layers referenced in it (unless the layers are already present on the client).
 %
-When pushing an image, a Docker host first uploads the layers (if not already present in
+When pushing an image, a Docker client first uploads the layers (if not already present in
 the registry) and then uploads the manifest.
 
 
@@ -63,19 +63,20 @@ balancer like NGINX in front of several independent registry
 instances~\cite{dockerworkload, anwar-cloud19}.
 %
 All the instances delegate storage and retrieval of images to drivers that interact with
-either a locally mounted file system or a remote cloud storage such as Amazon
-S3~\cite{s3}, Microsoft Azure~\cite{azure}, OpenStack Swift~\cite{swift}, or
-Aliyun OSS~\cite{aliyun}.
+either a locally mounted shared file system or a remote object storage~\cite{s3,azure,swift,aliyun}.
 %
 %For example, the Google Container Registry~\cite{GoogleContainerRegistry} uses
 %Google cloud as its backend image store.
 %
-Upon a \texttt{PUT} layer request from a Docker host, the Docker registry receives the layer and forwards it to the
-backend storage driver. Multiple replicas of the layer can be stored for redundancy.
+Upon a \texttt{PUT} layer request from a Docker client, the Docker registry receives the layer and forwards it to the
+backend storage driver.
 %
+Typically, multiple replicas of the layer are stored for redundancy.
+%
+Subsequent \texttt{GET} layer requests can be served by any registry server,
+which will get the layer from the backend storage using the configured driver.
 
-Any subsequent \texttt{GET} layer requests can be served by any of the servers that hold a replica of that layer. \Subil{Maybe replace mentions of "Docker hosts" in this section with "Docker clients"?}
-
+% that hold a replica of that layer.
 %
 %Service providers often use geographically distributed registries for faster
 %access, e.g., IBM's Container Registry setup spans five
