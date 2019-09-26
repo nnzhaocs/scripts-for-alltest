@@ -2,8 +2,9 @@
 \label{sec:Evaluation}
 
 For the evaluation of \sysname, we are interested in two main aspects. First, we analyze the deduplication
-performance of \sysname happening in the D-cluster~(\S\ref{sec:eval-dedup}). We then look at, how
-the different B modes affect the performance of the primary cluster~(\S\ref{sec:eval-primary}).
+performance of \sysname happening in the D-cluster~(\S\ref{sec:eval-dedup}). 
+We then look at, how
+the different deduplication modes affect the performance of the primary cluster~(\S\ref{sec:eval-primary}).
 
 %Our two-tier heterogeneous cache in the registry can improve the performance of the entire system
 %by hiding the long latency imposed by the backend dedup system.
@@ -83,9 +84,15 @@ traces (\dal, \fra, \lon, and \syd) to layers from our dataset to generate four 
 %
 Before an experiment, we first warmup P-servers and D-servers with a certain amount of layers as shown in
 Table~\ref{tab:eval-overall} and then replay the first 5000 requests from each workload.
+Note that we do not warmup the caches.
 %
 \Subil{there's nothing in the table indicating what number of layers we use for warmup.}
+\NZ{the unique layer count is the number.}
 \LR{Do you mean we warm up the caches?}
+\NZ{No we dont warmup caches.
+The warmup requests wont go to caches.
+We distinguish the request types as: \texttt{GET}, \texttt{PUT}, and \texttt{WARMUP}, 
+\texttt{PRECONSTRUCT}.}
 %
 Tables~\ref{tab:eval-overall} details how the 5000 requests for each workload are composed
 with respect to layer and manifest requests.

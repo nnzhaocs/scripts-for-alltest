@@ -66,7 +66,13 @@ Then we scale out to a deduplication cluster with multiple D-servers and compare
 \paragraph{Restoring latency}
 %
 \LR{Why are we only looking at layers between 1 and 9\,MB?}
+\NZ{We start from small layers to big layers like 70 MB.
+small layers can be restored by using just a single node.
+}
 \LR{Is the ARC cache the layer stage area cache or what does it refer to in Figure 3a)?}
+\NZ{No. ARC cache is a layer cache which stores the constructed hot layers
+to save restoring time. ARC cache does not preconstruct layers.
+}
 %
 The evaluate \sysname{}'s restoring latency, we launch a single node registry on a server
 and use one client on a separate machine.
@@ -80,12 +86,14 @@ We compare four different configurations:
 For each setup, we use the local file system as the storage backend.
 %
 \LR{Above we say we match layers randomly?}
+\NZ{yes}
 %
 The client matches requests from \dal to layers with similar sizes 
 from the evaluation dataset and replays them to the D-server.
 %We compare four backends: 
 
 \LR{Do we also have percentiles/errorbars or just averages?}
+\NZ{we have 90th percentile.}
 %
 As shown in Figure~\ref{fig:eval-1nodegetlayerlatency}, 
 layer restoring increases the average \texttt{GET} layer request latency by 189\% for layers 
@@ -93,8 +101,10 @@ with size 1\,MB for \sysname without caching compared to \emph{no deduplication}
 %
 Moreover, the layer restoring latency increases almost linearly as the layer size increases.
 %
-While a 1\,MB layer takes \gap to deduplicate, it takes 0.22\,s to restore and download a 9\,MB
+While a 1\,MB layer takes 0.13\,s to restore and download, 
+it takes 0.22\,s to restore and download a 9\,MB
 layer for \sysname without caching.
+\NZ{fill the gap with 0.13}
 
 %\paragraph{Preconstruct cache VS. ARC cache}
 %\paragraph{Cache}
@@ -112,6 +122,7 @@ However, as the layer size increases,  the improvement drops.
 For 9\,MB layers, the ARC cache reduces the layer restoring overhead by only 16\%.
 %
 \LR{Do we have a reason for that?}
+\NZ{This is because it takes longer to restore a bigger layer upon a cache miss.}
 %
 %\Subil{there is no 10-MB value in Fig~\ref{fig:eval-1nodegetlayerlatency}.}
 %ARC cache can only improve 10\% of 
@@ -131,6 +142,12 @@ Figure~\ref{fig:eval-cachehitratios} shows the cache hit ratios for the ARC and
 preconstruct caches.
 %
 Note that the cache size is set to 20\% of \dal{}'s ingress data ,i.e. \gap.
+\NZ{Here, the cache size = unique layer count x layer size x 0.2.
+Cache size depends on the layer size we chose.
+We match requests with layers with similar size.
+For example, if layer size is 1 M,
+then the cache size = unique layer count x I MB x 0.2
+= 1278*0.2MB.}
 %
 %\Subil{approximately how much is Dal's ingress data?}.
 %
@@ -144,6 +161,8 @@ Figure~\ref{fig:eval-1nodegetlayerlatency} and therefore, some layers can not be
 on time.
 %
 \LR{We should introduce waiting ratio here.}
+\NZ{The waiting ratio is calculated by the number of \texttt{GET} layer requests that are waiting for
+layer preconstruction process to finish divided by the total number of \texttt{GET} layer requests.}
 %
 This is indicated by the increasing number of waiting \texttt{GET} layer requests for larger layer
 sizes, depicted by the preconstruct cache waiting ratio in Figure~\ref{fig:eval-cachehitratios}.
@@ -152,6 +171,9 @@ sizes, depicted by the preconstruct cache waiting ratio in Figure~\ref{fig:eval-
 %be reduced.
 %
 \LR{The below is confusing, why is it the sum of the two?}
+\NZ{Its because prediction accuracy is calculated by the number of correct predictions divided by 
+total \texttt{GET} layer requests.
+The \texttt{GET} layer requests that are waiting for preconstruction to finish are also correct predictions.}
 The user-behavior based request prediction accuracy is calculated by summing the preconstruct
 cache hit ratio and the waiting ratio, which results to 0.95.
 %
@@ -203,6 +225,15 @@ When the client replays requests as fast as possible, the overhead of restoring 
 %
 \LR{How did we replay them in the previous experiment? As fast as possible or downsampled or in
 real-time?}
+\NZ{
+	First, there is an interval or delay between every two subsequent requests.
+	For \texttt{GET} manifest requests, we replay as fast as possible without delay.
+For \texttt{GET} layer requests,
+we use their real intervals if the intervals are smaller than 1 s. Otherwise,
+we use 1 s as the interval.
+We use the above method to replay traces for other tests (not for this different IAT test),
+This is for finishing all evaluations in a reasonable time.
+}
 
 %the cache hit ratio of the ARC cache and the preconstruct cache.
 
@@ -212,6 +243,7 @@ We analyze the impact of larger clusters and layers, we increase the number of r
 7 to 14, and the layer sizes from 30 to 70\,MB and compare \sysname to the BOLT registry.
 %
 \LR{Can we just call it \sysname instead of \sysname-dedup?}
+\NZ{yes.}
 %
 %(1) \sysname deduplication cluster (denoted as \sysname-dedup),
 %and
@@ -224,7 +256,7 @@ side (see~\S\ref{sec:impl}) to route requests to the correct registry server.
  %that the client distributes layers to 
 %Therefore,
 %we also use our client to cluster the non-dededuplication registry servers and setup BOLT for evaluation.
-We launch 20 clients on \gap servers to replay requests to the registries.
+We launch 20 clients on 2 servers to replay requests to the registries.
 
 As shown in Figure~\ref{fig:eval-clusterscale}, BOLT achieves stable request latencies when
 the number of registry servers increases.
@@ -268,11 +300,28 @@ layer construction consists of slice recipe lookup, slice construction, and slic
 %
 \LR{This is unclear, we've never talked about complete or waiting restoring processes before.
 What exactly are we doing here?}
+\NZ{We can delete "complete or waiting restoring processes" if it's confusing.
+"complete restoring processes" means the \texttt{GET} layer request misses on cache without
+layer preconstruction to wait.
+So this layer restoring process will have all the steps shown in  Figure~\ref{fig:eval-restoringbreakdown}.
+We count them in the figure.
+"waiting restoring processes" means the \texttt{GET} layer request misses cache but the request waits because
+layer preconstruction hasn't finished yet.
+So this layer restoring process will not have layer construct step. Instead it has a waiting step.
+We don't count them in the figure.
+Except for the above \texttt{GET} layer requests,
+we have \texttt{PRECONSTRUCT} layer requests.
+Those requests also initiate layer restoring processes, which contains all steps shown in
+Figure~\ref{fig:eval-restoringbreakdown}.
+We count them in the figure.
+}
 %
 We only include complete layer restoring processes and eliminate the layer restoring processes
 that are waiting for others to construct layers.
 %
 \LR{Again, the following is confusing. What does it mean?}
+\NZ{we count the layer restoring processes for both \texttt{GET} layer requests and
+\texttt{PRECONSTRUCT} layer requests.}
 %
 Note that the layer restoring latencies measured also include layer restoring processes for preconstruction.
 %
@@ -310,12 +359,17 @@ the layer deduplication duration.
 %
 \LR{Why does the following reduce the overhead? Do we want to reduce the impact on the
 restoring processes?}
+\NZ{Because there are \texttt{GET} and \texttt{PUT} requests.
+We configure deduplication process to use a single thread to 
+minimize its computation and I/O resource consumption
+so it wont compete for resources with layer restoring process. }
 %
 This is because \sysname uses single-threaded decompression and file-level deduplication for
 reducing the computation overhead of the off-line layer deduplication.
 %
 \Subil{This conflicts with our description of pgzip in the Implementation section where we
  talk about using parallelism in both compression ad decompression}.
+\NZ{pgzip is for layer restoring. We use standard gzip for deduplication.}
 %
 Moreover, the duration of decompression and file-level deduplication increases with layer sizes.
 %
