@@ -160,22 +160,27 @@ This is because the layer restoring latency increases with layer size as shown i
 Figure~\ref{fig:eval-1nodegetlayerlatency} and therefore, some layers can not be preconstructed
 on time.
 %
-\LR{We should introduce waiting ratio here.}
-\NZ{The waiting ratio is calculated by the number of \texttt{GET} layer requests that are waiting for
-layer preconstruction process to finish divided by the total number of \texttt{GET} layer requests.}
+%\LR{We should introduce waiting ratio here.}
+%\NZ{The waiting ratio is calculated by the number of \texttt{GET} layer requests that are waiting for
+%layer preconstruction process to finish divided by the total number of \texttt{GET} layer requests.}
 %
 This is indicated by the increasing number of waiting \texttt{GET} layer requests for larger layer
 sizes, depicted by the preconstruct cache waiting ratio in Figure~\ref{fig:eval-cachehitratios}.
 %
+The waiting ratio is the number of \texttt{GET} requests that were blocked on reconstruction
+divided by the total number of \texttt{GET} requests.
+%
 %Since layer construction already starts before these requests arrive, the restoring overhead can
 %be reduced.
 %
-\LR{The below is confusing, why is it the sum of the two?}
-\NZ{Its because prediction accuracy is calculated by the number of correct predictions divided by 
-total \texttt{GET} layer requests.
-The \texttt{GET} layer requests that are waiting for preconstruction to finish are also correct predictions.}
+%\LR{The below is confusing, why is it the sum of the two?}
+%\NZ{Its because prediction accuracy is calculated by the number of correct predictions divided by 
+%total \texttt{GET} layer requests.
+%The \texttt{GET} layer requests that are waiting for preconstruction to finish are also correct predictions.}
+%
 The user-behavior based request prediction accuracy is calculated by summing the preconstruct
-cache hit ratio and the waiting ratio, which results to 0.95.
+cache hit ratio and the waiting ratio, i.e. all requests that successfully retrieved layers from the cache,
+which results to 0.95.
 %
 %As shown in Figure~\ref{fig:eval-cachehitratios}, the prediction accuracy is 0.95.
 
@@ -308,42 +313,40 @@ becomes a bottleneck.
 
 \paragraph{Restoring latency breakdown}
 %
-To analyze \sysname{}'s performance in more detail, we study the contributions to latency
-for each step of the layer restoring process.
+To analyze \sysname{}'s performance in more detail, we measure the time it takes
+to reconstruct a layer and break down the layer restoring process into its individual steps.
 %
-The latencies are measured on the 7-node cluster.
-%
-The layer restoring latency comprises layer recipe lookup, layer construction, and layer transfer and
+The steps include layer recipe lookup, layer construction, and layer transfer and
 layer construction consists of slice recipe lookup, slice construction, and slice transfer.
 %
-\LR{This is unclear, we've never talked about complete or waiting restoring processes before.
-What exactly are we doing here?}
-\NZ{We can delete "complete or waiting restoring processes" if it's confusing.
-"complete restoring processes" means the \texttt{GET} layer request misses on cache without
-layer preconstruction to wait.
-So this layer restoring process will have all the steps shown in  Figure~\ref{fig:eval-restoringbreakdown}.
-We count them in the figure.
-"waiting restoring processes" means the \texttt{GET} layer request misses cache but the request waits because
-layer preconstruction hasn't finished yet.
-So this layer restoring process will not have layer construct step. Instead it has a waiting step.
-We don't count them in the figure.
-Except for the above \texttt{GET} layer requests,
-we have \texttt{PRECONSTRUCT} layer requests.
-Those requests also initiate layer restoring processes, which contains all steps shown in
+%\LR{This is unclear, we've never talked about complete or waiting restoring processes before.
+%What exactly are we doing here?}
+%\NZ{We can delete "complete or waiting restoring processes" if it's confusing.
+%"complete restoring processes" means the \texttt{GET} layer request misses on cache without
+%layer preconstruction to wait.
+%So this layer restoring process will have all the steps shown in  Figure~\ref{fig:eval-restoringbreakdown}.
+%We count them in the figure.
+%"waiting restoring processes" means the \texttt{GET} layer request misses cache but the request waits because
+%layer preconstruction hasn't finished yet.
+%So this layer restoring process will not have layer construct step. Instead it has a waiting step.
+%We don't count them in the figure.
+%Except for the above \texttt{GET} layer requests,
+%we have \texttt{PRECONSTRUCT} layer requests.
+%Those requests also initiate layer restoring processes, which contains all steps shown in
+%Figure~\ref{fig:eval-restoringbreakdown}.
+%We count them in the figure.}
+%
+%We only include complete layer restoring processes and eliminate the layer restoring processes
+%that are waiting for others to construct layers.
+%
+%\LR{Again, the following is confusing. What does it mean?}
+%\NZ{we count the layer restoring processes for both \texttt{GET} layer requests and
+%\texttt{PRECONSTRUCT} layer requests.}
+%
+%Note that the layer restoring latencies measured also include layer restoring processes for preconstruction.
+%
+The latencies are measured on the 7-node cluster and the breakdown is shown in
 Figure~\ref{fig:eval-restoringbreakdown}.
-We count them in the figure.
-}
-%
-We only include complete layer restoring processes and eliminate the layer restoring processes
-that are waiting for others to construct layers.
-%
-\LR{Again, the following is confusing. What does it mean?}
-\NZ{we count the layer restoring processes for both \texttt{GET} layer requests and
-\texttt{PRECONSTRUCT} layer requests.}
-%
-Note that the layer restoring latencies measured also include layer restoring processes for preconstruction.
-%
-The breakdown is shown in Figure~\ref{fig:eval-restoringbreakdown}.
 
 We can see that slice construction accounts for the largest portion of layer construction time.
 %
