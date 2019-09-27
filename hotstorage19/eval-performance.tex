@@ -10,20 +10,20 @@
 
 \begin{figure*}[t]
 	\centering
-	\begin{minipage}{0.28\textwidth}
+	\begin{minipage}{0.3\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{graphs/1nodegetlayerlatency.pdf}
 		\caption{GET layer latency}
 		\label{fig:eval-1nodegetlayerlatency}
 	\end{minipage}%
-\hfill
-	\begin{minipage}{0.28\textwidth}
+\hspace{1mm}
+	\begin{minipage}{0.29\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{graphs/cachehitratio.pdf}
 		\caption{Cache hit ratio}% of LRU cache and preconstruct cache.}
 		\label{fig:eval-cachehitratios}
 	\end{minipage}%
-\hfill
+\hspace{1mm}
 	\begin{minipage}{0.28\textwidth}
 	\centering
 	\includegraphics[width=\textwidth]{graphs/durationML.pdf}
@@ -190,21 +190,21 @@ which results to 0.95.
 	\centering
 	\begin{minipage}{0.3\textwidth}
 		\centering
-		\includegraphics[width=0.9\textwidth]{graphs/clusterscale.pdf}
+		\includegraphics[width=\textwidth]{graphs/clusterscale.pdf}
 		\caption{GET layer latency with different cluster size}
 		\label{fig:eval-clusterscale}
 	\end{minipage}%
 	\hspace{1mm}
 		\begin{minipage}{0.3\textwidth}
 		\centering
-		\includegraphics[width=0.9\textwidth]{graphs/clientscale.pdf}
+		\includegraphics[width=\textwidth]{graphs/clientscale.pdf}
 		\caption{GET layer latency with different client concurrency}
 		\label{fig:eval-clientscale}
 	\end{minipage}%
 	\hspace{1mm}
 	\begin{minipage}{0.3\textwidth}
 	\centering
-	\includegraphics[width=0.9\textwidth]{graphs/restoringbreakdown.pdf}
+	\includegraphics[width=\textwidth]{graphs/restoringbreakdown.pdf}
 	\caption{Restoring latency breakdown}
 	\label{fig:eval-restoringbreakdown}
 	\end{minipage}
@@ -214,21 +214,21 @@ which results to 0.95.
 	\centering
 	\begin{minipage}{0.3\textwidth}
 		\centering
-		\includegraphics[width=0.9\textwidth]{graphs/dedupbreakdown.pdf}
+		\includegraphics[width=\textwidth]{graphs/dedupbreakdown.pdf}
 		\caption{Deduplication latency breakdown}
 		\label{fig:eval-dedupbreakdown}
 	\end{minipage}%
 	\hspace{1mm}
 	\begin{minipage}{0.3\textwidth}
 		\centering
-		\includegraphics[width=0.9\textwidth]{graphs/dalprimary.pdf}
+		\includegraphics[width=\textwidth]{graphs/dalprimary.pdf}
 		\caption{\texttt{GET} layer latency for different layer sizes}
 		\label{fig:eval-dalprimary}
 	\end{minipage}%
 	\hspace{1mm}
 	\begin{minipage}{0.3\textwidth}
 		\centering
-		\includegraphics[width=1.0\textwidth]{graphs/total-traces.pdf}
+		\includegraphics[width=\textwidth]{graphs/total-traces.pdf}
 		\caption{\texttt{GET} layer latency for different workloads} %\Subil{"Blot" in figure should be "BOLT".}}
 		\label{fig:eval-total-traces}
 	\end{minipage}
