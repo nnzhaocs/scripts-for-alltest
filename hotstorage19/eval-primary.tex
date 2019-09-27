@@ -183,14 +183,21 @@ requests waiting for layer construction, respectively.
 This is because of the shorter duration between \texttt{GET} manifest requests and
 their subsequent \texttt{GET} layer requests in those traces.
 %
-Note that the \emph{superfetch cache} hit ratio is not affected by the duration between \texttt{GET} manifest
-requests and their subsequent \texttt{GET} layer requests.
+Note that the \emph{superfetch cache} hit ratio is not affected by the duration 
+between \texttt{GET} manifest requests and their subsequent \texttt{GET} layer 
+requests, because it does not have varying cache misses as a result of waiting 
+for layer reconstruction to finish as in the preconstruct cache.
 %
-\LR{Why is that?}
+\LR{Why is that?}\Subil{because you can stick a layer into the superfetch cache 
+because you have whole layers lying around on the P-servers, easy to retrieve; unlike the 
+preconstruct cache on the D-server where you have to wait for the layer to be rebuilt.
+so cache ratio is always the same because cache hits only depend on predicting the 
+layers to be placed into the cache correctly, not on the layers being constructed 
+in time for the GET layer request}
 %
 Therefore, \emph{B-mode 3} outperforms \emph{BOLT} for both the \fra and \lon traces.
 %
-\Subil{I think there needs to be at least some mention of Dal and Syd?}
+%\Subil{I think there needs to be at least some mention of Dal and Syd?}
 \LR{Why are the different configurations so close together in \syd?}
 %
 %For the \texttt{Dal} trace, \emph{B-mode 3} again outperforms \emph{BOLT} for
