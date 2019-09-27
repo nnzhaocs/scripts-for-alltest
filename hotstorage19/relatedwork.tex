@@ -13,7 +13,7 @@ and better image management~\cite{shifter,exoclones}. However, none
 of them provide deduplication capabilities for the registry.
 
 Skourtis \etal~\cite{skourtis2019carving} proposed to reduce registry storage utilization by
-restructuring layers to maximize their overlap. Their goal is similar to ours, however, they change
+restructuring layers to maximize their overlap. However, they change
 the existing structure of images whereas \sysname leaves images unchanged.
 %
 %Many studies focus on reducing the size of Docker
@@ -22,8 +22,7 @@ the existing structure of images whereas \sysname leaves images unchanged.
 %DockerSlim~\cite{dockerslim} is an effective tool to minify a single image.
 
 There is one community proposal to add file-level deduplication to container
-images~\cite{Krohmer-proposal}. However, it does not deal with the overhead
-of (de)compression and also does not provide a detailed design or performance
+images~\cite{Krohmer-proposal}, but doesn't provide a detailed design or performance
 analysis.
 %https://gist.github.com/devkid/5249ea4c88aab4c7bff1b34c955c1980#file-readme-md
 %However, neither of these approaches provide a performance evaluation.
@@ -31,10 +30,10 @@ analysis.
 %provide registry level deduplication and performance evaluation to quantify deduplication
 %overhead.}
 %
-Other work aimed at reducing the size of Docker images to reduce image pulling time storage
-utilization~\cite{cntr,rastogi2017cimplifier,gschwind2017optimizing,dockerslim}. 
+There is other work aimed at reducing image sizes to improve pulling time and 
+storage use~\cite{cntr,rastogi2017cimplifier,gschwind2017optimizing,dockerslim}. 
 %
-These methods are orthogonal to our approach and can be used with \sysname.
+These methods are orthogonal to our approach and can be used  with \sysname.
 %
 %Harter \etal~\cite{slacker} studied 57 images from Docker Hub for a variety of metrics
 %but not for data redundancy.
@@ -87,10 +86,7 @@ These methods are orthogonal to our approach and can be used with \sysname.
 %registry dataset for its deduplication potential.
 %and propose to apply deduplication to it.
 
-Deduplication in cloud storage has been investigated for decades.
-%
-Multiple studies proposed compression and deduplication techniques to reduce storage
-consumption of virtual machine
+Deduplication in cloud storage has been investigated for decades, particularly for virtual machine
 images~\cite{zhou2013characterizing,srinivasan2012idedup,jin2009effectiveness}.
 %
 For instance, Jayaram~\etal~\cite{jayaram2011empirical} studied 525 images
@@ -113,16 +109,15 @@ which allows it leverage image and workload information to reduce deduplication 
 %\Ali{Id whole-file deduplication a term? If not we should stick with file-level deduplication.}
 
 
-The performance of restoring the original data post-deduplication is as important as the deduplication ratio for all
-deduplication methods even for backup systems~\cite{lillibridge2013improving}.
+The performance of restoring the original data post-deduplication is as important as the deduplication ratio  even for backup systems~\cite{lillibridge2013improving}.
 %\Ali{What is restoring performance?}
 %\Subil{reworded. is this better?}
 %
-To improve the restoring latency, multiple optimizations are proposed and evaluated, such as caching, prefetching, exploiting
-historical information and temporal trends, data locality etc.~\cite{fu2014accelerating,fu2015design,fu2011aa}. 
+To improve the restoring latency, multiple optimizations are such as caching, prefetching, exploiting
+historical information and temporal trends, data locality etc. are evaluated~\cite{fu2014accelerating,fu2015design,fu2011aa}. 
 %
 \sysname combines several of these optimizations in its design to provide efficient
-image deduplication in container registries.
+image deduplication.
 %
 %All these optimization techniques inspire our design.
 %\Ali{Related work needs to be expanded.}
