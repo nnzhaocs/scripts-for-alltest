@@ -66,7 +66,7 @@ For heavily skewed workloads, \sysname also provides a \emph{selective
 deduplication mode} (S mode).
 %
 The S mode utilizes the skewness in layer popularity, observed
-in~\cite{dockerworkload}, to decide, how many replicas should be deduplicated
+in~\cite{dockerworkload}, to decide how many replicas should be deduplicated
 for each layer.
 %
 As there are hot layers that receive the majority of \texttt{GET} requests,
@@ -111,7 +111,7 @@ the primary cluster serves all incoming \texttt{GET} requests.
 If a request can't be served from the primary cluster (e.g., due to a
 node failure, or \sysname operating in B mode 0 or S modes),
 it will be forwarded to the deduplication cluster and the requested
-layer will be restored.
+layer will be reconstructed.
 %
 %\LR{Here we also need to talk about dealing with overloaded (not just crashed)
 %P-servers.}
@@ -153,7 +153,7 @@ reconstruct the layer.
 This information is stored in \sysname{}'s metadata database.
 %for reliability, consistency, and fast accesses. 
 %
-This allows D-servers to rebuild layer slices in parallel and thereby, improve
+This allows D-servers to rebuild layer slices in parallel and thereby improve
 reconstruction performance.
 %
 %To avoid storing duplicate layers and keep track of already stored unique
