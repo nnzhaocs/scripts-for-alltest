@@ -8,8 +8,7 @@
 %attention from the research community.
 
 A number of studies investigated various dimensions of Docker storage
-performance ranging from graph driver performance~\cite{slacker,docker-driver-eval,improve-cow-container-drivers}, to registry workload and image analysis~\cite{dockerworkload,dedupanalysis}
-and better image management~\cite{shifter,exoclones}. However, none
+performance\cite{slacker,docker-driver-eval,improve-cow-container-drivers,dockerworkload,dedupanalysis,shifter,exoclones}. However, none
 of them provide deduplication capabilities for the registry.
 
 Skourtis \etal~\cite{skourtis2019carving} proposed to reduce registry storage utilization by
@@ -30,8 +29,7 @@ analysis.
 %provide registry level deduplication and performance evaluation to quantify deduplication
 %overhead.}
 %
-There is other work aimed at reducing image sizes to improve pulling time and 
-storage use~\cite{cntr,rastogi2017cimplifier,gschwind2017optimizing,dockerslim}. 
+There is other work aimed at reducing image sizes~\cite{cntr,rastogi2017cimplifier,gschwind2017optimizing,dockerslim}. 
 %
 These methods are orthogonal to our approach and can be used  with \sysname.
 %
@@ -95,7 +93,7 @@ images~\cite{zhou2013characterizing,srinivasan2012idedup,jin2009effectiveness, j
  %block sharing between virtual disk images, instead relying on techniques such
  %as overlays to build multiple VMs from a single "base" image, similar with
  %Docker images.
-Beside virtual machine images, many studies also focused on primary and backup data
+Many studies also focused on primary and backup data
 deduplication~\cite{tarasov2014dmdedup,muthitacharoen2001low,lu2012insights,2009-sparse_indexing_inline_dedup_using_sampling-fast,2013-charact_increment_changes_data_protect-atc,wallace2012characteristics,zhu2008avoiding, lillibridge2013improving,
 fu2014accelerating,fu2015design,fu2011aa}
 and show the effectiveness of file- and sub-file-level
