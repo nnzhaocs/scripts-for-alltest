@@ -65,13 +65,9 @@ lowers latencies by prefetching layers into and serving them from memory.
 %
 B-mode 3 is able to reduce the average \texttt{GET} latencies by 13\% compared to
 BOLT for a layer size of 20\,MB.
-%\DIM{The 13\% is not significant by itself. Is there some other benefit of mode3 over BOLT, like space savings, that
-%could be added here?}
-%
-\LR{is it 0.91 for the 20\,MB case?}
+%\DIM{The 13\% is not significant by itself. Is there some other benefit of mode3 over BOLT, like space savings, that could be added here?}
 %
 The superfetch cache hit ratio in this case is 0.91.
-\NZ{yes}
 %
 %However, the network transfer time accounts for the largest portion of
 %the \text{GET} layer latency for \emph{BOLT} and \emph{B-mode 3}.
@@ -130,15 +126,14 @@ across the 6-node cluster, which improves the overall performance.
 %
 Additionally, S-mode can reduce storage consumption by 40\% compared to
 B-mode 2 as less popular layers keep less complete replicas.
-\NZ{s-mode saves 40\% of space.
-B-mode 2 saves 33\% of space.
-B-mode 1 saves 17\% of space.
-B-mode 0 saves 50\% of space.}
+%\NZ{s-mode saves 40\% of space.
+%B-mode 2 saves 33\% of space.
+%B-mode 1 saves 17\% of space.
+%B-mode 0 saves 50\% of space.}
 %
-However, for 25\,MB layers, the gap between S-mode and B-mode 2 widens
-because \todo{fill in reason}.
-\NZ{an error, fixed in new figure.
-B-mode 2 and S-mode are similar.}
+%However, for 25\,MB layers, the gap between S-mode and B-mode 2 widens
+%because \todo{fill in reason}.
+%\NZ{an error, fixed in new figure. B-mode 2 and S-mode are similar.}
 %while the remaining cold layers only have a single layer replica on the
 %primary cluster. 
 
@@ -183,35 +178,34 @@ cache hit ratios of 0.72 and 0.8, respectively.
 %
 In turn, the \fra and \lon traces have 21\% and 15\% of \texttt{GET} layer
 requests waiting for layer construction, respectively.
-%
-%\Subil{We need a graph or table or something to show this waiting times percentage because I don't see it from
-%the existing figures}.
-%
-This is because of the shorter duration between \texttt{GET} manifest requests and
+because of the shorter inter-arrival time between \texttt{GET} manifest requests and
 their subsequent \texttt{GET} layer requests in those traces.
 %
-Note that the \emph{superfetch cache} hit ratio is not affected by the duration 
-between \texttt{GET} manifest requests and their subsequent \texttt{GET} layer 
-requests, because it does not have varying cache misses as a result of waiting 
-for layer reconstruction to finish as in the preconstruct cache.
+Note that the \emph{superfetch cache} hit ratio is not as sensitive to inter-arrival times
+as it does not need to wait for a layer to be preconstructed before it can be loaded into the cache.
 %
-\LR{Why is that?}\Subil{because you can stick a layer into the superfetch cache 
-because you have whole layers lying around on the P-servers, easy to retrieve; unlike the 
-preconstruct cache on the D-server where you have to wait for the layer to be rebuilt.
-so cache ratio is always the same because cache hits only depend on predicting the 
-layers to be placed into the cache correctly, not on the layers being constructed 
-in time for the GET layer request}
-\NZ{because prefetching a whole layer is much faster than restoring a layer.
-There is no waiting request.}
+%\LR{Why is that?}
+%\Subil{because you can stick a layer into the superfetch cache 
+%because you have whole layers lying around on the P-servers, easy to retrieve; unlike the 
+%preconstruct cache on the D-server where you have to wait for the layer to be rebuilt.
+%so cache ratio is always the same because cache hits only depend on predicting the 
+%layers to be placed into the cache correctly, not on the layers being constructed 
+%in time for the GET layer request}
+%\NZ{because prefetching a whole layer is much faster than restoring a layer.
+%There is no waiting request.}
 %
 Therefore, \emph{B-mode 3} outperforms \emph{BOLT} for both the \fra and \lon traces.
 %
 %\Subil{I think there needs to be at least some mention of Dal and Syd?}
-\LR{Why are the different configurations so close together in \syd?}
-\NZ{this is because syd has a relative longer duration and the highest hit ratio
-	(0.96).
-}
-%
+%\LR{Why are the different configurations so close together in \syd?}
+%\NZ{this is because syd has a relative longer duration and the highest hit ratio
+%	(0.96).}
+
+The difference between the modes in \syd is less pronounced as the inter-arrival
+times between \texttt{GET} manifest and \texttt{GET} layer requests is higher on
+average and hence, the cache hit ratio increases to 0.96 and most layers are
+served from the cache in all modes.
+
 %For the \texttt{Dal} trace, \emph{B-mode 3} again outperforms \emph{BOLT} for
 %the same reasons.
 %
