@@ -13,7 +13,7 @@ and generating a suitable workload~(\S\ref{sec:workload}).
 able to correctly restore deduplicated layers in case of a failure.
 %
 \sysname uses Redis~\cite{redis} to store its metadata, i.e.
-the slice and layer recipes, the file and layer indices, and ULmap and RLmap.
+the slice and layer recipes, the file and layer indices, and ULmap and ILmap.
 %
 We enable \emph{append-only file (AOF)} to log all changes for durability purposes.
 This allows us to rebuild the dataset and prevent data loss after a Redis restart.
