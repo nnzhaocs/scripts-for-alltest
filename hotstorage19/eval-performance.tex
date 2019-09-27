@@ -72,7 +72,7 @@ Then we scale out to a deduplication cluster with multiple D-servers and compare
 %\NZ{No. ARC cache is a layer cache which stores the constructed hot layers
 %to save restoring time. ARC cache does not preconstruct layers.}
 %
-The evaluate \sysname{}'s restoring latency, we launch a single node registry on a server
+To evaluate \sysname{}'s restoring latency, we launch a single node registry on a server
 and use one client on a separate machine.
 %
 We compare four different configurations:
@@ -118,7 +118,7 @@ a size of 1\,MB compared to \sysname without cache.
 However, as the layer size increases,  the improvement drops.
 %
 For 9\,MB layers, the ARC cache reduces the average layer restoring overhead by only 16\%
-as the overhead for reconstructing non-cached layers increases.
+as the overhead for reconstructing non-cached layers increases\Subil{are you saying that ARC cache overhead is 16\% less than the no cache overhead for 9MB layers?}.
 %
 %\LR{Do we have a reason for that?}
 %\NZ{This is because it takes longer to restore a bigger layer upon a cache miss.}
