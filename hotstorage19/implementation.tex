@@ -187,20 +187,22 @@ to match requested layers in the IBM cloud registry trace with
 real layers, downloaded from Docker Hub.
 %~\cite{dedupanalysis}.
 %
-Specifically, we extract layer digests from layer requests recorded in the IBM trace
-and then randomly match each digest to a layer in the downloaded dataset.
+Specifically, we split the downloaded layers into different groups of similar size.
+We then extract layer digests from layer requests recorded in the IBM trace
+and randomly match each digest to a layer in a specific group. This allows us
+to replay a workload and control the layer size.
 %. 
 Consequently, each layer request pulls or pushes a real layer.
 %
-For manifest only requests recorded in the IBM traces, we generate a random file to emulate a
+For manifest only requests, we generate a random file to emulate the
 manifest file.
-\Ali{we need to explain how we match layers in detail.}
-\NZ{
-	We split the layers into different groups based on their sizes.
-	We randomly match the requests to a group of layers with similar sizes.
-	For each experiment,
-	we replay the workload multiple times, varying
-	the layer size.}
+%\Ali{we need to explain how we match layers in detail.}
+%\NZ{
+%	We split the layers into different groups based on their sizes.
+%	We randomly match the requests to a group of layers with similar sizes.
+%	For each experiment,
+%	we replay the workload multiple times, varying
+%	the layer size.}
 %This is because Sift does not deduplicate manifest file.
 %The trace replayer uses Docker registry client emulator Python-dxf~\cite{pydxf} to 
 %\texttt{pull} or \texttt{push} layers or manifests to registry.

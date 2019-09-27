@@ -63,14 +63,12 @@ Then we scale out to a deduplication cluster with multiple D-servers and compare
 
 \paragraph{Restoring latency}
 %
-\LR{Why are we only looking at layers between 1 and 9\,MB?}
-\NZ{We start from small layers to big layers like 70 MB.
-small layers can be restored by using just a single node.
-}
-\LR{Is the ARC cache the layer stage area cache or what does it refer to in Figure 3a?}
-\NZ{No. ARC cache is a layer cache which stores the constructed hot layers
-to save restoring time. ARC cache does not preconstruct layers.
-}
+%\LR{Why are we only looking at layers between 1 and 9\,MB?}
+%\NZ{We start from small layers to big layers like 70 MB.
+%small layers can be restored by using just a single node.}
+%\LR{Is the ARC cache the layer stage area cache or what does it refer to in Figure 3a?}
+%\NZ{No. ARC cache is a layer cache which stores the constructed hot layers
+%to save restoring time. ARC cache does not preconstruct layers.}
 %
 The evaluate \sysname{}'s restoring latency, we launch a single node registry on a server
 and use one client on a separate machine.
@@ -78,20 +76,22 @@ and use one client on a separate machine.
 We compare four different configurations:
 (1)~no deduplication;
 (2)~\sysname without caching;
-(3)~\sysname with ARC caching; and
+(3)~\sysname with ARC caching but no preconstruction; and
 (4)~\sysname with preconstruct cache.
 %
-For each setup, we use the local file system as the storage backend.
+For each setup, we use the local file system as the storage backend and replay the
+\dal workload with layer size groups from 1\,MB to 9\,MB. For this experiment, we focus
+only on smaller layers as our registry setup is single-node.
 %
-\LR{Above we say we match layers randomly?}
-\NZ{yes}
+%\LR{Above we say we match layers randomly?}
+%\NZ{yes}
 %
-The client matches requests from \dal to layers with similar sizes 
-from the evaluation dataset and replays them to the D-server.
+%The client matches requests from \dal to layers with similar sizes 
+%from the evaluation dataset and replays them to the D-server.
 %We compare four backends: 
 
-\LR{Do we also have percentiles/errorbars or just averages?}
-\NZ{we have 90th percentile.}
+%\LR{Do we also have percentiles/errorbars or just averages?}
+%\NZ{we have 90th percentile.}
 %
 As shown in Figure~\ref{fig:eval-1nodegetlayerlatency}, 
 layer restoring increases the average \texttt{GET} layer request latency by 189\% for layers 
@@ -100,8 +100,7 @@ with size 1\,MB for \sysname without caching compared to \emph{no deduplication}
 Moreover, the layer restoring latency increases almost linearly as the layer size increases.
 %
 While a 1\,MB layer takes 0.13\,s to restore and download, 
-it takes 0.22\,s to restore and download a 9\,MB
-layer for \sysname without caching.
+it takes 0.22\,s for a 9\,MB layer for \sysname without caching.
 
 %\paragraph{Preconstruct cache VS. ARC cache}
 %\paragraph{Cache}
@@ -116,10 +115,11 @@ a size of 1\,MB compared to \sysname without cache.
 %
 However, as the layer size increases,  the improvement drops.
 %
-For 9\,MB layers, the ARC cache reduces the layer restoring overhead by only 16\%.
+For 9\,MB layers, the ARC cache reduces the average layer restoring overhead by only 16\%
+as the overhead for reconstructing non-cached layers increases.
 %
-\LR{Do we have a reason for that?}
-\NZ{This is because it takes longer to restore a bigger layer upon a cache miss.}
+%\LR{Do we have a reason for that?}
+%\NZ{This is because it takes longer to restore a bigger layer upon a cache miss.}
 %
 %\Subil{there is no 10-MB value in Fig~\ref{fig:eval-1nodegetlayerlatency}.}
 %ARC cache can only improve 10\% of 
@@ -153,9 +153,9 @@ all unique layers, which are pushed to the registry as part of our workload.
 %
 The cache hit ratio for ARC is stable at 0.77 for all layer sizes while
 the preconstruct cache achieves a hit ratio of 0.95 for 1\,MB.
-%
-As the layer size increases to 9\,MB, the preconstruct cache hit ratio decreases to 79\%.
 
+As the layer size increases to 9\,MB, the preconstruct cache hit ratio decreases to 79\%.
+%
 This is because the layer restoring latency increases with layer size as shown in
 Figure~\ref{fig:eval-1nodegetlayerlatency} and therefore, some layers can not be preconstructed
 on time.
@@ -245,17 +245,16 @@ layers are not preconstructed in time.
 When the client replays requests as fast as possible, the overhead of restoring layers on
 \texttt{GET} layer requests increases by 30\%.
 %
-\LR{How did we replay them in the previous experiment? As fast as possible or downsampled or in
-real-time?}
-\NZ{
-	First, there is an interval or delay between every two subsequent requests.
-	For \texttt{GET} manifest requests, we replay as fast as possible without delay.
-For \texttt{GET} layer requests,
-we use their real intervals if the intervals are smaller than 1 s. Otherwise,
-we use 1 s as the interval.
-We use the above method to replay traces for other tests (not for this different IAT test),
-This is for finishing all evaluations in a reasonable time.
-}
+%\LR{How did we replay them in the previous experiment? As fast as possible or downsampled or in
+%real-time?}
+%\NZ{
+%	First, there is an interval or delay between every two subsequent requests.
+%	For \texttt{GET} manifest requests, we replay as fast as possible without delay.
+%For \texttt{GET} layer requests,
+%we use their real intervals if the intervals are smaller than 1 s. Otherwise,
+%we use 1 s as the interval.
+%We use the above method to replay traces for other tests (not for this different IAT test),
+%This is for finishing all evaluations in a reasonable time.}
 
 %the cache hit ratio of the ARC cache and the preconstruct cache.
 
