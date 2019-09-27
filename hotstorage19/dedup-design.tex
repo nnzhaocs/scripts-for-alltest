@@ -5,7 +5,7 @@
 %
 %\subsubsection{Layer replication, deduplication, and partitioning}
 %
-As the traditional Docker registry, \sysname maintains a \emph{layer index}.
+As in the traditional Docker registry, \sysname maintains a \emph{layer index}.
 After receiving a \texttt{PUT} layer request,
 \sysname first checks the layer fingerprint in the \emph{layer index} to ensure 
 an identical layer is not already stored.
@@ -303,7 +303,7 @@ are equally sized and evenly distributed across D-servers.
 %, shared and unique files,
 %
 %To distribute the newly added unique files' primary replicas,
-To achieve this \sysname employs a greedy packing algorithm.
+To achieve this, \sysname employs a greedy packing algorithm.
 %, which is constrained by  with shared file constraints.
 %distribute the newly added unique files in a way such that
 %each D-server stores relatively equal-sized slice for the layer.
