@@ -176,7 +176,7 @@ When a \texttt{GET} manifest request is received from a user, \sysname
 predicts which layers in the image will actually need to be \texttt{pulled} and
 \emph{prefetches} them in the cache.
 %
-To do that, \sysname maintains two maps: \emph{RLmap} and \emph{ULmap}.
+To do that, \sysname maintains two maps: \emph{ILmap} and \emph{ULmap}.
 %
 RLmap stores the mapping between images and layers while ULmap keeps track of a
 user's access history, i.e. which layers the user has pulled and how many
