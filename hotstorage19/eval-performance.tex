@@ -117,8 +117,8 @@ a size of 1\,MB compared to \sysname without cache.
 %
 However, as the layer size increases,  the improvement drops.
 %
-For 9\,MB layers, the ARC cache reduces the average layer restoring overhead by only 16\%
-as the overhead for reconstructing non-cached layers increases\Subil{are you saying that ARC cache overhead is 16\% less than the no cache overhead for 9MB layers?}.
+For 9\,MB layers, the presence of the ARC cache reduces the average layer restoring overhead by only 16\%
+from the overhead of using Sift without caching.
 %
 %\LR{Do we have a reason for that?}
 %\NZ{This is because it takes longer to restore a bigger layer upon a cache miss.}
