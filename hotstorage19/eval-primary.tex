@@ -201,11 +201,16 @@ preconstruct cache on the D-server where you have to wait for the layer to be re
 so cache ratio is always the same because cache hits only depend on predicting the 
 layers to be placed into the cache correctly, not on the layers being constructed 
 in time for the GET layer request}
+\NZ{because prefetching a whole layer is much faster than restoring a layer.
+There is no waiting request.}
 %
 Therefore, \emph{B-mode 3} outperforms \emph{BOLT} for both the \fra and \lon traces.
 %
 %\Subil{I think there needs to be at least some mention of Dal and Syd?}
 \LR{Why are the different configurations so close together in \syd?}
+\NZ{this is because syd has a relative longer duration and the highest hit ratio
+	(0.96).
+}
 %
 %For the \texttt{Dal} trace, \emph{B-mode 3} again outperforms \emph{BOLT} for
 %the same reasons.
