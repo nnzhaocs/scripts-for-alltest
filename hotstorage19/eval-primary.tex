@@ -71,6 +71,7 @@ BOLT for a layer size of 20\,MB.
 \LR{is it 0.91 for the 20\,MB case?}
 %
 The superfetch cache hit ratio in this case is 0.91.
+\NZ{yes}
 %
 %However, the network transfer time accounts for the largest portion of
 %the \text{GET} layer latency for \emph{BOLT} and \emph{B-mode 3}.
@@ -98,7 +99,7 @@ the primary cluster.
 %\DIM{This is just due to the setup though? Does it tell us anything fundamental about Sift?}
 %
 While the difference is minor for layer sizes less or equal than 20\,MB, only
-up to \gap, is is around 30\% for 25\,MB layers.
+up to 18\%, is around 30\% for 25\,MB layers.
 
 %basic modes: \emph{B-mode 2} and \emph{B-mode 1}, we see that
 %\emph{B-mode 1} has a higher \texttt{GET} layer latency than \emph{B-mode 2}.
@@ -127,11 +128,17 @@ the average \texttt{GET} layer latency variation between the two modes is only
 This is because in S-mode, the popular layers have multiple replicas
 across the 6-node cluster, which improves the overall performance.
 %
-Additionally, S-mode can reduce storage consumption by \gap compared to
+Additionally, S-mode can reduce storage consumption by 40\% compared to
 B-mode 2 as less popular layers keep less complete replicas.
+\NZ{s-mode saves 40\% of space.
+B-mode 2 saves 33\% of space.
+B-mode 1 saves 17\% of space.
+B-mode 0 saves 50\% of space.}
 %
 However, for 25\,MB layers, the gap between S-mode and B-mode 2 widens
 because \todo{fill in reason}.
+\NZ{an error, fixed in new figure.
+B-mode 2 and S-mode are similar.}
 %while the remaining cold layers only have a single layer replica on the
 %primary cluster. 
 
