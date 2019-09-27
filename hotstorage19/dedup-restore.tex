@@ -19,20 +19,21 @@
 %\LR{Are we only considering the case when a P-server fails or
 %are we also considering, if a P-server gets overloaded?}
 
-To restore a layer, each D-server in \sysname has a slice constructor and
-layer constructor. The restoring process works as follows:
+To restore a layer, each D-server in \sysname uses  a slice and a
+layer constructor. Considering Figure~\ref{fig:replication-partition} as
+an illustration, the restoring process works as follows:
 
 First, the layer constructor fetches the layer recipe from the metadata database.
 %According to $L1$'s layer recipe, 
 %(Figure~\ref{fig:replication-partition})
 %Figure~\ref{fig:construct}
-As shown in Figure~\ref{fig:replication-partition}, according to $L1$'s layer recipe,  the restoring workers are D-server $A$, $B$, and $C$. The node with the largest slices is picked as the restoring master ($A$ in the example).
+According to $L1$'s layer recipe,  the restoring workers are D-servers $A$, $B$, and $C$. The node with the largest slice is picked as the restoring master ($A$ in the example).
 Since $A$ is the restoring master
 %\LR{Explain how the master is picked},
 %\NZ{We select the server which stores the biggest slice as master to reduce restoring overhead.}
 it sends \texttt{GET slice} requests for the primary slices to $B$ and $C$.
-Note that the master first tries to rebuild the layer from primary slices.
-If a primary slice is missing, the master will find its corresponding backup
+%Note that the master first tries to rebuild the layer from primary slices.
+If a primary slice is missing, the master locates its corresponding backup
 slice and send a \texttt{GET slice} request to the corresponding D-server.
 
 %\paragraph{Parallel slice construction}
@@ -41,7 +42,7 @@ slice and send a \texttt{GET slice} request to the corresponding D-server.
 %\sysname initiates a layer restoring process on D-servers for it.
 %which involves two modules: slice constructor and layer constructor. 
 After a \texttt{GET slice} request has been received, 
-$B$ and $C$'s slice constructors start rebuilding their primary slices and send them to $A$ as shown in Figure~\ref{fig:construct}.
+$B$'s and $C$'s slice constructors start rebuilding their primary slices and send them to $A$ as shown in Figure~\ref{fig:construct}.
 Meanwhile $A$ instructs its local slice constructor to restore its primary slice for $L1$.
 %
 To construct a layer slice, a slice constructor first gets the associate slice recipe
@@ -50,17 +51,22 @@ backup level, i.e., $L1::A::P$.
 %\LR{More details here. Why is that they key? Why is the backup level relevant?}.
 %\NZ{The slices at the same backup level can build a complete layer.}
 %
-Based on the recipe, the slice constructor creates a slice tar archive by writing each file header and the corresponding
-file contents.
+Based on the recipe, the slice constructor creates a slice tar file by concatenating each file header and the corresponding
+file contents; it then compresses the slice and passes it to the master.
 %rebuilds each file entry in the slice tar archive according to the slice recipe.
-\paragraph{Optimizations}
+%
+The master concatenates all the compressed slices into a single
+layer compressed tarball and sends it back to the client.
+% as shown in Figure~\ref{fig:construct}.
+%As a result no intermediate file will be created or stored on disk. % subil: whoa!
+
+
+%\paragraph{Optimizations}
 The layer restoration performance is critical to keep \texttt{pull} latencies low. Hence,
-\sysname uses several optimiations to streamline the process.
-%
-Besides parallelizing layer reconstruction across D-servers, \sysname also
-parallelizes slice reconstruction on a single node.
-%
-Additionally, \sysname avoids generating intermediate files on disk to reduce disk I/O.
+\sysname uses several additional optimizations to further speed up the process:
+%Besides parallelizing layer reconstruction across D-servers, \sysname also
+it parallelizes slice reconstruction on a single node and
+avoids generating intermediate files on disk to reduce disk I/O.
 %
 %To avoid generating any intermediate files stored on disk to reduce disk I/Os
 %and improve restoring performance, the slice restoring process is a stateless streaming
@@ -68,22 +74,22 @@ Additionally, \sysname avoids generating intermediate files on disk to reduce di
 %
 %All the involved data processing operations are preceded in memory as streaming. 
 
-Specifically, a slice constructor first reads each entry in the slice recipe
-and gets each header and its corresponding content pointer.
+%Specifically, a slice constructor first reads each entry in the slice recipe
+%and gets each header and its corresponding content pointer.
 %
-Then, the slice constructor reads the corresponding physical files addressed by the content
-pointers in parallel from the D-server's file store
+%Then, the slice constructor reads the corresponding physical files addressed by the content
+%pointers in parallel from the D-server's file store
 %
 %\LR{The following is unclear. What does ``asynchronously'' mean in this case? Is every
 %file written to its own buffer in parallel and then combined in a single archive buffer?}
 %\NZ{It's synchronously.}
-and writes each file and it's corresponding header to a slice archive buffer in memory.
+%and writes each file and it's corresponding header to a slice archive buffer in memory.
 %Before writing file content to the archive buffer, slice constructor first writes its
 %associated file header into the archive buffer according to the slice recipe.
 %
-After archiving all the files along with their headers in the slice archive buffer,
-the archive buffer will be divided into several chunks, compressed in parallel,
-concatenated again into a single compressed slice, and sent to the master
+%After archiving all the files along with their headers in the slice archive buffer,
+%the archive buffer will be divided into several chunks, compressed in parallel,
+%concatenated again into a single compressed slice, and sent to the master.
 %
 %Then, it writes the header in the slice archive.
 %After that it put the associated file content in the slice archive
@@ -104,9 +110,6 @@ concatenated again into a single compressed slice, and sent to the master
 %\paragraph{Streaming layer construction}
 %\LR{What exactly do you mean by ``Through network transfer''? Are the different slices kept inmemory at the master for concatenation after they have been received?}
 %\NZ{Yes. But before that, these slices need to be transferred through network to master.}
-The master will concatenate all the compressed slices into a single
-layer compressed tarball and send it back the client as shown in Figure~\ref{fig:construct}.
-As a result no intermediate file will be created or stored on disk. % subil: whoa!
 %After receiving all slices, layer constructor on \emph{A} will concatenate all slices into a compressed layer
 %. 
 %Overall, the layer restoring process is a stateless streaming layer construction process.
@@ -115,9 +118,6 @@ As a result no intermediate file will be created or stored on disk. % subil: who
 %without creating any intermediate files stored on disk to reduce disk I/Os and improve
 %performance.
 
-\LR{Removed text on file cache. Make sure we really don't use it anymore in experiments
-and make sure, all references to file cache in the paper are removed.}
-\NZ{yes}
 %Furthermore, \sysname also provisions a small in-memory file cache on each D-server to cache hot files.
 %This reduces disk I/O during restoration even further. The file cache uses Adaptive
 %Replacement (ARC)~\cite{xxx} \todo{fill in more details on how the cache works, how big it is, etc.}
