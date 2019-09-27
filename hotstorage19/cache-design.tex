@@ -58,8 +58,8 @@ track of user access patterns and image metadata.
 Therefor, it uses two maps to record the image-to-layer information
 and user layer accesses: ILmap and ULmap.
 %
-\LR{Change RLmap (repo-to-layer) to ILmap (image-to-layer)?}
-\NZ{Ok.}\Subil{fixed}
+%\LR{Change RLmap (repo-to-layer) to ILmap (image-to-layer)?}
+%\NZ{Ok.}\Subil{fixed}
 %\NZ{Repo to layers; User to Layers.}
 %
 %\LR{ Is the layer set the set of layers contained in an image? Why do we need
@@ -126,6 +126,14 @@ counts for a user whenever a \texttt{GET layer} request is received.
 %	}
 %}
 
+\begin{figure}[t]
+	\centering
+	\centering
+	\includegraphics[width=\columnwidth]{graphs/sift-cache-bigger.pdf}
+	\caption{Tiered storage architecture.}
+	\label{fig:tieredstore}
+\end{figure} 
+
 \paragraph{Cache handling in tiered storage} %As mentioned earlier, \sysname uses two-tier storage architecture: primary cluster
 %and deduplication cluster. Now with the adding of superfetch cache and preconstruct
 %cache, The two-tier storage architecture becomes multiple-level storage architecture
@@ -139,8 +147,9 @@ counts for a user whenever a \texttt{GET layer} request is received.
 %‘rootdir/docker/registry/v2/blobs/sha256/< first two hex bytes of layer digest >/<hex layer digest>/’ 
 %(denoted as layerdir) as a file named ‘data’.}
 The introduction of the two cache layers results in a 5-level storage architecture of
-\sysname as shown in Figure~\ref{fig:tieredstore}, split into two tiers. \Subil{We say 5-tier here but 2-tier in the figure. Must change one or the other for consistency along with any other mentions of 2-tier/5-tier in the paper}.
-\NZ{can we say 2-tier with 5-level?} \Subil{changed to 5 level/2 tier}
+\sysname as shown in Figure~\ref{fig:tieredstore}, split into two tiers.
+%\Subil{We say 5-tier here but 2-tier in the figure. Must change one or the other for consistency along with any other mentions of 2-tier/5-tier in the paper}.
+%\NZ{can we say 2-tier with 5-level?} \Subil{changed to 5 level/2 tier}
  Requests are passed through the
 tiers in the order displayed in the figure. Upon a \texttt{GET} layer request,
 \sysname first determines the P-server(s) which is (are) repsonsible for the layer
