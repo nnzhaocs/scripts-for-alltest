@@ -168,7 +168,7 @@ Otherwise, the request will be served from the layer store .
 
 If a \texttt{GET layer} request cannot be served from the primary cluster
 due to a failure of the corresponding P-server(s),
-the request will be forward to the deduplication cluster.
+the request will be forwarded to the deduplication cluster.
 In that case, \sysname will first look up the layer recipe. If not found, it means that
 the layer has not been fully deduplicated yet and \sysname will serve the layer
 from one of the layer stage areas of the responsible D-servers. Those are located
