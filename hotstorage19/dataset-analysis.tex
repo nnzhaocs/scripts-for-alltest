@@ -1,3 +1,30 @@
+
+\begin{figure*}[t]
+        \centering
+        \begin{minipage}{0.3\textwidth}
+                \centering
+                \includegraphics[width=0.9\textwidth]{graphs/cdf-layer-repull-ratio-by-same-client.pdf}
+                \caption{CDF of \texttt{GET} layer request count}
+                \label{fig:layer-repull-cdf}
+        \end{minipage}%
+	\hfill
+        \begin{minipage}{0.3\textwidth}
+                \centering
+                \includegraphics[width=0.9\textwidth]{graphs/cdf-client-repull-layer-request-ratio.pdf}
+                \caption{CDF of Client repulling probability}% of LRU cache and preconstruct cache.}
+                \label{fig:client-repull-cdf}
+        \end{minipage}%
+	\hfill
+        \begin{minipage}{0.3\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{graphs/GML-intervals.pdf}
+        \caption{Intervals between \texttt{GET} manifest request and \texttt{GET} layer request}
+        \label{fig:intervals}
+        \end{minipage}
+\end{figure*}
+
+
+
 \section{Motivation and Challenges}
 \label{sec:dataset-analysis}
 
@@ -106,7 +133,8 @@ without sacrificing the \texttt{GET} layer performance.
 \subsection{Predictable User Access Patterns}
 \label{sec:predictable-user-access}
 
-\input{fig-repull-analysis}
+
+%\input{fig-repull-analysis}
 %
 A promising approach to mitigate layer restoring overhead is predicting which layers will be accessed in the future and preconstructing them.
 %

@@ -23,24 +23,55 @@
 %	\caption{PDF of client repull count, repository repulling probability, and client repulling probability..}
 %\end{figure*}
 
-\begin{figure}[!t]
-	\centering
-	\subfigure[\texttt{GET} layer request count]{
-		\includegraphics[width=0.22\textwidth]{graphs/cdf-layer-repull-ratio-by-same-client.pdf}
-		\label{fig:layer-repull-cdf}
-	}
-%	\subfigure[Repository repulling probability]{
-%		\includegraphics[width=0.2\linewidth]{graphs/cdf-repo-repull-ratio-by-same-client.pdf}
-%		\label{fig:repo-repull-cdf}
+%\begin{figure}[!t]
+%	\centering
+%	\subfigure[\texttt{GET} layer request count]{
+%		\includegraphics[width=0.22\textwidth]{graphs/cdf-layer-repull-ratio-by-same-client.pdf}
+%		\label{fig:layer-repull-cdf}
 %	}
-	\subfigure[Client repulling probability]{
-	\includegraphics[width=0.2\textwidth]{graphs/cdf-client-repull-layer-request-ratio.pdf}
-   \label{fig:client-repull-cdf}
-}
-	\caption{CDF of \texttt{GET} layer request count and client repulling probability. \Ali{Please rename "Layer repull count"  to "GET Layer count" in figure.}\VT{Also, Y axis label, can
- we change it to "Layers ratio" and "Clients ratio"?}}
-	\label{fig-repull}
-\end{figure}
+%%	\subfigure[Repository repulling probability]{
+%%		\includegraphics[width=0.2\linewidth]{graphs/cdf-repo-repull-ratio-by-same-client.pdf}
+%%		\label{fig:repo-repull-cdf}
+%%	}
+%	\subfigure[Client repulling probability]{
+%	\includegraphics[width=0.2\textwidth]{graphs/cdf-client-repull-layer-request-ratio.pdf}
+%   \label{fig:client-repull-cdf}
+%}
+%	\caption{CDF of \texttt{GET} layer request count and client repulling probability.}
+%	\label{fig-repull}
+%\end{figure}
+%
+
+
+
+
+
+
+\begin{figure*}[t]
+        \centering
+        \begin{minipage}{0.3\textwidth}
+                \centering
+                \includegraphics[width=0.9\textwidth]{{graphs/cdf-layer-repull-ratio-by-same-client.pdf}
+                \caption{CDF of \texttt{GET} layer request count}
+                \label{fig:layer-repull-cdf}
+        \end{minipage}%
+        \begin{minipage}{0.3\textwidth}
+                \centering
+                \includegraphics[width=0.9\textwidth]{graphs/cdf-client-repull-layer-request-ratio.pdf}
+                \caption{CDF of Client repulling probability}% of LRU cache and preconstruct cache.}
+                \label{fig:client-repull-cdf}
+        \end{minipage}%
+        \begin{minipage}{0.3\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{graphs/GML-intervals.pdf}
+        \caption{Intervals between \texttt{GET} manifest request and \texttt{GET} layer request}
+        \label{fig:intervals}
+   \end{minipage}
+\end{figure*}
+
+
+
+
 
 %\begin{figure}[!t]
 %	\centering
