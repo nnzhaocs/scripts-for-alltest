@@ -76,7 +76,7 @@ efficiently merge layers into a single file system tree when starting a containe
 %
 Identical layers across different images can be shared by containers.
 
-To store and distribute container images Docker relies on image
+To store and distribute container images, Docker relies on image
 \emph{registries} (e.g., Docker Hub~\cite{docker-hub}).
 %
 Docker clients can push images to or pull them from the registries as needed.
@@ -88,7 +88,7 @@ The Docker registry supports various storage backends for saving and retrieving
 layers. For example, a typical large-scale setup stores each layer as an object in an
 object store~\cite{s3,swift}.
 
-As the container market continues to expand, Docker registries manage a
+As the container market continues to expand, Docker registries have to manage a
 growing number of images and layers.
 %
 Some conservative estimates show that in spring 2019, Docker Hub alone
@@ -101,11 +101,11 @@ We believe that this is just the tip of the iceberg and the number of
 Other popular public
 registries~\cite{amazon-ecr,jfrog-artifactory,azure-cr,google-cr}, as well as
 on-prem registry deployments in large organizations, experience a similar
-surge of container images.
+surge in number of container images.
 %
 As a result,
 organizations spend an increasing amount of their storage and networking
-infrastructure on operating image registries to provide adequate service level.
+infrastructure on operating image registries to provide an adequate level of service.
 %while keeping up with the demand.
 
 %
@@ -116,7 +116,7 @@ infrastructure on operating image registries to provide adequate service level.
 Docker images must be self-contained by definition
 and yet they frequently rely on common dependencies (e.g., libraries).
 %
-As a result images are prone to contain a
+As a result, images are prone to contain a
 high number of duplicate files.
 %
 Docker employs layer sharing to reduce this redundancy.
@@ -182,7 +182,7 @@ slows down image pulls due to high layer reconstruction
 The slowdowns during image pulls are especially
 harmful because they contribute directly to the start times of containers.
 %
-Our experiments showed that on average, na\"{i}ve deduplication increases layer
+Our experiments showed that, on average, na\"{i}ve deduplication increases layer
 download latencies by 2.5$\times$ compared to the registry without deduplication and layer reconstruction.
 
 In this paper we propose \sysname, the first Docker registry that natively
@@ -217,7 +217,7 @@ are decompressed and deduplicated.
 aggressively than popular ones to speed up accesses to popular
 layers while achieving high storage savings.
 %
-\item By monitoring user access patterns \sysname predictively
+\item By monitoring user access patterns, \sysname predictively
 restores layers before layer download requests arrive,
 avoiding reconstruction latency in pull requests.
 %
