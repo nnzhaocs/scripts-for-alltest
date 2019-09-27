@@ -47,30 +47,30 @@ For higher fault tolerance and availability, existing registry setups replicate 
 \sysname also performs layer replication, but in addition allows to deduplicate
 files inside the layers.
 
-A \emph{basic deduplication mode} $n$ (B mode \emph{n}) defines that \sysname should only
+A \emph{basic deduplication mode} $n$ (B-mode \emph{n}) defines that \sysname should only
 keep $n$ layer replicas intact and deduplicate the remaining $R-n$ layer
 replicas, where $R$ is the layer replication level. This is in comparison to R-way replication in existing registry setups that hold $R$ layer replicas.
 %
-At one extreme, B mode $R$ means that no replica should be deduplicated and
+At one extreme, B-mode $R$ means that no replica should be deduplicated and
 hence, provides the best performance but no data reduction.
 %
-At the other end, B mode $0$ deduplicates all layer replicas, i.e. it provides
+At the other end, B-mode $0$ deduplicates all layer replicas, i.e. it provides
 the highest deduplication ratio but adds restoration overhead for every
 \texttt{GET} request.
 %
-The remaining B modes in between allow to trade off performance and data
+The remaining B-modes in between allow to trade off performance and data
 reduction.
 
 
 For heavily skewed workloads, \sysname also provides a \emph{selective
-deduplication mode} (S mode).
+deduplication mode} (S-mode).
 %
-The S mode utilizes the skewness in layer popularity, observed
+The S-mode utilizes the skewness in layer popularity, observed
 in~\cite{dockerworkload}, to decide how many replicas should be deduplicated
 for each layer.
 %
 As there are hot layers that receive the majority of \texttt{GET} requests,
-S mode sets the number of intact layer replicas proportional to its
+S-mode sets the number of intact layer replicas proportional to its
 popularity.
 %
 This means that hot layers have more intact layer replicas and
@@ -78,7 +78,7 @@ hence, can be served faster.
 %
 On the other hand, cold layers have fewer replicas to improve storage utilization.
 
-Figure~\ref{fig:sift-original} shows an example for B mode $1$ with $R=3$.
+Figure~\ref{fig:sift-original} shows an example for B-mode $1$ with $R=3$.
 \sysname first creates 3 layer replicas across our servers. It maintains a single layer replica as the \emph{primary layer replica} on
 server A for newly pushed layers.
 %
@@ -109,7 +109,7 @@ P- and D-servers form a 2-tier storage hierarchy. In the default case,
 the primary cluster serves all incoming \texttt{GET} requests.
 %
 If a request can't be served from the primary cluster (e.g., due to a
-node failure, or \sysname operating in B mode 0 or S modes),
+node failure, or \sysname operating in B-mode 0 or S-modes),
 it will be forwarded to the deduplication cluster and the requested
 layer will be reconstructed.
 %
