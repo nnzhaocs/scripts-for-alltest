@@ -16,20 +16,20 @@ page_number = 0
 list_of_repos = []
 
 #url of docker hub's explore page
-url = 'https://hub.docker.com/search?q=&page=%d'
-while page_number < 3:  #True:
+url = 'https://hub.docker.com/search/?q=&type=image&page=%d'
+while page_number < 100: #maximum number of accessible pages is 100  
     page_number = page_number + 1
-    print "Crawling page: " + str(page_number)
+    print "Crawling page: " + str(page_number) + " url: " + url % page_number
     browser.get(url % page_number)
 
     #getting repos links from explore pages
     print "	Getting links to repos..."
     repos = browser.find_elements_by_xpath("//div[@class='styles__resultsWrapper___38JCx']")
     for repo in repos:
-	elements = repo.find_elements_by_tag_name('a')
-        for element in elements:
+        for element in repo.find_elements_by_tag_name('a'):
             #for every page, we are adding links to repos in list_of_repos
 	    list_of_repos.append(element.get_attribute('href'))
+    	    #print element.get_attribute('href')
     #print list_of_repos
 
     #loop through list of repos to get tags
@@ -38,7 +38,6 @@ while page_number < 3:  #True:
         #get the repo html page
         data[repo] = []
 	tags_page = '?tab=tags'
-        #print repo+tags_page
 	#get the tags page of each repo
 	browser.get(repo+tags_page)
 	for elem in browser.find_elements_by_xpath("//span[@class='styles__tagName___bE6Eb']"):
@@ -51,6 +50,7 @@ print "saving results to repos_tags.json"
 print "===================================="
 with open('repos_tags.json','w') as outfile:
     json.dump(data, outfile)
+print "DONE"
 
 sleep(5)
 browser.quit()
