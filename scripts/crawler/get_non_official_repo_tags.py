@@ -30,7 +30,7 @@ while page_number < 100: #maximum number of accessible pages is 100
         for element in repo.find_elements_by_tag_name('a'):
             #for every page, we are adding links to repos in list_of_repos
             if '/r/' in element.get_attribute('href'):
-				list_of_repos.append(element.get_attribute('href'))
+			    list_of_repos.append(element.get_attribute('href'))
 				#print element.get_attribute('href')
     #print list_of_repos
 
@@ -46,9 +46,9 @@ while page_number < 100: #maximum number of accessible pages is 100
 			#print elem.text
 			#print "\n"
 			
-print "==========================================="
+print "=============================================="
 print "saving results to non_official_repos_tags.json"
-print "==========================================="
+print "=============================================="
 with open('non_official_repos_tags.json','w') as outfile:
     json.dump(data, outfile)
 print "DONE"
