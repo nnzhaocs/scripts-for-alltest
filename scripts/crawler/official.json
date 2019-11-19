@@ -1,0 +1,9617 @@
+{
+    "https://hub.docker.com/_/microsoft-iotedge-iotedgedev": [
+
+    ],
+    "https://hub.docker.com/_/lightstreamer": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "7.0.3-jdk8-openjdk"
+        },
+        {
+            "tag": "7.0.3-jdk8"
+        },
+        {
+            "tag": "7.0.3-jdk11-openjdk"
+        },
+        {
+            "tag": "7.0.3-jdk11"
+        },
+        {
+            "tag": "7.0.3"
+        },
+        {
+            "tag": "7.0-jdk8-openjdk"
+        },
+        {
+            "tag": "7.0-jdk8"
+        },
+        {
+            "tag": "7.0-jdk11-openjdk"
+        },
+        {
+            "tag": "7.0-jdk11"
+        },
+        {
+            "tag": "7.0"
+        },
+        {
+            "tag": "7-jdk8-openjdk"
+        },
+        {
+            "tag": "7-jdk8"
+        },
+        {
+            "tag": "7-jdk11-openjdk"
+        },
+        {
+            "tag": "7-jdk11"
+        },
+        {
+            "tag": "7"
+        },
+        {
+            "tag": "6.1.0"
+        },
+        {
+            "tag": "6.1"
+        },
+        {
+            "tag": "6.0.3"
+        },
+        {
+            "tag": "6.0"
+        },
+        {
+            "tag": "6"
+        },
+        {
+            "tag": "7.0.3-jre8"
+        },
+        {
+            "tag": "7.0-jre8"
+        },
+        {
+            "tag": "7-jre8"
+        },
+        {
+            "tag": "7.0.3-jre8-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-framework-runtime": [
+
+    ],
+    "https://hub.docker.com/_/julia": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.3.0-stretch"
+        },
+        {
+            "tag": "1.3.0-rc5-stretch"
+        },
+        {
+            "tag": "1.3.0-rc5-buster"
+        },
+        {
+            "tag": "1.3.0-rc5"
+        },
+        {
+            "tag": "1.3.0-buster"
+        },
+        {
+            "tag": "1.3.0"
+        },
+        {
+            "tag": "1.3-stretch"
+        },
+        {
+            "tag": "1.3-rc-stretch"
+        },
+        {
+            "tag": "1.3-rc-buster"
+        },
+        {
+            "tag": "1.3-rc"
+        },
+        {
+            "tag": "1.3-buster"
+        },
+        {
+            "tag": "1.3"
+        },
+        {
+            "tag": "windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "windowsservercore-1803"
+        },
+        {
+            "tag": "1.3.0-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "1.3.0-windowsservercore-1803"
+        },
+        {
+            "tag": "1.3.0-rc5-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "1.3.0-rc5-windowsservercore-1803"
+        },
+        {
+            "tag": "1.3-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "1.3-windowsservercore-1803"
+        },
+        {
+            "tag": "1.3-rc-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "1.3-rc-windowsservercore-1803"
+        },
+        {
+            "tag": "1.2.0-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "1.2.0-windowsservercore-1803"
+        }
+    ],
+    "https://hub.docker.com/_/sap-hana-express-edition-incl-application-services": [
+
+    ],
+    "https://hub.docker.com/_/softwareag-commandcentral": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-cognitive-services": [
+
+    ],
+    "https://hub.docker.com/_/alpine": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "edge"
+        },
+        {
+            "tag": "20191114"
+        },
+        {
+            "tag": "3.10.3"
+        },
+        {
+            "tag": "3.10"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "20190925"
+        },
+        {
+            "tag": "3.10.2"
+        },
+        {
+            "tag": "3.8.4"
+        },
+        {
+            "tag": "20190809"
+        },
+        {
+            "tag": "3.10.1"
+        },
+        {
+            "tag": "20190707"
+        },
+        {
+            "tag": "3.9.4"
+        },
+        {
+            "tag": "3.9"
+        },
+        {
+            "tag": "3.8"
+        },
+        {
+            "tag": "3.7.3"
+        },
+        {
+            "tag": "3.7"
+        },
+        {
+            "tag": "3.10.0"
+        },
+        {
+            "tag": "20190508"
+        },
+        {
+            "tag": "3.6.5"
+        },
+        {
+            "tag": "3.6"
+        },
+        {
+            "tag": "3.9.3"
+        },
+        {
+            "tag": "20190408"
+        },
+        {
+            "tag": "3.9.2"
+        },
+        {
+            "tag": "20190228"
+        }
+    ],
+    "https://hub.docker.com/_/auditbeat": [
+
+    ],
+    "https://hub.docker.com/_/storidge-csi-driver": [
+
+    ],
+    "https://hub.docker.com/_/openmaptiles-openstreetmap-maps": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-iotedge-opc-twin": [
+
+    ],
+    "https://hub.docker.com/_/clearlinux": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "base"
+        }
+    ],
+    "https://hub.docker.com/_/plone": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "python2"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "5.2.0-python2"
+        },
+        {
+            "tag": "5.2.0-alpine"
+        },
+        {
+            "tag": "5.2.0"
+        },
+        {
+            "tag": "5.2-python2"
+        },
+        {
+            "tag": "5.2-alpine"
+        },
+        {
+            "tag": "5.2"
+        },
+        {
+            "tag": "5.1.6-alpine"
+        },
+        {
+            "tag": "5.1.6"
+        },
+        {
+            "tag": "5.1-alpine"
+        },
+        {
+            "tag": "5.1"
+        },
+        {
+            "tag": "5-python2"
+        },
+        {
+            "tag": "5-alpine"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "4.3.19-alpine"
+        },
+        {
+            "tag": "4.3.19"
+        },
+        {
+            "tag": "4.3-alpine"
+        },
+        {
+            "tag": "4.3"
+        },
+        {
+            "tag": "4-alpine"
+        },
+        {
+            "tag": "4"
+        },
+        {
+            "tag": "5.1.5"
+        },
+        {
+            "tag": "4.3.18"
+        },
+        {
+            "tag": "4.3.18-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/nexentastor-5x-csi-driver": [
+
+    ],
+    "https://hub.docker.com/_/varnish": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "stable"
+        },
+        {
+            "tag": "fresh"
+        },
+        {
+            "tag": "6.3.1-1"
+        },
+        {
+            "tag": "6.3.1"
+        },
+        {
+            "tag": "6.3"
+        },
+        {
+            "tag": "6.0.5-1"
+        },
+        {
+            "tag": "6.0.5"
+        },
+        {
+            "tag": "6.0"
+        },
+        {
+            "tag": "6"
+        },
+        {
+            "tag": "6.3.0-1"
+        },
+        {
+            "tag": "6.3.0"
+        },
+        {
+            "tag": "6.0.4-1"
+        },
+        {
+            "tag": "6.0.4"
+        },
+        {
+            "tag": "6.2.1-1"
+        },
+        {
+            "tag": "6.2.1"
+        },
+        {
+            "tag": "6.2"
+        },
+        {
+            "tag": "6.2.0-1"
+        },
+        {
+            "tag": "6.2.0"
+        },
+        {
+            "tag": "6.0.3-1"
+        },
+        {
+            "tag": "6.0.3"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-k8s-aad-pod-identity-mic": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-aspnet": [
+
+    ],
+    "https://hub.docker.com/_/weave-cloud-agent": [
+
+    ],
+    "https://hub.docker.com/_/websphere-liberty": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "kernel"
+        },
+        {
+            "tag": "full"
+        },
+        {
+            "tag": "19.0.0.9-webProfile8-java11"
+        },
+        {
+            "tag": "19.0.0.9-webProfile7-java11"
+        },
+        {
+            "tag": "19.0.0.9-springBoot2-java11"
+        },
+        {
+            "tag": "19.0.0.9-springBoot1-java11"
+        },
+        {
+            "tag": "19.0.0.9-microProfile3-java11"
+        },
+        {
+            "tag": "19.0.0.9-microProfile2-java11"
+        },
+        {
+            "tag": "19.0.0.9-microProfile1-java11"
+        },
+        {
+            "tag": "19.0.0.9-kernel-java11"
+        },
+        {
+            "tag": "19.0.0.9-javaee8-java11"
+        },
+        {
+            "tag": "19.0.0.9-javaee7-java11"
+        },
+        {
+            "tag": "webProfile8"
+        },
+        {
+            "tag": "webProfile7-java11"
+        },
+        {
+            "tag": "webProfile7"
+        },
+        {
+            "tag": "springBoot2-java11"
+        },
+        {
+            "tag": "springBoot2"
+        },
+        {
+            "tag": "springBoot1-java11"
+        },
+        {
+            "tag": "springBoot1"
+        },
+        {
+            "tag": "microProfile3-java11"
+        },
+        {
+            "tag": "microProfile3"
+        },
+        {
+            "tag": "microProfile2-java11"
+        },
+        {
+            "tag": "microProfile2"
+        },
+        {
+            "tag": "microProfile1-java11"
+        }
+    ],
+    "https://hub.docker.com/_/tomee": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "8-jre-7.1.0-webprofile"
+        },
+        {
+            "tag": "8-jre-7.1.0-plus"
+        },
+        {
+            "tag": "8-jre-7.1.0-plume"
+        },
+        {
+            "tag": "8-jre-7.1.0-microprofile"
+        },
+        {
+            "tag": "8-jre-7.0.6-webprofile"
+        },
+        {
+            "tag": "8-jre-7.0.6-plus"
+        },
+        {
+            "tag": "8-jre-7.0.6-plume"
+        },
+        {
+            "tag": "8-jre-7.0.5-webprofile"
+        },
+        {
+            "tag": "8-jre-7.0.5-plus"
+        },
+        {
+            "tag": "8-jre-7.0.5-plume"
+        },
+        {
+            "tag": "8-jre-7.0.4-webprofile"
+        },
+        {
+            "tag": "8-jre-7.0.4-plus"
+        },
+        {
+            "tag": "8-jre-7.0.4-plume"
+        },
+        {
+            "tag": "8-jre-1.7.5-webprofile"
+        },
+        {
+            "tag": "8-jre-1.7.5-plus"
+        },
+        {
+            "tag": "8-jre-1.7.5-plume"
+        },
+        {
+            "tag": "8-jre-1.7.5-jaxrs"
+        },
+        {
+            "tag": "11-jre-8.0.0-M3-webprofile"
+        },
+        {
+            "tag": "11-jre-8.0.0-M3-plus"
+        },
+        {
+            "tag": "11-jre-8.0.0-M3-plume"
+        },
+        {
+            "tag": "11-jre-8.0.0-M3-microprofile"
+        },
+        {
+            "tag": "8-jre-8.0.0-M2-webprofile"
+        },
+        {
+            "tag": "8-jre-8.0.0-M2-plus"
+        },
+        {
+            "tag": "8-jre-8.0.0-M2-plume"
+        }
+    ],
+    "https://hub.docker.com/_/thingsboard-pe-web-report": [
+
+    ],
+    "https://hub.docker.com/_/rakudo-star": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "2019.03-alpine"
+        },
+        {
+            "tag": "2019.03"
+        },
+        {
+            "tag": "2018.10"
+        },
+        {
+            "tag": "2018.06"
+        },
+        {
+            "tag": "2018.04"
+        },
+        {
+            "tag": "2018.01"
+        },
+        {
+            "tag": "2017.10"
+        },
+        {
+            "tag": "2017.07"
+        },
+        {
+            "tag": "2017.04"
+        },
+        {
+            "tag": "2017.01"
+        },
+        {
+            "tag": "2016.11"
+        },
+        {
+            "tag": "2016.10"
+        },
+        {
+            "tag": "2016.07"
+        },
+        {
+            "tag": "2016.04"
+        },
+        {
+            "tag": "2016.01"
+        },
+        {
+            "tag": "2015.11"
+        },
+        {
+            "tag": "2015.09"
+        },
+        {
+            "tag": "2015.07"
+        },
+        {
+            "tag": "2015.06"
+        },
+        {
+            "tag": "2015.03"
+        }
+    ],
+    "https://hub.docker.com/_/scratch": [
+
+    ],
+    "https://hub.docker.com/_/softwareag-microgateway-trial": [
+
+    ],
+    "https://hub.docker.com/_/registry": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "2.7.1"
+        },
+        {
+            "tag": "2.7"
+        },
+        {
+            "tag": "2.6.2"
+        },
+        {
+            "tag": "2.6"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "2.5.2"
+        },
+        {
+            "tag": "2.5"
+        },
+        {
+            "tag": "2.7.0"
+        },
+        {
+            "tag": "2.6.1"
+        },
+        {
+            "tag": "2.6.1-rc.2"
+        },
+        {
+            "tag": "2.6.0"
+        },
+        {
+            "tag": "2.6.0-rc.2"
+        },
+        {
+            "tag": "2.5.1"
+        },
+        {
+            "tag": "2.6.0-rc.1"
+        },
+        {
+            "tag": "2.5.0"
+        },
+        {
+            "tag": "2.5.0-rc.2"
+        },
+        {
+            "tag": "2.4.1"
+        },
+        {
+            "tag": "2.4"
+        },
+        {
+            "tag": "2.5.0-rc.1"
+        },
+        {
+            "tag": "2.4.0"
+        },
+        {
+            "tag": "2.3.1"
+        },
+        {
+            "tag": "2.3"
+        },
+        {
+            "tag": "2.3.0"
+        },
+        {
+            "tag": "2.2.1"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-build": [
+
+    ],
+    "https://hub.docker.com/_/sl": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "6"
+        },
+        {
+            "tag": "7"
+        }
+    ],
+    "https://hub.docker.com/_/docker": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "test-dind-rootless"
+        },
+        {
+            "tag": "stable-dind-rootless"
+        },
+        {
+            "tag": "dind-rootless"
+        },
+        {
+            "tag": "19.03.5-dind-rootless"
+        },
+        {
+            "tag": "19.03-dind-rootless"
+        },
+        {
+            "tag": "19-dind-rootless"
+        },
+        {
+            "tag": "test-git"
+        },
+        {
+            "tag": "test-dind"
+        },
+        {
+            "tag": "test"
+        },
+        {
+            "tag": "stable-git"
+        },
+        {
+            "tag": "stable-dind"
+        },
+        {
+            "tag": "stable"
+        },
+        {
+            "tag": "git"
+        },
+        {
+            "tag": "dind"
+        },
+        {
+            "tag": "19.03.5-git"
+        },
+        {
+            "tag": "19.03.5-dind"
+        },
+        {
+            "tag": "19.03.5"
+        },
+        {
+            "tag": "19.03-git"
+        },
+        {
+            "tag": "19.03-dind"
+        },
+        {
+            "tag": "19.03"
+        },
+        {
+            "tag": "19-git"
+        },
+        {
+            "tag": "19-dind"
+        },
+        {
+            "tag": "19"
+        },
+        {
+            "tag": "rc-git"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-iotedge-opc-plc": [
+
+    ],
+    "https://hub.docker.com/_/sematext-agent-monitoring-and-logging": [
+
+    ],
+    "https://hub.docker.com/_/zookeeper": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3.5.6"
+        },
+        {
+            "tag": "3.5"
+        },
+        {
+            "tag": "3.5.5"
+        },
+        {
+            "tag": "3.4.14"
+        },
+        {
+            "tag": "3.4"
+        },
+        {
+            "tag": "3.5.4-beta"
+        },
+        {
+            "tag": "3.4.13"
+        },
+        {
+            "tag": "3.3"
+        },
+        {
+            "tag": "3.3.6"
+        },
+        {
+            "tag": "3.4.12"
+        },
+        {
+            "tag": "3.5.3-beta"
+        },
+        {
+            "tag": "3.4.11"
+        },
+        {
+            "tag": "3.4.10"
+        },
+        {
+            "tag": "3.4.9"
+        }
+    ],
+    "https://hub.docker.com/_/neurodebian": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "xenial-non-free"
+        },
+        {
+            "tag": "xenial"
+        },
+        {
+            "tag": "nd18.04-non-free"
+        },
+        {
+            "tag": "nd18.04"
+        },
+        {
+            "tag": "nd16.04-non-free"
+        },
+        {
+            "tag": "nd16.04"
+        },
+        {
+            "tag": "bionic-non-free"
+        },
+        {
+            "tag": "bionic"
+        },
+        {
+            "tag": "stretch-non-free"
+        },
+        {
+            "tag": "stretch"
+        },
+        {
+            "tag": "sid-non-free"
+        },
+        {
+            "tag": "sid"
+        },
+        {
+            "tag": "non-free"
+        },
+        {
+            "tag": "nd90-non-free"
+        },
+        {
+            "tag": "nd90"
+        },
+        {
+            "tag": "nd80-non-free"
+        },
+        {
+            "tag": "nd80"
+        },
+        {
+            "tag": "nd100-non-free"
+        },
+        {
+            "tag": "nd100"
+        },
+        {
+            "tag": "nd-non-free"
+        },
+        {
+            "tag": "nd"
+        },
+        {
+            "tag": "jessie-non-free"
+        },
+        {
+            "tag": "jessie"
+        },
+        {
+            "tag": "buster-non-free"
+        }
+    ],
+    "https://hub.docker.com/_/thingsboard-pe-web-ui": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-java-jdk": [
+
+    ],
+    "https://hub.docker.com/_/mongo-express": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "0.49.0"
+        },
+        {
+            "tag": "0.49"
+        },
+        {
+            "tag": "0.45.0"
+        },
+        {
+            "tag": "0.45"
+        },
+        {
+            "tag": "0.44"
+        },
+        {
+            "tag": "0.44.0"
+        },
+        {
+            "tag": "0.42"
+        },
+        {
+            "tag": "0.42.2"
+        },
+        {
+            "tag": "0.40"
+        },
+        {
+            "tag": "0.40.0"
+        },
+        {
+            "tag": "0.38"
+        },
+        {
+            "tag": "0.38.0"
+        },
+        {
+            "tag": "0.35"
+        },
+        {
+            "tag": "0.35.0"
+        },
+        {
+            "tag": "0.34"
+        },
+        {
+            "tag": "0.34.0"
+        },
+        {
+            "tag": "0.32"
+        },
+        {
+            "tag": "0.32.0"
+        },
+        {
+            "tag": "0.31"
+        },
+        {
+            "tag": "0.31.5"
+        },
+        {
+            "tag": "0.31.0"
+        },
+        {
+            "tag": "0.30"
+        },
+        {
+            "tag": "0.30.59"
+        },
+        {
+            "tag": "0.30.55"
+        }
+    ],
+    "https://hub.docker.com/_/oracle-coherence-12c": [
+
+    ],
+    "https://hub.docker.com/_/clefos": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "7.6.1810"
+        },
+        {
+            "tag": "7"
+        },
+        {
+            "tag": "7.5.1804"
+        },
+        {
+            "tag": "7.4.1708"
+        }
+    ],
+    "https://hub.docker.com/_/hipache": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "0.3.1"
+        },
+        {
+            "tag": "0.2.8"
+        },
+        {
+            "tag": "0.2.4"
+        }
+    ],
+    "https://hub.docker.com/_/db2-developer-c-edition": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-framework-wcf": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-hpcpack-hpcacm": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-node-6-11": [
+
+    ],
+    "https://hub.docker.com/_/veritas-netbackup-client": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-node-8-9": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-functions-python": [
+
+    ],
+    "https://hub.docker.com/_/haproxy": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "2.0.9-alpine"
+        },
+        {
+            "tag": "2.0.9"
+        },
+        {
+            "tag": "2.0-alpine"
+        },
+        {
+            "tag": "2.0"
+        },
+        {
+            "tag": "1.9.12-alpine"
+        },
+        {
+            "tag": "1.9.12"
+        },
+        {
+            "tag": "1.9-alpine"
+        },
+        {
+            "tag": "1.9"
+        },
+        {
+            "tag": "1.8.22-alpine"
+        },
+        {
+            "tag": "1.8.22"
+        },
+        {
+            "tag": "1.8-alpine"
+        },
+        {
+            "tag": "1.8"
+        },
+        {
+            "tag": "1.7.12-alpine"
+        },
+        {
+            "tag": "1.7.12"
+        },
+        {
+            "tag": "1.7-alpine"
+        },
+        {
+            "tag": "1.7"
+        },
+        {
+            "tag": "1.6.15-alpine"
+        },
+        {
+            "tag": "1.6.15"
+        },
+        {
+            "tag": "1.6-alpine"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1-alpine"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "2.0.8-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/mongo": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3.6.15-xenial"
+        },
+        {
+            "tag": "3.6.15-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "3.6.15-windowsservercore"
+        },
+        {
+            "tag": "3.6.15"
+        },
+        {
+            "tag": "3.6-xenial"
+        },
+        {
+            "tag": "3.6-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "3.6-windowsservercore"
+        },
+        {
+            "tag": "3.6"
+        },
+        {
+            "tag": "3-xenial"
+        },
+        {
+            "tag": "3-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "3-windowsservercore"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "bionic"
+        },
+        {
+            "tag": "4.2.1-bionic"
+        },
+        {
+            "tag": "4.2.1"
+        },
+        {
+            "tag": "4.2-bionic"
+        },
+        {
+            "tag": "4.2"
+        },
+        {
+            "tag": "4.0.13-xenial"
+        },
+        {
+            "tag": "4.0.13"
+        },
+        {
+            "tag": "4.0-xenial"
+        },
+        {
+            "tag": "4.0"
+        },
+        {
+            "tag": "4-bionic"
+        },
+        {
+            "tag": "4"
+        },
+        {
+            "tag": "3.6.14-xenial"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-windows-servercore-iis": [
+
+    ],
+    "https://hub.docker.com/_/haxe": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3.2-windowsservercore"
+        },
+        {
+            "tag": "3.2"
+        },
+        {
+            "tag": "3.1.3-windowsservercore"
+        },
+        {
+            "tag": "3.1.3"
+        },
+        {
+            "tag": "3.1-windowsservercore"
+        },
+        {
+            "tag": "3.1"
+        },
+        {
+            "tag": "4.0.2-windowsservercore"
+        },
+        {
+            "tag": "4.0.2"
+        },
+        {
+            "tag": "4.0-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "4.0-windowsservercore"
+        },
+        {
+            "tag": "4.0"
+        },
+        {
+            "tag": "3.4.7-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "3.4.7-windowsservercore-1809"
+        },
+        {
+            "tag": "3.4.7-windowsservercore-1803"
+        },
+        {
+            "tag": "3.4.7-windowsservercore"
+        },
+        {
+            "tag": "3.4.7"
+        },
+        {
+            "tag": "3.4-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "3.4-windowsservercore-1809"
+        },
+        {
+            "tag": "3.4-windowsservercore-1803"
+        },
+        {
+            "tag": "3.4-windowsservercore"
+        },
+        {
+            "tag": "3.4"
+        },
+        {
+            "tag": "3.3.0-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "3.3.0-windowsservercore-1809"
+        },
+        {
+            "tag": "3.3.0-windowsservercore-1803"
+        }
+    ],
+    "https://hub.docker.com/_/mageia": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "7"
+        },
+        {
+            "tag": "6"
+        },
+        {
+            "tag": "5.1"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "4"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "cauldron"
+        }
+    ],
+    "https://hub.docker.com/_/bonita": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "7.9.4"
+        },
+        {
+            "tag": "7.9"
+        },
+        {
+            "tag": "7.8.4"
+        },
+        {
+            "tag": "7.8"
+        },
+        {
+            "tag": "7.9.3"
+        },
+        {
+            "tag": "7.9.2"
+        },
+        {
+            "tag": "7.9.1"
+        },
+        {
+            "tag": "7.9.0"
+        },
+        {
+            "tag": "7.7.5"
+        },
+        {
+            "tag": "7.7"
+        },
+        {
+            "tag": "7.8.3"
+        },
+        {
+            "tag": "7.8.2"
+        },
+        {
+            "tag": "7.8.1"
+        },
+        {
+            "tag": "7.8.0"
+        },
+        {
+            "tag": "7.7.4"
+        },
+        {
+            "tag": "7.6"
+        },
+        {
+            "tag": "7.6.3"
+        },
+        {
+            "tag": "7.7.3"
+        },
+        {
+            "tag": "7.7.2"
+        },
+        {
+            "tag": "7.7.1"
+        },
+        {
+            "tag": "7.7.0"
+        },
+        {
+            "tag": "7.5.4"
+        },
+        {
+            "tag": "7.6.2"
+        },
+        {
+            "tag": "7.6.1"
+        }
+    ],
+    "https://hub.docker.com/_/neo4j": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3.4.16-enterprise"
+        },
+        {
+            "tag": "3.4.16"
+        },
+        {
+            "tag": "3.4-enterprise"
+        },
+        {
+            "tag": "3.4"
+        },
+        {
+            "tag": "enterprise"
+        },
+        {
+            "tag": "3.5.8-enterprise"
+        },
+        {
+            "tag": "3.5.8"
+        },
+        {
+            "tag": "3.5.7-enterprise"
+        },
+        {
+            "tag": "3.5.7"
+        },
+        {
+            "tag": "3.5.6-enterprise"
+        },
+        {
+            "tag": "3.5.6"
+        },
+        {
+            "tag": "3.5.12-enterprise"
+        },
+        {
+            "tag": "3.5.12"
+        },
+        {
+            "tag": "3.5.11-enterprise"
+        },
+        {
+            "tag": "3.5.11"
+        },
+        {
+            "tag": "3.5-enterprise"
+        },
+        {
+            "tag": "3.5"
+        },
+        {
+            "tag": "3.4.15-enterprise"
+        },
+        {
+            "tag": "3.4.15"
+        },
+        {
+            "tag": "3.4.14-enterprise"
+        },
+        {
+            "tag": "3.4.14"
+        },
+        {
+            "tag": "3.5.9-enterprise"
+        },
+        {
+            "tag": "3.5.9"
+        },
+        {
+            "tag": "3.4.0-enterprise"
+        }
+    ],
+    "https://hub.docker.com/_/jobber": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.4.0-alpine3.10"
+        },
+        {
+            "tag": "1.4-alpine3.10"
+        },
+        {
+            "tag": "1-alpine3.10"
+        }
+    ],
+    "https://hub.docker.com/_/ibm-websphere-liberty": [
+
+    ],
+    "https://hub.docker.com/_/celery": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "4"
+        },
+        {
+            "tag": "4.0"
+        },
+        {
+            "tag": "4.0.2"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "3.1"
+        },
+        {
+            "tag": "3.1.25"
+        },
+        {
+            "tag": "4.0.1"
+        },
+        {
+            "tag": "4.0.0rc7"
+        },
+        {
+            "tag": "3.1.24"
+        },
+        {
+            "tag": "4.0.0rc6"
+        },
+        {
+            "tag": "4.0.0rc5"
+        },
+        {
+            "tag": "4.0.0rc4"
+        },
+        {
+            "tag": "3.1.23"
+        },
+        {
+            "tag": "4.0.0rc3"
+        },
+        {
+            "tag": "3.1.22"
+        },
+        {
+            "tag": "3.1.20"
+        },
+        {
+            "tag": "3.1.19"
+        },
+        {
+            "tag": "3.1.18"
+        },
+        {
+            "tag": "3.1.17"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-windows": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-python-2-7": [
+
+    ],
+    "https://hub.docker.com/_/chronograf": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.7.14"
+        },
+        {
+            "tag": "1.7"
+        },
+        {
+            "tag": "1.6.2"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.5.0.1"
+        },
+        {
+            "tag": "1.5.0"
+        },
+        {
+            "tag": "1.5"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.7.14-alpine"
+        },
+        {
+            "tag": "1.7-alpine"
+        },
+        {
+            "tag": "1.7.12"
+        },
+        {
+            "tag": "1.7.12-alpine"
+        },
+        {
+            "tag": "1.7.11"
+        },
+        {
+            "tag": "1.7.11-alpine"
+        },
+        {
+            "tag": "1.6.2-alpine"
+        },
+        {
+            "tag": "1.6-alpine"
+        },
+        {
+            "tag": "1.5.0.1-alpine"
+        },
+        {
+            "tag": "1.5.0-alpine"
+        },
+        {
+            "tag": "1.5-alpine"
+        },
+        {
+            "tag": "1.7.10"
+        },
+        {
+            "tag": "1.7.10-alpine"
+        },
+        {
+            "tag": "1.7.8"
+        },
+        {
+            "tag": "1.7.8-alpine"
+        },
+        {
+            "tag": "1.7.7"
+        }
+    ],
+    "https://hub.docker.com/_/ibm-security-access-manager": [
+
+    ],
+    "https://hub.docker.com/_/elasticsearch": [
+        {
+            "tag": "7.4.2"
+        },
+        {
+            "tag": "7.4.1"
+        },
+        {
+            "tag": "6.8.4"
+        },
+        {
+            "tag": "7.4.0"
+        },
+        {
+            "tag": "7.3.2"
+        },
+        {
+            "tag": "6.8.3"
+        },
+        {
+            "tag": "7.3.1"
+        },
+        {
+            "tag": "7.3.0"
+        },
+        {
+            "tag": "6.8.2"
+        },
+        {
+            "tag": "7.2.1"
+        },
+        {
+            "tag": "7.2.0"
+        },
+        {
+            "tag": "6.8.1"
+        },
+        {
+            "tag": "7.1.1"
+        },
+        {
+            "tag": "7.1.0"
+        },
+        {
+            "tag": "6.8.0"
+        },
+        {
+            "tag": "7.0.1"
+        },
+        {
+            "tag": "6.7.2"
+        },
+        {
+            "tag": "7.0.0"
+        },
+        {
+            "tag": "6.7.1"
+        },
+        {
+            "tag": "5-alpine"
+        },
+        {
+            "tag": "5.6-alpine"
+        },
+        {
+            "tag": "5.6.16-alpine"
+        },
+        {
+            "tag": "6.7.0"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "5.6"
+        }
+    ],
+    "https://hub.docker.com/_/neuvector": [
+
+    ],
+    "https://hub.docker.com/_/memcached": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.5.20"
+        },
+        {
+            "tag": "1.5"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.5.20-alpine"
+        },
+        {
+            "tag": "1.5-alpine"
+        },
+        {
+            "tag": "1-alpine"
+        },
+        {
+            "tag": "1.5.19-alpine"
+        },
+        {
+            "tag": "1.5.19"
+        },
+        {
+            "tag": "1.5.17"
+        },
+        {
+            "tag": "1.5.17-alpine"
+        },
+        {
+            "tag": "1.5.16-alpine"
+        },
+        {
+            "tag": "1.5.16"
+        },
+        {
+            "tag": "1.5.15-alpine"
+        },
+        {
+            "tag": "1.5.15"
+        },
+        {
+            "tag": "1.5.14-alpine"
+        },
+        {
+            "tag": "1.5.14"
+        },
+        {
+            "tag": "1.5.12-alpine"
+        },
+        {
+            "tag": "1.5.12"
+        },
+        {
+            "tag": "1.5.11-alpine"
+        },
+        {
+            "tag": "1.5.11"
+        },
+        {
+            "tag": "1.5.10-alpine"
+        },
+        {
+            "tag": "1.5.10"
+        },
+        {
+            "tag": "1.5.9"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-iotedge-opc-proxy": [
+
+    ],
+    "https://hub.docker.com/_/gradle": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "jre13"
+        },
+        {
+            "tag": "jre11"
+        },
+        {
+            "tag": "jdk13"
+        },
+        {
+            "tag": "jdk11"
+        },
+        {
+            "tag": "6.0.0-jre13"
+        },
+        {
+            "tag": "6.0.0-jre11"
+        },
+        {
+            "tag": "6.0.0-jdk13"
+        },
+        {
+            "tag": "6.0.0-jdk11"
+        },
+        {
+            "tag": "6.0-jre13"
+        },
+        {
+            "tag": "6.0-jre11"
+        },
+        {
+            "tag": "6.0-jdk13"
+        },
+        {
+            "tag": "6.0-jdk11"
+        },
+        {
+            "tag": "jre8"
+        },
+        {
+            "tag": "jre"
+        },
+        {
+            "tag": "jdk8"
+        },
+        {
+            "tag": "jdk"
+        },
+        {
+            "tag": "6.0.0-jre8"
+        },
+        {
+            "tag": "6.0.0-jre"
+        },
+        {
+            "tag": "6.0.0-jdk8"
+        },
+        {
+            "tag": "6.0.0-jdk"
+        },
+        {
+            "tag": "6.0.0"
+        },
+        {
+            "tag": "6.0-jre8"
+        },
+        {
+            "tag": "6.0-jre"
+        },
+        {
+            "tag": "6.0-jdk8"
+        }
+    ],
+    "https://hub.docker.com/_/blobcity-db": [
+
+    ],
+    "https://hub.docker.com/_/ros": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "melodic-ros-core-bionic"
+        },
+        {
+            "tag": "melodic-ros-core"
+        },
+        {
+            "tag": "melodic-ros-base-bionic"
+        },
+        {
+            "tag": "melodic-ros-base"
+        },
+        {
+            "tag": "melodic-robot-bionic"
+        },
+        {
+            "tag": "melodic-robot"
+        },
+        {
+            "tag": "melodic-perception-bionic"
+        },
+        {
+            "tag": "melodic-perception"
+        },
+        {
+            "tag": "melodic"
+        },
+        {
+            "tag": "kinetic-ros-core-xenial"
+        },
+        {
+            "tag": "kinetic-ros-core"
+        },
+        {
+            "tag": "kinetic-ros-base-xenial"
+        },
+        {
+            "tag": "kinetic-ros-base"
+        },
+        {
+            "tag": "kinetic-robot-xenial"
+        },
+        {
+            "tag": "kinetic-robot"
+        },
+        {
+            "tag": "kinetic-perception-xenial"
+        },
+        {
+            "tag": "kinetic-perception"
+        },
+        {
+            "tag": "kinetic"
+        },
+        {
+            "tag": "dashing-ros-core-bionic"
+        },
+        {
+            "tag": "dashing-ros-core"
+        },
+        {
+            "tag": "dashing-ros-base-bionic"
+        },
+        {
+            "tag": "dashing-ros-base"
+        },
+        {
+            "tag": "dashing"
+        },
+        {
+            "tag": "crystal-ros-core-bionic"
+        }
+    ],
+    "https://hub.docker.com/_/golang": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "windowsservercore-1809"
+        },
+        {
+            "tag": "windowsservercore-1803"
+        },
+        {
+            "tag": "windowsservercore"
+        },
+        {
+            "tag": "stretch"
+        },
+        {
+            "tag": "buster"
+        },
+        {
+            "tag": "alpine3.10"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.13.4-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "1.13.4-windowsservercore-1809"
+        },
+        {
+            "tag": "1.13.4-windowsservercore-1803"
+        },
+        {
+            "tag": "1.13.4-windowsservercore"
+        },
+        {
+            "tag": "1.13.4-stretch"
+        },
+        {
+            "tag": "1.13.4-buster"
+        },
+        {
+            "tag": "1.13.4-alpine3.10"
+        },
+        {
+            "tag": "1.13.4-alpine"
+        },
+        {
+            "tag": "1.13.4"
+        },
+        {
+            "tag": "1.13-windowsservercore-ltsc2016"
+        },
+        {
+            "tag": "1.13-windowsservercore-1809"
+        },
+        {
+            "tag": "1.13-windowsservercore-1803"
+        },
+        {
+            "tag": "1.13-windowsservercore"
+        },
+        {
+            "tag": "1.13-stretch"
+        },
+        {
+            "tag": "1.13-buster"
+        },
+        {
+            "tag": "1.13-alpine3.10"
+        }
+    ],
+    "https://hub.docker.com/_/percona": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "psmdb-4.0.10"
+        },
+        {
+            "tag": "psmdb-4.0"
+        },
+        {
+            "tag": "psmdb-3.6.12"
+        },
+        {
+            "tag": "psmdb-3.6"
+        },
+        {
+            "tag": "ps-8.0.16-7"
+        },
+        {
+            "tag": "ps-8.0"
+        },
+        {
+            "tag": "ps-8"
+        },
+        {
+            "tag": "ps-5.7.26"
+        },
+        {
+            "tag": "ps-5.7"
+        },
+        {
+            "tag": "ps-5"
+        },
+        {
+            "tag": "centos"
+        },
+        {
+            "tag": "8.0.16-7-centos"
+        },
+        {
+            "tag": "8.0.16-7"
+        },
+        {
+            "tag": "8.0-centos"
+        },
+        {
+            "tag": "8.0"
+        },
+        {
+            "tag": "8-centos"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "5.7.26-centos"
+        },
+        {
+            "tag": "5.7.26"
+        },
+        {
+            "tag": "5.7-centos"
+        },
+        {
+            "tag": "5.7"
+        },
+        {
+            "tag": "5-centos"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "ps-5.6.45"
+        }
+    ],
+    "https://hub.docker.com/_/django": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "onbuild"
+        },
+        {
+            "tag": "python3-onbuild"
+        },
+        {
+            "tag": "python2-onbuild"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "1.10"
+        },
+        {
+            "tag": "1.10.4"
+        },
+        {
+            "tag": "python3"
+        },
+        {
+            "tag": "1-python3"
+        },
+        {
+            "tag": "1.10-python3"
+        },
+        {
+            "tag": "1.10.4-python3"
+        },
+        {
+            "tag": "python2"
+        },
+        {
+            "tag": "1-python2"
+        },
+        {
+            "tag": "1.10-python2"
+        },
+        {
+            "tag": "1.10.4-python2"
+        },
+        {
+            "tag": "1.10.3"
+        },
+        {
+            "tag": "1.10.3-python2"
+        },
+        {
+            "tag": "1.10.3-python3"
+        },
+        {
+            "tag": "1.10.2-python2"
+        },
+        {
+            "tag": "1.10.2"
+        },
+        {
+            "tag": "1.10.2-python3"
+        },
+        {
+            "tag": "1.10.1-python2"
+        },
+        {
+            "tag": "1.10.1"
+        },
+        {
+            "tag": "1.10.1-python3"
+        },
+        {
+            "tag": "1.9"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azuredocs-aci-hellofiles": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-node-8-8": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-presidio": [
+
+    ],
+    "https://hub.docker.com/_/nextcloud": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "stable-fpm-alpine"
+        },
+        {
+            "tag": "stable-fpm"
+        },
+        {
+            "tag": "stable-apache"
+        },
+        {
+            "tag": "stable"
+        },
+        {
+            "tag": "production-fpm-alpine"
+        },
+        {
+            "tag": "production-fpm"
+        },
+        {
+            "tag": "production-apache"
+        },
+        {
+            "tag": "production"
+        },
+        {
+            "tag": "fpm-alpine"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "17.0.1-fpm-alpine"
+        },
+        {
+            "tag": "17.0.1-fpm"
+        },
+        {
+            "tag": "17.0.1-apache"
+        },
+        {
+            "tag": "17.0.1"
+        },
+        {
+            "tag": "17.0-fpm-alpine"
+        },
+        {
+            "tag": "17.0-fpm"
+        },
+        {
+            "tag": "17.0-apache"
+        },
+        {
+            "tag": "17.0"
+        },
+        {
+            "tag": "17-fpm-alpine"
+        },
+        {
+            "tag": "17-fpm"
+        },
+        {
+            "tag": "17-apache"
+        },
+        {
+            "tag": "17"
+        },
+        {
+            "tag": "16.0.6-fpm-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/crux": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3.4"
+        },
+        {
+            "tag": "3.2"
+        },
+        {
+            "tag": "3.1"
+        },
+        {
+            "tag": "3.0"
+        }
+    ],
+    "https://hub.docker.com/_/perl": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "threaded-stretch"
+        },
+        {
+            "tag": "threaded-buster"
+        },
+        {
+            "tag": "threaded"
+        },
+        {
+            "tag": "slim-threaded-stretch"
+        },
+        {
+            "tag": "slim-threaded-buster"
+        },
+        {
+            "tag": "slim-threaded"
+        },
+        {
+            "tag": "slim-stretch"
+        },
+        {
+            "tag": "slim-buster"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "5.30.1-threaded-stretch"
+        },
+        {
+            "tag": "5.30.1-threaded-buster"
+        },
+        {
+            "tag": "5.30.1-threaded"
+        },
+        {
+            "tag": "5.30.1-stretch"
+        },
+        {
+            "tag": "5.30.1-slim-threaded-stretch"
+        },
+        {
+            "tag": "5.30.1-slim-threaded-buster"
+        },
+        {
+            "tag": "5.30.1-slim-threaded"
+        },
+        {
+            "tag": "5.30.1-slim-stretch"
+        },
+        {
+            "tag": "5.30.1-slim-buster"
+        },
+        {
+            "tag": "5.30.1-slim"
+        },
+        {
+            "tag": "5.30.1-buster"
+        },
+        {
+            "tag": "5.30.0"
+        },
+        {
+            "tag": "5.30-threaded-stretch"
+        },
+        {
+            "tag": "5.30-threaded-buster"
+        },
+        {
+            "tag": "5.30-threaded"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-java-se": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-cntk-nightly": [
+
+    ],
+    "https://hub.docker.com/_/rocket-chat": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "2.2.0"
+        },
+        {
+            "tag": "2.2"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "2.0.0"
+        },
+        {
+            "tag": "2.0"
+        },
+        {
+            "tag": "1.3.2"
+        },
+        {
+            "tag": "1.3"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "1.3.1"
+        },
+        {
+            "tag": "1.3.0"
+        },
+        {
+            "tag": "1.2.3"
+        },
+        {
+            "tag": "1.2"
+        },
+        {
+            "tag": "1.2.1"
+        },
+        {
+            "tag": "1.1.3"
+        },
+        {
+            "tag": "1.1"
+        },
+        {
+            "tag": "1.1.2"
+        },
+        {
+            "tag": "1.1.1"
+        },
+        {
+            "tag": "1.1.0"
+        },
+        {
+            "tag": "1.0.3"
+        },
+        {
+            "tag": "1.0"
+        },
+        {
+            "tag": "1.0.2"
+        },
+        {
+            "tag": "1.0.1"
+        },
+        {
+            "tag": "0"
+        },
+        {
+            "tag": "0.74"
+        }
+    ],
+    "https://hub.docker.com/_/eggdrop": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "develop"
+        },
+        {
+            "tag": "stable"
+        },
+        {
+            "tag": "1.8.4"
+        },
+        {
+            "tag": "1.8"
+        },
+        {
+            "tag": "1.8.4rc2"
+        },
+        {
+            "tag": "1.8.3"
+        },
+        {
+            "tag": "1.8.4rc1"
+        },
+        {
+            "tag": "1.6.21"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.8.2"
+        },
+        {
+            "tag": "1.8.3rc1"
+        },
+        {
+            "tag": "1.8.1"
+        },
+        {
+            "tag": "1.8.2rc2"
+        },
+        {
+            "tag": "1.8.2rc1"
+        },
+        {
+            "tag": "1.8.1rc2"
+        },
+        {
+            "tag": "1.8.0"
+        },
+        {
+            "tag": "1.8.0rc4"
+        },
+        {
+            "tag": "1.8.0rc3"
+        },
+        {
+            "tag": "1.8.0rc2"
+        },
+        {
+            "tag": "1.8.0rc1"
+        }
+    ],
+    "https://hub.docker.com/_/matomo": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "fpm-alpine"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "3.12.0-fpm-alpine"
+        },
+        {
+            "tag": "3.12.0-fpm"
+        },
+        {
+            "tag": "3.12.0-apache"
+        },
+        {
+            "tag": "3.12.0"
+        },
+        {
+            "tag": "3.12-fpm-alpine"
+        },
+        {
+            "tag": "3.12-fpm"
+        },
+        {
+            "tag": "3.12-apache"
+        },
+        {
+            "tag": "3.12"
+        },
+        {
+            "tag": "3-fpm-alpine"
+        },
+        {
+            "tag": "3-fpm"
+        },
+        {
+            "tag": "3-apache"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "3.11.0-fpm"
+        },
+        {
+            "tag": "3.11.0-apache"
+        },
+        {
+            "tag": "3.11.0"
+        },
+        {
+            "tag": "3.11-fpm"
+        },
+        {
+            "tag": "3.11-apache"
+        },
+        {
+            "tag": "3.11"
+        },
+        {
+            "tag": "3.11.0-fpm-alpine"
+        },
+        {
+            "tag": "3.11-fpm-alpine"
+        },
+        {
+            "tag": "3.10.0-fpm"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azureiotedge-functions-binding": [
+
+    ],
+    "https://hub.docker.com/_/splunk-universal-forwarder": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-nightly-sdk": [
+
+    ],
+    "https://hub.docker.com/_/mediawiki": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "stable"
+        },
+        {
+            "tag": "lts"
+        },
+        {
+            "tag": "legacylts"
+        },
+        {
+            "tag": "legacy"
+        },
+        {
+            "tag": "1.33.1"
+        },
+        {
+            "tag": "1.33"
+        },
+        {
+            "tag": "1.32.5"
+        },
+        {
+            "tag": "1.32"
+        },
+        {
+            "tag": "1.31.5"
+        },
+        {
+            "tag": "1.31"
+        },
+        {
+            "tag": "1.32.4"
+        },
+        {
+            "tag": "1.31.4"
+        },
+        {
+            "tag": "1.33.0"
+        },
+        {
+            "tag": "1.32.3"
+        },
+        {
+            "tag": "1.31.3"
+        },
+        {
+            "tag": "1.27.7"
+        },
+        {
+            "tag": "1.27"
+        },
+        {
+            "tag": "1.32.2"
+        },
+        {
+            "tag": "1.31.2"
+        },
+        {
+            "tag": "1.27.6"
+        },
+        {
+            "tag": "1.32.1"
+        },
+        {
+            "tag": "1.31.1"
+        },
+        {
+            "tag": "1.27.5"
+        },
+        {
+            "tag": "1.32.0"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-stream-analytics-azureiotedge": [
+
+    ],
+    "https://hub.docker.com/_/amazonlinux": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "with-sources"
+        },
+        {
+            "tag": "2018.03.0.20191014.0-with-sources"
+        },
+        {
+            "tag": "2018.03.0.20191014.0"
+        },
+        {
+            "tag": "2018.03-with-sources"
+        },
+        {
+            "tag": "2018.03"
+        },
+        {
+            "tag": "2.0.20191016.0-with-sources"
+        },
+        {
+            "tag": "2.0.20191016.0"
+        },
+        {
+            "tag": "2-with-sources"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "1-with-sources"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "2018.03.0.20190826-with-sources"
+        },
+        {
+            "tag": "2018.03.0.20190826"
+        },
+        {
+            "tag": "2.0.20190823.1-with-sources"
+        },
+        {
+            "tag": "2.0.20190823.1"
+        },
+        {
+            "tag": "2018.03.0.20190514-with-sources"
+        },
+        {
+            "tag": "2018.03.0.20190514"
+        },
+        {
+            "tag": "2.0.20190508-with-sources"
+        },
+        {
+            "tag": "2.0.20190508"
+        },
+        {
+            "tag": "2018.03.0.20190212-with-sources"
+        },
+        {
+            "tag": "2018.03.0.20190212"
+        },
+        {
+            "tag": "2.0.20190228-with-sources"
+        },
+        {
+            "tag": "2.0.20190228"
+        },
+        {
+            "tag": "2.0.20190218-with-sources"
+        }
+    ],
+    "https://hub.docker.com/_/arista-and-docker-container-tracer": [
+
+    ],
+    "https://hub.docker.com/_/rethinkdb": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "2.3.6"
+        },
+        {
+            "tag": "2.3"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "2.3.5"
+        },
+        {
+            "tag": "2.3.4"
+        },
+        {
+            "tag": "2.2"
+        },
+        {
+            "tag": "2.2.6"
+        },
+        {
+            "tag": "2.1"
+        },
+        {
+            "tag": "2.1.6"
+        },
+        {
+            "tag": "2.0"
+        },
+        {
+            "tag": "2.0.4"
+        },
+        {
+            "tag": "2.3.3"
+        },
+        {
+            "tag": "2.3.2"
+        },
+        {
+            "tag": "2.3.1"
+        },
+        {
+            "tag": "2.3.0"
+        },
+        {
+            "tag": "2.2.5"
+        },
+        {
+            "tag": "2.2.4"
+        },
+        {
+            "tag": "2.2.3"
+        },
+        {
+            "tag": "2.2.2"
+        },
+        {
+            "tag": "2.2.1"
+        },
+        {
+            "tag": "2.2.0"
+        },
+        {
+            "tag": "2.1.5"
+        },
+        {
+            "tag": "2.1.4"
+        },
+        {
+            "tag": "2.1.3"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azure-cognitive-services-luis": [
+
+    ],
+    "https://hub.docker.com/_/softwareag-apiportal": [
+
+    ],
+    "https://hub.docker.com/_/fullarmor-hapi-file-share-mount": [
+
+    ],
+    "https://hub.docker.com/_/redis": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "alpine3.10"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "5.0.6-alpine3.10"
+        },
+        {
+            "tag": "5.0.6-alpine"
+        },
+        {
+            "tag": "5.0-alpine3.10"
+        },
+        {
+            "tag": "5.0-alpine"
+        },
+        {
+            "tag": "5-alpine3.10"
+        },
+        {
+            "tag": "5-alpine"
+        },
+        {
+            "tag": "4.0.14-alpine3.10"
+        },
+        {
+            "tag": "4.0.14-alpine"
+        },
+        {
+            "tag": "4.0-alpine3.10"
+        },
+        {
+            "tag": "4.0-alpine"
+        },
+        {
+            "tag": "4-alpine3.10"
+        },
+        {
+            "tag": "4-alpine"
+        },
+        {
+            "tag": "buster"
+        },
+        {
+            "tag": "5.0.6-buster"
+        },
+        {
+            "tag": "5.0.6"
+        },
+        {
+            "tag": "5.0-buster"
+        },
+        {
+            "tag": "5.0"
+        },
+        {
+            "tag": "5-buster"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "4.0.14-buster"
+        },
+        {
+            "tag": "4.0.14"
+        },
+        {
+            "tag": "4.0-buster"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azure-functions-node": [
+
+    ],
+    "https://hub.docker.com/_/alt": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "sisyphus"
+        },
+        {
+            "tag": "p9"
+        },
+        {
+            "tag": "p8"
+        }
+    ],
+    "https://hub.docker.com/_/cirros": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "0.4.0"
+        },
+        {
+            "tag": "0.4"
+        },
+        {
+            "tag": "0"
+        },
+        {
+            "tag": "0.3.3"
+        },
+        {
+            "tag": "0.3.4"
+        },
+        {
+            "tag": "0.3.0"
+        }
+    ],
+    "https://hub.docker.com/_/spiped": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.6.0-alpine"
+        },
+        {
+            "tag": "1.6-alpine"
+        },
+        {
+            "tag": "1-alpine"
+        },
+        {
+            "tag": "1.6.0"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "1.5"
+        },
+        {
+            "tag": "1.5.0"
+        },
+        {
+            "tag": "1.5-alpine"
+        },
+        {
+            "tag": "1.5.0-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps": [
+
+    ],
+    "https://hub.docker.com/_/cheers": [
+        {
+            "tag": "latest"
+        }
+    ],
+    "https://hub.docker.com/_/eclipse-mosquitto": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.6.7"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.5.9"
+        },
+        {
+            "tag": "1.5"
+        },
+        {
+            "tag": "1.6.6"
+        },
+        {
+            "tag": "1.6.5"
+        },
+        {
+            "tag": "1.5.8"
+        },
+        {
+            "tag": "1.6.4"
+        },
+        {
+            "tag": "1.6.3"
+        },
+        {
+            "tag": "1.6.2"
+        },
+        {
+            "tag": "1.6.1"
+        },
+        {
+            "tag": "1.5.6"
+        },
+        {
+            "tag": "1.5.5"
+        },
+        {
+            "tag": "1.5.4"
+        },
+        {
+            "tag": "1.5.3"
+        },
+        {
+            "tag": "1.4.12"
+        },
+        {
+            "tag": "1.4.4"
+        },
+        {
+            "tag": "1.4.8"
+        },
+        {
+            "tag": "1.4.10"
+        }
+    ],
+    "https://hub.docker.com/_/php": [
+        {
+            "tag": "rc-zts-buster"
+        },
+        {
+            "tag": "rc-zts-alpine3.10"
+        },
+        {
+            "tag": "rc-zts-alpine"
+        },
+        {
+            "tag": "rc-zts"
+        },
+        {
+            "tag": "rc-fpm-buster"
+        },
+        {
+            "tag": "rc-fpm-alpine3.10"
+        },
+        {
+            "tag": "rc-fpm-alpine"
+        },
+        {
+            "tag": "rc-fpm"
+        },
+        {
+            "tag": "rc-cli-buster"
+        },
+        {
+            "tag": "rc-cli-alpine3.10"
+        },
+        {
+            "tag": "rc-cli-alpine"
+        },
+        {
+            "tag": "rc-cli"
+        },
+        {
+            "tag": "rc-buster"
+        },
+        {
+            "tag": "rc-apache-buster"
+        },
+        {
+            "tag": "rc-apache"
+        },
+        {
+            "tag": "rc-alpine3.10"
+        },
+        {
+            "tag": "rc-alpine"
+        },
+        {
+            "tag": "rc"
+        },
+        {
+            "tag": "7.4.0RC6-zts-buster"
+        },
+        {
+            "tag": "7.4.0RC6-zts-alpine3.10"
+        },
+        {
+            "tag": "7.4.0RC6-zts-alpine"
+        },
+        {
+            "tag": "7.4.0RC6-zts"
+        },
+        {
+            "tag": "7.4.0RC6-fpm-buster"
+        },
+        {
+            "tag": "7.4.0RC6-fpm-alpine3.10"
+        },
+        {
+            "tag": "7.4.0RC6-fpm-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/thingsboard-pe-js-executor": [
+
+    ],
+    "https://hub.docker.com/_/blackfire": [
+
+    ],
+    "https://hub.docker.com/_/geonetwork": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "postgres"
+        },
+        {
+            "tag": "3.8.2-postgres"
+        },
+        {
+            "tag": "3.8.2"
+        },
+        {
+            "tag": "3.8-postgres"
+        },
+        {
+            "tag": "3.8"
+        },
+        {
+            "tag": "3.6.0-postgres"
+        },
+        {
+            "tag": "3.6-postgres"
+        },
+        {
+            "tag": "3.8.1-postgres"
+        },
+        {
+            "tag": "3.8.1"
+        },
+        {
+            "tag": "3.8.0-postgres"
+        },
+        {
+            "tag": "3.8.0"
+        },
+        {
+            "tag": "3.6.0"
+        },
+        {
+            "tag": "3.6"
+        },
+        {
+            "tag": "3.4-postgres"
+        },
+        {
+            "tag": "3.4.4-postgres"
+        },
+        {
+            "tag": "3.4"
+        },
+        {
+            "tag": "3.4.4"
+        },
+        {
+            "tag": "3.4.3-postgres"
+        },
+        {
+            "tag": "3.4.3"
+        },
+        {
+            "tag": "3.4.2-postgres"
+        },
+        {
+            "tag": "3.4.2"
+        },
+        {
+            "tag": "3.2-postgres"
+        },
+        {
+            "tag": "3.2.2-postgres"
+        },
+        {
+            "tag": "3.2"
+        }
+    ],
+    "https://hub.docker.com/_/wordpress": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "php7.3-fpm-alpine"
+        },
+        {
+            "tag": "php7.3-fpm"
+        },
+        {
+            "tag": "php7.3-apache"
+        },
+        {
+            "tag": "php7.3"
+        },
+        {
+            "tag": "php7.2-fpm-alpine"
+        },
+        {
+            "tag": "php7.2-fpm"
+        },
+        {
+            "tag": "php7.2-apache"
+        },
+        {
+            "tag": "php7.2"
+        },
+        {
+            "tag": "php7.1-fpm-alpine"
+        },
+        {
+            "tag": "php7.1-fpm"
+        },
+        {
+            "tag": "php7.1-apache"
+        },
+        {
+            "tag": "php7.1"
+        },
+        {
+            "tag": "fpm-alpine"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "cli-php7.3"
+        },
+        {
+            "tag": "cli-php7.2"
+        },
+        {
+            "tag": "cli-php7.1"
+        },
+        {
+            "tag": "cli-2.4.0-php7.3"
+        },
+        {
+            "tag": "cli-2.4.0-php7.2"
+        },
+        {
+            "tag": "cli-2.4.0-php7.1"
+        },
+        {
+            "tag": "cli-2.4.0"
+        },
+        {
+            "tag": "cli-2.4-php7.3"
+        },
+        {
+            "tag": "cli-2.4-php7.2"
+        },
+        {
+            "tag": "cli-2.4-php7.1"
+        }
+    ],
+    "https://hub.docker.com/_/httpd": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "2.4.41-alpine"
+        },
+        {
+            "tag": "2.4.41"
+        },
+        {
+            "tag": "2.4-alpine"
+        },
+        {
+            "tag": "2.4"
+        },
+        {
+            "tag": "2-alpine"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "2.4.39-alpine"
+        },
+        {
+            "tag": "2.4.39"
+        },
+        {
+            "tag": "2.4.38"
+        },
+        {
+            "tag": "2.4.38-alpine"
+        },
+        {
+            "tag": "2.4.37"
+        },
+        {
+            "tag": "2.4.37-alpine"
+        },
+        {
+            "tag": "2.4.35-alpine"
+        },
+        {
+            "tag": "2.4.35"
+        },
+        {
+            "tag": "2.4.34-alpine"
+        },
+        {
+            "tag": "2.4.34"
+        },
+        {
+            "tag": "2.4.33-alpine"
+        },
+        {
+            "tag": "2.4.33"
+        },
+        {
+            "tag": "2.4.32-alpine"
+        },
+        {
+            "tag": "2.4.32"
+        },
+        {
+            "tag": "2.4.29"
+        },
+        {
+            "tag": "2.4.29-alpine"
+        },
+        {
+            "tag": "2.2"
+        }
+    ],
+    "https://hub.docker.com/_/swipl": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "8.1.12"
+        },
+        {
+            "tag": "stable"
+        },
+        {
+            "tag": "8.0.3"
+        },
+        {
+            "tag": "8.1.8"
+        },
+        {
+            "tag": "8.1.6"
+        },
+        {
+            "tag": "8.0.0"
+        },
+        {
+            "tag": "8.1.5"
+        },
+        {
+            "tag": "8.1.4"
+        },
+        {
+            "tag": "8.1.2"
+        },
+        {
+            "tag": "8.1.1"
+        },
+        {
+            "tag": "8.1.0"
+        },
+        {
+            "tag": "7.7.25"
+        },
+        {
+            "tag": "7.6.4"
+        },
+        {
+            "tag": "7.7.22"
+        },
+        {
+            "tag": "7.7.21"
+        },
+        {
+            "tag": "7.7.20"
+        },
+        {
+            "tag": "7.7.19"
+        },
+        {
+            "tag": "7.7.18"
+        },
+        {
+            "tag": "7.7.17"
+        },
+        {
+            "tag": "7.7.16"
+        },
+        {
+            "tag": "7.7.14"
+        },
+        {
+            "tag": "7.7.13"
+        },
+        {
+            "tag": "7.7.12"
+        },
+        {
+            "tag": "7.7.11"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azureiotedge-modbus": [
+
+    ],
+    "https://hub.docker.com/_/softwareag-terracottadb": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-cntk-release": [
+
+    ],
+    "https://hub.docker.com/_/haskell": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "8.8.1"
+        },
+        {
+            "tag": "8.8"
+        },
+        {
+            "tag": "8.6.5"
+        },
+        {
+            "tag": "8.6"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "8.4.4"
+        },
+        {
+            "tag": "8.4"
+        },
+        {
+            "tag": "8.6.3"
+        },
+        {
+            "tag": "8.6.2"
+        },
+        {
+            "tag": "8.2"
+        },
+        {
+            "tag": "8.2.2"
+        },
+        {
+            "tag": "8.4.3"
+        },
+        {
+            "tag": "8.2.1"
+        },
+        {
+            "tag": "8.0"
+        },
+        {
+            "tag": "8.0.2"
+        },
+        {
+            "tag": "8.0.1"
+        },
+        {
+            "tag": "7.10.3"
+        },
+        {
+            "tag": "7.10"
+        },
+        {
+            "tag": "7"
+        },
+        {
+            "tag": "7.8"
+        },
+        {
+            "tag": "7.8.4"
+        },
+        {
+            "tag": "7.10.2"
+        },
+        {
+            "tag": "7.10.1"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-nightly-runtime": [
+
+    ],
+    "https://hub.docker.com/_/orientdb": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3.0.25-tp3"
+        },
+        {
+            "tag": "3.0.25"
+        },
+        {
+            "tag": "3.0.24-tp3"
+        },
+        {
+            "tag": "3.0.24"
+        },
+        {
+            "tag": "2.2.37-spatial"
+        },
+        {
+            "tag": "2.2.37"
+        },
+        {
+            "tag": "2.1.25"
+        },
+        {
+            "tag": "2.0.18"
+        },
+        {
+            "tag": "3.0.23-tp3"
+        },
+        {
+            "tag": "3.0.23"
+        },
+        {
+            "tag": "3.0.22-tp3"
+        },
+        {
+            "tag": "3.0.22"
+        },
+        {
+            "tag": "3.0.21-tp3"
+        },
+        {
+            "tag": "3.0.21"
+        },
+        {
+            "tag": "3.0.20-tp3"
+        },
+        {
+            "tag": "3.0.20"
+        },
+        {
+            "tag": "3.0.19-tp3"
+        },
+        {
+            "tag": "3.0.19"
+        },
+        {
+            "tag": "3.0.18-tp3"
+        },
+        {
+            "tag": "3.0.18"
+        },
+        {
+            "tag": "3.0.17-tp3"
+        },
+        {
+            "tag": "3.0.17"
+        },
+        {
+            "tag": "3.0.16-tp3"
+        },
+        {
+            "tag": "3.0.16"
+        }
+    ],
+    "https://hub.docker.com/_/acicni": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-mmlspark-release": [
+
+    ],
+    "https://hub.docker.com/_/fluentd": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "v1.6.2-debian-1.0"
+        },
+        {
+            "tag": "v1.6-debian-1"
+        },
+        {
+            "tag": "v1.6.2-1.0"
+        },
+        {
+            "tag": "v1.6-1"
+        },
+        {
+            "tag": "v1.4.2-debian-2.0"
+        },
+        {
+            "tag": "v1.4-debian-2"
+        },
+        {
+            "tag": "v1.4.2-2.0"
+        },
+        {
+            "tag": "v1.4-2"
+        }
+    ],
+    "https://hub.docker.com/_/backdrop": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "1.13.2-fpm"
+        },
+        {
+            "tag": "1.13.2-apache"
+        },
+        {
+            "tag": "1.13.2"
+        },
+        {
+            "tag": "1.13-fpm"
+        },
+        {
+            "tag": "1.13-apache"
+        },
+        {
+            "tag": "1.13"
+        },
+        {
+            "tag": "1-fpm"
+        },
+        {
+            "tag": "1-apache"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "1.10.1-fpm"
+        },
+        {
+            "tag": "1.10.1-apache"
+        },
+        {
+            "tag": "1.10.1"
+        },
+        {
+            "tag": "1.10-fpm"
+        },
+        {
+            "tag": "1.10-apache"
+        },
+        {
+            "tag": "1.10"
+        },
+        {
+            "tag": "1.10.0-fpm"
+        },
+        {
+            "tag": "1.10.0-apache"
+        },
+        {
+            "tag": "1.10.0"
+        },
+        {
+            "tag": "1.9-fpm"
+        },
+        {
+            "tag": "1.9.3-fpm"
+        },
+        {
+            "tag": "1.9-apache"
+        },
+        {
+            "tag": "1.9.3-apache"
+        }
+    ],
+    "https://hub.docker.com/_/softwareag-adabas-ce": [
+
+    ],
+    "https://hub.docker.com/_/thingsboard-pe-http-transport": [
+
+    ],
+    "https://hub.docker.com/_/debian": [
+        {
+            "tag": "unstable-slim"
+        },
+        {
+            "tag": "unstable-20191014-slim"
+        },
+        {
+            "tag": "unstable-20191014"
+        },
+        {
+            "tag": "unstable"
+        },
+        {
+            "tag": "testing-slim"
+        },
+        {
+            "tag": "testing-backports"
+        },
+        {
+            "tag": "testing-20191014-slim"
+        },
+        {
+            "tag": "testing-20191014"
+        },
+        {
+            "tag": "testing"
+        },
+        {
+            "tag": "stretch-slim"
+        },
+        {
+            "tag": "stretch-backports"
+        },
+        {
+            "tag": "stretch-20191014-slim"
+        },
+        {
+            "tag": "stretch-20191014"
+        },
+        {
+            "tag": "stretch"
+        },
+        {
+            "tag": "stable-slim"
+        },
+        {
+            "tag": "stable-backports"
+        },
+        {
+            "tag": "stable-20191014-slim"
+        },
+        {
+            "tag": "stable-20191014"
+        },
+        {
+            "tag": "stable"
+        },
+        {
+            "tag": "sid-slim"
+        },
+        {
+            "tag": "sid-20191014-slim"
+        },
+        {
+            "tag": "sid-20191014"
+        },
+        {
+            "tag": "sid"
+        },
+        {
+            "tag": "rc-buggy-20191014"
+        },
+        {
+            "tag": "rc-buggy"
+        }
+    ],
+    "https://hub.docker.com/_/ibmjava": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "sfj"
+        },
+        {
+            "tag": "sdk"
+        },
+        {
+            "tag": "jre"
+        },
+        {
+            "tag": "8-sfj"
+        },
+        {
+            "tag": "8-sdk"
+        },
+        {
+            "tag": "8-jre"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "sfj-alpine"
+        },
+        {
+            "tag": "sdk-alpine"
+        },
+        {
+            "tag": "jre-alpine"
+        },
+        {
+            "tag": "8-sfj-alpine"
+        },
+        {
+            "tag": "8-sdk-alpine"
+        },
+        {
+            "tag": "8-jre-alpine"
+        },
+        {
+            "tag": "9-sdk"
+        },
+        {
+            "tag": "9-sdk-alpine"
+        },
+        {
+            "tag": "9"
+        },
+        {
+            "tag": "9-ea2-sdk"
+        }
+    ],
+    "https://hub.docker.com/_/portworx-px-developer": [
+
+    ],
+    "https://hub.docker.com/_/solace-pubsub-standard": [
+
+    ],
+    "https://hub.docker.com/_/oracle-weblogic-server-12c": [
+
+    ],
+    "https://hub.docker.com/_/kaazing-gateway": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "5.6.0"
+        },
+        {
+            "tag": "5.6"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "5.5.0"
+        },
+        {
+            "tag": "5.4.1"
+        },
+        {
+            "tag": "5.3.2"
+        },
+        {
+            "tag": "5.2.5"
+        },
+        {
+            "tag": "5.1.1"
+        },
+        {
+            "tag": "5.1.0"
+        },
+        {
+            "tag": "5.0.1.38"
+        },
+        {
+            "tag": "5.0.1.21"
+        }
+    ],
+    "https://hub.docker.com/_/oracle-serverjre-8": [
+
+    ],
+    "https://hub.docker.com/_/amazoncorretto": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "8u232"
+        },
+        {
+            "tag": "8-al2-full"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "11.0.5"
+        },
+        {
+            "tag": "11-al2-full"
+        },
+        {
+            "tag": "11"
+        },
+        {
+            "tag": "8u222"
+        },
+        {
+            "tag": "11.0.4"
+        },
+        {
+            "tag": "8u212"
+        },
+        {
+            "tag": "11.0.3"
+        },
+        {
+            "tag": "11.0.2"
+        },
+        {
+            "tag": "8u202"
+        },
+        {
+            "tag": "8u192"
+        }
+    ],
+    "https://hub.docker.com/_/open-liberty": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "kernel-java8-openj9"
+        },
+        {
+            "tag": "kernel"
+        },
+        {
+            "tag": "full-java8-openj9"
+        },
+        {
+            "tag": "full"
+        },
+        {
+            "tag": "19.0.0.9-webProfile8-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-webProfile8-java11"
+        },
+        {
+            "tag": "19.0.0.9-webProfile7-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-webProfile7-java11"
+        },
+        {
+            "tag": "19.0.0.9-springBoot2-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-springBoot2-java11"
+        },
+        {
+            "tag": "19.0.0.9-springBoot1-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-springBoot1-java11"
+        },
+        {
+            "tag": "19.0.0.9-microProfile3-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-microProfile3-java11"
+        },
+        {
+            "tag": "19.0.0.9-microProfile2-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-microProfile2-java11"
+        },
+        {
+            "tag": "19.0.0.9-microProfile1-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-microProfile1-java11"
+        },
+        {
+            "tag": "19.0.0.9-kernel-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-kernel-java11"
+        },
+        {
+            "tag": "19.0.0.9-javaee8-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-javaee8-java11"
+        },
+        {
+            "tag": "19.0.0.9-javaee7-java8-openj9"
+        },
+        {
+            "tag": "19.0.0.9-javaee7-java11"
+        }
+    ],
+    "https://hub.docker.com/_/nats-streaming": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "windowsservercore"
+        },
+        {
+            "tag": "nanoserver-1809"
+        },
+        {
+            "tag": "nanoserver-1803"
+        },
+        {
+            "tag": "nanoserver"
+        },
+        {
+            "tag": "0.16.2-windowsservercore"
+        },
+        {
+            "tag": "0.16.2-nanoserver-1809"
+        },
+        {
+            "tag": "0.16.2-nanoserver"
+        },
+        {
+            "tag": "0.16.2"
+        },
+        {
+            "tag": "linux"
+        },
+        {
+            "tag": "0.16.2-linux"
+        },
+        {
+            "tag": "0.16.0-windowsservercore"
+        },
+        {
+            "tag": "0.16.0-nanoserver-1809"
+        },
+        {
+            "tag": "0.16.0-nanoserver"
+        },
+        {
+            "tag": "0.16.0"
+        },
+        {
+            "tag": "0.16.0-linux"
+        },
+        {
+            "tag": "0.15.1-windowsservercore"
+        },
+        {
+            "tag": "0.15.1-nanoserver-1809"
+        },
+        {
+            "tag": "0.15.1-nanoserver"
+        },
+        {
+            "tag": "0.15.1"
+        },
+        {
+            "tag": "0.15.1-linux"
+        },
+        {
+            "tag": "0.14.3-linux"
+        },
+        {
+            "tag": "0.14.3"
+        },
+        {
+            "tag": "0.14.3-windowsservercore"
+        },
+        {
+            "tag": "0.14.3-nanoserver"
+        }
+    ],
+    "https://hub.docker.com/_/nginx": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "mainline-alpine-perl"
+        },
+        {
+            "tag": "mainline-alpine"
+        },
+        {
+            "tag": "alpine-perl"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.17.5-alpine-perl"
+        },
+        {
+            "tag": "1.17.5-alpine"
+        },
+        {
+            "tag": "1.17-alpine-perl"
+        },
+        {
+            "tag": "1.17-alpine"
+        },
+        {
+            "tag": "1-alpine-perl"
+        },
+        {
+            "tag": "1-alpine"
+        },
+        {
+            "tag": "perl"
+        },
+        {
+            "tag": "mainline-perl"
+        },
+        {
+            "tag": "mainline"
+        },
+        {
+            "tag": "1.17.5-perl"
+        },
+        {
+            "tag": "1.17.5"
+        },
+        {
+            "tag": "1.17-perl"
+        },
+        {
+            "tag": "1.17"
+        },
+        {
+            "tag": "1-perl"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "stable-alpine-perl"
+        },
+        {
+            "tag": "stable-alpine"
+        },
+        {
+            "tag": "1.17.4-alpine-perl"
+        },
+        {
+            "tag": "1.17.4-alpine"
+        },
+        {
+            "tag": "1.16.1-alpine-perl"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-acoustics-baketools": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-service-fabric-onebox": [
+
+    ],
+    "https://hub.docker.com/_/groovy": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "jre13"
+        },
+        {
+            "tag": "jre11"
+        },
+        {
+            "tag": "jdk13"
+        },
+        {
+            "tag": "jdk11"
+        },
+        {
+            "tag": "3.0.0-rc-1-jre13"
+        },
+        {
+            "tag": "3.0.0-rc-1-jre11"
+        },
+        {
+            "tag": "3.0.0-rc-1-jdk13"
+        },
+        {
+            "tag": "3.0.0-rc-1-jdk11"
+        },
+        {
+            "tag": "3.0-jre13"
+        },
+        {
+            "tag": "3.0-jre11"
+        },
+        {
+            "tag": "3.0-jdk13"
+        },
+        {
+            "tag": "3.0-jdk11"
+        },
+        {
+            "tag": "2.5.8-jre13"
+        },
+        {
+            "tag": "2.5.8-jre11"
+        },
+        {
+            "tag": "2.5.8-jdk13"
+        },
+        {
+            "tag": "2.5.8-jdk11"
+        },
+        {
+            "tag": "2.5-jre13"
+        },
+        {
+            "tag": "2.5-jre11"
+        },
+        {
+            "tag": "2.5-jdk13"
+        },
+        {
+            "tag": "2.5-jdk11"
+        },
+        {
+            "tag": "jre8"
+        },
+        {
+            "tag": "jre"
+        },
+        {
+            "tag": "jdk8"
+        },
+        {
+            "tag": "jdk"
+        }
+    ],
+    "https://hub.docker.com/_/jetty": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "jre8"
+        },
+        {
+            "tag": "9.4.18-jre8"
+        },
+        {
+            "tag": "9.4.18-jre11"
+        },
+        {
+            "tag": "9.4.18"
+        },
+        {
+            "tag": "9.4-jre8"
+        },
+        {
+            "tag": "9.4-jre11"
+        },
+        {
+            "tag": "9.4"
+        },
+        {
+            "tag": "9.3.27-jre8"
+        },
+        {
+            "tag": "9.3.27"
+        },
+        {
+            "tag": "9.3-jre8"
+        },
+        {
+            "tag": "9.3"
+        },
+        {
+            "tag": "9.2.28-jre8"
+        },
+        {
+            "tag": "9.2.28"
+        },
+        {
+            "tag": "9.2-jre8"
+        },
+        {
+            "tag": "9.2"
+        },
+        {
+            "tag": "9-jre8"
+        },
+        {
+            "tag": "9-jre11"
+        },
+        {
+            "tag": "9"
+        },
+        {
+            "tag": "jre8-alpine"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "9.4.18-jre8-alpine"
+        },
+        {
+            "tag": "9.4.18-alpine"
+        },
+        {
+            "tag": "9.4-jre8-alpine"
+        },
+        {
+            "tag": "9.4-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/composer": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.9.1"
+        },
+        {
+            "tag": "1.9"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "1.9.0"
+        },
+        {
+            "tag": "1.8.6"
+        },
+        {
+            "tag": "1.8"
+        },
+        {
+            "tag": "1.7.3"
+        },
+        {
+            "tag": "1.7"
+        },
+        {
+            "tag": "1.8.5"
+        },
+        {
+            "tag": "1.8.4"
+        },
+        {
+            "tag": "1.8.3"
+        },
+        {
+            "tag": "1.8.2"
+        },
+        {
+            "tag": "1.8.0"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.6.5"
+        },
+        {
+            "tag": "1.5"
+        },
+        {
+            "tag": "1.5.6"
+        },
+        {
+            "tag": "1.7.2"
+        },
+        {
+            "tag": "1.7.1"
+        },
+        {
+            "tag": "1.7.0"
+        },
+        {
+            "tag": "1.4"
+        },
+        {
+            "tag": "1.4.3"
+        },
+        {
+            "tag": "1.6.4"
+        },
+        {
+            "tag": "1.6.3"
+        }
+    ],
+    "https://hub.docker.com/_/java": [
+
+    ],
+    "https://hub.docker.com/_/crate": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "4.0.8"
+        },
+        {
+            "tag": "4.0"
+        },
+        {
+            "tag": "4.0.7"
+        },
+        {
+            "tag": "3.3.5"
+        },
+        {
+            "tag": "3.3"
+        },
+        {
+            "tag": "3.2.8"
+        },
+        {
+            "tag": "3.2"
+        },
+        {
+            "tag": "4.0.6"
+        },
+        {
+            "tag": "4.0.4"
+        },
+        {
+            "tag": "4.0.3"
+        },
+        {
+            "tag": "4.0.2"
+        },
+        {
+            "tag": "3.3.4"
+        },
+        {
+            "tag": "3.1.6"
+        },
+        {
+            "tag": "3.1"
+        },
+        {
+            "tag": "3.3.3"
+        },
+        {
+            "tag": "3.3.2"
+        },
+        {
+            "tag": "3.2.7"
+        },
+        {
+            "tag": "3.0.7"
+        },
+        {
+            "tag": "3.0"
+        },
+        {
+            "tag": "2.3.11"
+        },
+        {
+            "tag": "2.3"
+        },
+        {
+            "tag": "2.2.7"
+        },
+        {
+            "tag": "2.2"
+        },
+        {
+            "tag": "3.2.6"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azure-pipelines-vsts-agent": [
+
+    ],
+    "https://hub.docker.com/_/tomcat": [
+        {
+            "tag": "jdk13-openjdk-oracle"
+        },
+        {
+            "tag": "9.0.27-jdk13-openjdk-oracle"
+        },
+        {
+            "tag": "9.0-jdk13-openjdk-oracle"
+        },
+        {
+            "tag": "9-jdk13-openjdk-oracle"
+        },
+        {
+            "tag": "8.5.47-jdk13-openjdk-oracle"
+        },
+        {
+            "tag": "8.5-jdk13-openjdk-oracle"
+        },
+        {
+            "tag": "8-jdk13-openjdk-oracle"
+        },
+        {
+            "tag": "jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "jdk11-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "9.0.27-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "9.0.27-jdk11-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "9.0-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "9.0-jdk11-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "9-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "9-jdk11-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "8.5.47-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "8.5.47-jdk11-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "8.5-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "8.5-jdk11-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "8-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "8-jdk11-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "7.0.96-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "7.0-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "7-jdk8-adoptopenjdk-hotspot"
+        },
+        {
+            "tag": "jdk8-adoptopenjdk-openj9"
+        }
+    ],
+    "https://hub.docker.com/_/ubuntu-debootstrap": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "devel"
+        },
+        {
+            "tag": "wily"
+        },
+        {
+            "tag": "15.10"
+        },
+        {
+            "tag": "vivid"
+        },
+        {
+            "tag": "15.04"
+        },
+        {
+            "tag": "trusty"
+        },
+        {
+            "tag": "14.04"
+        },
+        {
+            "tag": "14.04.3"
+        },
+        {
+            "tag": "precise"
+        },
+        {
+            "tag": "12.04"
+        },
+        {
+            "tag": "12.04.5"
+        },
+        {
+            "tag": "14.04.1"
+        },
+        {
+            "tag": "10.04"
+        },
+        {
+            "tag": "14.04.2"
+        },
+        {
+            "tag": "14.10"
+        },
+        {
+            "tag": "utopic"
+        },
+        {
+            "tag": "10.04.4"
+        },
+        {
+            "tag": "lucid"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-windows-nanoserver": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azuredocs-aci-helloworld": [
+
+    ],
+    "https://hub.docker.com/_/rabbitmq": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "management-alpine"
+        },
+        {
+            "tag": "management"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "3.8.2-rc.1-management-alpine"
+        },
+        {
+            "tag": "3.8.2-rc.1-management"
+        },
+        {
+            "tag": "3.8.2-rc.1-alpine"
+        },
+        {
+            "tag": "3.8.2-rc.1"
+        },
+        {
+            "tag": "3.8.1-management-alpine"
+        },
+        {
+            "tag": "3.8.1-management"
+        },
+        {
+            "tag": "3.8.1-alpine"
+        },
+        {
+            "tag": "3.8.1"
+        },
+        {
+            "tag": "3.8-rc-management-alpine"
+        },
+        {
+            "tag": "3.8-rc-management"
+        },
+        {
+            "tag": "3.8-rc-alpine"
+        },
+        {
+            "tag": "3.8-rc"
+        },
+        {
+            "tag": "3.8-management-alpine"
+        },
+        {
+            "tag": "3.8-management"
+        },
+        {
+            "tag": "3.8-alpine"
+        },
+        {
+            "tag": "3.8"
+        },
+        {
+            "tag": "3.7.22-rc.1-management-alpine"
+        },
+        {
+            "tag": "3.7.22-rc.1-management"
+        },
+        {
+            "tag": "3.7.22-rc.1-alpine"
+        },
+        {
+            "tag": "3.7.22-rc.1"
+        },
+        {
+            "tag": "3.7.21-management-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/elixir": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.6.6-slim"
+        },
+        {
+            "tag": "1.6.6-alpine"
+        },
+        {
+            "tag": "1.6.6"
+        },
+        {
+            "tag": "1.6-slim"
+        },
+        {
+            "tag": "1.6-alpine"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.5.3-slim"
+        },
+        {
+            "tag": "1.5.3-alpine"
+        },
+        {
+            "tag": "1.5.3"
+        },
+        {
+            "tag": "1.5-slim"
+        },
+        {
+            "tag": "1.5-alpine"
+        },
+        {
+            "tag": "1.5"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.9.4-slim"
+        },
+        {
+            "tag": "1.9.4-alpine"
+        },
+        {
+            "tag": "1.9.4"
+        },
+        {
+            "tag": "1.9-slim"
+        },
+        {
+            "tag": "1.9-alpine"
+        },
+        {
+            "tag": "1.9"
+        },
+        {
+            "tag": "1.8.2-otp-22-alpine"
+        },
+        {
+            "tag": "1.8.2-otp-22"
+        },
+        {
+            "tag": "1.8-otp-22-alpine"
+        },
+        {
+            "tag": "1.8-otp-22"
+        }
+    ],
+    "https://hub.docker.com/_/postgres": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "9.5"
+        },
+        {
+            "tag": "9.4.25"
+        },
+        {
+            "tag": "9.4"
+        },
+        {
+            "tag": "9"
+        },
+        {
+            "tag": "12.1"
+        },
+        {
+            "tag": "12"
+        },
+        {
+            "tag": "11.6"
+        },
+        {
+            "tag": "11"
+        },
+        {
+            "tag": "10.11"
+        },
+        {
+            "tag": "10-alpine"
+        },
+        {
+            "tag": "10"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "9.6.16-alpine"
+        },
+        {
+            "tag": "9.6.16"
+        },
+        {
+            "tag": "9.6-alpine"
+        },
+        {
+            "tag": "9.6"
+        },
+        {
+            "tag": "9.5.20-alpine"
+        },
+        {
+            "tag": "9.5.20"
+        },
+        {
+            "tag": "9.5-alpine"
+        },
+        {
+            "tag": "9.4.25-alpine"
+        },
+        {
+            "tag": "9.4-alpine"
+        },
+        {
+            "tag": "9-alpine"
+        },
+        {
+            "tag": "12.1-alpine"
+        },
+        {
+            "tag": "12-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/openjdk": [
+        {
+            "tag": "14-jdk"
+        },
+        {
+            "tag": "14-ea-oraclelinux7"
+        },
+        {
+            "tag": "14-ea-oracle"
+        },
+        {
+            "tag": "14-ea-jdk-oraclelinux7"
+        },
+        {
+            "tag": "14-ea-jdk-oracle"
+        },
+        {
+            "tag": "14-ea-jdk"
+        },
+        {
+            "tag": "14-ea-23-oraclelinux7"
+        },
+        {
+            "tag": "14-ea-23-oracle"
+        },
+        {
+            "tag": "14-ea-23-jdk-oraclelinux7"
+        },
+        {
+            "tag": "14-ea-23-jdk-oracle"
+        },
+        {
+            "tag": "14-ea-23-jdk"
+        },
+        {
+            "tag": "14-ea-23"
+        },
+        {
+            "tag": "14-ea"
+        },
+        {
+            "tag": "14"
+        },
+        {
+            "tag": "13.0.1-oraclelinux7"
+        },
+        {
+            "tag": "13.0.1-oracle"
+        },
+        {
+            "tag": "13.0.1-jdk-oraclelinux7"
+        },
+        {
+            "tag": "13.0.1-jdk-oracle"
+        },
+        {
+            "tag": "13.0.1-jdk"
+        },
+        {
+            "tag": "13.0.1"
+        },
+        {
+            "tag": "13.0-oraclelinux7"
+        },
+        {
+            "tag": "13.0-oracle"
+        },
+        {
+            "tag": "13.0-jdk-oraclelinux7"
+        },
+        {
+            "tag": "13.0-jdk-oracle"
+        },
+        {
+            "tag": "13.0-jdk"
+        }
+    ],
+    "https://hub.docker.com/_/busybox": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "musl"
+        },
+        {
+            "tag": "glibc"
+        },
+        {
+            "tag": "1.31.1-musl"
+        },
+        {
+            "tag": "1.31.1-glibc"
+        },
+        {
+            "tag": "1.31.1"
+        },
+        {
+            "tag": "1.31-musl"
+        },
+        {
+            "tag": "1.31-glibc"
+        },
+        {
+            "tag": "1.31"
+        },
+        {
+            "tag": "1-musl"
+        },
+        {
+            "tag": "1-glibc"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "uclibc"
+        },
+        {
+            "tag": "1.31.1-uclibc"
+        },
+        {
+            "tag": "1.31-uclibc"
+        },
+        {
+            "tag": "1-uclibc"
+        },
+        {
+            "tag": "1.31.0-uclibc"
+        },
+        {
+            "tag": "1.31.0-musl"
+        },
+        {
+            "tag": "1.31.0-glibc"
+        },
+        {
+            "tag": "1.31.0"
+        },
+        {
+            "tag": "1.30.1-uclibc"
+        },
+        {
+            "tag": "1.30.1-musl"
+        },
+        {
+            "tag": "1.30.1-glibc"
+        },
+        {
+            "tag": "1.30.1"
+        },
+        {
+            "tag": "1.30-uclibc"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-node-8-0": [
+
+    ],
+    "https://hub.docker.com/_/appdynamics": [
+
+    ],
+    "https://hub.docker.com/_/jruby": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "9.2.9.0-onbuild"
+        },
+        {
+            "tag": "9.2.9.0-jre"
+        },
+        {
+            "tag": "9.2.9.0-jdk"
+        },
+        {
+            "tag": "9.2.9.0"
+        },
+        {
+            "tag": "9.2.9-onbuild"
+        },
+        {
+            "tag": "9.2.9-jre"
+        },
+        {
+            "tag": "9.2.9-jdk"
+        },
+        {
+            "tag": "9.2.9"
+        },
+        {
+            "tag": "9.2-jre"
+        },
+        {
+            "tag": "9.2-jdk"
+        },
+        {
+            "tag": "9.2"
+        },
+        {
+            "tag": "9-jdk"
+        },
+        {
+            "tag": "9"
+        },
+        {
+            "tag": "9.2.8.0-jre"
+        },
+        {
+            "tag": "9.2.8.0-jdk"
+        },
+        {
+            "tag": "9.2.8.0"
+        },
+        {
+            "tag": "9.2.8-jre"
+        },
+        {
+            "tag": "9.2.8-jdk"
+        },
+        {
+            "tag": "9.2.8"
+        },
+        {
+            "tag": "9.2.7.0-onbuild"
+        },
+        {
+            "tag": "9.2.7-onbuild"
+        },
+        {
+            "tag": "9.2-onbuild"
+        },
+        {
+            "tag": "9.1.17.0-jre"
+        },
+        {
+            "tag": "9.1.17.0-jdk"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-framework-samples": [
+
+    ],
+    "https://hub.docker.com/_/swift": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "xenial-slim"
+        },
+        {
+            "tag": "xenial"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "bionic-slim"
+        },
+        {
+            "tag": "bionic"
+        },
+        {
+            "tag": "5.1.2-xenial-slim"
+        },
+        {
+            "tag": "5.1.2-xenial"
+        },
+        {
+            "tag": "5.1.2-slim"
+        },
+        {
+            "tag": "5.1.2-bionic-sim"
+        },
+        {
+            "tag": "5.1.2-bionic"
+        },
+        {
+            "tag": "5.1.2"
+        },
+        {
+            "tag": "5.1-xenial-slim"
+        },
+        {
+            "tag": "5.1-xenial"
+        },
+        {
+            "tag": "5.1-slim"
+        },
+        {
+            "tag": "5.1-bionic-slim"
+        },
+        {
+            "tag": "5.1-bionic"
+        },
+        {
+            "tag": "5.1"
+        },
+        {
+            "tag": "5.1.1-xenial-slim"
+        },
+        {
+            "tag": "5.1.1-xenial"
+        },
+        {
+            "tag": "5.1.1-slim"
+        },
+        {
+            "tag": "5.1.1-bionic-sim"
+        },
+        {
+            "tag": "5.1.1-bionic"
+        },
+        {
+            "tag": "5.1.1"
+        },
+        {
+            "tag": "5.0.3-xenial-slim"
+        }
+    ],
+    "https://hub.docker.com/_/oracle-instant-client": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azureiotedge-hub": [
+
+    ],
+    "https://hub.docker.com/_/instana-dynamic-apm": [
+
+    ],
+    "https://hub.docker.com/_/ubuntu": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "xenial-20191024"
+        },
+        {
+            "tag": "xenial"
+        },
+        {
+            "tag": "focal-20191030"
+        },
+        {
+            "tag": "focal"
+        },
+        {
+            "tag": "disco-20191030"
+        },
+        {
+            "tag": "disco"
+        },
+        {
+            "tag": "devel"
+        },
+        {
+            "tag": "bionic-20191029"
+        },
+        {
+            "tag": "bionic"
+        },
+        {
+            "tag": "20.04"
+        },
+        {
+            "tag": "19.04"
+        },
+        {
+            "tag": "18.04"
+        },
+        {
+            "tag": "16.04"
+        },
+        {
+            "tag": "xenial-20191010"
+        },
+        {
+            "tag": "rolling"
+        },
+        {
+            "tag": "eoan-20191017"
+        },
+        {
+            "tag": "eoan"
+        },
+        {
+            "tag": "disco-20191011"
+        },
+        {
+            "tag": "bionic-20191010"
+        },
+        {
+            "tag": "19.10"
+        },
+        {
+            "tag": "xenial-20190904"
+        },
+        {
+            "tag": "eoan-20190916"
+        },
+        {
+            "tag": "disco-20190913"
+        },
+        {
+            "tag": "bionic-20190912.1"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-windows-base-os-images": [
+
+    ],
+    "https://hub.docker.com/_/puppet-agent-ubuntu": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-node-6-6": [
+
+    ],
+    "https://hub.docker.com/_/fsharp": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "netcore"
+        },
+        {
+            "tag": "10.6.0-netcore"
+        },
+        {
+            "tag": "10.6.0"
+        },
+        {
+            "tag": "10.6-netcore"
+        },
+        {
+            "tag": "10.6"
+        },
+        {
+            "tag": "10-netcore"
+        },
+        {
+            "tag": "10"
+        },
+        {
+            "tag": "4.1.34"
+        },
+        {
+            "tag": "4.1"
+        },
+        {
+            "tag": "4"
+        },
+        {
+            "tag": "10.2.3-netcore"
+        },
+        {
+            "tag": "10.2.3"
+        },
+        {
+            "tag": "10.2-netcore"
+        },
+        {
+            "tag": "10.2"
+        },
+        {
+            "tag": "10.2.1"
+        },
+        {
+            "tag": "10.2.1-netcore"
+        },
+        {
+            "tag": "4.0.1.1"
+        },
+        {
+            "tag": "4.0.1"
+        },
+        {
+            "tag": "4.0"
+        },
+        {
+            "tag": "10.0.2"
+        },
+        {
+            "tag": "10.0"
+        },
+        {
+            "tag": "10.0.2-netcore"
+        },
+        {
+            "tag": "10.0-netcore"
+        },
+        {
+            "tag": "4.1.34-netcore"
+        }
+    ],
+    "https://hub.docker.com/_/site24x7-linux-docker-agent": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-k8s-aad-pod-identity-nmi": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-sdk": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-blob-storage": [
+
+    ],
+    "https://hub.docker.com/_/logstash": [
+        {
+            "tag": "7.4.2"
+        },
+        {
+            "tag": "7.4.1"
+        },
+        {
+            "tag": "6.8.4"
+        },
+        {
+            "tag": "7.4.0"
+        },
+        {
+            "tag": "7.3.2"
+        },
+        {
+            "tag": "6.8.3"
+        },
+        {
+            "tag": "7.3.1"
+        },
+        {
+            "tag": "7.3.0"
+        },
+        {
+            "tag": "7.2.1"
+        },
+        {
+            "tag": "6.8.2"
+        },
+        {
+            "tag": "7.2.0"
+        },
+        {
+            "tag": "6.8.1"
+        },
+        {
+            "tag": "7.1.1"
+        },
+        {
+            "tag": "7.1.0"
+        },
+        {
+            "tag": "6.8.0"
+        },
+        {
+            "tag": "7.0.1"
+        },
+        {
+            "tag": "6.7.2"
+        },
+        {
+            "tag": "6.7.1"
+        },
+        {
+            "tag": "7.0.0"
+        },
+        {
+            "tag": "5-alpine"
+        },
+        {
+            "tag": "5.6-alpine"
+        },
+        {
+            "tag": "5.6.16-alpine"
+        },
+        {
+            "tag": "6.7.0"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "5.6"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-framework": [
+
+    ],
+    "https://hub.docker.com/_/bash": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "devel-20191115"
+        },
+        {
+            "tag": "devel"
+        },
+        {
+            "tag": "devel-20191108"
+        },
+        {
+            "tag": "devel-20191011"
+        },
+        {
+            "tag": "devel-20191009"
+        },
+        {
+            "tag": "5.0.11"
+        },
+        {
+            "tag": "5.0"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "4.4.23"
+        },
+        {
+            "tag": "4.4"
+        },
+        {
+            "tag": "4.3.48"
+        },
+        {
+            "tag": "4.3"
+        },
+        {
+            "tag": "4.2.53"
+        },
+        {
+            "tag": "4.2"
+        },
+        {
+            "tag": "4.1.17"
+        },
+        {
+            "tag": "4.1"
+        },
+        {
+            "tag": "4.0.44"
+        },
+        {
+            "tag": "4.0"
+        },
+        {
+            "tag": "4"
+        },
+        {
+            "tag": "3.2.57"
+        },
+        {
+            "tag": "3.2"
+        },
+        {
+            "tag": "3.1.23"
+        },
+        {
+            "tag": "3.1"
+        },
+        {
+            "tag": "3.0.22"
+        }
+    ],
+    "https://hub.docker.com/_/dynatrace": [
+
+    ],
+    "https://hub.docker.com/_/sonarqube": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "lts"
+        },
+        {
+            "tag": "enterprise-beta"
+        },
+        {
+            "tag": "developer-beta"
+        },
+        {
+            "tag": "community-beta"
+        },
+        {
+            "tag": "8.0-enterprise-beta"
+        },
+        {
+            "tag": "8.0-developer-beta"
+        },
+        {
+            "tag": "8.0-community-beta"
+        },
+        {
+            "tag": "8-enterprise-beta"
+        },
+        {
+            "tag": "8-developer-beta"
+        },
+        {
+            "tag": "8-community-beta"
+        },
+        {
+            "tag": "7.9.1-community"
+        },
+        {
+            "tag": "7.9-community"
+        },
+        {
+            "tag": "7.8-community"
+        },
+        {
+            "tag": "7.7-community"
+        },
+        {
+            "tag": "6.7.7-community"
+        },
+        {
+            "tag": "6.7-community"
+        },
+        {
+            "tag": "6.7.6-community"
+        },
+        {
+            "tag": "7.6-community"
+        },
+        {
+            "tag": "7.5-community"
+        },
+        {
+            "tag": "7.4-community"
+        },
+        {
+            "tag": "7.1"
+        },
+        {
+            "tag": "6.7.5"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "7.1-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azure-cli": [
+
+    ],
+    "https://hub.docker.com/_/softwareag-apigateway": [
+
+    ],
+    "https://hub.docker.com/_/bleemeo": [
+
+    ],
+    "https://hub.docker.com/_/irssi": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.2.2"
+        },
+        {
+            "tag": "1.2"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.2.2-alpine"
+        },
+        {
+            "tag": "1.2-alpine"
+        },
+        {
+            "tag": "1-alpine"
+        },
+        {
+            "tag": "1.2.1"
+        },
+        {
+            "tag": "1.2.1-alpine"
+        },
+        {
+            "tag": "1.2.0-alpine"
+        },
+        {
+            "tag": "1.2.0"
+        },
+        {
+            "tag": "1.1"
+        },
+        {
+            "tag": "1.1.2"
+        },
+        {
+            "tag": "1.1-alpine"
+        },
+        {
+            "tag": "1.1.2-alpine"
+        },
+        {
+            "tag": "1.1.1-alpine"
+        },
+        {
+            "tag": "1.1.1"
+        },
+        {
+            "tag": "1.1.0"
+        },
+        {
+            "tag": "1.1.0-alpine"
+        },
+        {
+            "tag": "1.0-alpine"
+        },
+        {
+            "tag": "1.0.6-alpine"
+        },
+        {
+            "tag": "1.0"
+        },
+        {
+            "tag": "1.0.6"
+        },
+        {
+            "tag": "1.0.5"
+        }
+    ],
+    "https://hub.docker.com/_/notary": [
+        {
+            "tag": "signer-0.6.1-2"
+        },
+        {
+            "tag": "signer"
+        },
+        {
+            "tag": "server-0.6.1-2"
+        },
+        {
+            "tag": "server"
+        },
+        {
+            "tag": "signer-0.6.1-1"
+        },
+        {
+            "tag": "server-0.6.1-1"
+        },
+        {
+            "tag": "signer-0.6.1"
+        },
+        {
+            "tag": "server-0.6.1"
+        },
+        {
+            "tag": "signer-0.2.0"
+        },
+        {
+            "tag": "server-0.2.0"
+        },
+        {
+            "tag": "signer-0.3.0"
+        },
+        {
+            "tag": "server-0.3.0"
+        },
+        {
+            "tag": "signer-0.4.2"
+        },
+        {
+            "tag": "server-0.4.2"
+        },
+        {
+            "tag": "signer-0.5.0"
+        },
+        {
+            "tag": "server-0.5.0"
+        }
+    ],
+    "https://hub.docker.com/_/php-zendserver": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "9.1"
+        },
+        {
+            "tag": "8.5-php5.6"
+        },
+        {
+            "tag": "8.5"
+        },
+        {
+            "tag": "5.6"
+        },
+        {
+            "tag": "2019.0"
+        },
+        {
+            "tag": "2018.0"
+        },
+        {
+            "tag": "7.0-php5.4"
+        },
+        {
+            "tag": "5.4"
+        },
+        {
+            "tag": "8.5-php5.5"
+        },
+        {
+            "tag": "5.5"
+        },
+        {
+            "tag": "9.0.1-php7"
+        },
+        {
+            "tag": "9.0.1"
+        },
+        {
+            "tag": "9.0-php7"
+        },
+        {
+            "tag": "9.0"
+        },
+        {
+            "tag": "9.0-techpreview2-php7.0GA"
+        },
+        {
+            "tag": "9.0rc9-php7.0GA"
+        },
+        {
+            "tag": "8.6"
+        },
+        {
+            "tag": "8.6-preview-php7.0"
+        },
+        {
+            "tag": "7.0"
+        },
+        {
+            "tag": "7.0-php5.5"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azureiotedge-testing-utility": [
+
+    ],
+    "https://hub.docker.com/_/maven": [
+        {
+            "tag": "3.6.2-jdk-14"
+        },
+        {
+            "tag": "3.6.2-jdk-13"
+        },
+        {
+            "tag": "3.6-jdk-14"
+        },
+        {
+            "tag": "3.6-jdk-13"
+        },
+        {
+            "tag": "3-jdk-14"
+        },
+        {
+            "tag": "3-jdk-13"
+        },
+        {
+            "tag": "3.6.2-jdk-8-openj9"
+        },
+        {
+            "tag": "3.6.2-jdk-11-openj9"
+        },
+        {
+            "tag": "3.6-jdk-8-openj9"
+        },
+        {
+            "tag": "3.6-jdk-11-openj9"
+        },
+        {
+            "tag": "3-jdk-8-openj9"
+        },
+        {
+            "tag": "3-jdk-11-openj9"
+        },
+        {
+            "tag": "3.6.2-ibmjava-8"
+        },
+        {
+            "tag": "3.6.2-ibmjava"
+        },
+        {
+            "tag": "3.6-ibmjava-8"
+        },
+        {
+            "tag": "3.6-ibmjava"
+        },
+        {
+            "tag": "3-ibmjava-8"
+        },
+        {
+            "tag": "amazoncorretto"
+        },
+        {
+            "tag": "3.6.2-amazoncorretto-8"
+        },
+        {
+            "tag": "3.6.2-amazoncorretto-11"
+        },
+        {
+            "tag": "3.6-amazoncorretto-8"
+        },
+        {
+            "tag": "3.6-amazoncorretto-11"
+        },
+        {
+            "tag": "3-amazoncorretto-8"
+        },
+        {
+            "tag": "3-amazoncorretto-11"
+        },
+        {
+            "tag": "3-amazoncorretto"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-windows-nanoserver-insider": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-node-4-5": [
+
+    ],
+    "https://hub.docker.com/_/iojs": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "3-slim"
+        },
+        {
+            "tag": "3.3-slim"
+        },
+        {
+            "tag": "3.3.0-slim"
+        },
+        {
+            "tag": "onbuild"
+        },
+        {
+            "tag": "3-onbuild"
+        },
+        {
+            "tag": "3.3-onbuild"
+        },
+        {
+            "tag": "3.3.0-onbuild"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "3.3"
+        },
+        {
+            "tag": "3.3.0"
+        },
+        {
+            "tag": "2-slim"
+        },
+        {
+            "tag": "2.5-slim"
+        },
+        {
+            "tag": "2.5.0-slim"
+        },
+        {
+            "tag": "2-onbuild"
+        },
+        {
+            "tag": "2.5-onbuild"
+        },
+        {
+            "tag": "2.5.0-onbuild"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "2.5"
+        },
+        {
+            "tag": "2.5.0"
+        },
+        {
+            "tag": "1-slim"
+        },
+        {
+            "tag": "1.8-slim"
+        },
+        {
+            "tag": "1.8.4-slim"
+        },
+        {
+            "tag": "1-onbuild"
+        }
+    ],
+    "https://hub.docker.com/_/sitescope": [
+
+    ],
+    "https://hub.docker.com/_/mysql-enterprise-server": [
+
+    ],
+    "https://hub.docker.com/_/silverpeas": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "6.0.2"
+        },
+        {
+            "tag": "6.0.1"
+        },
+        {
+            "tag": "6.0"
+        },
+        {
+            "tag": "6.0-beta1"
+        },
+        {
+            "tag": "6.0-alpha3"
+        },
+        {
+            "tag": "6.0-alpha2"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-node-10-12": [
+
+    ],
+    "https://hub.docker.com/_/thrift": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "0.12.0"
+        },
+        {
+            "tag": "0.12"
+        },
+        {
+            "tag": "0.9.3"
+        },
+        {
+            "tag": "0.9"
+        },
+        {
+            "tag": "0.11.0"
+        },
+        {
+            "tag": "0.11"
+        },
+        {
+            "tag": "0.10.0"
+        },
+        {
+            "tag": "0.10"
+        },
+        {
+            "tag": "0.9.2"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-mssql-tools": [
+
+    ],
+    "https://hub.docker.com/_/nats": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "scratch"
+        },
+        {
+            "tag": "linux"
+        },
+        {
+            "tag": "alpine3.10"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "2.1.0-scratch"
+        },
+        {
+            "tag": "2.1.0-linux"
+        },
+        {
+            "tag": "2.1.0-alpine3.10"
+        },
+        {
+            "tag": "2.1.0-alpine"
+        },
+        {
+            "tag": "2.1.0"
+        },
+        {
+            "tag": "2.1-scratch"
+        },
+        {
+            "tag": "2.1-linux"
+        },
+        {
+            "tag": "2.1-alpine3.10"
+        },
+        {
+            "tag": "2.1-alpine"
+        },
+        {
+            "tag": "2.1"
+        },
+        {
+            "tag": "2-scratch"
+        },
+        {
+            "tag": "2-linux"
+        },
+        {
+            "tag": "2-alpine3.10"
+        },
+        {
+            "tag": "2-alpine"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "windowsservercore"
+        },
+        {
+            "tag": "nanoserver"
+        },
+        {
+            "tag": "2.1.0-windowsservercore"
+        },
+        {
+            "tag": "2.1.0-nanoserver"
+        },
+        {
+            "tag": "2.1-windowsservercore-ltsc2016"
+        }
+    ],
+    "https://hub.docker.com/_/oracle-database-enterprise-edition": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-runtime": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azuredocs-multicontainerwordpress": [
+
+    ],
+    "https://hub.docker.com/_/swarm": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.2.9"
+        },
+        {
+            "tag": "1.2.8"
+        },
+        {
+            "tag": "1.2.7"
+        },
+        {
+            "tag": "1.2.8-rc1"
+        },
+        {
+            "tag": "1.2.6"
+        },
+        {
+            "tag": "1.2.5"
+        },
+        {
+            "tag": "1.2.6-rc2"
+        },
+        {
+            "tag": "1.2.6-rc1"
+        },
+        {
+            "tag": "1.2.4"
+        },
+        {
+            "tag": "1.2.4-rc2"
+        },
+        {
+            "tag": "1.2.4-rc1"
+        },
+        {
+            "tag": "1.2.3"
+        },
+        {
+            "tag": "1.2.2"
+        },
+        {
+            "tag": "1.2.1"
+        },
+        {
+            "tag": "1.2.0"
+        },
+        {
+            "tag": "1.1.3"
+        },
+        {
+            "tag": "1.1.2"
+        },
+        {
+            "tag": "1.1.1"
+        },
+        {
+            "tag": "1.1.0"
+        },
+        {
+            "tag": "1.0.1"
+        },
+        {
+            "tag": "1.0.0"
+        },
+        {
+            "tag": "1.2.3-rc1"
+        },
+        {
+            "tag": "1.2.2-rc1"
+        },
+        {
+            "tag": "1.2.1-rc1"
+        }
+    ],
+    "https://hub.docker.com/_/rapidoid": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "5.4.6"
+        },
+        {
+            "tag": "5.4"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "5.4.5"
+        },
+        {
+            "tag": "5.4.4"
+        },
+        {
+            "tag": "5.4.3"
+        },
+        {
+            "tag": "5.4.2"
+        },
+        {
+            "tag": "5.4.1"
+        },
+        {
+            "tag": "5.4.0"
+        },
+        {
+            "tag": "5.3"
+        },
+        {
+            "tag": "5.3.5"
+        },
+        {
+            "tag": "5.3.4"
+        },
+        {
+            "tag": "5.3.3"
+        },
+        {
+            "tag": "5.3.2"
+        },
+        {
+            "tag": "5.3.1"
+        },
+        {
+            "tag": "5.3.0"
+        },
+        {
+            "tag": "5.2"
+        },
+        {
+            "tag": "5.2.8"
+        },
+        {
+            "tag": "5.2.6"
+        }
+    ],
+    "https://hub.docker.com/_/rails": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "onbuild"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "5.0"
+        },
+        {
+            "tag": "5.0.1"
+        },
+        {
+            "tag": "5.0.0"
+        },
+        {
+            "tag": "5.0.0.1"
+        },
+        {
+            "tag": "4"
+        },
+        {
+            "tag": "4.2.6"
+        },
+        {
+            "tag": "4.2"
+        },
+        {
+            "tag": "4.2.5.2"
+        },
+        {
+            "tag": "4.2.5"
+        },
+        {
+            "tag": "4.2.5.1"
+        },
+        {
+            "tag": "4.1"
+        },
+        {
+            "tag": "4.2.0"
+        },
+        {
+            "tag": "4.1.4"
+        },
+        {
+            "tag": "4.1.5"
+        },
+        {
+            "tag": "4.1.1"
+        },
+        {
+            "tag": "4.1.8"
+        },
+        {
+            "tag": "4.1.7"
+        },
+        {
+            "tag": "4.1.6"
+        },
+        {
+            "tag": "4.2.4"
+        },
+        {
+            "tag": "4.2.3"
+        },
+        {
+            "tag": "4.2.2"
+        },
+        {
+            "tag": "4.2.1"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azureiotedge-simulated-temperature-sensor": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-java-jre": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-cognitive-services-sentiment": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-nightly-aspnet": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-powershell": [
+
+    ],
+    "https://hub.docker.com/_/oraclelinux": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "8-slim"
+        },
+        {
+            "tag": "7.7"
+        },
+        {
+            "tag": "7-slim"
+        },
+        {
+            "tag": "7"
+        },
+        {
+            "tag": "8.0"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "7.6"
+        },
+        {
+            "tag": "6.10"
+        },
+        {
+            "tag": "6"
+        },
+        {
+            "tag": "6-slim"
+        },
+        {
+            "tag": "7.5"
+        },
+        {
+            "tag": "6.9"
+        },
+        {
+            "tag": "7.4"
+        },
+        {
+            "tag": "7.1"
+        },
+        {
+            "tag": "6.6"
+        },
+        {
+            "tag": "6.7"
+        },
+        {
+            "tag": "6.8"
+        },
+        {
+            "tag": "7.0"
+        },
+        {
+            "tag": "7.2"
+        },
+        {
+            "tag": "7.3"
+        },
+        {
+            "tag": "5.11"
+        },
+        {
+            "tag": "5"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-service-fabric-reverse-proxy": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-framework-aspnet": [
+
+    ],
+    "https://hub.docker.com/_/centos": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "centos7.7.1908"
+        },
+        {
+            "tag": "centos7"
+        },
+        {
+            "tag": "7.7.1908"
+        },
+        {
+            "tag": "7"
+        },
+        {
+            "tag": "centos8"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "centos7.6.1810"
+        },
+        {
+            "tag": "7.6.1810"
+        },
+        {
+            "tag": "centos7.5.1804"
+        },
+        {
+            "tag": "centos7.4.1708"
+        },
+        {
+            "tag": "centos7.3.1611"
+        },
+        {
+            "tag": "centos7.2.1511"
+        },
+        {
+            "tag": "centos7.1.1503"
+        },
+        {
+            "tag": "centos7.0.1406"
+        },
+        {
+            "tag": "centos6.9"
+        },
+        {
+            "tag": "centos6.8"
+        },
+        {
+            "tag": "centos6.7"
+        },
+        {
+            "tag": "centos6.6"
+        },
+        {
+            "tag": "centos6.10"
+        },
+        {
+            "tag": "centos6"
+        },
+        {
+            "tag": "7.5.1804"
+        },
+        {
+            "tag": "7.4.1708"
+        },
+        {
+            "tag": "7.3.1611"
+        },
+        {
+            "tag": "7.2.1511"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azure-cognitive-services-keyphrase": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-python-3-6": [
+
+    ],
+    "https://hub.docker.com/_/senzing-package": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-java-jre-headless": [
+
+    ],
+    "https://hub.docker.com/_/couchdb": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "2.3.1"
+        },
+        {
+            "tag": "2.3.0"
+        },
+        {
+            "tag": "2.3"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "2.2"
+        },
+        {
+            "tag": "2.2.0"
+        },
+        {
+            "tag": "1-couchperuser"
+        },
+        {
+            "tag": "1.7-couchperuser"
+        },
+        {
+            "tag": "1.7.2-couchperuser"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "1.7"
+        },
+        {
+            "tag": "1.7.2"
+        },
+        {
+            "tag": "2.1"
+        },
+        {
+            "tag": "2.1.2"
+        },
+        {
+            "tag": "1.7.1-couchperuser"
+        },
+        {
+            "tag": "1.7.1"
+        },
+        {
+            "tag": "2.1.1"
+        },
+        {
+            "tag": "1.7.0-couchperuser"
+        },
+        {
+            "tag": "1.7.0"
+        },
+        {
+            "tag": "1.6.1-couchperuser"
+        },
+        {
+            "tag": "1.6-couchperuser"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.6.1"
+        }
+    ],
+    "https://hub.docker.com/_/sapmachine": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "lts"
+        },
+        {
+            "tag": "13.0.1"
+        },
+        {
+            "tag": "13"
+        },
+        {
+            "tag": "11.0.5"
+        },
+        {
+            "tag": "11"
+        },
+        {
+            "tag": "11.0.4"
+        },
+        {
+            "tag": "12.0.2"
+        },
+        {
+            "tag": "12"
+        },
+        {
+            "tag": "12.0.1"
+        },
+        {
+            "tag": "11.0.3"
+        }
+    ],
+    "https://hub.docker.com/_/rust": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "stretch"
+        },
+        {
+            "tag": "slim-stretch"
+        },
+        {
+            "tag": "slim-buster"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "buster"
+        },
+        {
+            "tag": "alpine3.10"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.39.0-stretch"
+        },
+        {
+            "tag": "1.39.0-slim-stretch"
+        },
+        {
+            "tag": "1.39.0-slim-buster"
+        },
+        {
+            "tag": "1.39.0-slim"
+        },
+        {
+            "tag": "1.39.0-buster"
+        },
+        {
+            "tag": "1.39.0-alpine3.10"
+        },
+        {
+            "tag": "1.39.0-alpine"
+        },
+        {
+            "tag": "1.39.0"
+        },
+        {
+            "tag": "1.39-stretch"
+        },
+        {
+            "tag": "1.39-slim-stretch"
+        },
+        {
+            "tag": "1.39-slim-buster"
+        },
+        {
+            "tag": "1.39-slim"
+        },
+        {
+            "tag": "1.39-buster"
+        },
+        {
+            "tag": "1.39-alpine3.10"
+        },
+        {
+            "tag": "1.39-alpine"
+        },
+        {
+            "tag": "1.39"
+        },
+        {
+            "tag": "1-stretch"
+        }
+    ],
+    "https://hub.docker.com/_/postfixadmin": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "fpm-alpine"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "3.2.2-fpm-alpine"
+        },
+        {
+            "tag": "3.2.2-fpm"
+        },
+        {
+            "tag": "3.2.2-apache"
+        },
+        {
+            "tag": "3.2.2"
+        },
+        {
+            "tag": "3.2-fpm-alpine"
+        },
+        {
+            "tag": "3.2-fpm"
+        },
+        {
+            "tag": "3.2-apache"
+        },
+        {
+            "tag": "3.2"
+        },
+        {
+            "tag": "3-fpm-alpine"
+        },
+        {
+            "tag": "3-fpm"
+        },
+        {
+            "tag": "3-apache"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "3.1"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-mssql-server": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-containernetworking": [
+
+    ],
+    "https://hub.docker.com/_/consul": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.6.2"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.6.1"
+        },
+        {
+            "tag": "1.6.0"
+        },
+        {
+            "tag": "1.6.0-rc1"
+        },
+        {
+            "tag": "1.5.3"
+        },
+        {
+            "tag": "1.5"
+        },
+        {
+            "tag": "1.6.0-beta1"
+        },
+        {
+            "tag": "1.5.2"
+        },
+        {
+            "tag": "1.5.1"
+        },
+        {
+            "tag": "1.4.5"
+        },
+        {
+            "tag": "1.4"
+        },
+        {
+            "tag": "1.3.1"
+        },
+        {
+            "tag": "1.3"
+        },
+        {
+            "tag": "1.2.4"
+        },
+        {
+            "tag": "1.2"
+        },
+        {
+            "tag": "1.1.1"
+        },
+        {
+            "tag": "1.1"
+        },
+        {
+            "tag": "1.0.8"
+        },
+        {
+            "tag": "1.0"
+        },
+        {
+            "tag": "0.9.4"
+        },
+        {
+            "tag": "0.9"
+        },
+        {
+            "tag": "1.5.0"
+        },
+        {
+            "tag": "1.4.4"
+        }
+    ],
+    "https://hub.docker.com/_/hello-world": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "nanoserver-1809"
+        },
+        {
+            "tag": "nanoserver-1803"
+        },
+        {
+            "tag": "nanoserver"
+        },
+        {
+            "tag": "linux"
+        },
+        {
+            "tag": "nanoserver-1709"
+        },
+        {
+            "tag": "nanoserver-sac2016"
+        },
+        {
+            "tag": "nanoserver1709"
+        }
+    ],
+    "https://hub.docker.com/_/redmine": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "4.0.5-alpine"
+        },
+        {
+            "tag": "4.0-alpine"
+        },
+        {
+            "tag": "4-alpine"
+        },
+        {
+            "tag": "3.4.12-alpine"
+        },
+        {
+            "tag": "3.4-alpine"
+        },
+        {
+            "tag": "3-alpine"
+        },
+        {
+            "tag": "passenger"
+        },
+        {
+            "tag": "4.0.5-passenger"
+        },
+        {
+            "tag": "4.0.5"
+        },
+        {
+            "tag": "4.0-passenger"
+        },
+        {
+            "tag": "4.0"
+        },
+        {
+            "tag": "4-passenger"
+        },
+        {
+            "tag": "4"
+        },
+        {
+            "tag": "3.4.12-passenger"
+        },
+        {
+            "tag": "3.4.12"
+        },
+        {
+            "tag": "3.4-passenger"
+        },
+        {
+            "tag": "3.4"
+        },
+        {
+            "tag": "3-passenger"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "4.0.4-passenger"
+        },
+        {
+            "tag": "4.0.4"
+        },
+        {
+            "tag": "3.4.11-passenger"
+        },
+        {
+            "tag": "3.4.11"
+        }
+    ],
+    "https://hub.docker.com/_/coscale-agent": [
+
+    ],
+    "https://hub.docker.com/_/metricbeat": [
+
+    ],
+    "https://hub.docker.com/_/archlinux": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "20191105"
+        },
+        {
+            "tag": "20191006"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-businesscentral-onprem": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-functions-base": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-python-3-7": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-iotedge-opc-publisher": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azuredocs-aci-tutorial-sidecar": [
+
+    ],
+    "https://hub.docker.com/_/skaffolder-enterprise": [
+
+    ],
+    "https://hub.docker.com/_/cassandra": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3.11.5"
+        },
+        {
+            "tag": "3.11"
+        },
+        {
+            "tag": "3.0.19"
+        },
+        {
+            "tag": "3.0"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "2.2.15"
+        },
+        {
+            "tag": "2.2"
+        },
+        {
+            "tag": "2"
+        },
+        {
+            "tag": "3.11.4"
+        },
+        {
+            "tag": "3.0.18"
+        },
+        {
+            "tag": "2.2.14"
+        },
+        {
+            "tag": "2.1.21"
+        },
+        {
+            "tag": "2.1"
+        },
+        {
+            "tag": "3.11.3"
+        },
+        {
+            "tag": "3.0.17"
+        },
+        {
+            "tag": "2.2.13"
+        },
+        {
+            "tag": "2.1.20"
+        },
+        {
+            "tag": "3.11.2"
+        },
+        {
+            "tag": "3.0.16"
+        },
+        {
+            "tag": "2.2.12"
+        },
+        {
+            "tag": "3.0.15"
+        },
+        {
+            "tag": "3.11.1"
+        },
+        {
+            "tag": "2.2.11"
+        },
+        {
+            "tag": "2.1.19"
+        }
+    ],
+    "https://hub.docker.com/_/thingsboard-pe-coap-transport": [
+
+    ],
+    "https://hub.docker.com/_/traefik": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "v2.1.0-rc2-windowsservercore-1809"
+        },
+        {
+            "tag": "v2.1.0-rc2"
+        },
+        {
+            "tag": "v2.1-windowsservercore-1809"
+        },
+        {
+            "tag": "v2.1"
+        },
+        {
+            "tag": "cantal-windowsservercore-1809"
+        },
+        {
+            "tag": "cantal"
+        },
+        {
+            "tag": "2.1.0-rc2-windowsservercore-1809"
+        },
+        {
+            "tag": "2.1.0-rc2"
+        },
+        {
+            "tag": "2.1-windowsservercore-1809"
+        },
+        {
+            "tag": "2.1"
+        },
+        {
+            "tag": "windowsservercore-1809"
+        },
+        {
+            "tag": "v2.0.5-windowsservercore-1809"
+        },
+        {
+            "tag": "v2.0.5"
+        },
+        {
+            "tag": "v2.0-windowsservercore-1809"
+        },
+        {
+            "tag": "v2.0"
+        },
+        {
+            "tag": "v1.7.19-windowsservercore-1809"
+        },
+        {
+            "tag": "v1.7-windowsservercore-1809"
+        },
+        {
+            "tag": "montdor-windowsservercore-1809"
+        },
+        {
+            "tag": "montdor"
+        },
+        {
+            "tag": "maroilles-windowsservercore-1809"
+        },
+        {
+            "tag": "2.0.5-windowsservercore-1809"
+        },
+        {
+            "tag": "2.0.5"
+        },
+        {
+            "tag": "2.0-windowsservercore-1809"
+        },
+        {
+            "tag": "2.0"
+        }
+    ],
+    "https://hub.docker.com/_/known": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "0.9.9"
+        },
+        {
+            "tag": "0.9"
+        },
+        {
+            "tag": "0"
+        },
+        {
+            "tag": "0.9.2"
+        }
+    ],
+    "https://hub.docker.com/_/mysql": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "8.0.18"
+        },
+        {
+            "tag": "8.0"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "5.7.28"
+        },
+        {
+            "tag": "5.7"
+        },
+        {
+            "tag": "5.6.46"
+        },
+        {
+            "tag": "5.6"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "8.0.17"
+        },
+        {
+            "tag": "5.7.27"
+        },
+        {
+            "tag": "5.6.45"
+        },
+        {
+            "tag": "8.0.16"
+        },
+        {
+            "tag": "5.7.26"
+        },
+        {
+            "tag": "5.6.44"
+        },
+        {
+            "tag": "5.5.62"
+        },
+        {
+            "tag": "5.5"
+        },
+        {
+            "tag": "5.6.43"
+        },
+        {
+            "tag": "5.7.25"
+        },
+        {
+            "tag": "8.0.15"
+        },
+        {
+            "tag": "8.0.14"
+        },
+        {
+            "tag": "5.6.42"
+        },
+        {
+            "tag": "5.7.24"
+        },
+        {
+            "tag": "8.0.13"
+        },
+        {
+            "tag": "5.5.61"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-k8s-aad-pod-identity-demo": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-nightly-runtime-deps": [
+
+    ],
+    "https://hub.docker.com/_/fedora": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "31"
+        },
+        {
+            "tag": "30"
+        },
+        {
+            "tag": "rawhide"
+        },
+        {
+            "tag": "32"
+        },
+        {
+            "tag": "29"
+        },
+        {
+            "tag": "28"
+        },
+        {
+            "tag": "27"
+        },
+        {
+            "tag": "26"
+        },
+        {
+            "tag": "branched"
+        },
+        {
+            "tag": "25"
+        },
+        {
+            "tag": "26-modular"
+        },
+        {
+            "tag": "modular"
+        },
+        {
+            "tag": "24"
+        },
+        {
+            "tag": "heisenbug"
+        },
+        {
+            "tag": "20"
+        },
+        {
+            "tag": "21"
+        },
+        {
+            "tag": "22"
+        },
+        {
+            "tag": "23"
+        }
+    ],
+    "https://hub.docker.com/_/buildpack-deps": [
+        {
+            "tag": "focal-scm"
+        },
+        {
+            "tag": "focal-curl"
+        },
+        {
+            "tag": "focal"
+        },
+        {
+            "tag": "20.04-scm"
+        },
+        {
+            "tag": "20.04-curl"
+        },
+        {
+            "tag": "20.04"
+        },
+        {
+            "tag": "xenial-scm"
+        },
+        {
+            "tag": "xenial-curl"
+        },
+        {
+            "tag": "xenial"
+        },
+        {
+            "tag": "disco-scm"
+        },
+        {
+            "tag": "disco-curl"
+        },
+        {
+            "tag": "disco"
+        },
+        {
+            "tag": "bionic-scm"
+        },
+        {
+            "tag": "bionic-curl"
+        },
+        {
+            "tag": "bionic"
+        },
+        {
+            "tag": "19.04-scm"
+        },
+        {
+            "tag": "19.04-curl"
+        },
+        {
+            "tag": "19.04"
+        },
+        {
+            "tag": "18.04-scm"
+        },
+        {
+            "tag": "18.04-curl"
+        },
+        {
+            "tag": "18.04"
+        },
+        {
+            "tag": "16.04-scm"
+        },
+        {
+            "tag": "16.04-curl"
+        },
+        {
+            "tag": "16.04"
+        },
+        {
+            "tag": "eoan-scm"
+        }
+    ],
+    "https://hub.docker.com/_/softwareag-adabasmanager-ce": [
+
+    ],
+    "https://hub.docker.com/_/node": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "stretch-slim"
+        },
+        {
+            "tag": "stretch"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "buster-slim"
+        },
+        {
+            "tag": "buster"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "13.1.0-stretch-slim"
+        },
+        {
+            "tag": "13.1.0-stretch"
+        },
+        {
+            "tag": "13.1.0-slim"
+        },
+        {
+            "tag": "13.1.0-buster-slim"
+        },
+        {
+            "tag": "13.1.0-buster"
+        },
+        {
+            "tag": "13.1.0-alpine"
+        },
+        {
+            "tag": "13.1.0"
+        },
+        {
+            "tag": "13.1-stretch-slim"
+        },
+        {
+            "tag": "13.1-stretch"
+        },
+        {
+            "tag": "13.1-slim"
+        },
+        {
+            "tag": "13.1-buster-slim"
+        },
+        {
+            "tag": "13.1-buster"
+        },
+        {
+            "tag": "13.1-alpine"
+        },
+        {
+            "tag": "13.1"
+        },
+        {
+            "tag": "13-stretch-slim"
+        },
+        {
+            "tag": "13-stretch"
+        },
+        {
+            "tag": "13-slim"
+        },
+        {
+            "tag": "13-buster-slim"
+        }
+    ],
+    "https://hub.docker.com/_/heartbeat": [
+
+    ],
+    "https://hub.docker.com/_/intersystems-iris-data-platform": [
+
+    ],
+    "https://hub.docker.com/_/glassfish": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "4.1-jdk8"
+        },
+        {
+            "tag": "4.1"
+        },
+        {
+            "tag": "4.0"
+        },
+        {
+            "tag": "4.0-jdk7"
+        }
+    ],
+    "https://hub.docker.com/_/python": [
+        {
+            "tag": "3.7.5"
+        },
+        {
+            "tag": "3.7"
+        },
+        {
+            "tag": "3.6.9-alpine3.9"
+        },
+        {
+            "tag": "3.6.9-alpine3.10"
+        },
+        {
+            "tag": "3.6.9-alpine"
+        },
+        {
+            "tag": "3.6.9"
+        },
+        {
+            "tag": "3.6-stretch"
+        },
+        {
+            "tag": "3.6-slim-stretch"
+        },
+        {
+            "tag": "3.6-slim-buster"
+        },
+        {
+            "tag": "3.6-slim"
+        },
+        {
+            "tag": "3.6-buster"
+        },
+        {
+            "tag": "3.6-alpine3.9"
+        },
+        {
+            "tag": "3.6-alpine3.10"
+        },
+        {
+            "tag": "3.6-alpine"
+        },
+        {
+            "tag": "3.6"
+        },
+        {
+            "tag": "3.5.9-stretch"
+        },
+        {
+            "tag": "3.5.9-slim-stretch"
+        },
+        {
+            "tag": "3.5.9-slim-buster"
+        },
+        {
+            "tag": "3.5.9-slim"
+        },
+        {
+            "tag": "3.5.9-buster"
+        },
+        {
+            "tag": "3.5.9-alpine3.9"
+        },
+        {
+            "tag": "3.5.9-alpine3.10"
+        },
+        {
+            "tag": "3.5.9-alpine"
+        },
+        {
+            "tag": "3.5.9"
+        },
+        {
+            "tag": "3.5-stretch"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-oryx-node-4-4": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azureiotedge-agent": [
+
+    ],
+    "https://hub.docker.com/_/solr": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "8.3.0-slim"
+        },
+        {
+            "tag": "8.3.0"
+        },
+        {
+            "tag": "8.3-slim"
+        },
+        {
+            "tag": "8.3"
+        },
+        {
+            "tag": "8.2.0-slim"
+        },
+        {
+            "tag": "8.2.0"
+        },
+        {
+            "tag": "8.2-slim"
+        },
+        {
+            "tag": "8.2"
+        },
+        {
+            "tag": "8.1.1-slim"
+        },
+        {
+            "tag": "8.1.1"
+        },
+        {
+            "tag": "8.1-slim"
+        },
+        {
+            "tag": "8.1"
+        },
+        {
+            "tag": "8.0.0-slim"
+        },
+        {
+            "tag": "8.0.0"
+        },
+        {
+            "tag": "8.0-slim"
+        },
+        {
+            "tag": "8.0"
+        },
+        {
+            "tag": "8-slim"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "7.7.2-slim"
+        },
+        {
+            "tag": "7.7.2"
+        },
+        {
+            "tag": "7.7-slim"
+        },
+        {
+            "tag": "7.7"
+        },
+        {
+            "tag": "7.6.0-slim"
+        }
+    ],
+    "https://hub.docker.com/_/netscaler-cpx-express": [
+
+    ],
+    "https://hub.docker.com/_/oracle-webtier-12c": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-iotedge-opc-client": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-windows-insider": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-nightly": [
+
+    ],
+    "https://hub.docker.com/_/apm-server": [
+
+    ],
+    "https://hub.docker.com/_/mariadb": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "bionic"
+        },
+        {
+            "tag": "10.4.10-bionic"
+        },
+        {
+            "tag": "10.4.10"
+        },
+        {
+            "tag": "10.4-bionic"
+        },
+        {
+            "tag": "10.4"
+        },
+        {
+            "tag": "10.3.20-bionic"
+        },
+        {
+            "tag": "10.3.20"
+        },
+        {
+            "tag": "10.3-bionic"
+        },
+        {
+            "tag": "10.3"
+        },
+        {
+            "tag": "10.2.29-bionic"
+        },
+        {
+            "tag": "10.2.29"
+        },
+        {
+            "tag": "10.2-bionic"
+        },
+        {
+            "tag": "10.2"
+        },
+        {
+            "tag": "10.1.43-bionic"
+        },
+        {
+            "tag": "10.1.43"
+        },
+        {
+            "tag": "10.1-bionic"
+        },
+        {
+            "tag": "10.1"
+        },
+        {
+            "tag": "10-bionic"
+        },
+        {
+            "tag": "10"
+        },
+        {
+            "tag": "10.4.8-bionic"
+        },
+        {
+            "tag": "10.4.8"
+        },
+        {
+            "tag": "10.3.18-bionic"
+        },
+        {
+            "tag": "10.3.18"
+        },
+        {
+            "tag": "10.2.27-bionic"
+        }
+    ],
+    "https://hub.docker.com/_/arangodb": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3.5.2"
+        },
+        {
+            "tag": "3.5"
+        },
+        {
+            "tag": "3.5.1"
+        },
+        {
+            "tag": "3.4.8"
+        },
+        {
+            "tag": "3.4"
+        },
+        {
+            "tag": "3.2.17"
+        },
+        {
+            "tag": "3.2"
+        },
+        {
+            "tag": "3.3.23"
+        },
+        {
+            "tag": "3.3"
+        },
+        {
+            "tag": "2.8.11"
+        },
+        {
+            "tag": "2.8"
+        },
+        {
+            "tag": "3.5.0"
+        },
+        {
+            "tag": "3.4.7"
+        },
+        {
+            "tag": "3.4.6"
+        },
+        {
+            "tag": "3.4.5"
+        },
+        {
+            "tag": "3.3.21"
+        },
+        {
+            "tag": "3.4.4"
+        },
+        {
+            "tag": "3.4.3"
+        },
+        {
+            "tag": "3.4.2"
+        },
+        {
+            "tag": "3.4.1"
+        },
+        {
+            "tag": "3.4.0"
+        },
+        {
+            "tag": "3.3.20"
+        },
+        {
+            "tag": "3.3.19"
+        },
+        {
+            "tag": "3.3.16"
+        }
+    ],
+    "https://hub.docker.com/_/xwiki": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "postgres-tomcat"
+        },
+        {
+            "tag": "mysql-tomcat"
+        },
+        {
+            "tag": "lts-postgres-tomcat"
+        },
+        {
+            "tag": "lts-postgres"
+        },
+        {
+            "tag": "lts-mysql-tomcat"
+        },
+        {
+            "tag": "lts-mysql"
+        },
+        {
+            "tag": "lts"
+        },
+        {
+            "tag": "10.11.10-postgres-tomcat"
+        },
+        {
+            "tag": "10.11.10"
+        },
+        {
+            "tag": "10.11-postgres-tomcat"
+        },
+        {
+            "tag": "10.11"
+        },
+        {
+            "tag": "10-postgres-tomcat"
+        },
+        {
+            "tag": "10-mysql-tomcat"
+        },
+        {
+            "tag": "10"
+        },
+        {
+            "tag": "stable-postgres-tomcat"
+        },
+        {
+            "tag": "stable-postgres"
+        },
+        {
+            "tag": "stable-mysql-tomcat"
+        },
+        {
+            "tag": "stable-mysql"
+        },
+        {
+            "tag": "stable"
+        },
+        {
+            "tag": "11.9-postgres-tomcat"
+        },
+        {
+            "tag": "11.9-mysql-tomcat"
+        },
+        {
+            "tag": "11.9"
+        },
+        {
+            "tag": "11-postgres-tomcat"
+        },
+        {
+            "tag": "11-mysql-tomcat"
+        }
+    ],
+    "https://hub.docker.com/_/joomla": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "php7.3-fpm-alpine"
+        },
+        {
+            "tag": "php7.3-fpm"
+        },
+        {
+            "tag": "php7.3-apache"
+        },
+        {
+            "tag": "php7.3"
+        },
+        {
+            "tag": "php7.2-fpm-alpine"
+        },
+        {
+            "tag": "php7.2-fpm"
+        },
+        {
+            "tag": "php7.2-apache"
+        },
+        {
+            "tag": "php7.2"
+        },
+        {
+            "tag": "php7.1-fpm-alpine"
+        },
+        {
+            "tag": "php7.1-fpm"
+        },
+        {
+            "tag": "php7.1-apache"
+        },
+        {
+            "tag": "php7.1"
+        },
+        {
+            "tag": "fpm-alpine"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "3.9.13-php7.3-fpm-alpine"
+        },
+        {
+            "tag": "3.9.13-php7.3-fpm"
+        },
+        {
+            "tag": "3.9.13-php7.3-apache"
+        },
+        {
+            "tag": "3.9.13-php7.3"
+        },
+        {
+            "tag": "3.9.13-php7.2-fpm-alpine"
+        },
+        {
+            "tag": "3.9.13-php7.2-fpm"
+        },
+        {
+            "tag": "3.9.13-php7.2-apache"
+        },
+        {
+            "tag": "3.9.13-php7.2"
+        },
+        {
+            "tag": "3.9.13-php7.1-fpm-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/packetbeat": [
+
+    ],
+    "https://hub.docker.com/_/pasoe": [
+
+    ],
+    "https://hub.docker.com/_/piwik": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "3"
+        },
+        {
+            "tag": "3.6"
+        },
+        {
+            "tag": "3.6.0"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "3-apache"
+        },
+        {
+            "tag": "3.6-apache"
+        },
+        {
+            "tag": "3.6.0-apache"
+        },
+        {
+            "tag": "3-fpm"
+        },
+        {
+            "tag": "fpm-alpine"
+        },
+        {
+            "tag": "3-fpm-alpine"
+        },
+        {
+            "tag": "3.6-fpm-alpine"
+        },
+        {
+            "tag": "3.6.0-fpm-alpine"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "3.6-fpm"
+        },
+        {
+            "tag": "3.6.0-fpm"
+        },
+        {
+            "tag": "3.5-fpm"
+        },
+        {
+            "tag": "3.5.1-fpm"
+        },
+        {
+            "tag": "3.5-fpm-alpine"
+        },
+        {
+            "tag": "3.5.1-fpm-alpine"
+        },
+        {
+            "tag": "3.5"
+        },
+        {
+            "tag": "3.5.1"
+        },
+        {
+            "tag": "3.5-apache"
+        },
+        {
+            "tag": "3.5.1-apache"
+        },
+        {
+            "tag": "3.5.0-fpm"
+        }
+    ],
+    "https://hub.docker.com/_/yourls": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "fpm-alpine"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "1.7.4-fpm-alpine"
+        },
+        {
+            "tag": "1.7.4-fpm"
+        },
+        {
+            "tag": "1.7.4-apache"
+        },
+        {
+            "tag": "1.7.4"
+        },
+        {
+            "tag": "1.7-fpm-alpine"
+        },
+        {
+            "tag": "1.7-fpm"
+        },
+        {
+            "tag": "1.7-apache"
+        },
+        {
+            "tag": "1.7"
+        },
+        {
+            "tag": "1-fpm-alpine"
+        },
+        {
+            "tag": "1-fpm"
+        },
+        {
+            "tag": "1-apache"
+        },
+        {
+            "tag": "1"
+        },
+        {
+            "tag": "1.7.3-fpm-alpine"
+        },
+        {
+            "tag": "1.7.3-fpm"
+        },
+        {
+            "tag": "1.7.3-apache"
+        },
+        {
+            "tag": "1.7.3"
+        },
+        {
+            "tag": "1.7.2-fpm-alpine"
+        },
+        {
+            "tag": "1.7.2-fpm"
+        },
+        {
+            "tag": "1.7.2"
+        },
+        {
+            "tag": "1.7.2-apache"
+        }
+    ],
+    "https://hub.docker.com/_/sourcemage": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "0.62"
+        },
+        {
+            "tag": "0.61"
+        }
+    ],
+    "https://hub.docker.com/_/influxdb": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "data-alpine"
+        },
+        {
+            "tag": "data"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.7.9-data-alpine"
+        },
+        {
+            "tag": "1.7.9-data"
+        },
+        {
+            "tag": "1.7.9-alpine"
+        },
+        {
+            "tag": "1.7.9"
+        },
+        {
+            "tag": "1.7-data-alpine"
+        },
+        {
+            "tag": "1.7-data"
+        },
+        {
+            "tag": "1.7-alpine"
+        },
+        {
+            "tag": "1.7"
+        },
+        {
+            "tag": "1.6.6-data-alpine"
+        },
+        {
+            "tag": "1.6.6-data"
+        },
+        {
+            "tag": "1.6.6-alpine"
+        },
+        {
+            "tag": "1.6.6"
+        },
+        {
+            "tag": "1.6-data-alpine"
+        },
+        {
+            "tag": "1.6-data"
+        },
+        {
+            "tag": "1.6-alpine"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.5.4-data-alpine"
+        },
+        {
+            "tag": "1.5.4-data"
+        },
+        {
+            "tag": "1.5.4-alpine"
+        },
+        {
+            "tag": "1.5.4"
+        },
+        {
+            "tag": "1.5-data-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-framework-sdk": [
+
+    ],
+    "https://hub.docker.com/_/gcc": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "7.5.0"
+        },
+        {
+            "tag": "7.5"
+        },
+        {
+            "tag": "7"
+        },
+        {
+            "tag": "9.2.0"
+        },
+        {
+            "tag": "9.2"
+        },
+        {
+            "tag": "9"
+        },
+        {
+            "tag": "8.3.0"
+        },
+        {
+            "tag": "8.3"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "7.4.0"
+        },
+        {
+            "tag": "7.4"
+        },
+        {
+            "tag": "6.5.0"
+        },
+        {
+            "tag": "6.5"
+        },
+        {
+            "tag": "6"
+        },
+        {
+            "tag": "9.1.0"
+        },
+        {
+            "tag": "9.1"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "5.5"
+        },
+        {
+            "tag": "5.5.0"
+        },
+        {
+            "tag": "8.2"
+        },
+        {
+            "tag": "8.2.0"
+        },
+        {
+            "tag": "7.3"
+        },
+        {
+            "tag": "7.3.0"
+        },
+        {
+            "tag": "6.4"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-cntk": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-mcr-hello-world": [
+
+    ],
+    "https://hub.docker.com/_/opensuse": [
+
+    ],
+    "https://hub.docker.com/_/hylang": [
+        {
+            "tag": "stretch"
+        },
+        {
+            "tag": "python3.7-stretch"
+        },
+        {
+            "tag": "python3.7-buster"
+        },
+        {
+            "tag": "python3.7-alpine3.9"
+        },
+        {
+            "tag": "python3.7-alpine3.10"
+        },
+        {
+            "tag": "python3.7-alpine"
+        },
+        {
+            "tag": "python3.7"
+        },
+        {
+            "tag": "python3.6-stretch"
+        },
+        {
+            "tag": "python3.6-buster"
+        },
+        {
+            "tag": "python3.6-alpine3.9"
+        },
+        {
+            "tag": "python3.6-alpine3.10"
+        },
+        {
+            "tag": "python3.6-alpine"
+        },
+        {
+            "tag": "python3.6"
+        },
+        {
+            "tag": "python3.5-stretch"
+        },
+        {
+            "tag": "python3.5-buster"
+        },
+        {
+            "tag": "python3.5-alpine3.9"
+        },
+        {
+            "tag": "python3.5-alpine3.10"
+        },
+        {
+            "tag": "python3.5-alpine"
+        },
+        {
+            "tag": "python3.5"
+        },
+        {
+            "tag": "python2.7-stretch"
+        },
+        {
+            "tag": "python2.7-buster"
+        },
+        {
+            "tag": "python2.7-alpine3.9"
+        },
+        {
+            "tag": "python2.7-alpine3.10"
+        },
+        {
+            "tag": "python2.7-alpine"
+        },
+        {
+            "tag": "python2.7"
+        }
+    ],
+    "https://hub.docker.com/_/datadog-agent": [
+
+    ],
+    "https://hub.docker.com/_/logagent": [
+
+    ],
+    "https://hub.docker.com/_/pypy": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "stretch"
+        },
+        {
+            "tag": "slim-stretch"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "3.6-stretch"
+        },
+        {
+            "tag": "3.6-slim-stretch"
+        },
+        {
+            "tag": "3.6-slim"
+        },
+        {
+            "tag": "3.6-7.2.0-stretch"
+        },
+        {
+            "tag": "3.6-7.2.0-slim-stretch"
+        },
+        {
+            "tag": "3.6-7.2.0-slim"
+        },
+        {
+            "tag": "3.6-7.2.0"
+        },
+        {
+            "tag": "3.6-7.2-stretch"
+        },
+        {
+            "tag": "3.6-7.2-slim-stretch"
+        },
+        {
+            "tag": "3.6-7.2-slim"
+        },
+        {
+            "tag": "3.6-7.2"
+        },
+        {
+            "tag": "3.6-7-stretch"
+        },
+        {
+            "tag": "3.6-7-slim-stretch"
+        },
+        {
+            "tag": "3.6-7-slim"
+        },
+        {
+            "tag": "3.6-7"
+        },
+        {
+            "tag": "3.6"
+        },
+        {
+            "tag": "3-stretch"
+        },
+        {
+            "tag": "3-slim-stretch"
+        },
+        {
+            "tag": "3-slim"
+        },
+        {
+            "tag": "3-7.2.0-stretch"
+        },
+        {
+            "tag": "3-7.2.0-slim-stretch"
+        }
+    ],
+    "https://hub.docker.com/_/telegraf": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.12.5"
+        },
+        {
+            "tag": "1.12"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "1.12.5-alpine"
+        },
+        {
+            "tag": "1.12-alpine"
+        },
+        {
+            "tag": "1.12.4-alpine"
+        },
+        {
+            "tag": "1.12.4"
+        },
+        {
+            "tag": "1.12.3"
+        },
+        {
+            "tag": "1.11.5"
+        },
+        {
+            "tag": "1.11"
+        },
+        {
+            "tag": "1.10.4"
+        },
+        {
+            "tag": "1.10"
+        },
+        {
+            "tag": "1.12.3-alpine"
+        },
+        {
+            "tag": "1.12.2-alpine"
+        },
+        {
+            "tag": "1.12.2"
+        },
+        {
+            "tag": "1.12.1"
+        },
+        {
+            "tag": "1.12.1-alpine"
+        },
+        {
+            "tag": "1.11.5-alpine"
+        },
+        {
+            "tag": "1.11-alpine"
+        },
+        {
+            "tag": "1.9.5"
+        },
+        {
+            "tag": "1.9"
+        },
+        {
+            "tag": "1.11.3"
+        },
+        {
+            "tag": "1.11.3-alpine"
+        },
+        {
+            "tag": "1.11.1"
+        }
+    ],
+    "https://hub.docker.com/_/clojure": [
+        {
+            "tag": "openjdk-14-tools-deps-slim-buster"
+        },
+        {
+            "tag": "openjdk-14-tools-deps-buster"
+        },
+        {
+            "tag": "openjdk-14-tools-deps-1.10.1.483-slim-buster"
+        },
+        {
+            "tag": "openjdk-14-tools-deps-1.10.1.483-buster"
+        },
+        {
+            "tag": "openjdk-14-tools-deps-1.10.1.483"
+        },
+        {
+            "tag": "openjdk-14-tools-deps"
+        },
+        {
+            "tag": "openjdk-14-slim-buster"
+        },
+        {
+            "tag": "openjdk-14-lein-slim-buster"
+        },
+        {
+            "tag": "openjdk-14-lein-buster"
+        },
+        {
+            "tag": "openjdk-14-lein-2.9.1-slim-buster"
+        },
+        {
+            "tag": "openjdk-14-lein-2.9.1-buster"
+        },
+        {
+            "tag": "openjdk-14-lein-2.9.1"
+        },
+        {
+            "tag": "openjdk-14-lein"
+        },
+        {
+            "tag": "openjdk-14-buster"
+        },
+        {
+            "tag": "openjdk-14-boot-slim-buster"
+        },
+        {
+            "tag": "openjdk-14-boot-buster"
+        },
+        {
+            "tag": "openjdk-14-boot-2.8.3-slim-buster"
+        },
+        {
+            "tag": "openjdk-14-boot-2.8.3-buster"
+        },
+        {
+            "tag": "openjdk-14-boot-2.8.3"
+        },
+        {
+            "tag": "openjdk-14-boot"
+        },
+        {
+            "tag": "openjdk-14"
+        },
+        {
+            "tag": "tools-deps-stretch"
+        },
+        {
+            "tag": "tools-deps-slim-buster"
+        },
+        {
+            "tag": "tools-deps-1.10.1.483-stretch"
+        },
+        {
+            "tag": "tools-deps-1.10.1.483-slim-buster"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-windows-servercore-insider": [
+
+    ],
+    "https://hub.docker.com/_/blockbridge-volume-plugin-for-kubernetes-csi-driver": [
+
+    ],
+    "https://hub.docker.com/_/aerospike": [
+
+    ],
+    "https://hub.docker.com/_/kibana": [
+        {
+            "tag": "7.4.2"
+        },
+        {
+            "tag": "7.4.1"
+        },
+        {
+            "tag": "6.8.4"
+        },
+        {
+            "tag": "7.4.0"
+        },
+        {
+            "tag": "7.3.2"
+        },
+        {
+            "tag": "6.8.3"
+        },
+        {
+            "tag": "7.3.1"
+        },
+        {
+            "tag": "7.3.0"
+        },
+        {
+            "tag": "6.8.2"
+        },
+        {
+            "tag": "7.2.1"
+        },
+        {
+            "tag": "7.2.0"
+        },
+        {
+            "tag": "6.8.1"
+        },
+        {
+            "tag": "7.1.1"
+        },
+        {
+            "tag": "7.1.0"
+        },
+        {
+            "tag": "6.8.0"
+        },
+        {
+            "tag": "7.0.1"
+        },
+        {
+            "tag": "6.7.2"
+        },
+        {
+            "tag": "6.7.1"
+        },
+        {
+            "tag": "7.0.0"
+        },
+        {
+            "tag": "6.7.0"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "5.6"
+        },
+        {
+            "tag": "5.6.16"
+        },
+        {
+            "tag": "6.6.2"
+        },
+        {
+            "tag": "5.6.15"
+        }
+    ],
+    "https://hub.docker.com/_/oracle-fmw-infrastructure": [
+
+    ],
+    "https://hub.docker.com/_/ubuntu-upstart": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "utopic"
+        },
+        {
+            "tag": "14.10"
+        },
+        {
+            "tag": "trusty"
+        },
+        {
+            "tag": "14.04"
+        },
+        {
+            "tag": "precise"
+        },
+        {
+            "tag": "12.04"
+        },
+        {
+            "tag": "saucy"
+        },
+        {
+            "tag": "quantal"
+        },
+        {
+            "tag": "raring"
+        },
+        {
+            "tag": "12.10"
+        },
+        {
+            "tag": "13.10"
+        },
+        {
+            "tag": "13.04"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azuredocs-aci-wordcount": [
+
+    ],
+    "https://hub.docker.com/_/traefikee": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-dotnet-core-samples": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-cognitive-services-language": [
+
+    ],
+    "https://hub.docker.com/_/px-enterprise": [
+
+    ],
+    "https://hub.docker.com/_/mono": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "6.4.0.198-slim"
+        },
+        {
+            "tag": "6.4.0.198"
+        },
+        {
+            "tag": "6.4.0-slim"
+        },
+        {
+            "tag": "6.4.0"
+        },
+        {
+            "tag": "6.4-slim"
+        },
+        {
+            "tag": "6.4"
+        },
+        {
+            "tag": "6.0.0.334-slim"
+        },
+        {
+            "tag": "6.0.0.334"
+        },
+        {
+            "tag": "6.0.0-slim"
+        },
+        {
+            "tag": "6.0.0"
+        },
+        {
+            "tag": "6.0-slim"
+        },
+        {
+            "tag": "6.0"
+        },
+        {
+            "tag": "6-slim"
+        },
+        {
+            "tag": "6"
+        },
+        {
+            "tag": "5.20.1.34-slim"
+        },
+        {
+            "tag": "5.20.1.34"
+        },
+        {
+            "tag": "5.20.1-slim"
+        },
+        {
+            "tag": "5.20.1"
+        },
+        {
+            "tag": "5.20-slim"
+        },
+        {
+            "tag": "5.20"
+        },
+        {
+            "tag": "5-slim"
+        },
+        {
+            "tag": "5"
+        },
+        {
+            "tag": "6.0.0.313-slim"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-businesscentral-sandbox": [
+
+    ],
+    "https://hub.docker.com/_/euleros": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "2.3.1809"
+        },
+        {
+            "tag": "2.3.1806"
+        },
+        {
+            "tag": "2.3.1803"
+        },
+        {
+            "tag": "2.2"
+        }
+    ],
+    "https://hub.docker.com/_/odoo": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "13.0"
+        },
+        {
+            "tag": "13"
+        },
+        {
+            "tag": "12.0"
+        },
+        {
+            "tag": "12"
+        },
+        {
+            "tag": "11.0"
+        },
+        {
+            "tag": "11"
+        },
+        {
+            "tag": "10.0"
+        },
+        {
+            "tag": "10"
+        },
+        {
+            "tag": "9"
+        },
+        {
+            "tag": "9.0"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "8.0"
+        }
+    ],
+    "https://hub.docker.com/_/appbaseio": [
+
+    ],
+    "https://hub.docker.com/_/hello-seattle": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "nanoserver"
+        },
+        {
+            "tag": "linux"
+        },
+        {
+            "tag": "nanoserver-1809"
+        },
+        {
+            "tag": "nanoserver-1803"
+        },
+        {
+            "tag": "nanoserver-1709"
+        },
+        {
+            "tag": "nanoserver-sac2016"
+        },
+        {
+            "tag": "nanoserver1709"
+        }
+    ],
+    "https://hub.docker.com/_/owncloud": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "9-fpm"
+        },
+        {
+            "tag": "9.1-fpm"
+        },
+        {
+            "tag": "9.1.8-fpm"
+        },
+        {
+            "tag": "9"
+        },
+        {
+            "tag": "9.1"
+        },
+        {
+            "tag": "9.1.8"
+        },
+        {
+            "tag": "9-apache"
+        },
+        {
+            "tag": "9.1-apache"
+        },
+        {
+            "tag": "9.1.8-apache"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "10-fpm"
+        },
+        {
+            "tag": "10.0-fpm"
+        },
+        {
+            "tag": "10.0.10-fpm"
+        },
+        {
+            "tag": "10"
+        },
+        {
+            "tag": "10.0"
+        },
+        {
+            "tag": "10.0.10"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "10-apache"
+        },
+        {
+            "tag": "10.0-apache"
+        },
+        {
+            "tag": "10.0.10-apache"
+        },
+        {
+            "tag": "10.0.9-fpm"
+        },
+        {
+            "tag": "10.0.9"
+        },
+        {
+            "tag": "10.0.9-apache"
+        },
+        {
+            "tag": "10.0.8-fpm"
+        }
+    ],
+    "https://hub.docker.com/_/couchbase": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "enterprise-6.0.3"
+        },
+        {
+            "tag": "enterprise"
+        },
+        {
+            "tag": "community-6.0.0"
+        },
+        {
+            "tag": "community"
+        },
+        {
+            "tag": "6.5.0-beta2"
+        },
+        {
+            "tag": "6.0.3"
+        },
+        {
+            "tag": "enterprise-6.0.2"
+        },
+        {
+            "tag": "6.5.0-beta"
+        },
+        {
+            "tag": "6.0.2"
+        },
+        {
+            "tag": "enterprise-6.0.1"
+        },
+        {
+            "tag": "6.0.1"
+        },
+        {
+            "tag": "enterprise-6.0.0"
+        },
+        {
+            "tag": "6.0.0"
+        },
+        {
+            "tag": "community-4.5.1"
+        },
+        {
+            "tag": "community-5.1.1"
+        },
+        {
+            "tag": "enterprise-4.6.5"
+        },
+        {
+            "tag": "4.6.5"
+        },
+        {
+            "tag": "6.0.0-beta"
+        },
+        {
+            "tag": "enterprise-5.5.2"
+        },
+        {
+            "tag": "5.5.2"
+        },
+        {
+            "tag": "enterprise-5.5.1"
+        },
+        {
+            "tag": "5.5.1"
+        },
+        {
+            "tag": "enterprise-5.5.0"
+        },
+        {
+            "tag": "5.5.0"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-iot-opc-twin-service": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-windows-iotcore": [
+
+    ],
+    "https://hub.docker.com/_/filebeat": [
+
+    ],
+    "https://hub.docker.com/_/flink": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "scala_2.12"
+        },
+        {
+            "tag": "scala_2.11"
+        },
+        {
+            "tag": "1.9.1-scala_2.12"
+        },
+        {
+            "tag": "1.9.1-scala_2.11"
+        },
+        {
+            "tag": "1.9.1"
+        },
+        {
+            "tag": "1.9-scala_2.12"
+        },
+        {
+            "tag": "1.9-scala_2.11"
+        },
+        {
+            "tag": "1.9"
+        },
+        {
+            "tag": "1.9.0-scala_2.12"
+        },
+        {
+            "tag": "1.9.0-scala_2.11"
+        },
+        {
+            "tag": "1.9.0"
+        },
+        {
+            "tag": "1.8.2-scala_2.12"
+        },
+        {
+            "tag": "1.8.2-scala_2.11"
+        },
+        {
+            "tag": "1.8.2"
+        },
+        {
+            "tag": "1.8-scala_2.12"
+        },
+        {
+            "tag": "1.8-scala_2.11"
+        },
+        {
+            "tag": "1.8"
+        },
+        {
+            "tag": "1.8.1-scala_2.12"
+        },
+        {
+            "tag": "1.8.1-scala_2.11"
+        },
+        {
+            "tag": "1.8.1"
+        },
+        {
+            "tag": "1.7.2-scala_2.12"
+        },
+        {
+            "tag": "1.7.2-scala_2.11"
+        },
+        {
+            "tag": "1.7.2-hadoop28-scala_2.12"
+        },
+        {
+            "tag": "1.7.2-hadoop28-scala_2.11"
+        }
+    ],
+    "https://hub.docker.com/_/ruby": [
+        {
+            "tag": "rc-slim-buster"
+        },
+        {
+            "tag": "rc-slim"
+        },
+        {
+            "tag": "rc-buster"
+        },
+        {
+            "tag": "rc-alpine3.10"
+        },
+        {
+            "tag": "rc-alpine"
+        },
+        {
+            "tag": "rc"
+        },
+        {
+            "tag": "2.7.0-preview2-slim-buster"
+        },
+        {
+            "tag": "2.7.0-preview2-slim"
+        },
+        {
+            "tag": "2.7.0-preview2-buster"
+        },
+        {
+            "tag": "2.7.0-preview2-alpine3.10"
+        },
+        {
+            "tag": "2.7.0-preview2-alpine"
+        },
+        {
+            "tag": "2.7.0-preview2"
+        },
+        {
+            "tag": "2.7-rc-slim-buster"
+        },
+        {
+            "tag": "2.7-rc-slim"
+        },
+        {
+            "tag": "2.7-rc-buster"
+        },
+        {
+            "tag": "2.7-rc-alpine3.10"
+        },
+        {
+            "tag": "2.7-rc-alpine"
+        },
+        {
+            "tag": "2.7-rc"
+        },
+        {
+            "tag": "alpine3.10"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "2.7.0-preview1-alpine3.10"
+        },
+        {
+            "tag": "2.7.0-preview1-alpine"
+        },
+        {
+            "tag": "2.6.5-alpine3.10"
+        },
+        {
+            "tag": "2.6.5-alpine"
+        },
+        {
+            "tag": "2.6-alpine3.10"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-azure-devops-vsts-cli": [
+
+    ],
+    "https://hub.docker.com/_/znc": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "1.7.5-slim"
+        },
+        {
+            "tag": "1.7.5"
+        },
+        {
+            "tag": "1.7-slim"
+        },
+        {
+            "tag": "1.7"
+        },
+        {
+            "tag": "1.7.4-slim"
+        },
+        {
+            "tag": "1.7.4"
+        },
+        {
+            "tag": "1.7.3-slim"
+        },
+        {
+            "tag": "1.7.3"
+        },
+        {
+            "tag": "1.7.2-slim"
+        },
+        {
+            "tag": "1.7.2"
+        },
+        {
+            "tag": "1.7.1"
+        },
+        {
+            "tag": "1.7.1-slim"
+        },
+        {
+            "tag": "1.7.0-slim"
+        },
+        {
+            "tag": "1.7.0"
+        },
+        {
+            "tag": "1.6-slim"
+        },
+        {
+            "tag": "1.6.6-slim"
+        },
+        {
+            "tag": "1.6"
+        },
+        {
+            "tag": "1.6.6"
+        },
+        {
+            "tag": "1.6.5-slim"
+        },
+        {
+            "tag": "1.6.5"
+        },
+        {
+            "tag": "1.6.4-slim"
+        },
+        {
+            "tag": "1.6.4"
+        }
+    ],
+    "https://hub.docker.com/_/softwareag-aris-connect": [
+
+    ],
+    "https://hub.docker.com/_/drupal": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "fpm-alpine"
+        },
+        {
+            "tag": "fpm"
+        },
+        {
+            "tag": "apache"
+        },
+        {
+            "tag": "8.7.10-fpm-alpine"
+        },
+        {
+            "tag": "8.7.10-fpm"
+        },
+        {
+            "tag": "8.7.10-apache"
+        },
+        {
+            "tag": "8.7.10"
+        },
+        {
+            "tag": "8.7-fpm-alpine"
+        },
+        {
+            "tag": "8.7-fpm"
+        },
+        {
+            "tag": "8.7-apache"
+        },
+        {
+            "tag": "8.7"
+        },
+        {
+            "tag": "8.6.18-fpm-alpine"
+        },
+        {
+            "tag": "8.6.18-fpm"
+        },
+        {
+            "tag": "8.6.18-apache"
+        },
+        {
+            "tag": "8.6.18"
+        },
+        {
+            "tag": "8.6-fpm-alpine"
+        },
+        {
+            "tag": "8.6-fpm"
+        },
+        {
+            "tag": "8.6-apache"
+        },
+        {
+            "tag": "8.6"
+        },
+        {
+            "tag": "8-fpm-alpine"
+        },
+        {
+            "tag": "8-fpm"
+        },
+        {
+            "tag": "8-apache"
+        },
+        {
+            "tag": "8"
+        },
+        {
+            "tag": "8.7.9-fpm-alpine"
+        }
+    ],
+    "https://hub.docker.com/_/express-gateway": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "1.x"
+        },
+        {
+            "tag": "1.16.x"
+        },
+        {
+            "tag": "1.16.9"
+        },
+        {
+            "tag": "1.16.7"
+        },
+        {
+            "tag": "1.16.6"
+        },
+        {
+            "tag": "1.16.4"
+        },
+        {
+            "tag": "1.16.3"
+        },
+        {
+            "tag": "1.16.2"
+        },
+        {
+            "tag": "1.16.1"
+        },
+        {
+            "tag": "1.16.0"
+        },
+        {
+            "tag": "1.15.0"
+        },
+        {
+            "tag": "1.15.x"
+        },
+        {
+            "tag": "1.14.0"
+        },
+        {
+            "tag": "1.14.x"
+        }
+    ],
+    "https://hub.docker.com/_/microsoft-windows-servercore": [
+
+    ],
+    "https://hub.docker.com/_/splunk-enterprise": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-functions-dotnet": [
+
+    ],
+    "https://hub.docker.com/_/microsoft-azure-oss-db-tools-pgbouncer-sidecar": [
+
+    ],
+    "https://hub.docker.com/_/erlang": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "20.3.8.24-slim"
+        },
+        {
+            "tag": "20.3.8.24-alpine"
+        },
+        {
+            "tag": "20.3.8.24"
+        },
+        {
+            "tag": "20.3.8-slim"
+        },
+        {
+            "tag": "20.3.8-alpine"
+        },
+        {
+            "tag": "20.3.8"
+        },
+        {
+            "tag": "20.3-slim"
+        },
+        {
+            "tag": "20.3-alpine"
+        },
+        {
+            "tag": "20.3"
+        },
+        {
+            "tag": "20-slim"
+        },
+        {
+            "tag": "20-alpine"
+        },
+        {
+            "tag": "20"
+        },
+        {
+            "tag": "slim"
+        },
+        {
+            "tag": "alpine"
+        },
+        {
+            "tag": "22.1.7-slim"
+        },
+        {
+            "tag": "22.1.7-alpine"
+        },
+        {
+            "tag": "22.1.7"
+        },
+        {
+            "tag": "22.1-slim"
+        },
+        {
+            "tag": "22.1-alpine"
+        },
+        {
+            "tag": "22.1"
+        },
+        {
+            "tag": "22-slim"
+        },
+        {
+            "tag": "22-alpine"
+        },
+        {
+            "tag": "22"
+        },
+        {
+            "tag": "22.1.6-slim"
+        }
+    ],
+    "https://hub.docker.com/_/hola-mundo": [
+        {
+            "tag": "latest"
+        },
+        {
+            "tag": "linux"
+        },
+        {
+            "tag": "nanoserver"
+        },
+        {
+            "tag": "nanoserver-1809"
+        },
+        {
+            "tag": "nanoserver-1803"
+        },
+        {
+            "tag": "nanoserver-1709"
+        },
+        {
+            "tag": "nanoserver-sac2016"
+        },
+        {
+            "tag": "nanoserver1709"
+        }
+    ]
+}
