@@ -1,0 +1,67 @@
+\paragraph{Deduplication modes}
+\label{sec:dedup-mode}
+
+To satisfy different space saving and performance requirements,
+\sysname provides two kinds of deduplication modes:
+Basic deduplication modes and selective deduplication modes, denoted as \emph{B-modes} and \emph{S-modes}.
+B-mode maintains a certain amount of layer replicas for each layer and deduplicates the remaining layer replicas.
+S-mode, on the other hand, maintains a number of layer replicas for different layers 
+%in proportionate 
+based to their popularity.
+
+%\subsubsection{Basic deduplication modes}
+Assume that registry storage system uses R-way replication.
+A layer dataset deduplication analysis~\cite{xxx} shows a file-level deduplication ratio of 2$\times$.
+Thus, the average layer deduplication ratio for the layer dataset~\cite{xxx} is 2$\times$.
+\LR{Was it just 2$\times$? I thought it was larger. Can we use a variable for the deduplication ratio, e.g. $d$?
+We would need to substitute that in the formulas.}
+% subil: need clarification here. where is the 2x coming from
+
+B-mode \emph{r} is defined as keeping \emph{r} layer replicas and deduplicating the rest of the layer replicas, where $r \leq R$. 
+The space saving is calculated by following equation~\ref{eq:b-savings}.
+\begin{equation}\label{eq:b-savings}
+Space savings = \frac{R-(r+\frac{1}{2}(R-r))}{R} = \frac{R-r}{2R}
+\end{equation}
+
+\LR{Not sure if I understand this correctly but the space savings here look like they're per layer
+while the space savings in Eq. 3 seem to be for all layers? If that's true, can we make it consistent?}
+
+Layer pulling performance largely depends on registry server load.
+Assume that the total number of P-servers and D-servers are \emph{P} and \emph{D} especially.
+The total \texttt{pull} layer request load is \emph{L}.
+Consequently, the average server load is $\frac{L}{P}$ and $\frac{L}{P+D}$ for \sysname and original registry respectively.
+Note that original registry is \sysname's B-mode \emph{R}, which represents the best pulling layer performance with no space savings.
+The performance degradation can be calculated as:
+%$$
+ %$\emph{f}_\frac{L}{P} \times \theta_{r}$. 
+ 
+\LR{The following equation is unclear. What is F? How does it operate on the parameters?} 
+ 
+ \begin{equation}\label{eq:c-pull}
+Performance degradation =  F(L, P, D, \delta_{R-r})
+ \end{equation}
+ $\delta_{R-r}$ means the performance degradation caused by load variance among different servers impacted by replication level.
+
+%\subsubsection{Selective deduplication modes}
+In S-mode, the number of layer replicas \emph{r} is proportional to their popularity ($r \leq R$).
+Layer popularity is calculated as $\frac{\emph{l}_{pcnt}}{L}$, 
+where $\emph{l}_{pcnt}$ is the total number of pulling request count to layer \emph{l}.  
+Consequently, the number of layer replicas $r_{l}$ for layer \emph{l} is
+%\emph{r} ($r \leq R$) is calculated as:
+$r_{l} = R \times \Phi (\frac{\emph{l}_{pcnt}}{L})$, 
+where $\Phi (\frac{\emph{l}_{pcnt}}{L})$ denotes a replication factor.
+\LR{How is $\Phi (\frac{\emph{l}_{pcnt}}{L})$ defined?}
+
+The space savings for S-mode is calculated as following equation~\ref{eq:s-savings}.
+\begin{equation}\label{eq:s-savings}
+Space savings = \frac{\sum\limits_{l=1}^n{R-(r_{l}+\frac{1}{2}(R-r_{l}))}}{\sum\limits_{l=1}^n{R}} 
+\end{equation}
+% subil: I feel like there should be a summation over the whole numerator and a summation over the whole denominatorgit 
+
+The performance degradation is:
+  \begin{equation}\label{eq:s-pull}
+Performance degradation =  F(L, P, D, \delta_{R-r_{l}})
+ \end{equation}
+where $\delta_{R-r_{l}}$ means 
+the performance degradation caused by load variance among different servers impacted by different replication levels.
+ 

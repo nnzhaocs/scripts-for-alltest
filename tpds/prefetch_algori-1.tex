@@ -1,0 +1,70 @@
+\begin{algorithm}
+	\scriptsize 
+	\caption{User access history based prefetch algorithm.}
+	\label{alg:prefetch}
+	\SetAlgoLined
+	\KwIn{
+		$U_{thresh}$: Threshold for duration to keep a prefetched layer.
+	}
+	\While{true}{
+		\emph{r} $\leftarrow$ \texttt{request received}\\
+		\uIf{r = GET manifest}{
+%			layerlst $\leftarrow$ URLMap[(r.client, r.repo)]
+			\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[(r.client, r.repo)]} \\
+			\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
+			\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
+			{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
+			}
+		\uElseIf{r = PUT layer }{
+				\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
+				\emph{LayerBuffer} $\leftarrow$ \texttt{buffer} \emph{r.layer} \\
+				\texttt{set} \emph{L\_timer[r.layer]} \\
+				{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}	 \\
+			}
+		\uElseIf{r = GET layer}{
+				\eIf{r.layer in PrefetchedLayers or LayerBuffer}{
+					\emph{serve from PrefetchedLayers or LayerBuffer} \\
+					\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
+					\texttt{Reset} \emph{L\_timer[r.layer]}\\
+					\emph{prefetch\_hit++} 
+				}{
+					\emph{server from backend storage system} \\
+					\texttt{update} \emph{URLMap[(r.client, r.repo, r.layer)]} \\
+					\emph{layers} $\gets$ \emph{RLMap[r.repo]} $-$ \emph{URLMap[(r.client, r.repo)]} \\
+					\emph{PrefetchedLayers} $\gets$ \emph{Prefetch(layers)} \\
+					\texttt{set} \emph{L\_timer[layer] for each layer in layers} \\
+					{\tiny\texttt{/*when $L\_timer[layer] > L\_thresh$, layer is evicted/}}
+			}
+		}
+	}
+\end{algorithm}
+
+%U_thresh
+%
+%while true do
+%	r <- request received
+%		if r = Get manifest then
+%			layerlst <- UrlMap[(r.client, r.repo)]
+%			layers <- choose_popular(layerlst) 
+%			PrefetchedLayers <- Prefetch(layers) 
+%			set L_timer[layer] for each layer in layers
+%			/when L_timer[layer] > L_thresh, layer is evicted/
+%		if r = Put layer then
+%			update UrlMap[(r.client, r.repo, r.layer)]
+%			Layerbuffer <- buffer r.layer
+%			set L_timer[r.layer] for r.layer
+%			/when L_timer[layer] > L_thresh, layer is evicted/		
+%		if r = Get layer then
+%			if r.layer in PrefetchedLayers then
+%				serve from PrefetchedLayers[r.layer]
+%				update UrlMap[(r.client, r.repo, r.layer)]
+%				prefetch_hit++
+%			else
+%				server from backend storage system
+%				update UrlMap[(r.client, r.repo, r.layer)]
+%				layerlst <- UrlMap[(r.client, r.repo)]
+%				layers <- choose_popular(layerlst) 
+%				PrefetchedLayers <- Prefetch(layers) and 
+%				set L_timer[layer] for each layer in layers
+%				/when L_timer[layer] > L_thresh, layer is evicted/
+

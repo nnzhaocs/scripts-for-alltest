@@ -1,0 +1,12 @@
+
+
+Intuitively, such deduplication techniques can be applied to eliminate redundant data from the Docker image storage system.  
+Except, the Docker image dataset is different from the common data stream. 
+They are compressed archival files.
+To eliminate file-level redundancy from the compressed layer files, changes must be made to these deduplication methods. 
+Such changes should recognize the compression formats, perform decompression before feeding the data to a block-level or file-level deduplication process. 
+Otherwise, the deduplication ratio would be very low since compressed files have a very low deduplication ratio. 
+
+Intuitively, registries can be deployed as a proxy cache to host frequently requested layers to speedup image pulls and improve performance 
+while the backend cloud storage can leverage deduplication to save storage space.
+However, there are several unique problems concerning the integration of caching and deduplication to the unique Docker registries workload: \textbf{compressed layers}. 

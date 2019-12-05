@@ -1,0 +1,99 @@
+%\paragraph{User active time-based cache replacement algorithm}
+%%\label{sec:design_cache_algori}
+%
+%\input{cache_algori.tex}
+%
+%We leverage observations from our study of the user access patterns to guide our cache replacement. This is because
+%a user's active time is more predictable as discussed in~\cref{sec:background}.
+%%   In~\cref{sec:design}, the incoming \texttt{push} layer requests are first buffered in the layer buffer and later evicted to the file cache.
+%%   If there is a \texttt{pull} layer request miss in both the layer buffer and the file cache, 
+%%   \sysname~will fetch the layer from backend storage system and store it in the layer buffer.
+%We service requests from the layer buffer, then file cache, and then from the backend storage system. 
+%When a cache (layer buffer or file cache) is under pressure due to 
+%shortage of free space,
+%the layer buffer or the file cache will simply evict or delete some layers or files and reclaim space.
+%Since our layer buffer and file cache both share the same cache replacement algorithm, we only present
+%our user-based cache replacement algorithm for the layer buffer as shown in Algorithm~\ref{alg:cache}.
+%
+%Free space in the layer buffer is considered too low if ($free\_buffer$ $<$ $S_{thresh}$). 
+%In such a sitation, \sysname~will free the buffer space used by inactive users. 
+%\sysname~maintains two LRU lists: an LRU list of active users, and
+%an LRU list of recently accessed layers, referred to as \emph{UsrLRU} and \emph{LayerLRU}, respectively.
+%At first, \sysname~will select the least active user from \emph{UsrLRU}.
+%Next, \sysname~will \arb{what is???: reversely iterate} \emph{UsrLRU} until it finds a layer that is exclusively owned by that least active user. 
+%\sysname~then evicts this layer from the layer buffer. 
+% Note that layers are shared among different active users.
+% \sysname~will continue to evict until the free space in the layer buffer is above the specified capacity threshold.
+% 
+%%iteratively removes the least active users along with the least recently accessed layers 
+%% that exclusively owned by these users from the two LRU lists and evict the layers from layer buffer.
+%%, then   
+
+\paragraph{User access history-based prefetching algorithm}
+%\label{sec:design_cache_algori}
+To improve our cache hit ratio for \texttt{pull} layer request on layer buffer and file cache, 
+we propose a user access history-based prefetch algorithm. 
+The algorithm
+exploits the uniqueness of the registry's 
+%image %structure
+dataset hierarchy: repositories are comprised of a list of layers.
+%or organization
+%Users create repositories in the registry, \texttt{push} layers to their own repositories,
+%and \texttt{pull} layers from their own repositories or other public repositories. 
+When a user \emph{pulls} an image from a repository, it will first \texttt{pull} the manifest of the image~\cite{docker}~\cite{dockerworkload} and 
+parse the manifest to get the layer digests from the manifest,
+then lookup each layer digest against a \emph{local layer digest index}.
+After that it only \emph{pulls} the layers that has \emph{not been stored locally}.
+%
+Based on the above 
+%behavior 
+pattern and hierarchy 
+%of image in Docker registry
+, we can record the users' repository and layer access history. 
+Theoretically, once a user starts to \texttt{pull} manifest from a repository, all the layers that belongs to this repository but have not been \emph{pulled} by this user should be prefetched into the cache.
+%when a new use connects to registry, we can prefetch all the layers that have been accessed by this user into cache ideally.
+In this case, cache hit ratio will reach 1.
+%However, because there is a limit to the cache size, %we won't be able to fit all the active users' layers into cache.
+%not all active user's layers will fit into the cache.
+%%But we can prefetch active users' popular layers in the cache based on the historical access information.
+%To mitigate this, we can only prefetch the active user's top requested layers based on the historical access information.
+
+\input{prefetch_algori}
+As shown in algorithm~\ref{alg:prefetch}, \sysname maintains two maps: a RLMap for recording layer-repository
+relationship, and 
+a URLMap for recording 
+users' repository and layer access history information. 
+For example, if a user~\emph{U} \emph{pulls} a layer~\emph{L} from a repository~\emph{R},
+\sysname will add an new entry (\emph{U,L}) in URLMap.
+%Each node records the following history information: (\emph{Get\_cnt}, \emph{Put\_cnt}, \emph{last\_access\_time}). a child node layer~\emph{L} to parent node~\emph{R}
+While if a user~\emph{U} \emph{pushes} a  layer~\emph{L} to a repository~\emph{R},
+\sysname~will add an new entry (\emph{R,L}) in RLMap. 
+Note that to identify which layers are locally available for a user, 
+we extract \emph{user end host address} (\emph{r.client}) as shown in Algorithm~\ref{alg:prefetch}) from each request and define the user end host address as user,
+and keep track of all layers that have been downloaded by \emph{r.client}. 
+%Note that for a layer node, \emph{Put\_cnt} $=$ 1 or $=$ 0.
+%When a GET or PUT layer request is received, \sysname~will update the URLMap of the associating user, repository, and layer. 
+When either a GET manifest request is received or 
+%a GET layer request is miss,
+%a requested layer is not cached or prefetched  (
+a miss on a GET layer request happens,
+\sysname will lookup RLMap and get the requested repository's containing layers,
+and compare against the layers that are already \emph{pulled} by the user by lookup URLMap,
+%select a certain number of \emph{popular} layers from the client's 
+%previously accessed layers by lookup 
+%URLMap
+then prefetch the layers that have not been \emph{pulled} for the user later accesses.
+%To determine if a layer is a popular layer and need to be prefetched into cache,
+%we only consider the layers that was recently accessed with a time period 
+%We consider popular layers to be the layers accessed during the most recent~\emph{T\_thresh} 
+%seconds?
+%time period. In other words, the layers that satisfy the condition:
+%\emph{current\_time} $-$ \emph{last\_access\_time} $<$ \emph{T\_thresh}.
+%Then we calculate the layer popularity as: 
+%$\omega_{pull} \times Pull\_cnt + \omega_{push} \times Push\_cnt$.
+%Since recently \emph{pushed} layer has a higher chance to get \emph{pulled} in the future,
+%we give a higher weight ($\omega_{push} > \omega_{pull}$) for the layer if it has a \emph{Push\_cnt} equal to 1. 
+
+ 
+%We assume that users are independent with each other.
+
