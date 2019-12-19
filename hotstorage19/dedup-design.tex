@@ -15,7 +15,7 @@ If not, \sysname,
 replicates the layer $r$ times across the P-servers
 and submits the remaining $R-r$ layer replicas to the D-servers. Those replicas are
 temporarily stored in the layer stage areas of the D-servers. \sysname uses
-two consistent hashing rings to for each cluster to pick the target servers for
+two consistent hashing rings for each cluster to pick the target servers for
 a layer. Once the replicas
 have been stored successfully, \sysname notifies the client of the request completion.
 %
