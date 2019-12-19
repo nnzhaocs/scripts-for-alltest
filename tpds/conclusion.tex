@@ -1,0 +1,12 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented \sysname, a new Docker registry architecture that supports deduplication for
+Docker images to reduce storage utilization. \sysname makes several design decisions to
+reduce deduplication overhead and keep layer retrieval latencies low. It parallelizes
+layer reconstruction locally and across the cluster to mitigate the overhead of
+compression and decompression of layers, and exploits user behavior patterns to preconstruct
+layers before being accessed. \sysname additionally leverages caching at different
+storage tiers to further improve \texttt{GET} latencies. Our evaluation shows that
+we can achieve a deduplication ratio of 1.74$\times$ while only adding an overhead
+of up to 80\% when layers are pulled.

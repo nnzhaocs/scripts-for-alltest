@@ -1,0 +1,30 @@
+\begin{algorithm}
+\scriptsize 
+	\caption{File cache assisted slice restoring}
+	\label{alg:file-cache}
+	\KwIn{\\
+		$\theta_{rsfc}$: Slice restoring latency threshold. \\
+		$s$: Slice to be restored. \\
+	}
+
+	\SetKwFunction{Fsub}{Restore}
+	\SetKwProg{Fn}{Function}{:}{}
+
+	\Fn{\Fsub{s}}{
+		%{\tiny\texttt{/* Otherwise, it's a repull layer miss   /}}\\
+		\eIf{files in s are cached in file cache}
+		{
+			slice $\gets$ \texttt{RestoreSlice} \emph{s} \texttt{From} \emph{file cache + disk} 
+		}
+		{
+			slice, $D_{rs}$ $\gets$ \texttt{RestoreSlice} \emph{s} \texttt{From} \emph{disk} \\
+			\If{ $D_{rs} > \theta_{rsfc}$} 
+			{ 
+				\emph{file cache} $\gets$ \texttt{Cache} \texttt{Subsetof} \emph{s.files}
+			}		
+		}
+	}
+
+\end{algorithm}
+
+

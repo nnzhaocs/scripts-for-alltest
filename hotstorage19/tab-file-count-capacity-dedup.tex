@@ -1,0 +1,22 @@
+\begin{table} 
+	\centering 
+	\scriptsize  
+	%\begin{minipage}{.5\linewidth}
+	\caption{Redundant ratio in terms of file count and capacity}
+	\label{tbl:overall-redundant_ratio} 
+	\begin{tabular}{|l|l|l|}%p{0.14\textwidth}
+		\hline  
+		& File count & Capacity \\ 
+		\hline 
+		Repeat cnt = 1 & 0.58\% & 10.87\%\\
+		\hline 
+		Repeat cnt $>$ 1 after dedup. & 2.59\% & 3.44\%\\ 
+		\hline 
+		Repeat cnt $>$ 1 before dedup.  & 99.42\%  & 89.13\%\\ 
+		\hline 
+		Unique dataset (Uncompressed) & 3.17\% (167,251,437)  &  14.31\% (23.92 TB) \\ 
+		\hline 
+		Total dataset (Uncompressed) & 5,278,465,130 & 167.20 TB \\ \hline 	
+			%\hline 
+	\end{tabular} 
+\end{table} 

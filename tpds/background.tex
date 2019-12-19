@@ -1,0 +1,113 @@
+\section{Docker Registries}
+\label{sec:background}
+
+%\paragraph{Docker registry.}
+
+%A Docker image consists of an ordered series of \emph{layers}.
+%
+%Each Docker layer contains a subset of the files in the image and often
+%represents a specific component/dependency of the image, \eg a shared library.
+%
+%Layers can be shared between two or more images if the images depend on the
+%same layer.
+
+%In this section, we explain how the existing Docker registry works and how users
+%can interact with it.
+%
+The main purpose of a registry is to store container images and make them available
+to other users.
+%
+A registry allows Docker clients to \emph{push} images to and \emph{pull}
+images from it.
+%
+A number of public Docker registry deployments
+exist~\cite{docker-hub,amazon-ecr,jfrog-artifactory,azure-cr,google-cr} and
+enterprises often resort to running private registries for improved security
+and privacy.
+%
+The Docker community specifies the REST API for clients to communicate with the
+registries~\cite{docker-registry-api} and provides a reference registry server implementation~\cite{docker-registry-software} which serves as
+a basis for commercial deployments.
+
+
+
+
+
+Docker registries group images into \emph{repositories}, each containing
+versions (\emph{tags}) of the same image, identified as
+\texttt{<repo-name:tag>}.
+%
+For each tagged image in a repository, the Docker registry stores a \emph{manifest}.
+%
+The manifest is a JSON file, which contains the runtime configuration for a
+container image (\eg environment variables) and the list of layers that make
+up the image.
+%
+A layer is stored as a compressed archival file and identified using a digest that is computed as a hash (SHA-256) over
+the uncompressed content of the layer.
+%
+When pulling an image, a Docker client first downloads the manifest and then the
+layers referenced in it (unless the layers are already present on the client).
+%
+When pushing an image, a Docker client first uploads the layers (if not already present in
+the registry) and then uploads the manifest.
+
+
+
+
+
+The current Docker registry software is a single-node application.
+%
+To scale the registry and serve many requests concurrently, organizations typically deploy a load
+balancer like NGINX in front of several independent registry
+instances~\cite{dockerworkload, littley2019bolt}.
+%
+All the instances delegate storage and retrieval of images to drivers that interact with
+either a locally mounted shared file system or a remote object storage~\cite{s3,azure,swift,aliyun}.
+%
+%For example, the Google Container Registry~\cite{GoogleContainerRegistry} uses
+%Google cloud as its backend image store.
+%
+Upon a \texttt{PUT} layer request from a Docker client, the Docker registry receives the layer and forwards it to the
+backend storage driver.
+%
+Typically, multiple replicas of the layer are stored for redundancy.
+%
+Subsequent \texttt{GET} layer requests can be served by any registry server,
+which will get the layer from the backend storage using the configured driver.
+
+% that hold a replica of that layer.
+%
+%Service providers often use geographically distributed registries for faster
+%access, e.g., IBM's Container Registry setup spans five
+%regions~\cite{dockerworkload}. 
+
+
+%\paragraph{Deduplication} Most existing cloud storage providers employ data
+%deduplication techniques to eliminate redundant data, same data stored more
+%than once.
+%
+%Deduplication techniques significantly reduce storage needs and therefore
+%reduce storage costs and improve storage efficiency.
+%
+%Data deduplication works by storing duplicate data chunks only once, keeping
+%only the unique data chunks. 
+%
+%Current cloud providers deploy a cross-user client-side fixed-size-chunk-level
+%data deduplication that delivers the highest deduplication
+%gain~\cite{pooranian2018rare}.
+%
+%These approaches maximize the benefit of deduplication: The cross-user data
+%deduplication treats cloud storage as a pool shared by all the cloud users,
+%because the potential for data deduplication is the highest as the probability
+%for redundancies and duplicates is higher the more inclusive the shared pool.
+%
+%The fixed-size-chunk-level specifies that a fixed-size chunk is the unit for
+%checking for duplicates on cloud storage.
+%
+%Google cloud and AWS employ StorReduce, a deduplication software that performs
+%in-line data deduplication transparently and resides between the client's
+%application and the hosting cloud storage.
+%
+%StorReduce provide 80-97\% storage and bandwidth reduction to the cloud
+%providers~\cite{StorReduce_google}.

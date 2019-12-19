@@ -1,0 +1,93 @@
+This is BibTeX, Version 0.99d (TeX Live 2016)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: /Users/hadeel/docker-remetrics/hotstorage19/.texpadtmp/paper.aux
+The style file: acm.bst
+Database file #1: ../paper.bib
+Warning--I didn't find a database entry for "storreduce_purestorage"
+Warning--I didn't find a database entry for "?"
+Warning--I didn't find a database entry for "gfs"
+Warning--I didn't find a database entry for "s3"
+Warning--I didn't find a database entry for "swift"
+Warning--to sort, need author or key in docker
+Warning--to sort, need author or key in docker-hub
+Warning--to sort, need author or key in GoogleCloudStoragePricing
+Warning--to sort, need author or key in GoogleContainerRegistry
+Warning--to sort, need author or key in StorReduce_google
+Warning--to sort, need author or key in spark
+Warning--to sort, need author or key in hdfs
+Warning--to sort, need author or key in openvz
+Warning--to sort, need author or key in singularity
+Warning--to sort, need author or key in Dockerfile
+Warning--to sort, need author or key in cowsay
+Warning--to sort, need author or key in pymagic
+Warning--to sort, need author or key in googletest
+Warning--to sort, need author or key in github
+Warning--to sort, need author or key in go-ethereum
+Warning--to sort, need author or key in NDK
+Warning--to sort, need author or key in xnu-chroot-environment
+Warning--to sort, need author or key in redis
+Warning--to sort, need author or key in lz4
+Warning--empty year in dockerworkload
+Warning--empty year in dockerssd
+Warning--empty year in shifter
+Warning--empty year in analysisdockergithub
+Warning--empty year in slacker
+Warning--empty year in 2009-dedup_effectiveness_on_vm_disk_images-systor
+Warning--empty year in 2009-sparse_indexing_inline_dedup_using_sampling-fast
+Warning--empty year in 2012-data_reduction_in_primary_storage-systor
+Warning--empty year in 2012-hpc_practical_dedup_study-sc
+Warning--empty year in 2001-low_bandwidth_network_fs-sosp
+Warning--empty journal in MD5
+Warning--empty year in 2013-charact_increment_changes_data_protect-atc
+Warning--empty year in dockervulnerabile
+Warning--empty year in exoclones
+Warning--empty year in 2012-idedup-fast
+Warning--empty year in msst16dedup-study
+Warning--empty year in tarasov2014dmdedup
+Warning--empty year in docker-driver-eval
+Warning--empty year in 2012-charact_backup_workloads-fast
+Warning--empty year in improve-cow-container-drivers
+Warning--empty year in 2013-charact_dedup_effic_big_data-iiswc
+Warning--empty year in 2008-avoid_disk_bottleneck_data_domain_dedupfs-fast
+You've used 42 entries,
+            2253 wiz_defined-function locations,
+            685 strings with 9662 characters,
+and the built_in function-call counts, 11450 in all, are:
+= -- 934
+> -- 645
+< -- 0
++ -- 279
+- -- 232
+* -- 732
+:= -- 1738
+add.period$ -- 106
+call.type$ -- 42
+change.case$ -- 242
+chr.to.int$ -- 0
+cite$ -- 83
+duplicate$ -- 501
+empty$ -- 1060
+format.name$ -- 232
+if$ -- 2412
+int.to.chr$ -- 0
+int.to.str$ -- 42
+missing$ -- 23
+newline$ -- 193
+num.names$ -- 46
+pop$ -- 523
+preamble$ -- 1
+purify$ -- 200
+quote$ -- 0
+skip$ -- 221
+stack$ -- 0
+substring$ -- 247
+swap$ -- 72
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 168
+warning$ -- 41
+while$ -- 49
+width$ -- 44
+write$ -- 342
+(There were 46 warnings)

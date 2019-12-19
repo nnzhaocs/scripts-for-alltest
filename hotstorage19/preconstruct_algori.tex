@@ -1,0 +1,79 @@
+\begin{algorithm}
+\scriptsize 
+	\caption{Layer preconstruction}
+	\label{alg:prefetch}
+	\KwIn{\\
+		$\theta_{rpc}$: Threshold for repull layers to be preconstructed. \\
+		$RLmap$: Repository to layer map. \\
+		$ULmap$: User to layer map.  \\
+		$LayerRecipes$: Layer recipes. \\
+		$SliceRecipes$: Slice recipes.\\
+	}
+	\emph{r} $\leftarrow$ \texttt{request received}\\
+	\uIf{r = GET manifest}
+		{
+			difference $\gets$ \emph{RLmap[r.repo]} $-$ \emph{ULmap[r.client]} \\
+			intersection $\gets$ \emph{RLmap[r.repo]} $\bigcap$ \emph{ULmap[r.client]} \\
+			
+			targets $\leftarrow$ difference \\
+			\ForEach{layer in intersection} 
+			{ \If{ layer.rpcnt $>$ $\theta_{rpc}$}{
+				targets	$\leftarrow$ layer
+				}
+			}
+			\ForEach{layer in targets} {
+				master $\leftarrow$ \emph{LayerRecipes[layer].master} \\
+				\texttt{Notify} master `PRECONSTRUCT layer' \\
+			}
+		}
+	
+		\uElseIf{r = PRECONSTRUCT layer}
+		{
+			\If{r.layer not in DiskCache}{
+				workers $\leftarrow$ \emph{LayerRecipes[r.layer].workers} \\
+				\ForEach{worker in workers} {
+					%{\scriptsize $/*$\textit{sliceid = r.layer+worker}}\\ 
+					slices $\leftarrow$ \texttt{GET slice from} worker `GET slice' \\
+				}
+				layer $\leftarrow$ \texttt{Concatenate} slices \\
+				
+				DiskCache $\gets$ layer \\
+				{\tiny{$/*$\texttt{Set timer for layer}} $/*$}\\
+			}
+		}
+	
+		\uElseIf{r = GET slice}
+		{
+			slice $\leftarrow$ \texttt{Construct by following} \emph{SliceRecipes[r.slice]} \\
+			
+			\texttt{Serve} slice \\
+		}
+	
+%		\uElseIf{r = PUT layer}
+%		{
+%				\emph{LayerCache} $\leftarrow$ \texttt{cache} \emph{r.layer} \\
+%				\texttt{update} \emph{RLmap[r.repo, r.layer]} \\
+%		}
+%		\uElseIf{r = GET layer} 
+%		{
+%			{\tiny\texttt{/* r.layer has not been deduplicated   /}} \\
+%				\eIf{r.layer in cache}
+%				{
+%					\emph{cache hit for layer} \\
+%					\texttt{Serve} layer \\
+%				} 
+%				{
+%					workers $\leftarrow$ \emph{LayerRecipes[layer].workers} \\
+%					\ForEach{slave in slaves} {
+%						slices $\leftarrow$ \texttt{GET} worker `GET layer'slice' \\
+%					}
+%					layer $\leftarrow$ \texttt{Concatenate} slices \\
+%					\texttt{Serve} layer
+%					LayerCache $\gets$ layer \\
+%				}
+%		}
+%		\texttt{update} \emph{ULmap[r.client, r.repo, r.layer]} \\
+		
+\end{algorithm}
+
+

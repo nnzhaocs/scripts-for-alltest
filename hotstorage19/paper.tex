@@ -1,0 +1,150 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage{usenix2019_v3}
+
+\usepackage{xcolor}
+\usepackage{times}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{url}
+\usepackage{xspace}
+\usepackage{listings}
+%\usepackage{todonotes}
+%\usepackage[hyperfootnotes=false,breaklinks]{hyperref}
+%\hypersetup{
+%	colorlinks,
+%	citecolor=red,
+%	linkcolor=blue,
+%	urlcolor=blue
+%}
+
+% do not change these values
+\baselineskip 12pt
+\textheight 9in
+\textwidth 6.5in
+\oddsidemargin 0in
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e} 
+\SetVlineSkip{0pt} 
+\SetKwRepeat{Do}{do}{while}
+%\usepackage{algorithmic}
+
+\usepackage{cleveref}
+\crefname{section}{\S}{\S\S}
+\Crefname{section}{\S}{\S\S}
+
+\newlength{\gapspace}
+\newcommand{\gap}[1][0cm]{\setlength{\gapspace}{#1}\vspace{.5\gapspace}\textbf{\color{red}[...]}\vspace{.5\gapspace}\xspace}
+
+\newcommand{\NZ}[1]{\noindent\textcolor{blue}{\bf $\blacksquare$ Nannan: #1}}
+\newcommand{\VT}[1]{\noindent\textcolor{orange}{\bf $\blacksquare$ Vasily: #1}}
+\newcommand{\HA}[1]{\noindent\textcolor{red}{\bf $\blacksquare$ Hadeel: #1}}
+\newcommand{\LR}[1]{\noindent\textcolor{cyan}{\bf $\blacksquare$ Lukas: #1}}
+\newcommand{\DIM}[1]{\noindent\textcolor{olive}{\bf $\blacksquare$ Dimitris: #1}}
+\newcommand{\Ali}[1]{\noindent\textcolor{green}{\bf $\blacksquare$ Ali: #1}}
+\newcommand{\Subil}[1]{\noindent\textcolor{violet}{\bf $\blacksquare$ Subil: #1}}
+\newcommand{\todo}[1]{\noindent\textcolor{red}{\bf $\blacksquare$ TODO: #1}}
+
+\iffalse
+\renewcommand{\NZ}[1]{}
+\renewcommand{\VT}[1]{}
+\renewcommand{\HA}[1]{}
+\renewcommand{\LR}[1]{}
+\renewcommand{\DIM}[1]{}
+\renewcommand{\Ali}[1]{}
+\renewcommand{\Subil}[1]{}
+\renewcommand{\todo}[1]{}
+\fi
+
+\newcommand{\abc}[1]{\noindent\textcolor{red}{\bf $\blacksquare$ AB: #1}}
+
+\newcommand{\arb}[1]{\todo[inline,color=red]{\textcolor{white}{ARB: #1}}}
+
+\newcommand{\ie}{i.e.\ }
+\newcommand{\eg}{e.g.,\ }
+\newcommand{\etal}{et al.~}
+\newcommand{\vs}{vs.\ }
+\newcommand{\cf}{cf.~}
+
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\vspace{2px}\noindent\textbf{#1.}}
+\newcommand{\paragraphQ}[1]{\vspace{2px}\noindent\textbf{#1?}}
+
+\newcommand{\sysname}{Sift\xspace}
+\newcommand{\dedupname}{LRPA deduplication\xspace}
+\newcommand{\filecachename}{LRA file cache\xspace}
+\newcommand{\preconstructcachename}{UBLP cache\xspace}
+
+\newcommand{\dal}{\texttt{dal}\xspace}
+\newcommand{\fra}{\texttt{fra}\xspace}
+\newcommand{\lon}{\texttt{lon}\xspace}
+\newcommand{\syd}{\texttt{syd}\xspace}
+
+ % lukas: a more compact itemize/enumerate environment to save space and better looks
+\newenvironment{compactitemize}{%
+\begin{itemize}[leftmargin=1em, itemsep=0em, parsep=0em, topsep=.1em, partopsep=.1em]}
+{\end{itemize}}
+\newenvironment{compactenumerate}{%
+\begin{enumerate}[leftmargin=1em, itemsep=0em, parsep=0em, topsep=.1em,partopsep=.1em]}
+{\end{enumerate}}
+
+\begin{document}
+
+
+%make title bold and 14 pt font (Latex default is non-bold, 16 pt)
+\title{
+\sysname: A Docker Registry with Deduplication Support
+%\\
+%Applying Deduplication to Docker Registry\\
+%Why and How to Apply Deduplication to Docker Registry
+}
+
+
+%\author{
+%	{\rm Nannan Zhao$^{1}$,
+%		%Vasily Tarasov$^{2}$,
+%		Hadeel Albahar$^{1}$,
+%		Subil Abraham$^{1}$,
+%		Ali Anwar$^{2}$},
+%	    %Lukas Rupprecht$^{2}$, 
+%	    %Dimitrios Skourtis$^{2}$,}\\
+%	%{\rm Amit S. Warke$^{2}$,
+%	%	Mohamed Mohamed$^{2}$, 
+%	%	Dean Hildebrand$^{2}$\thanks{Now at Google.}
+%	and Ali R. Butt$^{1}$\\
+%	\small {\em $^1$Virginia Tech \quad $^{2}$IBM Research---Almaden} \\ [2mm]
+%}
+
+%don't want date printed
+\date{}
+\maketitle
+
+% Use the following at camera-ready time to suppress page numbers.
+% Comment it out when you first submit the paper for review.
+%\thispagestyle{empty}
+
+\input{abstract}
+\input{intro}
+\input{background}
+\input{dataset-analysis}
+
+\input{sift-design}
+\input{implementation}
+\input{evaluation}
+\input{relatedwork}
+\input{conclusion}
+%\input{dedup_discussion}
+
+
+
+{\bibliographystyle{abbrv}
+\bibliography{paper}}
+
+
+\end{document}

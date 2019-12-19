@@ -1,0 +1,51 @@
+
+
+We present the cache hit ratio of our user access history-based algorithm 
+by replaying three IBM container registry workloads~\cite{dockerworkload}
+as shown in Figure~\ref{xxx},.
+%Our algorithm exhibits an enhanced cache performance, with a high hit ratio
+%up to 0.96.
+The hit ratio increases significant from 0.74 to 0.95 as the duration threshold grows from 1 min to 10 min.
+Increasing the duration threshold can keep more recently prefetched layers in the cache and serve later
+pull requests. 
+After that, the hit ratio stays stable around 0.96 as the duration threshold grows from 15 min to 20 min.
+Therefore,
+the highest hit ratio of our algorithm is around 0.96,
+and there are 0.4 of layers that are miss because 
+some users \emph{re-pull} the layers after they pull the same layers.
+From Figure~\ref{xxx} we also can see that 74\% of users can finish their \texttt{pull} layer request
+within a minute and 
+around 89\% of users can finished their \texttt{pull} layer request with less than 5 min. 
+
+
+%\textbf{6.9$\times$} as the layer dataset grows from 1000 to 1.7 million layers.
+
+
+We analyze the space efficiency for file cache comparing to a cache that naively store
+compressed layer tarballs.
+%for an increasing number of files stored in the file cache 
+(see Figure~\ref{fig:dedup-ratio-growth}).
+%
+%Figure~\ref{fig:dedup-ratio-growth} shows the deduplication ratio growth over the layer dataset size.
+%
+The x-axis values correspond to the sizes of 4 random samples drawn from the whole dataset and the size of the dataset in terms of layer count and capacity.
+For a traditional cache, the compressed layer tarballs will be kept as it is.
+While for our cache, \sysname will store \emph{deduped} layers: 
+unique files in the file cache.
+The y-axis shows compare to naively storing compressed layer tarballs,
+how many more layers we can fit in our file cache. 
+For a first two smaller dataset which are less than 20GB, 
+There is no benefit to \emph{dedup} layers and store unique files
+because the deduplication ratio is to low.
+While when the dataset increases to 3TB, we can store more than 56\% of layers
+in file cache.
+The number of extra layers increases almost linearly with the layer dataset size.
+In this case, there is a high potential for file cache when the cache size is big.
+we should be carefully select file cache size. 
+%
+%In terms of file count, it increases from \textbf{3.6$\times$} to \textbf{31.5$\times$} while
+%in terms of capacity, it increases from \textbf{1.9$\times$} to
+%\textbf{6.9$\times$} as the layer dataset grows from 1000 to 1.7 million layers.
+%%
+%This confirms the high potential for file-level deduplication in large-scale
+%Docker registry deployments.

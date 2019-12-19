@@ -1,0 +1,43 @@
+\section{Deduplication analysis}
+\label{sec:dedup-analysis}
+%\NZ{I would like to add some general analysis before dedup analysis.}
+%\LR{The figures in the whole section are very hard to read in black and white
+%and I think the dots in Fig. 6 are even hard to read in color. We should change
+%the colors to ones that are better distinguishable and add patterns to lines
+%and bars.}\NZ{addressed}
+
+In this section, we investigate the potential for data reduction in the
+Docker registry by estimating the efficacy of layer sharing,
+compression, and the proposed file-level deduplication.
+%
+We also analyze the root causes of the high file redundancy
+across container images.
+%
+%We first analyze the benefits of data reduction
+%techniques that Docker already implements---layer sharing and local
+%compression.
+%
+%\LR{We should introduce the term layer-level deduplication in the previous
+%section.}
+%
+%\VT{Lukas, I rephrased and changed to layer sharing, which was introduced in
+%prev. section. c if it reads better now.}
+%\NZ{changed to layer-sharing.}
+%
+%Docker, in its current state, already performs rudimentary deduplication by
+%sharing identical layers between images.
+%
+%We start our analysis from quantifying how much benefits does this existing
+%approach provides.
+%
+%However, we believe that there is significantly more potential in
+%deduplicating individual files in the layers.
+%
+%We then use the same dataset to estimate the efficacy of file-level
+%deduplication and analyze the root causes of the high file redundancy found
+%across container images.
+%
+
+\input{methodology}
+\input{dedup_ratio}
+\input{dedup_types}

@@ -1,0 +1,20 @@
+\begin{algorithm}
+	\scriptsize 
+	\caption{eviction.}
+	\label{alg:cache}
+	\SetAlgoLined
+	\KwIn{
+		$S_{thresh}$: Capacity threshold for layer buffer to trigger eviction.
+	}
+	\While{free\_buffer $<$ $S_{thresh}$}{
+		\emph{last\_usr} $\gets$ \emph{UsrLRU.last\_item()}\\
+		\For{layer in \texttt{reversed}(LayerLRU.items())}{
+			\If{layer exclusively belongs to last\_usr}{
+				%{\scriptsize $/*$\textit{If layer is not shared with other users, layer is deleted}}\\
+				\texttt{Evict} \emph{LayerLRU[layer]}\\			
+				\emph{free\_buffer} $+=$ \emph{sizeof(layer)}
+		}
+	}
+	\texttt{Evict} \emph{UsrLRU[last\_usr]}
+	}
+\end{algorithm}
