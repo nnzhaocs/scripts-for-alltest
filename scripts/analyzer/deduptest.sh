@@ -29,3 +29,22 @@ vdostats --human-readable /dev/mapper/vdolvm
 # vdo restart
 vdo start --all
 # dedup with btrfs/lessfs/sdfs/zfs
+sudo vdo enableDeduplication --name=vdolvm250g
+
+#============setup zfs
+sudo apt install zfs
+sudo zpool create -f zfsvlm /dev/sda1
+sudo zpool status
+
+sudo zfs set mountpoint=/home/nannan/sampled/ zfsvlm
+
+zpool list zfsvlm
+
+zfs set dedup=on zfsvlm
+
+#===========setup btrfs
+apt install btrfs-tools
+mkfs.btrfs /dev/sda2
+
+watch 'btrfs filesystem df ./sampled-2'
+
