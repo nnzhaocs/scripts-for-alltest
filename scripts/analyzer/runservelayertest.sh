@@ -20,7 +20,7 @@ just_send_layer () {
 
 
 
-for (( i = 350 ; i < 400 ; i += 1 )) ; do
+for (( i = 300 ; i < 400 ; i += 1 )) ; do
 
 	echo $i
 	./server.sh $i

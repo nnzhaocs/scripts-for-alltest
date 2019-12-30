@@ -1,6 +1,3 @@
-
-
-
 # this is registry and it sends layers to client. no get request needed!
 
 # first randomly select few files and pack 1 layers
@@ -9,19 +6,19 @@
 
 export TIMEFORMAT=%R
 
-hulk2file="/home/nannan/sampled.lst"
+#hulk2file="/home/nannan/sampled.lst"
 testdir="/home/nannan/testdir/"
 layer="${testdir}testlayer_$1"
 layername="layer_$1.tar.gz"
 
-inputfile=$hulk2file
-outputfile="tmpsample.lst"
+#inputfile=$hulk2file
+outputfile="/home/nannan/samplefiles/$1" # this is inputfile :) "tmpsample.lst"
 
-samplesize=$1
+#samplesize=$1
 clientaddr="192.168.0.173"
 clientport=1234
 
-python random_select_and_packing.py $inputfile $samplesize $outputfile 
+#python random_select_and_packing.py $inputfile $samplesize $outputfile 
 
 elapsed_mkdir=0
 elapsed_cp=0
@@ -31,7 +28,7 @@ elapsed_ncat=0
 (time mkdir -p $layer) &> tmp_mkdir
 elapsed_mkdir=$(cat tmp_mkdir | tail -1)
 
-(time cat $outputfile | parallel -j 16 cp {} $layer ) &> tmp_cp
+(time cat $outputfile | parallel -j 16 cp /home/nannan/sampled/{} $layer ) &> tmp_cp
 elapsed_cp=$(cat tmp_cp | tail -1)
 
 (time tar -zcf $layername $layer ) &> tmp_tar
