@@ -9,8 +9,8 @@ testdir="/home/nannan/testdir/"
 layer="${testdir}testlayer_$1"
 layername="layer_$1.tar.gz"
 
-#inputfile=$hulk2file
-outputfile="tmpsample.lst"
+inputfile="/home/nannan/samplefiles/$1"
+#outputfile="tmpsample.lst"
 
 #samplesize=$1
 clientaddr="192.168.0.173"
@@ -26,9 +26,9 @@ elapsed_ncat=0
 (time mkdir -p $layer) &> tmp_mkdir
 elapsed_mkdir=$(cat tmp_mkdir | tail -1)
 
-rados -p dedup_base put $line "$hulk2filestoredir/$line"
+#rados -p dedup_base get $line "$hulk2filestoredir/$line"
 
-(time cat $outputfile | parallel -j 16 rados -p dedup_base get {} $layer ) &> tmp_cp
+(time cat $inputfile | parallel -j 16 rados -p dedup_base get {} $layer/{} ) &> tmp_cp
 elapsed_cp=$(cat tmp_cp | tail -1)
 
 (time tar -zcf $layername $layer ) &> tmp_tar
