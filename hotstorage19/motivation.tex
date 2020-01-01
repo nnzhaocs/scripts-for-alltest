@@ -133,7 +133,15 @@ without sacrificing the \texttt{GET} layer performance.
 % Please add the following required packages to your document preamble:
 % \usepackage{multirow}
 
+\begin{table}[]
+	\scriptsize
+	\begin{tabular}{|l|l|l|l|l|l|}
+		\hline
+		\#Layers 			&	Compres. size  &  Uncompres. size & \# Files & \# Uniq files &  Total uniq file size \\ \hline
+		24 K					  &  610 GB 						& 1.5 TB   					 & 	41 M	  &     5 M         &   310 GB           \\ \hline
 
+	\end{tabular}
+\end{table}
 
 \begin{table}[t]
 	%\centering
@@ -151,28 +159,6 @@ without sacrificing the \texttt{GET} layer performance.
 	\end{tabular}
 	\label{tab:dedupratio-restoringlatency}
 \end{table}
-
-%\begin{table}[t]
-%	%\centering
-%	%\tiny 
-%	\scriptsize
-%	\caption{Dedup ratio and layer restoring latency (i.e., layer pulling latency).}
-%	\resizebox{\columnwidth}{!}{%
-%		\begin{tabular}{| c | c | c | c | c | c | c | c |} 
-%			\hline
-%			\textbf{Storage systems/tools with deduplication support}    &   \textbf{Dedup layers as it is} & \textbf{Dedup layers after decompressing them first} \\ 
-%			& \textbf{\#PUT L} & \textbf{\#PUT M} & \textbf{\#Uniq L} & \textbf{\#Uniq M} 
-%			\hline\hline
-%			\textbf{Dal}    &  2867  & 2000   & 124  & 9     & 1278 & 88      \\ 
-%			\hline
-%			\textbf{Fra}     &  1602  & 3278   & 111  & 9     & 420 & 43     \\
-%			\hline
-%			\textbf{Lon}    &  924    & 3972   & 98  & 6      & 698 & 88    \\
-%			\hline 
-%			\textbf{Syd}      &  1310   & 3653   & 35 & 2     & 154 & 18      \\  
-%			\hline
-%	\end{tabular}}
-%\end{table}
 
 \subsection{Deduplication challenges: high restoring latency}
 
