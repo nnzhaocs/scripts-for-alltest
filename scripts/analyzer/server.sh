@@ -10,6 +10,7 @@ export TIMEFORMAT=%R
 testdir="/home/nannan/testdir/"
 layer="${testdir}testlayer_$1"
 layername="layer_$1.tar.gz"
+uniqfilesdir="/home/nannan/sampled-3"
 
 #inputfile=$hulk2file
 outputfile="/home/nannan/samplefiles/$1" # this is inputfile :) "tmpsample.lst"
@@ -28,7 +29,7 @@ elapsed_ncat=0
 (time mkdir -p $layer) &> tmp_mkdir
 elapsed_mkdir=$(cat tmp_mkdir | tail -1)
 
-(time cat $outputfile | parallel -j 16 cp /home/nannan/sampled/{} $layer ) &> tmp_cp
+(time cat $outputfile | parallel -j 16 cp "$uniqfilesdir/{}" $layer ) &> tmp_cp
 elapsed_cp=$(cat tmp_cp | tail -1)
 
 (time tar -zcf $layername $layer ) &> tmp_tar

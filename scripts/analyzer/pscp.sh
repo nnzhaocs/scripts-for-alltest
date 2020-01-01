@@ -22,3 +22,6 @@ for lst in ${inputfilenames[@]}; do
 #cp_file {} "$lst"
     break
 done
+
+
+while read f ; do newname=$(echo $f |sed -e 's/\//_/g'); cp $f ../sampledfiles/$newname; done <../totalsampledfiles_scp.sh
