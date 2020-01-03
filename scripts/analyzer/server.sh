@@ -10,7 +10,7 @@ export TIMEFORMAT=%R
 testdir="/home/nannan/testdir/"
 layer="${testdir}testlayer_$1"
 layername="layer_$1.tar.gz"
-uniqfilesdir="/home/nannan/sampled-3"
+uniqfilesdir="/home/nannan/sampled"
 
 #inputfile=$hulk2file
 outputfile="/home/nannan/samplefiles/$1" # this is inputfile :) "tmpsample.lst"
