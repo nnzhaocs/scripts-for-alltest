@@ -1,4 +1,16 @@
 
+
+# ssh login without password
+
+a@A:~> ssh-keygen -t rsa
+a@A:~> ssh b@B mkdir -p .ssh
+a@A:~> cat .ssh/id_rsa.pub | ssh b@B 'cat >> .ssh/authorized_keys'
+a@A:~> ssh b@B
+
+#-------
+cd docker-remetrics/
+sshpass -p 'nannan' pssh -h thors.lst -l root -A -i 'ceph -v'
+
 # install ceph
 1. first setup ceph-deploy
 https://docs.ceph.com/docs/master/start/quick-start-preflight/#ceph-deploy-setup
@@ -8,23 +20,27 @@ https://docs.ceph.com/docs/master/start/quick-ceph-deploy/
 mkdir ceph-cluster
 cd ceph-cluster
 
-ceph-deploy purge thor0 thor1 thor2 thor3
-ceph-deploy purgedata thor0 thor1 thor2 thor3
+ceph-deploy purge thor0 thor1 thor2 thor3 thor4
+ceph-deploy purgedata thor0 thor1 thor2 thor3 thor4
 ceph-deploy forgetkeys
 rm ceph.*
 
 # ------------------------------------------------------------------
 ceph-deploy new thor0
-ceph-deploy install --release nautilus thor0 thor1 thor2 thor3
+ceph-deploy install --release nautilus thor0 thor1 thor2 thor3 thor4
 
 pssh -h ods -l root -A -i 'ceph -v'
 
 ceph-deploy mon create-initial
 ceph-deploy admin thor0
 
-ceph-deploy osd create --data /dev/sda4 thor1
-ceph-deploy osd create --data /dev/sda4 thor2
-ceph-deploy osd create --data /dev/sda4 thor3
+pssh -h ods -l root -A -i 'ceph-volume lvm zap --destroy /dev/sda5'
+#need to create sda5 again
+
+ceph-deploy osd create --data /dev/sda5 thor1
+ceph-deploy osd create --data /dev/sda5 thor2
+ceph-deploy osd create --data /dev/sda5 thor3
+ceph-deploy osd create --data /dev/sda5 thor4
 
 ceph-deploy mon add xxx (optional)
 ceph-deploy mgr create thor2
@@ -88,11 +104,16 @@ ceph-volume lvm create --osd-id {id} --data /dev/sdX
 # remove osd
 
 ceph osd out 0
-ceph stop osd.0
+ssh {osd-host}
+sudo systemctl stop ceph-osd@{osd-num}
+
+
+#ssh -t root@thor3 'systemctl stop ceph-osd@2'
 ceph osd crush remove osd.0
 ceph auth del osd.0
 ceph osd rm osd.0
-
+ceph-volume lvm zap --destroy /dev/sdax
+ceph osd purge osd.x --yes-i-really-mean-it
 # check
 # https://docs.ceph.com/docs/master/rados/operations/monitoring/#checking-mds-status
 # https://docs.ceph.com/docs/master/start/quick-rbd/
@@ -133,9 +154,8 @@ ceph-volume simple scan /dev/sda4
 
 
 # pools
-
 ceph osd lspools
-
+ceph osd pool delete pool
 ##############################
 3*100
 ----------- = 100 2^6
@@ -156,6 +176,6 @@ SUM :128 128 128 128 128 128 128 128 128 128 128
 
 ceph osd pool get cephfs_data pg_num
 
-
-
-
+# create erasure coding 
+ceph osd erasure-code-profile set newmyprofile k=2 m=2 crush-failure-domain=rack
+ceph osd pool create ecpool 32 32 erasure newmyprofile
