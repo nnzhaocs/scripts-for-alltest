@@ -1,6 +1,30 @@
 
 \input{fig-eval-primary}
 
+
+\begin{table}[]
+		\scriptsize
+	\begin{tabular}{ | l | l | l | }
+		\hline
+	                	     & Dedup ratio & layer restoring latency increases \\ \hline
+	 \multicolumn{3}{|c|}{********* File level [3-way replication] *********} \\ \hline
+	B-mode 0	       &          2 x           &  \\ \hline
+	B-mode 1            &          1.5 x           &  \\ \hline
+	B-mode 2	       &           1.2 x            &  \\ \hline
+%	B-mode 3	       &                        &  \\ \hline
+	S-mode  	          &           1.3 x             &  \\ \hline
+	 \multicolumn{3}{|c|}{********* Block level [3-way replication] *********} \\ \hline
+	B-mode 0 	       &        4 x             &  \\ \hline
+	B-mode 1            &        2 x             &  \\ \hline
+	B-mode 2	       &         1.3 x              &  \\ \hline
+%	B-mode 3	       &                        &  \\ \hline
+	S-mode  	          &          1.7 x              &  \\ \hline
+	 \multicolumn{3}{|c|}{********* Block level [Erasure coding] *********} \\ \hline
+	B-mode 0 	  &           6 x             &  \\ \hline
+	\end{tabular}
+\end{table}
+
+
 \subsection{Deduplication Modes}
 \label{sec:eval-primary}
 %\paragraph{}
