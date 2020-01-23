@@ -1,5 +1,0 @@
-
-export SPARK_HOME=/usr/local/spark
-export SPARK_CONF_DIR=/home/nannan/spark/conf
-
-export PATH=$PATH:$SPARK_HOME/bin
