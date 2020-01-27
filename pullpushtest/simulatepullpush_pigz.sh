@@ -1,7 +1,7 @@
 
 export TIMEFORMAT=%R
-export testdir="/root/nannan/testdir/"
-#export testdir="/root/nannan/sdb4/testdir/"
+#export testdir="/root/nannan/testdir/"
+export testdir="/home/nannan/sdb4/testdir/"
 testlayerslstfname=$1 #"/root/nannan/testlayers.lst"
 
 export clientaddr="192.168.0.173"
@@ -109,7 +109,7 @@ process_layers () {
         compressed_archival_size=$(stat -c%s "$new_comprs_fname")
         echo "size of $1 = $compressed_archival_size bytes."
 
-	stime ncat -w3 $clientaddr $clientport < $new_comprs_fname ) &> tmp_ncat
+	(time ncat -w3 $clientaddr $clientport < $new_comprs_fname ) &> tmp_ncat
 	elapsed_ncat=$(cat tmp_ncat | tail -1)
 
 	clear_dir $layer_dir

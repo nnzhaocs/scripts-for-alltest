@@ -1,6 +1,6 @@
 
 export TIMEFORMAT=%R
-export testdir="/root/nannan/testdir/"
+export testdir="/home/nannan/testdir/"
 #export testdir="/root/nannan/sdb4/testdir/"
 testlayerslstfname=$1 #"/root/nannan/testlayers.lst"
 
@@ -44,36 +44,39 @@ pack () { # src, dest
 unpack () {
 	(time tar -pxf $1 -C $2) &> tmp_unpack
 	elapsed_unpack=$(cat tmp_unpack | tail -1)
-	#return "$elapsed_unpack"
+	
 }
 
 decompress () {
-	(time gunzip -c $1 > $2) &> tmp_decomprs
+	(time gunzip -c $1 > $2) 2> tmp_decomprs
 	elapsed_decomprs=$(cat tmp_decomprs | tail -1)
-	#return "$elapsed_decomprs"
+	
 }
 
 compress () {
-	#(time gzip -9 -f $1) &> tmp_comprs
-	(time lz4 -9 -qf $1) &> tmp_comprs
+	echo "compress lz4: $1"
+	#lz4 -qf $1
+	(time lz4 -qf $1 > "$1.lz4") 2> tmp_comprs
 	elapsed_comprs=$(cat tmp_comprs | tail -1)
-	#return "$elapsed_comprs"
+	echo "done compress"
+	
 }
 
 
 decompress_lz4 () {
-        (time lz4 -df $1) &> tmp_decomprs
+	echo "decompress lz: $1"
+        (time lz4 -qdf $1 > "$2.new.tar") 2> tmp_decomprs
         elapsed_decomprs=$(cat tmp_decomprs | tail -1)
-        #return "$elapsed_decomprs"
+        
 }
 
 
 export -f pack
 export -f unpack
-export -f decompress
+export -f decompress_lz4
 export -f compress
-
-#=======================================
+export -f decompress
+#======================================
 
 export outputfname=$(basename $testlayerslstfname)
 
@@ -103,16 +106,19 @@ process_layers () {
     	cp_file $1 $cp_layer_tarball_name	
 	decompress $cp_layer_tarball_name $archival_file_name
 
-	uncompressed_archival_size=$(stat -c%s "$archival_file_name")
+	#uncompressed_archival_size=$(stat -c%s "$new_archival_fname")
 
 	unpack $archival_file_name $unpack_dir
 	pack $unpack_dir $new_archival_fname
+
+	uncompressed_archival_size=$(stat -c%s "$new_archival_fname")
+
 	compress $new_archival_fname
 
         compressed_archival_size=$(stat -c%s "$new_comprs_fname")
         echo "size of $1 = $compressed_archival_size bytes."
 
-	decompress_lz4 $new_comprs_fname 
+	decompress_lz4 $new_comprs_fname $new_archival_fname
 
 	(time ncat -w3 $clientaddr $clientport < $new_comprs_fname ) &> tmp_ncat
 	elapsed_ncat=$(cat tmp_ncat | tail -1)
