@@ -1,5 +1,3 @@
-
-
 # ssh login without password
 
 a@A:~> ssh-keygen -t rsa
@@ -34,11 +32,13 @@ pssh -h ods -l root -A -i 'ceph -v'
 ceph-deploy mon create-initial
 ceph-deploy admin thor0
 
-pssh -h ods -l root -A -i 'ceph-volume lvm zap --destroy /dev/sda5'
+#pssh -h ods -l root -A -i 'ceph-volume lvm zap --destroy /dev/sda5'
 #need to create sda5 again
+ceph-deploy --overwrite-conf admin thor1 thor2 thor3 thor4
+ceph-deploy --overwrite-conf admin thor0 thor1 thor2 thor3 thor4 thor5
 
-ceph-deploy osd create --data /dev/sda5 thor1
-ceph-deploy osd create --data /dev/sda5 thor2
+ceph-deploy osd create --data /dev/sda5 thor1 
+ceph-deploy osd create --data /dev/sda5 thor2 
 ceph-deploy osd create --data /dev/sda5 thor3
 ceph-deploy osd create --data /dev/sda5 thor4
 
@@ -87,34 +87,29 @@ ceph-fuse /mnt/mycephfs
 ceph-fuse /mnt/mycephfs/ --client_mds_namespace mycephfs
 
 # -------------------------------------------------------------------
-# create osd
-vgs
-lvremove xxx
-
-mkfs.ext4 /dev/sda4
-mount -o user_xattr /dev/sda4 /var/lib/ceph/osd/ceph-x
-ceph-volume lvm zap /dev/sdX
-ceph-volume lvm prepare --osd-id {id} --data /dev/sdX
-ceph-volume lvm activate {id} {fsid}
-
-or 
-
-ceph-volume lvm create --osd-id {id} --data /dev/sdX
-
 # remove osd
 
 ceph osd out 0
 ssh {osd-host}
 sudo systemctl stop ceph-osd@{osd-num}
-
-
+or 
 #ssh -t root@thor3 'systemctl stop ceph-osd@2'
-ceph osd crush remove osd.0
-ceph auth del osd.0
-ceph osd rm osd.0
-ceph-volume lvm zap --destroy /dev/sdax
 ceph osd purge osd.x --yes-i-really-mean-it
-# check
+
+# remove ceph-volume
+ceph-volume lvm zap --destroy /dev/sdax
+
+
+## add mon
+mkdir tmp
+mkdir -p /var/lib/ceph/mon/ceph-mon-x
+
+ceph auth get mon. -o ./key-filename
+ceph mon getmap -o ./map-filename
+ceph-mon -i mon-x --mkfs --monmap ./map-filename --keyring ./key-filename
+ceph-mon -i mon-x --public-addr 192.168.0.201:6820
+
+# check mon
 # https://docs.ceph.com/docs/master/rados/operations/monitoring/#checking-mds-status
 # https://docs.ceph.com/docs/master/start/quick-rbd/
 
@@ -179,3 +174,13 @@ ceph osd pool get cephfs_data pg_num
 # create erasure coding 
 ceph osd erasure-code-profile set newmyprofile k=2 m=2 crush-failure-domain=rack
 ceph osd pool create ecpool 32 32 erasure newmyprofile
+
+
+
+
+
+
+
+
+
+

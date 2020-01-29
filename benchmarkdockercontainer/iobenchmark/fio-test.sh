@@ -19,12 +19,12 @@ echo "input: $varname"
 #fio --size=$testsize"k" --directory=/home --name=12 --nrfiles=$nrfs --direct=1 -bs=$blocksize --rw=$rwtp --group_report --numjobs=$nrjobs
 
 
-fio --ioengine=rbd --size=$testsize"k" --directory=/home --name=12 --nrfiles=$nrfs --direct=1 -bs=$blocksize --rw=$rwtp --group_report --numjobs=$nrjobs
+fio --ioengine=rbd --size=$testsize"k" --pool=rbd --rbdname=rbd --clientname=admin --clustername=ceph --name=12 --nrfiles=$nrfs --direct=1 -bs=$blocksize --rw=$rwtp --group_report --numjobs=$nrjobs
 
 
-#echo "docker run --rm ljishen/fio --name=filesize --directory=/ --nrfiles=$nrfiles --size=$testsize  --direct=1 --rw=$rwtp --bs=$blocksize  --numjobs=$nrjobs --group_reporting"
 
 
-#docker run --rm ljishen/fio --name="filesize" --directory=/ --nrfiles=$nrfs --size=$testsize  --direct=1 --rw=$rwtp --bs=$blocksize  --numjobs=$nrjobs --group_reporting --runtime=$totalruntime 
+
+
 
 
