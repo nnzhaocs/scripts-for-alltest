@@ -1,37 +1,22 @@
 
 echo "copy on write test"
-#================ distributions ================
-
-nrfss=(90 2600 50000)
-
-filesizes=("1k" "2k" "6k" "18k" "1m") #KB
-
-rwtps=("read" "write" "randread" "randwrite")
-
-blocksizse=("1k" "2k" "4k" "8k" "16k" "32k" "64k" "128k")
-
-layersizes=("3k" "14k" "8000k" "55000k" "900000k")
-
-imgsizes=("190m" "280m" "530m" "800m" "5000m")
-
-layers=(6 10 12 19 50)
 
 #================== init parameters =============================
 
-nrfs=90
-filesize="1m"
+nrfs=$1 # 90
+filesize=$2 #"1m"
 
-rwtp="randwrite"
-blksize=1
+rwtp=$3 #"randwrite"
+blksize=$4 #1
 blocksize="${blksize}k"
 
-nrjobs=1
+nrjobs=$5 #1
 totalruntime=600
 
 #testmode="rawfs"
-testmode="container" # or rawfs or container
+testmode=$6 #"container" # or rawfs or container
 
-ioeng="libaio"
+ioeng=$7 #"libaio"
 
 hname=$(hostname)
 
@@ -43,9 +28,7 @@ res_f="${hname}.${testmode}_res.txt"
 create_res="${res_f}"
 rewrite_res="${res_f}"
 
-#testsize="2g"
-#testsize=$(echo "$nrfs * $filesize"|bc)
-#testsize=45m
+#testsize="2g" #testsize=$(echo "$nrfs * $filesize"|bc) #testsize=45m
  
 #=================== overwrite parameters ========================
 
@@ -53,6 +36,8 @@ tsize=$(echo "$blksize * $nrfs * 3" | bc)
 testsize="${tsize}k" # 4k * 90 * 3 # testsize = (blocksize * nrfiles) * 3
 
 #==================== cleanup caches & disk cache ======================================
+
+echo "$1 => nrfs: $nrfs, filesize: $filesize, rwtp: $rwtp, blksize: $blksize, nrjobs: $nrjobs, $ioeng, overwritesize: $testsize "
 
 echo "cleanup caches & disk cache"
 
@@ -67,7 +52,6 @@ extract_vals () {
 	cat "$1" | grep "IOPS=" >> "$2"
 	cat "$1" | grep "clat (usec)" >> "$2"
 }
-
 
 #================== create img and files =======================
 
@@ -115,7 +99,6 @@ rewrite_files () {
 
 }
 
-
 rewrite_layer () {
 
 	echo "======================= rewrite to previous layer ======================"
@@ -157,7 +140,7 @@ cowtest_rawfs () {
 
 
 if [ "$testmode" == "container" ] ; then
-	echo $testmode
+	echo "$testmode"
 	cowtest_container
 else
 	echo "$testmode"
@@ -165,6 +148,7 @@ else
 fi
 
 echo "======================== output results ==================="
-cat ${create_res}
-cat ${rewrite_res}
+
+cat ${res_f}
+
 

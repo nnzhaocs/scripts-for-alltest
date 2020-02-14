@@ -6,4 +6,5 @@ while [ $i -lt 5  ] ; do
 	dd if=/dev/zero of=/home/testfile bs=1G count=2 oflag=direct
 	sleep 10
 	rm -rf /home/testfile
+	#((i++))
 done
