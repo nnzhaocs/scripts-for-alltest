@@ -33,11 +33,15 @@ testmode="container" # or rawfs or container
 
 ioeng="libaio"
 
-create_f="${testmode}_create_output.txt"
-rewrite_f="${testmode}_rewrite_output.txt"
+hname=$(hostname)
 
-create_res="${testmode}_create_res.txt"
-rewrite_res="${testmode}_rewrite_res.txt"
+create_f="${hname}.${testmode}_create_output.txt"
+rewrite_f="${hname}.${testmode}_rewrite_output.txt"
+
+res_f="${hname}.${testmode}_res.txt"
+
+create_res="${res_f}"
+rewrite_res="${res_f}"
 
 #testsize="2g"
 #testsize=$(echo "$nrfs * $filesize"|bc)
