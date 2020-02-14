@@ -23,7 +23,7 @@ hname=$(hostname)
 create_f="${hname}.${testmode}_create_output.txt"
 rewrite_f="${hname}.${testmode}_rewrite_output.txt"
 
-res_f="${hname}.${testmode}_res.txt"
+res_f="${hname}.res.txt"
 
 create_res="${res_f}"
 rewrite_res="${res_f}"
@@ -37,7 +37,7 @@ testsize="${tsize}k" # 4k * 90 * 3 # testsize = (blocksize * nrfiles) * 3
 
 #==================== cleanup caches & disk cache ======================================
 
-echo "$1 => nrfs: $nrfs, filesize: $filesize, rwtp: $rwtp, blksize: $blksize, nrjobs: $nrjobs, $ioeng, overwritesize: $testsize "
+echo "=====> nrfs: $nrfs, filesize: $filesize, rwtp: $rwtp, blksize: $blksize, nrjobs: $nrjobs, $ioeng, overwritesize: $testsize "
 
 echo "cleanup caches & disk cache"
 
@@ -50,7 +50,7 @@ extract_vals () {
 	echo "extract result vals"
 	echo "$1 => nrfs: $nrfs, filesize: $filesize, rwtp: $rwtp, blksize: $blksize, nrjobs: $nrjobs, $ioeng, overwritesize: $testsize " >> "$2"
 	cat "$1" | grep "IOPS=" >> "$2"
-	cat "$1" | grep "clat (usec)" >> "$2"
+	cat "$1" | grep "clat (" >> "$2"
 }
 
 #================== create img and files =======================
@@ -63,7 +63,7 @@ create_imgwithfiles () {
 
 	docker run --name test_cow --rm nnzhaocs/fio sleep 910 &
 	sleep 5
-	docker exec -ti test_cow fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --allow_file_create=1 --ioengine=$ioeng --numjobs=$nrjobs --runtime=$totalruntime --group_reporting 1> "${create_f}"
+	docker exec -i test_cow fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --allow_file_create=1 --ioengine=$ioeng --numjobs=$nrjobs --runtime=$totalruntime --group_reporting 1> "${create_f}"
 
 	cat "${create_f}"	
 
@@ -71,7 +71,7 @@ create_imgwithfiles () {
 
 	sleep 5
 	docker commit test_cow nnzhaocs/fio_cow-0
-	docker exec -ti test_cow ls -hl /
+	docker exec -i test_cow ls -hl /
 	docker stop $(docker ps -a -q)
 }
 
@@ -107,7 +107,7 @@ rewrite_layer () {
 
 	sleep 5
 
-	docker exec -ti test-0 fio --name=cowtest --nrfiles="$nrfs" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting --size=$testsize --ioengine=$ioeng --file_service_type=random 1> ""${rewrite_f}""
+	docker exec -i test-0 fio --name=cowtest --nrfiles="$nrfs" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting --size=$testsize --ioengine=$ioeng --file_service_type=random 1> ""${rewrite_f}""
 
         cat "${rewrite_f}"
 

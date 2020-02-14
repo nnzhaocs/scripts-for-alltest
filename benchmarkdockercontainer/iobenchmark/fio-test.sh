@@ -36,16 +36,27 @@ layers=(6 10 12 19 50)
 #======> ./cow_test_layers.sh $nrfs $filesize $rwtp $blksize $nrjobs $testmode $ioeng 
 #====================== commands ==========================================
 
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'cd /home/nannan/scripts-for-alltest/benchmarkdockercontainer/iobenchmark/; git pull'
+
 date
-./cow_test_layers.sh 90 "1m" "randwrite" 1 1 "container" "libaio" 
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'cd /home/nannan/scripts-for-alltest/benchmarkdockercontainer/iobenchmark/; ./cow_test_layers.sh 90 "1m" "randwrite" 1 1 "container" "libaio" &> container-log '
+
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'cd /home/nannan/scripts-for-alltest/benchmarkdockercontainer/iobenchmark/; tail -n 50 container-log'
+
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'docker ps -a'
 
 sleep 20
 
 date
-./cow_test_layers.sh 90 "1m" "randwrite" 1 1 "rawfs" "libaio"
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i ' cd /home/nannan/scripts-for-alltest/benchmarkdockercontainer/iobenchmark/; ./cow_test_layers.sh 90 "1m" "randwrite" 1 1 "rawfs" "libaio" &> rawfs-log '
+
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'cd /home/nannan/scripts-for-alltest/benchmarkdockercontainer/iobenchmark/; tail -n 50 rawfs-log'
+
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'ps aux|grep fio'
 
 
-
+#=== cleanup ====
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'cd /home/nannan/scripts-for-alltest/benchmarkdockercontainer/iobenchmark/; rm -rf thor*_res.txt;'
 
 
 

@@ -13,5 +13,9 @@ sudo yum groupinstall 'Development Tools'
 
 # ============== install hdparm and bc =======================
 
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'cd /home/nannan/fio-fio-3.6; ./configure'
+
 yum install bc hdparm
+
+yum install libaio-devel
 
