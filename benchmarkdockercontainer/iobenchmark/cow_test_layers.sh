@@ -53,7 +53,7 @@ echo "create img and files"
 
 create_imgwithfiles () {
 
-	echo "create_imgwithfiles"
+	echo "====================== create_imgwithfiles ================="
 
 	docker run --name test_cow --rm nnzhaocs/fio sleep 910 &
 	sleep 5
@@ -66,14 +66,15 @@ create_imgwithfiles () {
 
 create_files () {
 
-	echo "create files"
+	echo "====================== create files =========================="
 
         fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --allow_file_create=1 --numjobs=$nrjobs --runtime=$totalruntime --group_reporting
 }
 
 
 rewrite_files () {
-	echo "rewrite files"
+	echo "===================== rewrite files ============================"
+
 	fio --name=cowtest --nrfiles="$nrfs" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting --ioengine=sync --fdatasync=1 --size=$testsize --file_service_type=random
 
 }
@@ -81,7 +82,7 @@ rewrite_files () {
 
 rewrite_layer () {
 
-	echo "rewrite to previous layer"
+	echo "======================= rewrite to previous layer ======================"
 
 	docker run --name test-0 --rm -m 0 nnzhaocs/fio_cow-0 sleep 250 &
 
