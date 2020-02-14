@@ -115,7 +115,7 @@ cowtest_rawfs () {
 }
 
 
-if [ "$testmode" == "container"] ; then
+if [ "$testmode" == "container" ] ; then
 	echo $testmode
 	cowtest_container
 else
