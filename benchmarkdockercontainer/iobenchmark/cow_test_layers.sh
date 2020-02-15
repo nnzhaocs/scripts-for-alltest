@@ -48,10 +48,10 @@ hdparm -W 0 /dev/sda
 
 extract_vals () {
 	echo "extract result vals"
-	echo "$1 \\_// " >> "$2"
+	echo "$1 \\\\// " >> "$2"
 	#echo "$1 => nrfs: $nrfs, filesize: $filesize, rwtp: $rwtp, blksize: $blksize, nrjobs: $nrjobs, $ioeng, overwritesize: $testsize " >> "$2"
-	cat "$1" | grep "IOPS=" >> "$2"
-	cat "$1" | grep "clat (" >> "$2"
+	cat "$1" | grep -n "IOPS=" >> "$2"
+	cat "$1" | grep -n "clat (" >> "$2"
 }
 
 #================== create img and files =======================
