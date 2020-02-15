@@ -36,6 +36,8 @@ layers=(6 10 12 19 50)
 #======> ./cow_test_layers.sh $nrfs $filesize $rwtp $blksize $nrjobs $testmode $ioeng 
 #====================== commands ==========================================
 
+sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'df -hT'
+
 sshpass -p 'kevin123' pssh -h thors.lst -l root -A -i 'cd /home/nannan/scripts-for-alltest/benchmarkdockercontainer/iobenchmark/; git pull'
 
 date

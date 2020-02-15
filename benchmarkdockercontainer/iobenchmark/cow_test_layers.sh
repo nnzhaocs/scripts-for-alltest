@@ -48,7 +48,8 @@ hdparm -W 0 /dev/sda
 
 extract_vals () {
 	echo "extract result vals"
-	echo "$1 => nrfs: $nrfs, filesize: $filesize, rwtp: $rwtp, blksize: $blksize, nrjobs: $nrjobs, $ioeng, overwritesize: $testsize " >> "$2"
+	echo "$1 \\_// " >> "$2"
+	#echo "$1 => nrfs: $nrfs, filesize: $filesize, rwtp: $rwtp, blksize: $blksize, nrjobs: $nrjobs, $ioeng, overwritesize: $testsize " >> "$2"
 	cat "$1" | grep "IOPS=" >> "$2"
 	cat "$1" | grep "clat (" >> "$2"
 }
@@ -79,7 +80,7 @@ create_files () {
 
 	echo "====================== create files =========================="
 
-        fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --allow_file_create=1 --numjobs=$nrjobs --runtime=$totalruntime --ioengine=$ioeng --group_reporting 1> "${create_f}"
+        fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --allow_file_create=1 --numjobs=$nrjobs --runtime=$totalruntime --ioengine=$ioeng --group_reporting 1> "${create_f}"
 
         cat "${create_f}"
 
@@ -91,7 +92,7 @@ create_files () {
 rewrite_files () {
 	echo "===================== rewrite files ============================"
 
-	fio --name=cowtest --nrfiles="$nrfs" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting  --size=$testsize --ioengine=$ioeng --file_service_type=random 1> "${rewrite_f}"
+	fio --name=cowtest --nrfiles="$nrfs" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting  --size=$testsize --ioengine=$ioeng --file_service_type=random 1> "${rewrite_f}"
 
         cat "${rewrite_f}"
 
