@@ -82,6 +82,7 @@ create_files () {
 
         fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --allow_file_create=1 --numjobs=$nrjobs --runtime=$totalruntime --ioengine=$ioeng --group_reporting 1> "${create_f}"
 
+	ls "/testing/" | wc
         cat "${create_f}"
 
         extract_vals "${create_f}" "${create_res}"	
