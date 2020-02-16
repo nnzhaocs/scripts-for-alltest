@@ -37,7 +37,7 @@ testsize="${tsize}k" # 4k * 90 * 3 # testsize = (blocksize * nrfiles) * 3
 
 #==================== cleanup caches & disk cache ======================================
 
-ulimit -n 2000000
+ulimit -n 200000
 
 echo "=====> nrfs: $nrfs, filesize: $filesize, rwtp: $rwtp, blksize: $blksize, nrjobs: $nrjobs, $ioeng, overwritesize: $testsize "
 
