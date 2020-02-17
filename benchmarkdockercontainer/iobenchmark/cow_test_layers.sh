@@ -95,7 +95,7 @@ create_files () {
 rewrite_files () {
 	echo "===================== rewrite files ============================"
 
-	fio --name=cowtest --nrfiles="$nrfs" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting  --size=$testsize --ioengine=$ioeng --file_service_type=random 1> "${rewrite_f}"
+	fio --name=cowtest --nrfiles="$nrfs" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting  --size=$testsize --ioengine=$ioeng --allow_file_create=false --file_service_type=random 1> "${rewrite_f}"
 
         cat "${rewrite_f}"
 
@@ -111,7 +111,7 @@ rewrite_layer () {
 
 	sleep 5
 
-	docker exec -i test-0 fio --name=cowtest --nrfiles="$nrfs" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting --size=$testsize --ioengine=$ioeng --file_service_type=random 1> ""${rewrite_f}""
+	docker exec -i test-0 fio --name=cowtest --nrfiles="$nrfs" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting --size=$testsize --ioengine=$ioeng --allow_file_create=false --file_service_type=random 1> ""${rewrite_f}""
 
         cat "${rewrite_f}"
 
