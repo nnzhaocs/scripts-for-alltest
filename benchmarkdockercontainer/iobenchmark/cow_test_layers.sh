@@ -66,7 +66,7 @@ create_imgwithfiles () {
 
 	docker run --name test_cow --rm nnzhaocs/fio sleep 910 &
 	sleep 5
-	docker exec -i test_cow fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --allow_file_create=1 --ioengine=$ioeng --numjobs=$nrjobs --runtime=$totalruntime --group_reporting 1> "${create_f}"
+	docker exec -i test_cow fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --create_on_open=1 --ioengine=$ioeng --numjobs=$nrjobs --runtime=$totalruntime --group_reporting 1> "${create_f}"
 
 	cat "${create_f}"	
 
@@ -82,7 +82,7 @@ create_files () {
 
 	echo "====================== create files =========================="
 
-        fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --allow_file_create=1 --numjobs=$nrjobs --runtime=$totalruntime --ioengine=$ioeng --group_reporting 1> "${create_f}"
+        fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --create_on_open=1 --numjobs=$nrjobs --runtime=$totalruntime --ioengine=$ioeng --group_reporting 1> "${create_f}"
 
 	ls "/testing/" | wc
         cat "${create_f}"
