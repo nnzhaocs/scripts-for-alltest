@@ -7,16 +7,19 @@ layersizes=("3k" "14k" "8000k" "55000k" "900000k")
 imgsizes=("190m" "280m" "530m" "800m" "5000m")
 layers=(6 10 12 19 50)
 #================== init parameters =============================
-nrfs=90
-filesize="1m"
-rwtp="randwrite"
-blksize=4
+nrfs=2600 #
+filesize="128k"
+rwtp="randread"
+blksize=2
 blocksize="${blksize}k"
-nrjobs=1
+nrjobs=3
 totalruntime=600
 #testmode="rawfs"
 testmode=$1 #"container" # or rawfs or container
 ioeng="libaio"
+
+tsize=$(echo "$blksize * $nrfs * 3" | bc)
+testsize="${tsize}k" # 4k * 90 * 3 # testsize = (blocksize * nrfiles) * 3
 
 #====================== commands ==========================================
 

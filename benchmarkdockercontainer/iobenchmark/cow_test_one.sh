@@ -1,5 +1,3 @@
-
-echo "copy on write test"
 #================parameters================
 
 nrfss=(90 2600 50000)
@@ -31,16 +29,17 @@ docker commit test_cow nnzhaocs/fio_cow
 
 
 
-
+layercnt=$1
+fcnt=$2
 i=1
 
-while [ $i -lt 30  ] ; do
+while [ $i -lt $layercnt  ] ; do
 
     echo "previous layer cnt: $i"
 
     docker run --name test-$i --rm nnzhaocs/fiodifflayertest-$i sleep 310 &
     sleep 5
-    docker exec -ti test-$i fio --name=directory --nrfiles=100 --size=1600k --filename_format='/$jobnum/$jobnum/$filenum.f' --bs=16k --direct=1 --rw=randwrite --allow_file_create=0 --numjobs=32 --runtime=300 --group_reporting
+    docker exec -ti test-$i fio --name=directory --nrfiles=100 --size=1600k --filename_format='/$jobnum/$jobnum/$filenum.f' --bs=16k --direct=1 --rw=randwrite --allow_file_create= --numjobs=32 --runtime=300 --group_reporting
 
     layercnt=$(echo "$i + 1" | bc)
     echo "creating layer cnt: $layercnt"
