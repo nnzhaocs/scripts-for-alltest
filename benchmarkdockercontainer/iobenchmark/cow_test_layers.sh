@@ -100,6 +100,8 @@ rewrite_files () {
 
         cat "${rewrite_f}"
 
+	ls -hl "/testing/"
+
         extract_vals "${rewrite_f}" "${rewrite_res}"	
 
 }
