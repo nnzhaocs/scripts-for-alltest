@@ -66,7 +66,7 @@ create_imgwithfiles () {
 
 	docker run --name test_cow --rm nnzhaocs/fio sleep 910 &
 	sleep 5
-	docker exec -i test_cow fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --create_on_open=1 --ioengine=$ioeng --numjobs=$nrjobs --runtime=$totalruntime --group_reporting 1> "${create_f}"
+	docker exec -i test_cow fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --ioengine=$ioeng --numjobs=$nrjobs --runtime=$totalruntime --group_reporting 1> "${create_f}"
 
 	cat "${create_f}"	
 
@@ -82,7 +82,7 @@ create_files () {
 
 	echo "====================== create files =========================="
 
-        fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --create_on_open=1 --numjobs=$nrjobs --runtime=$totalruntime --ioengine=$ioeng --group_reporting 1> "${create_f}"
+        fio --name=cowtest --nrfiles="$nrfs" --filesize="${filesize}" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --ioengine=$ioeng --group_reporting 1> "${create_f}"
 
 	ls "/testing/" | wc
         cat "${create_f}"
@@ -95,11 +95,8 @@ create_files () {
 rewrite_files () {
 	echo "===================== rewrite files ============================"
 
-#<<<<<<< Updated upstream
-	fio --name=cowtest --nrfiles="$nrfs" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting  --size=$testsize --ioengine=$ioeng --allow_file_create=0 --overwrite=1 --file_service_type=random 1> "${rewrite_f}"
-#=======
-#	fio --name=cowtest --nrfiles="$nrfs" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting  --size=$testsize --ioengine=$ioeng --overwrite=1 --file_service_type=random 1> "${rewrite_f}"
-#>>>>>>> Stashed changes
+
+	fio --name=cowtest --nrfiles="$nrfs" --filename_format='/testing/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting  --size=$testsize --ioengine=$ioeng --file_service_type=random 1> "${rewrite_f}"
 
         cat "${rewrite_f}"
 
@@ -115,7 +112,7 @@ rewrite_layer () {
 
 	sleep 5
 
-	docker exec -i test-0 fio --name=cowtest --nrfiles="$nrfs" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting --size=$testsize --ioengine=$ioeng ----allow_file_create=0 --overwrite=1 --file_service_type=random 1> ""${rewrite_f}""
+	docker exec -i test-0 fio --name=cowtest --nrfiles="$nrfs" --filename_format='/$jobnum.$filenum.f' --bs=$blocksize --direct=1 --rw=$rwtp --numjobs=$nrjobs --runtime=$totalruntime --group_reporting --size=$testsize --ioengine=$ioeng --file_service_type=random 1> ""${rewrite_f}""
 
         cat "${rewrite_f}"
 
