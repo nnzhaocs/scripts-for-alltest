@@ -19,7 +19,7 @@ ipaddress="http://10.101.89.190:8080"
 
 cd /root/DeathStarBench/socialNetwork/wrk2
 #./wrk -D exp -t <num-threads> -c <num-conns> -d <duration> -L -s ./scripts/social-network/compose-post.lua http://localhost:8080/wrk2-api/post/compose -R <reqs-per-sec>
- ./wrk -D exp -t $1 -c $2 -d $3 -L -s ./scripts/social-network/compose-post.lua "${ipaddress}/wrk2-api/post/compose" -R $4
+ ./wrk -D exp -t $1 -c $2 -d $3 -L -s ./scripts/social-network/read-home-timeline.lua "${ipaddress}/wrk2-api/post/compose" -R $4
 
 
 
