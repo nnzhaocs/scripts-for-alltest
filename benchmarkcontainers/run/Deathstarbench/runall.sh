@@ -5,7 +5,12 @@ yum install libssl-devel
 
 https://github.com/nnzhaocs/DeathStarBench/tree/master/socialNetwork
 
+kubectl -n social-network get svc nginx-thrift 
+and replace cluster ip in init_social_graph.py
+
 python3 scripts/init_social_graph.py
+
+kubectl delete -f k8s-yaml/
 
 # install norch
 http://torch.ch/docs/getting-started.html
